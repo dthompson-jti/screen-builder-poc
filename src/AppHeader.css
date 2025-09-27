@@ -1,0 +1,209 @@
+/* src/AppHeader.css */
+
+.app-header {
+  flex-shrink: 0;
+  background-color: var(--surface-bg-primary);
+  font-family: var(--font-family-sans);
+}
+
+.app-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-6);
+  border-bottom: 1px solid var(--surface-border-secondary);
+}
+
+.app-header-title {
+  font-size: 1.25em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+  margin: 0;
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-1p5);
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  color: var(--surface-fg-secondary);
+}
+
+.icon-button:hover:not(:disabled) {
+  background-color: var(--control-bg-secondary-hover);
+  opacity: 1;
+}
+
+.icon-button.small {
+  padding: var(--spacing-1);
+}
+
+.app-header-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-6);
+  border-bottom: 1px solid var(--surface-border-secondary);
+  font-size: 0.9em;
+}
+
+.sub-header-left, .sub-header-center, .sub-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.sub-header-center {
+  flex-grow: 1;
+}
+
+.link-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background: none;
+  border: none;
+  color: var(--surface-fg-secondary);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.vertical-divider {
+  width: 1px;
+  height: var(--spacing-6);
+  background-color: var(--surface-border-secondary);
+}
+
+.form-name-editor {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--surface-fg-primary);
+}
+
+.tab-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tab-button {
+  padding: var(--spacing-1p5) var(--spacing-3);
+  background: none;
+  border: none;
+  color: var(--surface-fg-secondary);
+  font-weight: 500;
+  position: relative;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  color: var(--surface-fg-theme-primary);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -9px; /* This is relative to padding, might need adjustment */
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--surface-fg-theme-primary);
+}
+
+/* --- Standardized Button Styles --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--spacing-2); /* 8px */
+  transition: background-color 0.2s, border-color 0.2s, transform 0.1s ease-out;
+  transform: translateY(0);
+  box-sizing: border-box; /* Important for border management */
+  line-height: 1; /* Ensure consistent vertical alignment */
+}
+
+/* --- Primary Button --- */
+.btn-primary {
+  padding: var(--spacing-2) var(--spacing-4); /* 8px 16px */
+  background-color: var(--control-bg-theme);
+  color: var(--control-fg-on-solid);
+  border: 2px solid var(--control-border-primary); /* 2px solid #155ACA */
+}
+
+.btn-primary:hover:not(:disabled) {
+  /* Adjust padding to maintain visual size when borders change */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 1px); /* 9px 16px 7px */
+  background-color: var(--control-bg-theme-hover); /* #276FE3 */
+  border-top: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
+  border-right: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
+  border-bottom: 3px solid var(--control-border-primary-hover); /* 3px solid #123D82 */
+  border-left: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
+}
+
+.btn-primary:active:not(:disabled) {
+  /* Adjust padding to maintain visual size when borders change */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) var(--spacing-2); /* 9px 16px 8px */
+  background-color: var(--control-bg-theme-pressed); /* #174B9F */
+  border-top: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
+  border-right: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
+  border-bottom: 2px solid var(--control-border-primary-pressed); /* 2px solid #123D82 */
+  border-left: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
+  transform: translateY(1px); /* Visual press effect */
+}
+
+/* --- Secondary Button --- */
+.btn-secondary {
+  padding: var(--spacing-2) var(--spacing-4); /* 8px 16px */
+  background-color: var(--control-bg-secondary); /* #F9F9F9 */
+  color: var(--surface-fg-primary);
+  border: 1px solid var(--control-border-secondary); /* 1px solid #535862 */
+}
+
+.btn-secondary.icon-only {
+  padding: var(--spacing-1p5); /* 6px */
+}
+
+.btn-secondary:hover:not(:disabled) {
+  /* Adjust padding to maintain visual size when borders change */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 2px); /* 9px 16px 6px */
+  background-color: var(--control-bg-secondary-hover); /* #F1F1F1 */
+  border-top: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
+  border-right: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
+  border-bottom: 3px solid var(--control-border-secondary-hover); /* 3px solid #414651 */
+  border-left: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
+}
+.btn-secondary.icon-only:hover:not(:disabled) {
+  /* Adjust padding for icon-only variant */
+  padding: calc(var(--spacing-1p5) + 1px) var(--spacing-1p5) calc(var(--spacing-1p5) - 2px); /* 7px 6px 4px */
+}
+
+.btn-secondary:active:not(:disabled), .btn-secondary.active {
+  /* Adjust padding to maintain visual size when borders change */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 2px); /* 9px 16px 6px */
+  background-color: var(--control-bg-secondary-pressed); /* #E8E8E9 */
+  border-top: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
+  border-right: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
+  border-bottom: 3px solid var(--control-border-secondary-pressed); /* 3px solid #414651 */
+  border-left: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
+  transform: translateY(1px); /* Visual press effect */
+}
+.btn-secondary.icon-only:active:not(:disabled), .btn-secondary.icon-only.active {
+  /* Adjust padding for icon-only variant */
+  padding: calc(var(--spacing-1p5) + 1px) var(--spacing-1p5) calc(var(--spacing-1p5) - 2px); /* 7px 6px 4px */
+}

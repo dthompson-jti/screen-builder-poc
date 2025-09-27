@@ -1,0 +1,20 @@
+/* src/editor-canvas/TextInputPreview.css */
+.field-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+.field-preview label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+}
+.field-preview input {
+  font-family: var(--font-family-sans);
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  font-size: 0.9em;
+  background-color: var(--surface-bg-primary);
+}

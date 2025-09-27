@@ -1,0 +1,46 @@
+/* src/MainToolbar.css */
+.main-toolbar {
+  width: 60px;
+  height: 100%;
+  background-color: var(--surface-bg-primary);
+  border-right: 1px solid var(--surface-border-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-2p5) 0; /* 10px -> custom value, using spacing-2 for 8px */
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.toolbar-button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background-color: transparent;
+  border-radius: var(--spacing-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  opacity: 0.8;
+}
+
+.toolbar-button:hover:not(:disabled) {
+  background-color: var(--control-bg-secondary-hover);
+  opacity: 1;
+}
+
+.toolbar-button.active {
+  background-color: var(--surface-bg-brand-solid);
+  opacity: 1;
+}
+
+.toolbar-button .material-symbols-outlined {
+  font-size: 24px;
+  color: var(--surface-fg-secondary);
+}
+
+.toolbar-button.active .material-symbols-outlined {
+  color: var(--surface-fg-primary_on-brand);
+}

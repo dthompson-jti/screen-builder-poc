@@ -1,0 +1,28 @@
+/* src/editor-canvas/ComponentPreview.css */
+.component-preview {
+  padding: var(--spacing-4);
+  background-color: var(--surface-bg-primary);
+  border: 1px solid var(--surface-border-secondary);
+  border-radius: 6px;
+  box-shadow: var(--surface-shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 200px;
+}
+
+.component-preview-name {
+  margin: 0;
+  font-size: 0.9em;
+  font-family: var(--font-family-sans);
+  color: var(--surface-fg-primary);
+}
+
+.component-preview-type {
+  font-size: 0.8em;
+  color: var(--surface-fg-secondary);
+  background-color: var(--surface-bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-family-sans);
+}

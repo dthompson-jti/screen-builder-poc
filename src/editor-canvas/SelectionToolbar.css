@@ -1,0 +1,62 @@
+/* src/editor-canvas/SelectionToolbar.css */
+.selection-toolbar {
+  position: absolute;
+  top: -44px;
+  /* THE FIX: Left-align the toolbar to match the new mockup. */
+  left: 0;
+  transform: none;
+  display: flex;
+  align-items: center;
+  background-color: var(--surface-bg-brand-solid);
+  border-radius: var(--spacing-2);
+  padding: var(--spacing-1);
+  color: var(--surface-fg-primary_on-brand);
+  z-index: 10;
+  box-shadow: var(--surface-shadow-md);
+  gap: var(--spacing-1);
+}
+
+.toolbar-drag-handle {
+  cursor: grab;
+  padding: var(--spacing-1p5);
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.toolbar-drag-handle:hover {
+  background-color: var(--primitives-dark-tint-800);
+}
+
+.toolbar-drag-handle:active {
+  cursor: grabbing;
+  background-color: var(--primitives-dark-tint-700);
+}
+
+.toolbar-drag-handle .material-symbols-outlined {
+  display: block;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--primitives-dark-tint-700);
+  margin: 0 var(--spacing-1);
+}
+
+.toolbar-action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--spacing-1p5) var(--spacing-2);
+  background-color: transparent;
+  border: none;
+  color: var(--surface-fg-primary_on-brand);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: background-color 0.2s;
+}
+
+.toolbar-action-button:hover {
+  background-color: var(--primitives-dark-tint-800);
+}

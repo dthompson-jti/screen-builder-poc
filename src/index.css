@@ -1,0 +1,49 @@
+/* src/index.css */
+
+/* THE FIX: Import the new, centralized design tokens. */
+@import './styles/design-tokens.css';
+
+/* THE FIX: Remove the old, scattered design system variables. */
+:root {
+  --font-family-sans: 'Inter', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* THE FIX: Update body styles to use semantic tokens. */
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  background-color: var(--surface-bg-secondary);
+  color: var(--surface-fg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 20;
+  vertical-align: middle;
+  font-size: 20px;
+}
+
+.resizer {
+  width: 5px;
+  cursor: col-resize;
+  background-color: var(--surface-border-secondary);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: background-color 0.2s;
+}
+
+.resizer:hover {
+  background-color: var(--control-border-primary);
+}
