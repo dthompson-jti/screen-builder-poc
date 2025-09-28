@@ -6,6 +6,7 @@ import { selectedNodeIdAtom, isConnectionsDropdownVisibleAtom, componentSearchQu
 import { componentTreeData, DraggableComponent, ComponentGroup, connectionsDropdownData, DropdownItem } from './mockComponentTree';
 import { NodeNavigator } from './navigator.js';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
+import { isComponentBrowserVisibleAtom } from '../appAtoms'; // Import app state
 import './navigator.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
@@ -87,6 +88,10 @@ export const ComponentBrowser = () => {
   const [query, setQuery] = useAtom(componentSearchQueryAtom);
   const componentGroups = useAtomValue(filteredComponentGroupsAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useAtom(isConnectionsDropdownVisibleAtom);
+  
+  // FIX: Atom for controlling panel visibility
+  const setIsPanelVisible = useSetAtom(isComponentBrowserVisibleAtom);
+  
   const mountRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<NodeNavigator | null>(null);
 
@@ -124,6 +129,11 @@ export const ComponentBrowser = () => {
     }
   };
 
+  const handleClosePanel = () => {
+    // FIX: Set visibility state to false
+    setIsPanelVisible(false);
+  }
+
   const currentNodeIndex = componentTreeData.findIndex(node => node.id === selectedNodeId);
   const breadcrumbPath = currentNodeIndex !== -1 ? componentTreeData.slice(0, currentNodeIndex + 1) : [];
   
@@ -134,6 +144,16 @@ export const ComponentBrowser = () => {
     <div className="component-browser-container">
       <div className="component-browser-header">
         <h4>Data navigator</h4>
+        {/* FIX: Close button for the panel */}
+        <button 
+          className="btn-tertiary icon-only close-panel-button" 
+          title="Close Panel" 
+          aria-label="Close Panel"
+          onClick={handleClosePanel}
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
+
         <div className="breadcrumb">
           {breadcrumbPath.map((node, index) => (
             <React.Fragment key={node.id}>

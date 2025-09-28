@@ -33,7 +33,8 @@
   border-radius: var(--spacing-2);
   position: relative;
   touch-action: none;
-  transition: background-color 0.2s, border-color 0.2s, border-width 0.2s;
+  /* FIX: Add transitions for smooth selection */
+  transition: background-color 0.2s, border-color 0.2s, padding 0.2s;
   cursor: grab;
 }
 

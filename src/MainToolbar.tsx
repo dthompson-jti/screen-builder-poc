@@ -1,35 +1,67 @@
 // src/MainToolbar.tsx
+import { useAtom, useAtomValue } from 'jotai';
+import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom } from './appAtoms';
 import './MainToolbar.css';
 
-// This is now a static, cosmetic component based on the mockup.
-// The active state is hardcoded for the prototype.
+const toolbarItems = [
+  { id: 'layout', label: 'Layout', icon: 'auto_awesome_mosaic' },
+  { id: 'data', label: 'Data fields', icon: 'database' },
+  { id: 'general', label: 'General', icon: 'borg' },
+  
+  // Divider group 1
+  { id: 'templates', label: 'Templates', icon: 'mobile_layout' },
+  
+  // Divider group 2
+  { id: 'conditions', label: 'Conditions', icon: 'arrow_split' },
+  
+  // Divider group 3
+  { id: 'layers', label: 'Layers', icon: 'layers' },
+];
+
 export const MainToolbar = () => {
+  const isCompact = useAtomValue(isToolbarCompactAtom);
+  const [activeTabId, setActiveTabId] = useAtom(activeToolbarTabAtom);
+  const [isPanelVisible, setIsPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
+  
+  const toolbarClassName = isCompact ? 'main-toolbar compact' : 'main-toolbar normal';
+
+  const handleTabClick = (id: string) => {
+    if (id === activeTabId) {
+      // If clicking the current active tab, toggle visibility
+      setIsPanelVisible(prev => !prev);
+    } else {
+      // If clicking a new tab, make it active and ensure panel is open
+      setActiveTabId(id);
+      setIsPanelVisible(true);
+    }
+  };
+
   return (
-    <div className="main-toolbar">
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button" title="Layout" disabled aria-label="Layout">
-        <span className="material-symbols-outlined">grid_view</span>
-      </button>
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button active" title="Data fields" disabled aria-label="Data fields">
-        <span className="material-symbols-outlined">database</span>
-      </button>
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button" title="General" disabled aria-label="General">
-        <span className="material-symbols-outlined">tune</span>
-      </button>
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button" title="Templates" disabled aria-label="Templates">
-        <span className="material-symbols-outlined">layers</span>
-      </button>
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button" title="Conditions" disabled aria-label="Conditions">
-        <span className="material-symbols-outlined">account_tree</span>
-      </button>
-      {/* THE FIX: Added aria-label for accessibility */}
-      <button className="toolbar-button" title="Layers" disabled aria-label="Layers">
-        <span className="material-symbols-outlined">view_quilt</span>
-      </button>
+    <div className={toolbarClassName}>
+      {toolbarItems.map((item, index) => {
+        const isActive = item.id === activeTabId;
+        // Panel is open AND the toolbar item is the active tab.
+        const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
+
+        return (
+          <div key={item.id} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <button 
+              className={`toolbar-button ${isCurrentlyActiveAndOpen ? 'active' : ''}`} 
+              title={item.label} 
+              aria-label={item.label}
+              onClick={() => handleTabClick(item.id)}
+            >
+              <span className="material-symbols-outlined">{item.icon}</span>
+              {!isCompact && (
+                <span className="toolbar-label">{item.label}</span>
+              )}
+            </button>
+            
+            {/* Dividers appear only in Normal mode, after specific indices (Layout, Templates, Conditions) */}
+            {!isCompact && (index === 0 || index === 3 || index === 4) && <div className="toolbar-divider-horizontal" />}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -38,6 +38,8 @@
   cursor: pointer;
   opacity: 0.7;
   color: var(--surface-fg-secondary);
+  /* FIX: Add transition */
+  transition: opacity 0.2s, background-color 0.2s;
 }
 
 .icon-button:hover:not(:disabled) {
@@ -77,6 +79,8 @@
   color: var(--surface-fg-secondary);
   cursor: pointer;
   font-weight: 500;
+  /* FIX: Add transition */
+  transition: color 0.2s;
 }
 
 .vertical-divider {
@@ -108,6 +112,8 @@
   font-weight: 500;
   position: relative;
   cursor: pointer;
+  /* FIX: Add transition */
+  transition: color 0.2s;
 }
 
 .tab-button.active {
@@ -132,78 +138,154 @@
   font-weight: 500;
   cursor: pointer;
   border-radius: var(--spacing-2); /* 8px */
-  transition: background-color 0.2s, border-color 0.2s, transform 0.1s ease-out;
+  /* FIX: Refine transition for snappier press effect (transform is faster) */
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
   transform: translateY(0);
   box-sizing: border-box; /* Important for border management */
   line-height: 1; /* Ensure consistent vertical alignment */
 }
 
-/* --- Primary Button --- */
+/* --- Primary Button (ROCK SOLID FIX) --- */
 .btn-primary {
-  padding: var(--spacing-2) var(--spacing-4); /* 8px 16px */
+  /* Fixed Height: 38px, Fixed Padding: 9px top/bottom (var(--spacing-2) + 1px) */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
+  height: 38px;
+  
   background-color: var(--control-bg-theme);
   color: var(--control-fg-on-solid);
-  border: 2px solid var(--control-border-primary); /* 2px solid #155ACA */
+  
+  /* Base border thickness (2px physical border) */
+  border: 2px solid var(--control-border-primary); 
+
+  /* Only transition visual effects */
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
 }
 
 .btn-primary:hover:not(:disabled) {
-  /* Adjust padding to maintain visual size when borders change */
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 1px); /* 9px 16px 7px */
-  background-color: var(--control-bg-theme-hover); /* #276FE3 */
-  border-top: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
-  border-right: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
-  border-bottom: 3px solid var(--control-border-primary-hover); /* 3px solid #123D82 */
-  border-left: 1px solid var(--control-border-primary-hover); /* 1px solid #123D82 */
+  /* Simulate hover depth via box-shadow inset, keeping physical border */
+  background-color: var(--control-bg-theme-hover);
+  
+  /* Apply dark border color and thicker bottom shadow */
+  box-shadow: 
+    inset 0 1px 0 0 var(--control-border-primary-hover), /* Top border simulation */
+    inset 0 -3px 0 0 var(--control-border-primary-hover), /* Bottom depth simulation */
+    inset 1px 0 0 0 var(--control-border-primary-hover), /* Right border simulation */
+    inset -1px 0 0 0 var(--control-border-primary-hover); /* Left border simulation */
+    
+  /* Padding and size remains ROCK SOLID */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
+  border-color: transparent; /* Use box-shadow to simulate border on hover */
 }
 
 .btn-primary:active:not(:disabled) {
-  /* Adjust padding to maintain visual size when borders change */
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) var(--spacing-2); /* 9px 16px 8px */
-  background-color: var(--control-bg-theme-pressed); /* #174B9F */
-  border-top: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
-  border-right: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
-  border-bottom: 2px solid var(--control-border-primary-pressed); /* 2px solid #123D82 */
-  border-left: 1px solid var(--control-border-primary-pressed); /* 1px solid #123D82 */
-  transform: translateY(1px); /* Visual press effect */
+  /* Simulate pressed depth + 1px vertical shift */
+  background-color: var(--control-bg-theme-pressed);
+  transform: translateY(1px);
+  
+  /* Apply dark border color and 2px bottom shadow */
+  box-shadow: 
+    inset 0 1px 0 0 var(--control-border-primary-pressed), 
+    inset 0 -2px 0 0 var(--control-border-primary-pressed),
+    inset 1px 0 0 0 var(--control-border-primary-pressed),
+    inset -1px 0 0 0 var(--control-border-primary-pressed);
+    
+  /* Padding and size remains ROCK SOLID */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
+  border-color: transparent; 
 }
 
-/* --- Secondary Button --- */
+
+/* --- Secondary Button (ROCK SOLID FIX) --- */
 .btn-secondary {
-  padding: var(--spacing-2) var(--spacing-4); /* 8px 16px */
-  background-color: var(--control-bg-secondary); /* #F9F9F9 */
+  /* Fixed Padding and 1px border. Height 38px for text. */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
+  height: 38px; 
+  
+  background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
-  border: 1px solid var(--control-border-secondary); /* 1px solid #535862 */
+  border: 1px solid var(--control-border-secondary); 
+  
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
 }
 
 .btn-secondary.icon-only {
-  padding: var(--spacing-1p5); /* 6px */
+  padding: calc(var(--spacing-1p5) + 1px); /* 7px padding for 20px icon. Total height 34px */
+  height: 34px;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  /* Adjust padding to maintain visual size when borders change */
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 2px); /* 9px 16px 6px */
-  background-color: var(--control-bg-secondary-hover); /* #F1F1F1 */
-  border-top: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
-  border-right: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
-  border-bottom: 3px solid var(--control-border-secondary-hover); /* 3px solid #414651 */
-  border-left: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
+  /* Simulate 3px bottom border using box-shadow inset */
+  background-color: var(--control-bg-secondary-hover);
+  border-color: var(--control-border-secondary-hover);
+  box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
 }
 .btn-secondary.icon-only:hover:not(:disabled) {
-  /* Adjust padding for icon-only variant */
-  padding: calc(var(--spacing-1p5) + 1px) var(--spacing-1p5) calc(var(--spacing-1p5) - 2px); /* 7px 6px 4px */
+  padding: calc(var(--spacing-1p5) + 1px);
 }
 
 .btn-secondary:active:not(:disabled), .btn-secondary.active {
-  /* Adjust padding to maintain visual size when borders change */
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4) calc(var(--spacing-2) - 2px); /* 9px 16px 6px */
-  background-color: var(--control-bg-secondary-pressed); /* #E8E8E9 */
-  border-top: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  border-right: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  border-bottom: 3px solid var(--control-border-secondary-pressed); /* 3px solid #414651 */
-  border-left: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  transform: translateY(1px); /* Visual press effect */
+  /* Simulate 2px bottom border + 1px vertical shift */
+  background-color: var(--control-bg-secondary-pressed);
+  border-color: var(--control-border-secondary-pressed);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
+  transform: translateY(1px);
 }
 .btn-secondary.icon-only:active:not(:disabled), .btn-secondary.icon-only.active {
-  /* Adjust padding for icon-only variant */
-  padding: calc(var(--spacing-1p5) + 1px) var(--spacing-1p5) calc(var(--spacing-1p5) - 2px); /* 7px 6px 4px */
+  padding: calc(var(--spacing-1p5) + 1px);
+}
+
+
+/* --- Tertiary Button Styles (ROCK SOLID FIX) --- */
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  
+  /* FIX: Use 1px transparent border for sizing consistency (Total height 34px) */
+  border: 1px solid transparent; 
+  height: 34px;
+  
+  /* FIX: Ensure 8px radius */
+  border-radius: var(--spacing-2); 
+  
+  /* Fixed vertical padding 6px (var(--spacing-1p5)). */
+  padding: var(--spacing-1p5); 
+  
+  color: var(--surface-fg-tertiary);
+  
+  transition: background-color 0.2s, box-shadow 0.1s, transform 0.1s ease-out, color 0.2s;
+  box-sizing: border-box;
+  transform: translateY(0);
+}
+
+.btn-tertiary.icon-text {
+  /* Fixed horizontal padding 8px (var(--spacing-2)). Vertical 6px. */
+  padding: var(--spacing-1p5) var(--spacing-2);
+  gap: var(--spacing-2);
+}
+.btn-tertiary.icon-only {
+  padding: var(--spacing-1p5);
+}
+
+.btn-tertiary:hover:not(:disabled) {
+  /* ROCK SOLID: Only change internal visuals (BG, color, shadow) */
+  background-color: var(--control-bg-tertiary-hover); 
+  color: var(--control-fg-secondary_hover); 
+  
+  /* Simulate 3px bottom border */
+  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
+}
+
+.btn-tertiary:active:not(:disabled) {
+  /* ROCK SOLID: Only change internal visuals + 1px transform */
+  transform: translateY(1px);
+  
+  background-color: var(--control-bg-tertiary-pressed);
+  color: var(--control-fg-secondary);
+  
+  /* Simulate 2px bottom border */
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
 }

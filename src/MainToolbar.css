@@ -1,20 +1,29 @@
 /* src/MainToolbar.css */
 .main-toolbar {
-  width: 60px;
+  /* Default (Compact) Styling */
+  width: 60px; 
   height: 100%;
   background-color: var(--surface-bg-primary);
   border-right: 1px solid var(--surface-border-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-2p5) 0; /* 10px -> custom value, using spacing-2 for 8px */
+  padding: var(--spacing-2p5) 0;
   gap: var(--spacing-2);
   flex-shrink: 0;
+  transition: width 0.3s ease; 
+}
+
+/* Normal (Expanded) Mode */
+.main-toolbar.normal {
+  width: 120px; 
+  padding: var(--spacing-4) var(--spacing-2);
+  gap: var(--spacing-4); 
 }
 
 .toolbar-button {
-  width: 44px;
-  height: 44px;
+  /* Base button properties */
+  
   border: none;
   background-color: transparent;
   border-radius: var(--spacing-2);
@@ -22,25 +31,102 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  /* FIX: Enhanced transition */
+  transition: background-color 0.2s, opacity 0.2s, color 0.2s, width 0.3s ease, height 0.3s ease, padding 0.3s ease, border 0.2s;
   opacity: 0.8;
+  flex-direction: row; /* Default: Icon only, centered */
+  box-sizing: border-box;
 }
 
-.toolbar-button:hover:not(:disabled) {
+/* Inactive/Hover States (Both Modes) */
+.toolbar-button:hover:not(.active):not(:disabled) {
   background-color: var(--control-bg-secondary-hover);
   opacity: 1;
 }
 
-.toolbar-button.active {
-  background-color: var(--surface-bg-brand-solid);
-  opacity: 1;
+/* ---------------------------------
+   COMPACT MODE STYLING (Icon Only)
+   --------------------------------- */
+.main-toolbar.compact .toolbar-button {
+  /* Ensure compact buttons are fixed size for icon only */
+  width: 44px;
+  height: 44px;
+  border: 1px solid transparent;
 }
-
-.toolbar-button .material-symbols-outlined {
+.main-toolbar.compact .toolbar-button .material-symbols-outlined {
   font-size: 24px;
   color: var(--surface-fg-secondary);
 }
 
-.toolbar-button.active .material-symbols-outlined {
-  color: var(--surface-fg-primary_on-brand);
+/* Compact Active State (Styled like selected node) */
+.main-toolbar.compact .toolbar-button.active {
+  background-color: var(--control-bg-selected);
+  border: 2px solid var(--control-border-selected);
+  opacity: 1;
+  /* Padding adjustment to maintain 44px height despite 2px border */
+  padding: 0; 
+}
+.main-toolbar.compact .toolbar-button.active .material-symbols-outlined {
+  color: var(--control-fg-selected);
+}
+.main-toolbar.compact .toolbar-button.active:hover {
+  background-color: var(--control-bg-selected-hover);
+}
+
+
+/* ---------------------------------
+   NORMAL MODE STYLING (Icon + Text)
+   --------------------------------- */
+.main-toolbar.normal .toolbar-button {
+  width: 100%; /* Fill container width */
+  height: 72px; 
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-1);
+  opacity: 1; 
+  
+  /* FIX: Active state border is 2px, so rest/hover state needs 1px transparent padding 
+     to ensure fixed height of 72px when the 2px active border is applied.
+     72px total height. 1px padding + 70px content area.
+  */
+  padding: 1px 0;
+  border: 1px solid transparent; 
+  color: var(--surface-fg-primary); 
+}
+
+.main-toolbar.normal .toolbar-button .material-symbols-outlined {
+    font-size: 24px;
+    color: var(--surface-fg-secondary);
+}
+
+.toolbar-label {
+  /* FIX: Inter, medium, 14px */
+  font-size: 14px; 
+  font-weight: 500; /* Medium weight */
+  color: var(--surface-fg-secondary);
+  line-height: 1;
+}
+
+/* Normal Active State */
+.main-toolbar.normal .toolbar-button.active {
+  background-color: var(--control-bg-selected);
+  /* FIX: Active border is 2px */
+  border: 2px solid var(--control-border-selected);
+  /* Adjust padding to compensate for thicker border: 1px -> 2px is 1px difference */
+  padding: 0; 
+}
+.main-toolbar.normal .toolbar-button.active:hover {
+  background-color: var(--control-bg-selected-hover);
+}
+.main-toolbar.normal .toolbar-button.active .material-symbols-outlined,
+.main-toolbar.normal .toolbar-button.active .toolbar-label {
+  color: var(--control-fg-selected);
+}
+
+/* Dividers for Normal Mode */
+.toolbar-divider-horizontal {
+  width: 80%;
+  height: 1px;
+  background-color: var(--surface-border-secondary);
+  margin: var(--spacing-1) 0;
 }

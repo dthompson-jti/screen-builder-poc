@@ -11,24 +11,43 @@
 }
 
 .component-browser-header {
+  /* FIX: Apply new header background token */
+  background: var(--surface-bg-secondary);
+  position: relative;
+  
+  display: grid;
+  grid-template-areas: 
+    "title close"
+    "breadcrumb breadcrumb";
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-1) 0;
+  
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
 }
 
 .component-browser-header h4 {
-  margin: 0 0 var(--spacing-2) 0;
+  grid-area: title;
+  margin: 0;
   font-weight: 600;
   font-size: 1.1em;
   color: var(--surface-fg-primary);
 }
 
+.component-browser-header .close-panel-button {
+  grid-area: close;
+  align-self: center;
+}
+
 .breadcrumb {
+  grid-area: breadcrumb;
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
   font-size: 0.85em;
   color: var(--surface-fg-secondary);
+  margin-top: var(--spacing-2);
 }
 .breadcrumb .material-symbols-outlined { font-size: 16px; }
 .breadcrumb button {
@@ -41,7 +60,8 @@
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: transparent;
-  transition: text-decoration-color 0.2s;
+  /* FIX: Add transition */
+  transition: text-decoration-color 0.2s, color 0.2s;
 }
 .breadcrumb button:hover:not(:disabled) {
   text-decoration-color: var(--surface-fg-secondary);
@@ -120,35 +140,34 @@
   border-radius: var(--spacing-2);
 }
 
-/* Secondary Button styles for Last and Connected Nodes */
+/* Secondary Button styles for Last and Connected Nodes (ROCK SOLID FIX) 
+   These inherit core styles from .btn-secondary in AppHeader.css
+*/
 .last-node .node-button, .connected-node .node-button {
-  padding: calc(var(--spacing-2) - 1px) var(--spacing-3); /* 7px 12px to match border */
-  background-color: var(--control-bg-secondary); /* #F9F9F9 */
+  /* Overrides to ensure consistency with main AppHeader.css .btn-secondary (text variant) */
+  padding: calc(var(--spacing-2) + 1px) var(--spacing-3); 
+  height: 38px;
+  
+  background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
-  border: 1px solid var(--control-border-secondary); /* 1px solid #535862 */
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s, transform 0.1s ease-out, padding 0.2s;
+  border: 1px solid var(--control-border-secondary); 
+  
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
   transform: translateY(0);
   font-weight: 500;
 }
 
 .last-node .node-button:hover, .connected-node .node-button:hover {
-  padding: var(--spacing-2) var(--spacing-3) calc(var(--spacing-2) - 3px); /* 8px 12px 5px */
-  background-color: var(--control-bg-secondary-hover); /* #F1F1F1 */
-  border-top: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
-  border-right: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
-  border-bottom: 3px solid var(--control-border-secondary-hover); /* 3px solid #414651 */
-  border-left: 1px solid var(--control-border-secondary-hover); /* 1px solid #414651 */
+  background-color: var(--control-bg-secondary-hover);
+  border-color: var(--control-border-secondary-hover);
+  box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
 }
 
 .last-node .node-button:active, .connected-node .node-button:active, .connected-node .node-button.active {
-  padding: var(--spacing-2) var(--spacing-3) calc(var(--spacing-2) - 3px); /* 8px 12px 5px */
-  background-color: var(--control-bg-secondary-pressed); /* #E8E8E9 */
-  border-top: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  border-right: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  border-bottom: 3px solid var(--control-border-secondary-pressed); /* 3px solid #414651 */
-  border-left: 1px solid var(--control-border-secondary-pressed); /* 1px solid #414651 */
-  transform: translateY(1px); /* Visual press effect */
+  background-color: var(--control-bg-secondary-pressed);
+  border-color: var(--control-border-secondary-pressed);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
+  transform: translateY(1px);
 }
 
 /* Selected Node styles */
@@ -272,6 +291,8 @@
 }
 .dropdown-item.navigable:hover {
   background-color: var(--surface-bg-secondary_hover);
+  /* FIX: Add transition */
+  transition: background-color 0.2s;
 }
 
 .dropdown-item .item-icon { font-size: 20px; }
@@ -298,6 +319,7 @@
   border-radius: 6px;
   margin-bottom: var(--spacing-1);
   cursor: grab;
+  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 .component-list-item:hover { background-color: var(--surface-bg-secondary_hover); }

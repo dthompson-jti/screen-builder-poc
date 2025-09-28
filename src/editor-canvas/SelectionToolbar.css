@@ -20,6 +20,7 @@
   cursor: grab;
   padding: var(--spacing-1p5);
   border-radius: 6px;
+  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 
@@ -54,6 +55,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85em;
+  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 
