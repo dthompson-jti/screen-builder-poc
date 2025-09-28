@@ -1,12 +1,13 @@
 // src/component-browser/ComponentBrowser.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { selectedNodeIdAtom, isConnectionsDropdownVisibleAtom, componentSearchQueryAtom, filteredComponentGroupsAtom } from './browserAtoms';
 import { componentTreeData, DraggableComponent, ComponentGroup, connectionsDropdownData, DropdownItem } from './mockComponentTree';
 import { NodeNavigator } from './navigator.js';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
-import { isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../appAtoms'; // Import app state
+import { isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../appAtoms';
 import './navigator.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
@@ -28,12 +29,11 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
   const data = connectionsDropdownData[selectedNodeId];
   const [query, setQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autofocus
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useOnClickOutside(dropdownRef, () => setIsVisible(false));
 
   useEffect(() => {
-    // FIX: Autofocus search input when dropdown opens
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
@@ -41,7 +41,11 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
 
   const handleItemClick = (item: DropdownItem) => {
     if (item.isNavigable && navigator) {
-      navigator.navigate('forward');
+      // FIX: To navigate forward, we now find the target in the main tree data
+      const targetNode = componentTreeData.find(node => node.id === item.id);
+      if (targetNode) {
+        navigator.navigateToId(targetNode.id);
+      }
       setIsVisible(false);
     }
   };
@@ -55,7 +59,6 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
 
   return (
     <div className="connections-dropdown-container" ref={dropdownRef}>
-      {/* FIX: Title row with close button */}
       <div className="dropdown-header-row">
         <h5>Navigate to...</h5>
         <button 
@@ -70,7 +73,7 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
       <div className="dropdown-search">
         <span className="material-symbols-outlined">search</span>
         <input 
-          ref={searchInputRef} // Attach ref here
+          ref={searchInputRef}
           type="text" 
           placeholder="Search Connections" 
           value={query}
@@ -160,10 +163,32 @@ export const ComponentBrowser = () => {
   const selectedNode = componentTreeData.find(node => node.id === selectedNodeId);
   const searchPlaceholder = `Search ${selectedNode ? selectedNode.name : 'components'}`;
 
+  const breadcrumbVariants: Variants = {
+    hidden: { opacity: 0, x: 10 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        type: 'tween',
+        ease: 'easeInOut',
+        duration: 0.3,
+      },
+    }),
+    exit: { 
+      opacity: 0, 
+      x: 10,
+      transition: {
+        type: 'tween',
+        ease: 'easeInOut',
+        duration: 0.3,
+      }
+    },
+  };
+
   return (
     <div className="component-browser-container">
       <div className="component-browser-header">
-        {/* FIX: Use fg-secondary for the title */}
         <h4 style={{ color: 'var(--surface-fg-secondary)' }}>Data navigator</h4>
         <button 
           className="btn-tertiary icon-only close-panel-button" 
@@ -175,22 +200,31 @@ export const ComponentBrowser = () => {
         </button>
       </div>
 
-      {/* Breadcrumb moved into its own wrapper, conditionally rendered */}
       {isShowBreadcrumb && (
         <div className="breadcrumb-wrapper">
           <div className="breadcrumb">
-            {breadcrumbPath.map((node, index) => (
-              <React.Fragment key={node.id}>
-                <button 
-                  className={index === breadcrumbPath.length - 1 ? 'active' : ''}
-                  onClick={() => handleBreadcrumbClick(node.id)}
-                  disabled={index === breadcrumbPath.length - 1}
+            <AnimatePresence>
+              {breadcrumbPath.map((node, index) => (
+                <motion.div
+                  key={node.id}
+                  custom={index}
+                  variants={breadcrumbVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  style={{ display: 'flex', alignItems: 'center' }}
                 >
-                  {node.name}
-                </button>
-                {index < breadcrumbPath.length - 1 && <span className="material-symbols-outlined">chevron_right</span>}
-              </React.Fragment>
-            ))}
+                  <button 
+                    className={index === breadcrumbPath.length - 1 ? 'active' : ''}
+                    onClick={() => handleBreadcrumbClick(node.id)}
+                    disabled={index === breadcrumbPath.length - 1}
+                  >
+                    {node.name}
+                  </button>
+                  {index < breadcrumbPath.length - 1 && <span className="material-symbols-outlined">chevron_right</span>}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         </div>
       )}
@@ -206,7 +240,8 @@ export const ComponentBrowser = () => {
             </div>
             <div className="static-label last-node-label">Last node</div>
             <div className="static-label selected-node-label">Selected node</div>
-            <div className="static-label connected-node-label">Connected nodes</div>
+            {/* FIX: Update static label to reflect new role */}
+            <div className="static-label connected-node-label">Connections</div>
         </div>
       </div>
 

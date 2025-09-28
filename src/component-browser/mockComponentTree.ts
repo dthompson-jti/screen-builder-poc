@@ -1,14 +1,15 @@
-// src/component-browser/mockComponentTree.ts
+// src/component-browser/mockComponentTreen.ts
 
 // --- HIERARCHY & INTERFACES ---
 
-export const componentTreeData = [
-  { id: 'case', name: 'Case', connections: 18 },
-  { id: 'subcase', name: 'Subcase', connections: 5 },
-  { id: 'arrest', name: 'Arrest', connections: 96 },
-  { id: 'victim', name: 'Victim', connections: 4 },
-  { id: 'arrest-charges', name: 'Arrest Charges', connections: 15 },
-  { id: 'officer', name: 'Officer', connections: 8 },
+// Base definition of the tree structure
+const componentTreeBase = [
+  { id: 'case', name: 'Case' },
+  { id: 'subcase', name: 'Subcase' },
+  { id: 'arrest', name: 'Arrest' },
+  { id: 'victim', name: 'Victim' },
+  { id: 'arrest-charges', name: 'Arrest Charges' },
+  { id: 'officer', name: 'Officer' },
 ];
 
 export interface DraggableComponent {
@@ -39,7 +40,6 @@ const arrestData = {
 
 // --- SIMPLIFIED DATA FOR OTHER NODES ---
 
-// FIX: Use the 'collections' parameter to generate collection fields
 const createSampleData = (name: string, entities: string[], collections: string[]) => ({
   plainFields: [`${name} ID (PK)`, `${name} Date`, `${name} Status`].map(n => createComponent(n, 'field', 'database')),
   entityFields: entities.map(n => createComponent(n, 'field', 'database')),
@@ -92,3 +92,12 @@ export const connectionsDropdownData: Record<string, DropdownCategory> = {
   'arrest-charges': { entities: [{id: 'officer', name: 'Officer', isNavigable: true}, {id: 'plea-bargain', name: 'Plea Bargain'}], collections: [{id: 'court-filings', name: 'Court Filings'}], transients: [{id: 'charge-status', name: 'Charge Status'}] },
   'officer': { entities: [{id: 'assisting-officer', name: 'Assisting Officer'}], collections: [{id: 'officer-reports', name: 'Officer Reports'}], transients: [{id: 'officer-status', name: 'Officer Status'}] },
 };
+
+// FIX: Dynamically generate componentTreeData with accurate connection counts
+export const componentTreeData = componentTreeBase.map(node => {
+  const connections = connectionsDropdownData[node.id];
+  const count = connections
+    ? connections.entities.length + connections.collections.length + connections.transients.length
+    : 0;
+  return { ...node, connections: count };
+});

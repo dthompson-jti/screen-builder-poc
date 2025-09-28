@@ -1,13 +1,14 @@
 // src/navigator.js
 import { gsap } from 'gsap';
+import { TextPlugin } from 'gsap/TextPlugin';
+
+gsap.registerPlugin(TextPlugin);
 
 export class NodeNavigator {
   constructor(mountElement) {
     this.container = mountElement;
     this.viewport = this.container.querySelector('#nodes-viewport');
     this.track = this.container.querySelector('#nodes-track');
-    this.arrowGap1 = this.track.querySelector('#arrow-gap-1');
-    this.arrowGap2 = this.track.querySelector('#arrow-gap-2');
     
     this.duration = 0.4;
     this.ease = 'power3.inOut';
@@ -25,7 +26,7 @@ export class NodeNavigator {
         selectedColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-selected').trim(),
         defaultBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-secondary').trim(),
         defaultBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-secondary').trim(),
-        defaultColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-primary').trim(), // Use primary foreground for default
+        defaultColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-primary').trim(),
         disabledBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-disabled_subtle').trim(),
         disabledBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-disabled').trim(),
         disabledColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-disabled').trim(),
@@ -38,7 +39,7 @@ export class NodeNavigator {
     this.selectedIndex = initialIndex !== -1 ? initialIndex : 0;
 
     this._buildElementPool();
-    const resizeObserver = new ResizeObserver(() => this._updateLayoutAndPositionElements());
+    const resizeObserver = new ResizeObserver(() => this._updateLayoutAndPositionElements(true, true));
     resizeObserver.observe(this.container);
   }
 
@@ -46,13 +47,24 @@ export class NodeNavigator {
     this.elementPool = [];
     for (let i = 0; i < this.poolSize; i++) {
       const node = document.createElement('div');
-      node.innerHTML = `<button class="node-button"></button>`;
-      this.track.insertBefore(node, this.arrowGap1);
+      node.innerHTML = `<button class="node-button"><span></span></button>`;
+      this.track.append(node);
       this.elementPool.push(node);
     }
   }
 
-  _updateLayoutAndPositionElements(isInstant = true) {
+  _applySemanticText() {
+    const connectionsNode = this.container.querySelector('.connections-node');
+    if (connectionsNode) {
+        const selectedData = this.nodeData[this.selectedIndex];
+        const textSpan = connectionsNode.querySelector('span');
+        if (selectedData && textSpan) {
+            textSpan.innerText = `${selectedData.connections} connections`;
+        }
+    }
+  }
+
+  _updateLayoutAndPositionElements(isInstant = true, applySemanticText = true) {
     if (!this.container.offsetWidth) return;
     
     const viewportWidth = this.viewport.offsetWidth;
@@ -61,12 +73,21 @@ export class NodeNavigator {
     
     this.layout.slotWidth = (viewportWidth - (2 * gap)) / 3;
     this.layout.slideDistance = this.layout.slotWidth + gap;
+    this.layout.gap = gap;
 
     const centerSlot = Math.floor(this.elementPool.length / 2);
 
     this.elementPool.forEach((node, i) => {
       gsap.set(node, { x: i * this.layout.slideDistance, width: this.layout.slotWidth });
     });
+    
+    const gap1 = this.track.querySelector('#arrow-gap-1');
+    const gap2 = this.track.querySelector('#arrow-gap-2');
+    const gap1X = (centerSlot - 1) * this.layout.slideDistance + this.layout.slotWidth;
+    const gap2X = centerSlot * this.layout.slideDistance + this.layout.slotWidth;
+    gsap.set(gap1, { x: gap1X, width: this.layout.gap });
+    gsap.set(gap2, { x: gap2X, width: this.layout.gap });
+
 
     const selectedNodeCenterOnTrack = (centerSlot * this.layout.slideDistance) + (this.layout.slotWidth / 2);
     const viewportCenter = viewportWidth / 2;
@@ -74,217 +95,159 @@ export class NodeNavigator {
 
     this.elementPool.forEach((node, i) => {
       const dataIndexOffset = i - centerSlot;
-      // Use modulus for cycling only if we are outside the boundary check
-      let dataIndex = this.selectedIndex + dataIndexOffset;
-
-      // Handle cycling boundaries (only cycle if dataIndex is valid, otherwise clamp)
-      if (dataIndex < 0) {
-        dataIndex = this.nodeData.length + dataIndex;
-      } else if (dataIndex >= this.nodeData.length) {
-        dataIndex = dataIndex % this.nodeData.length;
-      }
-
+      let dataIndex = (this.selectedIndex + dataIndexOffset + this.nodeData.length * 10) % this.nodeData.length;
       this._updateNodeState(node, this.nodeData[dataIndex], dataIndexOffset, isInstant);
     });
 
-    const arrowPadding = 12;
-    const arrowWidth = gap - (arrowPadding * 2);
-    const lastNodeXOnTrack = (centerSlot - 1) * this.layout.slideDistance;
-    const firstGapStartX = lastNodeXOnTrack + this.layout.slotWidth + arrowPadding;
-    const secondGapStartX = firstGapStartX + this.layout.slotWidth + (arrowPadding * 2);
-    gsap.set(this.arrowGap1, { left: firstGapStartX, width: arrowWidth });
-    gsap.set(this.arrowGap2, { left: secondGapStartX, width: arrowWidth });
-    
-    gsap.set([this.arrowGap1.querySelector('.left'), this.arrowGap2.querySelector('.left')], { opacity: 0 });
-    gsap.set([this.arrowGap1.querySelector('.right'), this.arrowGap2.querySelector('.right')], { opacity: 1 });
+    if (applySemanticText) {
+        this._applySemanticText();
+    }
 
     this._attachAllListeners();
   }
 
   _updateNodeState(node, data, dataIndexOffset, isInstant = true) {
+    const button = node.querySelector('.node-button');
+    const textSpan = node.querySelector('span');
+    
     let type = 'offscreen';
     if (dataIndexOffset === -1) type = 'last';
     else if (dataIndexOffset === 0) type = 'selected';
-    else if (dataIndexOffset === 1) type = 'connected';
+    else if (dataIndexOffset === 1) type = 'connections';
     
-    const button = node.querySelector('.node-button');
     node.className = `node-group ${type}-node`;
     
-    // --- New Boundary Logic: Last Node is Case (index 0) ---
+    let newText = data ? data.name : '';
     if (dataIndexOffset === -1 && this.selectedIndex === 0) {
         node.className = `node-group last-node none-state`;
-        button.innerHTML = `<span>None</span>`;
-        button.classList.add('disabled-none');
-        gsap.set(button, { clearProps: 'all' });
-        return;
-    } 
-    // --- End New Boundary Logic ---
-
-    button.innerHTML = `<span>${data.name}</span>`;
-    if (type === 'connected') {
-        button.innerHTML = `<span>${data.connections} connections</span>`;
+        newText = 'None';
     }
 
-    // Crucially, remove all custom inline styles when not selected
-    // to allow CSS classes to take full control.
-    if (type === 'selected') {
-        button.classList.remove('btn-secondary'); // Ensure it doesn't get secondary button styles
-        button.classList.remove('disabled-none'); // Ensure disabled class is removed
-        if (isInstant) {
-            gsap.set(button, {
-                borderColor: this.colors.selectedBorder,
-                backgroundColor: this.colors.selectedBg,
-                color: this.colors.selectedColor,
-                borderWidth: '2px',
-                padding: '0 11px', // 12px - 1px for each border
-                transform: 'translateY(0)',
-            });
-        }
-    } else {
-        button.classList.add('btn-secondary'); // Apply secondary button styles via class
-        button.classList.remove('disabled-none');
-        gsap.set(button, { clearProps: 'all' }); // Remove any inline styles from GSAP
+    if (isInstant) {
+      // The Connections button is always blanked initially; its text is set by animations.
+      textSpan.innerText = (type === 'connections') ? '' : newText;
+      gsap.set(button, { clearProps: 'all' });
+      if (type === 'selected') {
+        Object.assign(button.style, { borderColor: this.colors.selectedBorder, backgroundColor: this.colors.selectedBg, color: this.colors.selectedColor, borderWidth: '2px', padding: '6px 11px', transform: 'translateY(0)' });
+      } else {
+        button.classList.add('btn-secondary');
+        if (node.classList.contains('none-state')) button.classList.add('disabled-none');
+      }
     }
   }
 
-  // Public method for dropdown to call
   navigate(direction) {
-    this._slide(direction);
+    const targetIndex = this.selectedIndex + (direction === 'backward' ? -1 : 1);
+    const targetId = this.nodeData[targetIndex]?.id;
+    if (targetId) {
+      this.navigateToId(targetId);
+    }
   }
   
-  // Public method for breadcrumbs to call
   navigateToId(targetId) {
-    if (this.isAnimating) return;
+    if (this.isAnimating || !targetId) return;
     const targetIndex = this.nodeData.findIndex(n => n.id === targetId);
-    if (targetIndex !== -1 && targetIndex !== this.selectedIndex) {
-      this.selectedIndex = targetIndex;
-      this._updateLayoutAndPositionElements(true); 
-      this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: this.nodeData[this.selectedIndex].id } }));
-    }
-  }
-
-  // Public method to set the active state of the connected node button
-  setConnectedNodeActive(isActive) {
-    const connectedNodeButton = this.container.querySelector('.connected-node .node-button');
-    if (connectedNodeButton) {
-      connectedNodeButton.classList.toggle('active', isActive);
-      // Manually trigger a re-render of the node state to update styles immediately
-      this._updateNodeState(connectedNodeButton.closest('.node-group'), this.nodeData[(this.selectedIndex + 1) % this.nodeData.length], 1, true);
-    }
-  }
-
-  _slide(direction) {
-    if (this.isAnimating || !this.layout.slideDistance) return;
-    
-    const isBackward = direction === 'backward';
-    const directionMultiplier = isBackward ? 1 : -1;
-    const centerSlot = Math.floor(this.elementPool.length / 2);
-
-    // --- Boundary Check: Stop at Case node (index 0) ---
-    if (isBackward && this.selectedIndex === 0) {
-        this.isAnimating = false;
-        return;
-    }
-    // --- Boundary Check: Stop at last node ---
-    if (!isBackward && this.selectedIndex === this.nodeData.length - 1) {
-        this.isAnimating = false;
-        return;
-    }
+    if (targetIndex === -1 || targetIndex === this.selectedIndex) return;
 
     this.isAnimating = true;
+
+    const indexDifference = targetIndex - this.selectedIndex;
+    const isBackward = indexDifference < 0;
+    const animationDistance = this.layout.slideDistance * (isBackward ? 1 : -1);
+    const centerSlot = Math.floor(this.poolSize / 2);
+
+    // --- Phase 0: Pre-Animation Setup ---
+    this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: targetId } }));
     
-    const oldSelectedNodeButton = this.elementPool[centerSlot].querySelector('.node-button');
-    const newSelectedNodeButton = isBackward 
-      ? this.elementPool[centerSlot - 1].querySelector('.node-button') 
-      : this.elementPool[centerSlot + 1].querySelector('.node-button');
-    
+    // Instantly blank the current connections button text. It will slide out blank.
+    const connectionsNode = this.container.querySelector('.connections-node');
+    if (connectionsNode) {
+      connectionsNode.querySelector('span').innerText = '';
+    }
+    // If moving forward, also blank the node that will slide INTO view.
+    if (!isBackward) {
+      const incomingNode = this.elementPool[centerSlot + 2];
+      if (incomingNode) {
+        incomingNode.querySelector('span').innerText = '';
+      }
+    }
+
     const tl = gsap.timeline({
       onComplete: () => {
-        const newSelectedIndex = this.selectedIndex + (isBackward ? -1 : 1);
-        this.selectedIndex = newSelectedIndex;
-        
-        if (isBackward) { this.track.prepend(this.track.lastElementChild); } 
-        else { this.track.appendChild(this.track.firstElementChild); }
-        
-        this._updateLayoutAndPositionElements(true); // Re-render instantly after move
+        this.selectedIndex = targetIndex;
+        // Phase 2 Step 1: Reorder DOM for infinite scroll
+        if (isBackward) {
+            for (let i = 0; i < Math.abs(indexDifference); i++) { this.track.prepend(this.track.lastElementChild); }
+        } else {
+            for (let i = 0; i < indexDifference; i++) { this.track.appendChild(this.track.firstElementChild); }
+        }
+        // Phase 2 Step 2: Reset layout instantly.
+        this._updateLayoutAndPositionElements(true, false);
+
+        // Phase 2 Step 3: Begin the cross-fade on the new Connections button.
+        const newConnectionsNode = this.container.querySelector('.connections-node');
+        if (newConnectionsNode) {
+            const selectedData = this.nodeData[this.selectedIndex];
+            const textSpan = newConnectionsNode.querySelector('span');
+            if (selectedData && textSpan) {
+                const newText = `${selectedData.connections} connections`;
+                gsap.set(textSpan, { text: newText, opacity: 0 });
+                gsap.to(textSpan, { opacity: 1, duration: 0.2, ease: 'power2.out', delay: 0.05 });
+            }
+        }
+
         this.isAnimating = false;
-        
-        this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: this.nodeData[this.selectedIndex].id } }));
       }
     });
 
-    tl.to(this.track, { x: `+=${this.layout.slideDistance * directionMultiplier}`, duration: this.duration, ease: this.ease }, 0);
-    
-    // Animate the new selected node to its selected state
-    tl.to(newSelectedNodeButton, { 
-      borderColor: this.colors.selectedBorder, 
-      backgroundColor: this.colors.selectedBg, 
-      color: this.colors.selectedColor, 
-      borderWidth: '2px', 
-      padding: '0 11px', 
-      duration: this.duration * 0.8, 
-      ease: this.ease,
-      overwrite: 'auto',
-      onStart: () => {
-          newSelectedNodeButton.classList.remove('btn-secondary');
-          gsap.set(newSelectedNodeButton, { clearProps: 'all' }); // Clear any lingering btn-secondary styles
-      }
-    }, 0);
-    
-    // Animate the old selected node back to its default secondary button state
-    tl.fromTo(oldSelectedNodeButton, 
-      { 
-        borderColor: this.colors.selectedBorder, 
-        backgroundColor: this.colors.selectedBg, 
-        color: this.colors.selectedColor, 
-        borderWidth: '2px', 
-        padding: '0 11px' 
-      }, 
-      { 
-        borderColor: this.colors.defaultBorder, 
-        backgroundColor: this.colors.defaultBg, 
-        color: this.colors.defaultColor, 
-        borderWidth: '1px', 
-        padding: '0 12px', // 12px for 1px border
-        duration: this.duration * 0.8, 
-        ease: this.ease,
-        overwrite: 'auto',
-        onComplete: () => {
-            oldSelectedNodeButton.classList.add('btn-secondary');
-            gsap.set(oldSelectedNodeButton, { clearProps: 'all' }); // Clear inline styles to let CSS take over
-        }
-      }, 0);
+    // Phase 1: The Slide Animation
+    tl.to(this.track, { x: `+=${animationDistance}`, duration: this.duration, ease: this.ease }, 0);
 
-    const arrowsToFadeIn = isBackward ? '.left' : '.right';
-    const arrowsToFadeOut = isBackward ? '.right' : '.left';
-    tl.to([this.arrowGap1.querySelector(arrowsToFadeIn), this.arrowGap2.querySelector(arrowsToFadeIn)], { opacity: 1, duration: this.duration * 0.5, ease: 'linear' }, 0);
-    tl.to([this.arrowGap1.querySelector(arrowsToFadeOut), this.arrowGap2.querySelector(arrowsToFadeOut)], { opacity: 0, duration: this.duration * 0.5, ease: 'linear' }, 0);
+    this.elementPool.forEach((node, i) => {
+        const button = node.querySelector('.node-button');
+        const currentOffset = i - centerSlot;
+        const futureOffset = currentOffset + (isBackward ? 1 : -1);
+        
+        if (futureOffset === 0) {
+             button.classList.remove('btn-secondary');
+             tl.to(button, { borderColor: this.colors.selectedBorder, backgroundColor: this.colors.selectedBg, color: this.colors.selectedColor, borderWidth: '2px', padding: '6px 11px', duration: this.duration, ease: this.ease }, 0);
+        } else {
+             button.classList.add('btn-secondary');
+             tl.to(button, { borderColor: this.colors.defaultBorder, backgroundColor: this.colors.defaultBg, color: this.colors.defaultColor, borderWidth: '1px', padding: '7px 12px', duration: this.duration, ease: this.ease }, 0);
+        }
+    });
+  }
+
+  setConnectedNodeActive(isActive) {
+    const connectionsNodeButton = this.container.querySelector('.connections-node .node-button');
+    if (connectionsNodeButton) {
+      connectionsNodeButton.classList.toggle('active', isActive);
+    }
   }
 
   _attachAllListeners() {
-    // Re-attach listeners to new DOM elements if they were swapped
-    this.container.querySelectorAll('.node-button').forEach(btn => {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
+    this.elementPool.forEach(node => {
+      const button = node.querySelector('.node-button');
+      if (button) {
+        const newBtn = button.cloneNode(true);
+        button.parentNode.replaceChild(newBtn, button);
+      }
     });
 
     const lastNodeGroup = this.container.querySelector('.last-node');
-    const lastNodeButton = lastNodeGroup ? lastNodeGroup.querySelector('.node-button') : null;
-
-    if (lastNodeButton) { 
-        // If it's the disabled "None" state, set onclick to null
-        if (lastNodeGroup.classList.contains('none-state')) {
-            lastNodeButton.onclick = null;
-        } else {
-            lastNodeButton.onclick = () => this._slide('backward'); 
+    if (lastNodeGroup) {
+        const lastNodeButton = lastNodeGroup.querySelector('.node-button');
+        if (lastNodeButton) {
+            lastNodeButton.onclick = lastNodeGroup.classList.contains('none-state') ? null : () => this.navigate('backward'); 
         }
     }
     
-    const connectedNodeButton = this.container.querySelector('.connected-node .node-button');
-    if (connectedNodeButton) { 
-        connectedNodeButton.onclick = () => {
-            this.container.dispatchEvent(new CustomEvent('toggleConnectionsDropdown', { bubbles: true }));
-        };
+    const connectionsNodeGroup = this.container.querySelector('.connections-node');
+    if(connectionsNodeGroup){
+        const connectionsNodeButton = connectionsNodeGroup.querySelector('.node-button');
+        if(connectionsNodeButton){
+            connectionsNodeButton.onclick = () => this.container.dispatchEvent(new CustomEvent('toggleConnectionsDropdown', { bubbles: true }));
+        }
     }
   }
 }

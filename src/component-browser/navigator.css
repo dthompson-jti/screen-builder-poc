@@ -135,11 +135,13 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   border-radius: var(--spacing-2);
+  /* FIX: Add properties for text animation */
+  position: relative;
+  overflow: hidden;
 }
 
-.last-node .node-button, .connected-node .node-button {
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-3); 
-  height: 38px;
+.last-node .node-button, .connections-node .node-button {
+  padding: 7px var(--spacing-3);
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
@@ -148,13 +150,13 @@
   font-weight: 500;
 }
 
-.last-node .node-button:hover, .connected-node .node-button:hover {
+.last-node .node-button:hover, .connections-node .node-button:hover {
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
 }
 
-.last-node .node-button:active, .connected-node .node-button:active, .connected-node .node-button.active {
+.last-node .node-button:active, .connections-node .node-button:active, .connections-node .node-button.active {
   background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
@@ -171,14 +173,22 @@
 }
 
 .selected-node .node-button {
+  padding: 6px calc(var(--spacing-3) - 1px);
   border: 2px solid var(--control-border-selected);
   background: var(--control-bg-selected);
   color: var(--control-fg-selected);
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.21px;
-  padding: 0 calc(var(--spacing-3) - 2px);
   cursor: default;
+}
+
+/* FIX: Forcefully remove all interactive hover effects from the selected node. */
+.selected-node .node-button:hover {
+  background-color: var(--control-bg-selected);
+  border-color: var(--control-border-selected);
+  box-shadow: none;
+  transform: translateY(0);
 }
 
 .static-label {
@@ -199,32 +209,33 @@
   position: absolute;
   top: 0;
   height: 100%;
+  will-change: transform;
 }
 
+/* FIX: New high-craft arrow styling */
 .nav-arrow {
   position: absolute;
   top: 50%;
-  width: 100%;
-  height: 1px;
+  left: 8px;
+  right: 8px;
+  width: auto;
+  height: 1.5px;
   background-color: var(--surface-fg-tertiary);
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
 }
-
 .nav-arrow::after {
   content: '';
   position: absolute;
-  top: -3px;
-  width: 7px;
-  height: 7px;
-  border-top: 1px solid var(--surface-fg-tertiary);
-  border-right: 1px solid var(--surface-fg-tertiary);
+  top: -3.25px;
+  right: 0px;
+  width: 8px;
+  height: 8px;
+  border-top: 1.5px solid var(--surface-fg-tertiary);
+  border-right: 1.5px solid var(--surface-fg-tertiary);
+  transform: rotate(45deg);
 }
-
-.nav-arrow.left { transform: translateY(-50%); }
-.nav-arrow.left::after { left: -1px; transform: rotate(-135deg); }
-.nav-arrow.right { transform: translateY(-50%); }
-.nav-arrow.right::after { right: -1px; transform: rotate(45deg); }
+.nav-arrow.left { display: none; }
 
 /* --- Dropdown Styles --- */
 .connections-dropdown-container {
