@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; // FIX: Remove unused 'React' import
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, DragOverEvent, UniqueIdentifier, Active, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -15,7 +15,7 @@ import { isComponentBrowserVisibleAtom, activeToolbarTabAtom, appViewModeAtom } 
 import { FormComponent } from './types.ts';
 import { BrowserItemPreview } from './component-browser/BrowserItemPreview.tsx';
 import { PlaceholderPanel } from './PlaceholderPanel.tsx';
-import { FullScreenPlaceholder } from './FullScreenPlaceholder.tsx'; // FIX: Import new placeholder wrapper
+import { FullScreenPlaceholder } from './FullScreenPlaceholder'; // FIX: Remove .tsx extension from import path
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -36,7 +36,7 @@ function App() {
   const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
   const [isPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
-  const viewMode = useAtomValue(appViewModeAtom); // FIX: Read the current view mode
+  const viewMode = useAtomValue(appViewModeAtom);
 
   const [activeItem, setActiveItem] = useState<Active | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
@@ -142,7 +142,6 @@ function App() {
     return <PlaceholderPanel title={activeTabId} />;
   }
   
-  // FIX: Main content router based on viewMode
   const renderMainContent = () => {
     switch (viewMode) {
       case 'preview':

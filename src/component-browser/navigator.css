@@ -13,29 +13,25 @@
 .component-browser-header {
   background: var(--surface-bg-secondary);
   position: relative;
-  display: grid;
-  grid-template-areas: "title close";
-  grid-template-columns: 1fr auto;
-  gap: 0;
-  padding: var(--spacing-2) var(--spacing-4);
+  /* FIX: Change to flexbox for simpler and more robust alignment */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-4); /* Control padding directly */
   height: 44px;
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
 }
 
 .component-browser-header h4 {
-  grid-area: title;
   margin: 0;
   font-weight: 600;
   font-size: 1.1em;
-  /* FIX: Center vertically within the 44px height */
-  align-self: center;
+  /* No alignment needed, flex container handles it */
 }
 
 .component-browser-header .close-panel-button {
-  grid-area: close;
-  /* FIX: Center vertically within the 44px height */
-  align-self: center;
+  /* No alignment needed, flex container handles it */
 }
 
 .breadcrumb-wrapper {
@@ -84,7 +80,6 @@
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
   width: 100%;
-  /* FIX: Reduce height by 48px */
   height: 112px;
   display: flex;
   align-items: center;

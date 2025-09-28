@@ -7,7 +7,7 @@ import './HeaderMenu.css';
 
 export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
-  const [viewMode, setViewMode] = useAtom(appViewModeAtom); // FIX: Use view mode atom
+  const [viewMode, setViewMode] = useAtom(appViewModeAtom);
 
   const handleToggleMenu = () => {
       setIsMenuOpen(p => !p);
@@ -20,7 +20,7 @@ export const AppHeader = () => {
   return (
     <header className="app-header">
       <div className="app-header-top">
-        {/* FIX: Use new class for spacing control */}
+        {/* FIX: Removed inline style for margin. Parent padding now controls the 20px edge margin. */}
         <div className="app-header-left-group"> 
           <button 
             className="btn-tertiary icon-only" 
@@ -58,7 +58,6 @@ export const AppHeader = () => {
             </button>
           </div>
           <div className="tab-group">
-            {/* FIX: Wire up tab buttons to set view mode */}
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>
             <button className={`tab-button ${viewMode === 'settings' ? 'active' : ''}`} onClick={() => handleTabClick('settings')}>Settings</button>
