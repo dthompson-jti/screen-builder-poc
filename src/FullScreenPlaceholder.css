@@ -1,0 +1,45 @@
+/* src/FullScreenPlaceholder.css */
+
+.fullscreen-placeholder-wrapper {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-bg-secondary);
+  padding: var(--spacing-8);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.fullscreen-placeholder-card {
+  background-color: var(--surface-bg-primary);
+  border-radius: var(--spacing-3);
+  padding: var(--spacing-8);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--surface-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.fullscreen-placeholder-card .material-symbols-outlined {
+  font-size: 48px;
+  color: var(--surface-fg-tertiary);
+}
+
+.fullscreen-placeholder-card h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0;
+  color: var(--surface-fg-primary);
+}
+
+.fullscreen-placeholder-card p {
+  margin: 0;
+  color: var(--surface-fg-secondary);
+  line-height: 1.5;
+}

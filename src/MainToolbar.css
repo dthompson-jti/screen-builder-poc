@@ -8,7 +8,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-2p5) 0;
+  /* FIX: Adjust top padding to match spacing between icons (var(--spacing-2) = 8px) */
+  padding: var(--spacing-2) 0; 
   gap: var(--spacing-2);
   flex-shrink: 0;
   transition: width 0.3s ease; 

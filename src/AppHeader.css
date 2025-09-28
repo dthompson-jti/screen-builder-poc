@@ -10,8 +10,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-2) var(--spacing-6);
+  /* FIX: Adjust horizontal padding to use spacing-5 for 20px */
+  padding: var(--spacing-2) var(--spacing-5);
   border-bottom: 1px solid var(--surface-border-secondary);
+}
+
+/* FIX: New style for the container holding menu button and title */
+.app-header-left-group {
+  display: flex;
+  align-items: center;
+  /* FIX: Spacing between menu button and title is 16px (var(--spacing-4)) */
+  gap: var(--spacing-4); 
+  position: relative;
 }
 
 .app-header-title {
@@ -38,7 +48,6 @@
   cursor: pointer;
   opacity: 0.7;
   color: var(--surface-fg-secondary);
-  /* FIX: Add transition */
   transition: opacity 0.2s, background-color 0.2s;
 }
 
@@ -79,7 +88,6 @@
   color: var(--surface-fg-secondary);
   cursor: pointer;
   font-weight: 500;
-  /* FIX: Add transition */
   transition: color 0.2s;
 }
 
@@ -108,26 +116,33 @@
   padding: var(--spacing-1p5) var(--spacing-3);
   background: none;
   border: none;
-  color: var(--surface-fg-secondary);
-  font-weight: 500;
   position: relative;
   cursor: pointer;
-  /* FIX: Add transition */
   transition: color 0.2s;
+
+  /* FIX: Update text styles */
+  color: var(--surface-fg-quaternary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
 }
 
-.tab-button.active {
-  color: var(--surface-fg-theme-primary);
+.tab-button.active, .tab-button:hover {
+  /* FIX: Update active and hover color */
+  color: var(--surface-fg-theme-strong);
 }
 
 .tab-button.active::after {
   content: '';
   position: absolute;
-  bottom: -9px; /* This is relative to padding, might need adjustment */
+  bottom: -9px;
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--surface-fg-theme-primary);
+  /* FIX: Update underline color */
+  background-color: var(--surface-fg-theme-strong);
 }
 
 /* --- Standardized Button Styles --- */
@@ -137,84 +152,62 @@
   justify-content: center;
   font-weight: 500;
   cursor: pointer;
-  border-radius: var(--spacing-2); /* 8px */
-  /* FIX: Refine transition for snappier press effect (transform is faster) */
+  border-radius: var(--spacing-2);
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
   transform: translateY(0);
-  box-sizing: border-box; /* Important for border management */
-  line-height: 1; /* Ensure consistent vertical alignment */
+  box-sizing: border-box;
+  line-height: 1;
 }
 
-/* --- Primary Button (ROCK SOLID FIX) --- */
+/* --- Primary Button --- */
 .btn-primary {
-  /* Fixed Height: 38px, Fixed Padding: 9px top/bottom (var(--spacing-2) + 1px) */
   padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
   height: 38px;
-  
   background-color: var(--control-bg-theme);
   color: var(--control-fg-on-solid);
-  
-  /* Base border thickness (2px physical border) */
   border: 2px solid var(--control-border-primary); 
-
-  /* Only transition visual effects */
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
 }
 
 .btn-primary:hover:not(:disabled) {
-  /* Simulate hover depth via box-shadow inset, keeping physical border */
   background-color: var(--control-bg-theme-hover);
-  
-  /* Apply dark border color and thicker bottom shadow */
   box-shadow: 
-    inset 0 1px 0 0 var(--control-border-primary-hover), /* Top border simulation */
-    inset 0 -3px 0 0 var(--control-border-primary-hover), /* Bottom depth simulation */
-    inset 1px 0 0 0 var(--control-border-primary-hover), /* Right border simulation */
-    inset -1px 0 0 0 var(--control-border-primary-hover); /* Left border simulation */
-    
-  /* Padding and size remains ROCK SOLID */
+    inset 0 1px 0 0 var(--control-border-primary-hover),
+    inset 0 -3px 0 0 var(--control-border-primary-hover),
+    inset 1px 0 0 0 var(--control-border-primary-hover),
+    inset -1px 0 0 0 var(--control-border-primary-hover);
   padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
-  border-color: transparent; /* Use box-shadow to simulate border on hover */
+  border-color: transparent;
 }
 
 .btn-primary:active:not(:disabled) {
-  /* Simulate pressed depth + 1px vertical shift */
   background-color: var(--control-bg-theme-pressed);
   transform: translateY(1px);
-  
-  /* Apply dark border color and 2px bottom shadow */
   box-shadow: 
     inset 0 1px 0 0 var(--control-border-primary-pressed), 
     inset 0 -2px 0 0 var(--control-border-primary-pressed),
     inset 1px 0 0 0 var(--control-border-primary-pressed),
     inset -1px 0 0 0 var(--control-border-primary-pressed);
-    
-  /* Padding and size remains ROCK SOLID */
   padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
   border-color: transparent; 
 }
 
-
-/* --- Secondary Button (ROCK SOLID FIX) --- */
+/* --- Secondary Button --- */
 .btn-secondary {
-  /* Fixed Padding and 1px border. Height 38px for text. */
   padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
   height: 38px; 
-  
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
-  
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
 }
 
 .btn-secondary.icon-only {
-  padding: calc(var(--spacing-1p5) + 1px); /* 7px padding for 20px icon. Total height 34px */
+  padding: calc(var(--spacing-1p5) + 1px);
   height: 34px;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  /* Simulate 3px bottom border using box-shadow inset */
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
@@ -224,7 +217,6 @@
 }
 
 .btn-secondary:active:not(:disabled), .btn-secondary.active {
-  /* Simulate 2px bottom border + 1px vertical shift */
   background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
@@ -235,7 +227,7 @@
 }
 
 
-/* --- Tertiary Button Styles (ROCK SOLID FIX) --- */
+/* --- Tertiary Button Styles --- */
 .btn-tertiary {
   display: inline-flex;
   align-items: center;
@@ -244,25 +236,18 @@
   cursor: pointer;
   background: none;
   
-  /* FIX: Use 1px transparent border for sizing consistency (Total height 34px) */
+  /* FIX: Use transparent border for sizing consistency */
   border: 1px solid transparent; 
   height: 34px;
-  
-  /* FIX: Ensure 8px radius */
   border-radius: var(--spacing-2); 
-  
-  /* Fixed vertical padding 6px (var(--spacing-1p5)). */
   padding: var(--spacing-1p5); 
-  
   color: var(--surface-fg-tertiary);
-  
-  transition: background-color 0.2s, box-shadow 0.1s, transform 0.1s ease-out, color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.1s, transform 0.1s ease-out, color 0.2s, border-color 0.2s;
   box-sizing: border-box;
   transform: translateY(0);
 }
 
 .btn-tertiary.icon-text {
-  /* Fixed horizontal padding 8px (var(--spacing-2)). Vertical 6px. */
   padding: var(--spacing-1p5) var(--spacing-2);
   gap: var(--spacing-2);
 }
@@ -271,21 +256,18 @@
 }
 
 .btn-tertiary:hover:not(:disabled) {
-  /* ROCK SOLID: Only change internal visuals (BG, color, shadow) */
+  /* FIX: New two-part border effect */
   background-color: var(--control-bg-tertiary-hover); 
-  color: var(--control-fg-secondary_hover); 
-  
-  /* Simulate 3px bottom border */
+  color: var(--control-fg-tertiary-hover);
+  border-color: var(--control-border-tertiary-faint-hover);
   box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
 }
 
 .btn-tertiary:active:not(:disabled) {
-  /* ROCK SOLID: Only change internal visuals + 1px transform */
+  /* FIX: New two-part border effect for pressed state */
   transform: translateY(1px);
-  
   background-color: var(--control-bg-tertiary-pressed);
-  color: var(--control-fg-secondary);
-  
-  /* Simulate 2px bottom border */
+  color: var(--control-fg-tertiary-hover); /* Spec says use hover color */
+  border-color: var(--control-border-tertiary-faint-pressed);
   box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
 }

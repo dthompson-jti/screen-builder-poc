@@ -33,20 +33,20 @@
     font-size: 1em;
 }
 
-/* Ensure the shared header styles work */
-/* Duplicating required styles from navigator.css to avoid imports if PlaceholderPanel is generic */
+/* Ensure the shared header styles work (Updated for 44px height) */
 .component-browser-header {
     background: var(--surface-bg-secondary);
     position: relative;
     
     display: grid;
-    grid-template-areas: 
-      "title close"
-      "breadcrumb breadcrumb";
+    /* FIX: Simplified grid template */
+    grid-template-areas: "title close";
     grid-template-columns: 1fr auto;
-    gap: var(--spacing-1) 0;
+    gap: 0;
     
-    padding: var(--spacing-4);
+    /* FIX: Reduced padding for 44px height */
+    padding: var(--spacing-2) var(--spacing-4);
+    height: 44px;
     border-bottom: 1px solid var(--surface-border-secondary);
     flex-shrink: 0;
 }
@@ -57,6 +57,7 @@
     font-weight: 600;
     font-size: 1.1em;
     color: var(--surface-fg-primary);
+    align-self: center;
 }
 
 .component-browser-header .close-panel-button {

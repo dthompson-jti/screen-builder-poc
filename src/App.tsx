@@ -11,10 +11,11 @@ import { TextInputPreview } from './editor-canvas/TextInputPreview.tsx';
 import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './editor-canvas/canvasAtoms.ts';
 import { PropertiesPanel } from './properties-panel/PropertiesPanel.tsx';
 import { MainToolbar } from './MainToolbar.tsx';
-import { isComponentBrowserVisibleAtom, activeToolbarTabAtom } from './appAtoms.ts';
+import { isComponentBrowserVisibleAtom, activeToolbarTabAtom, appViewModeAtom } from './appAtoms.ts';
 import { FormComponent } from './types.ts';
 import { BrowserItemPreview } from './component-browser/BrowserItemPreview.tsx';
-import { PlaceholderPanel } from './PlaceholderPanel.tsx'; // FIX: Correct import
+import { PlaceholderPanel } from './PlaceholderPanel.tsx';
+import { FullScreenPlaceholder } from './FullScreenPlaceholder.tsx'; // FIX: Import new placeholder wrapper
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -35,23 +36,17 @@ function App() {
   const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
   const [isPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
-  
-  // FIX: Removed unused currentPanelWidth state and dependency on onWidthChange
-  // const [currentPanelWidth, setCurrentPanelWidth] = useState(INITIAL_PANEL_WIDTH); 
+  const viewMode = useAtomValue(appViewModeAtom); // FIX: Read the current view mode
 
   const [activeItem, setActiveItem] = useState<Active | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 
-  // --- State Synchronization (UX Fixes) ---
-  
   useEffect(() => {
     if (!isPanelVisible) {
       setSelectedComponentId(null);
     }
   }, [isPanelVisible, setSelectedComponentId]);
 
-  // --- DND Logic (Unchanged) ---
-  
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -147,37 +142,45 @@ function App() {
     return <PlaceholderPanel title={activeTabId} />;
   }
   
+  // FIX: Main content router based on viewMode
+  const renderMainContent = () => {
+    switch (viewMode) {
+      case 'preview':
+        return <FullScreenPlaceholder icon="visibility" title="Preview Mode" message="This is a placeholder for the form preview." />;
+      case 'settings':
+        return <FullScreenPlaceholder icon="settings" title="Settings" message="This is a placeholder for the form settings." />;
+      case 'editor':
+      default:
+        return (
+          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+            <MainToolbar />
+            <ResizablePanel 
+              initialWidth={INITIAL_PANEL_WIDTH} 
+              minWidth={MIN_PANEL_WIDTH} 
+              position="left"
+              isAnimatedVisible={isPanelVisible}
+            >
+              {renderLeftPanelContent()}
+            </ResizablePanel>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <EditorCanvas active={activeItem} overId={overId} />
+            </div>
+            <ResizablePanel initialWidth={300} minWidth={280} position="right">
+              <PropertiesPanel />
+            </ResizablePanel>
+            <DragOverlay dropAnimation={dropAnimation}>
+              {renderDragOverlay()}
+            </DragOverlay>
+          </div>
+        );
+    }
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} autoScroll={false}>
         <AppHeader />
-        <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-          
-          <MainToolbar />
-          
-          <ResizablePanel 
-            initialWidth={INITIAL_PANEL_WIDTH} 
-            minWidth={MIN_PANEL_WIDTH} 
-            position="left"
-            isAnimatedVisible={isPanelVisible}
-            // FIX: Removed onWidthChange, relying on ResizablePanel internal width for animation
-            // onWidthChange={setCurrentPanelWidth} 
-          >
-            {renderLeftPanelContent()}
-          </ResizablePanel>
-
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <EditorCanvas active={activeItem} overId={overId} />
-          </div>
-          <ResizablePanel initialWidth={300} minWidth={280} position="right">
-            <PropertiesPanel />
-          </ResizablePanel>
-          
-          <DragOverlay dropAnimation={dropAnimation}>
-            {renderDragOverlay()}
-          </DragOverlay>
-        </div>
+        {renderMainContent()}
       </DndContext>
     </div>
   )

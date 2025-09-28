@@ -18,7 +18,7 @@ export const PlaceholderPanel: React.FC<PlaceholderPanelProps> = ({ title }) => 
 
   return (
     <div className="placeholder-panel-container">
-      {/* Reusing ComponentBrowser header for visual consistency */}
+      {/* FIX: Header structure updated to match the new shorter, secondary-bg version */}
       <div className="component-browser-header">
         <h4>{title}</h4>
         <button 

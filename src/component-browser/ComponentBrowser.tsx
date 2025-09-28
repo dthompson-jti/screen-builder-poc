@@ -6,7 +6,7 @@ import { selectedNodeIdAtom, isConnectionsDropdownVisibleAtom, componentSearchQu
 import { componentTreeData, DraggableComponent, ComponentGroup, connectionsDropdownData, DropdownItem } from './mockComponentTree';
 import { NodeNavigator } from './navigator.js';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
-import { isComponentBrowserVisibleAtom } from '../appAtoms'; // Import app state
+import { isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../appAtoms'; // Import app state
 import './navigator.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
@@ -28,8 +28,16 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
   const data = connectionsDropdownData[selectedNodeId];
   const [query, setQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null); // Ref for autofocus
 
   useOnClickOutside(dropdownRef, () => setIsVisible(false));
+
+  useEffect(() => {
+    // FIX: Autofocus search input when dropdown opens
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
 
   const handleItemClick = (item: DropdownItem) => {
     if (item.isNavigable && navigator) {
@@ -47,9 +55,22 @@ const ConnectionsDropdown = ({ navigator, selectedNodeId }: { navigator: NodeNav
 
   return (
     <div className="connections-dropdown-container" ref={dropdownRef}>
+      {/* FIX: Title row with close button */}
+      <div className="dropdown-header-row">
+        <h5>Navigate to...</h5>
+        <button 
+          className="btn-tertiary icon-only" 
+          onClick={() => setIsVisible(false)}
+          aria-label="Close connections dropdown"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
       <div className="dropdown-search">
         <span className="material-symbols-outlined">search</span>
         <input 
+          ref={searchInputRef} // Attach ref here
           type="text" 
           placeholder="Search Connections" 
           value={query}
@@ -88,8 +109,8 @@ export const ComponentBrowser = () => {
   const [query, setQuery] = useAtom(componentSearchQueryAtom);
   const componentGroups = useAtomValue(filteredComponentGroupsAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useAtom(isConnectionsDropdownVisibleAtom);
+  const isShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
   
-  // FIX: Atom for controlling panel visibility
   const setIsPanelVisible = useSetAtom(isComponentBrowserVisibleAtom);
   
   const mountRef = useRef<HTMLDivElement>(null);
@@ -130,7 +151,6 @@ export const ComponentBrowser = () => {
   };
 
   const handleClosePanel = () => {
-    // FIX: Set visibility state to false
     setIsPanelVisible(false);
   }
 
@@ -143,8 +163,8 @@ export const ComponentBrowser = () => {
   return (
     <div className="component-browser-container">
       <div className="component-browser-header">
-        <h4>Data navigator</h4>
-        {/* FIX: Close button for the panel */}
+        {/* FIX: Use fg-secondary for the title */}
+        <h4 style={{ color: 'var(--surface-fg-secondary)' }}>Data navigator</h4>
         <button 
           className="btn-tertiary icon-only close-panel-button" 
           title="Close Panel" 
@@ -153,22 +173,27 @@ export const ComponentBrowser = () => {
         >
           <span className="material-symbols-outlined">close</span>
         </button>
-
-        <div className="breadcrumb">
-          {breadcrumbPath.map((node, index) => (
-            <React.Fragment key={node.id}>
-              <button 
-                className={index === breadcrumbPath.length - 1 ? 'active' : ''}
-                onClick={() => handleBreadcrumbClick(node.id)}
-                disabled={index === breadcrumbPath.length - 1}
-              >
-                {node.name}
-              </button>
-              {index < breadcrumbPath.length - 1 && <span className="material-symbols-outlined">chevron_right</span>}
-            </React.Fragment>
-          ))}
-        </div>
       </div>
+
+      {/* Breadcrumb moved into its own wrapper, conditionally rendered */}
+      {isShowBreadcrumb && (
+        <div className="breadcrumb-wrapper">
+          <div className="breadcrumb">
+            {breadcrumbPath.map((node, index) => (
+              <React.Fragment key={node.id}>
+                <button 
+                  className={index === breadcrumbPath.length - 1 ? 'active' : ''}
+                  onClick={() => handleBreadcrumbClick(node.id)}
+                  disabled={index === breadcrumbPath.length - 1}
+                >
+                  {node.name}
+                </button>
+                {index < breadcrumbPath.length - 1 && <span className="material-symbols-outlined">chevron_right</span>}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="navigator-container">
         <div id="navigator-grid" ref={mountRef}>

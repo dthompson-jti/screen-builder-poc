@@ -11,18 +11,14 @@
 }
 
 .component-browser-header {
-  /* FIX: Apply new header background token */
   background: var(--surface-bg-secondary);
   position: relative;
-  
   display: grid;
-  grid-template-areas: 
-    "title close"
-    "breadcrumb breadcrumb";
+  grid-template-areas: "title close";
   grid-template-columns: 1fr auto;
-  gap: var(--spacing-1) 0;
-  
-  padding: var(--spacing-4);
+  gap: 0;
+  padding: var(--spacing-2) var(--spacing-4);
+  height: 44px;
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
 }
@@ -32,22 +28,30 @@
   margin: 0;
   font-weight: 600;
   font-size: 1.1em;
-  color: var(--surface-fg-primary);
+  /* FIX: Center vertically within the 44px height */
+  align-self: center;
 }
 
 .component-browser-header .close-panel-button {
   grid-area: close;
+  /* FIX: Center vertically within the 44px height */
   align-self: center;
 }
 
+.breadcrumb-wrapper {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-bottom: 1px solid var(--surface-border-secondary);
+    flex-shrink: 0;
+    background-color: var(--surface-bg-primary);
+}
+
 .breadcrumb {
-  grid-area: breadcrumb;
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
   font-size: 0.85em;
   color: var(--surface-fg-secondary);
-  margin-top: var(--spacing-2);
+  margin: 0; 
 }
 .breadcrumb .material-symbols-outlined { font-size: 16px; }
 .breadcrumb button {
@@ -60,7 +64,6 @@
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: transparent;
-  /* FIX: Add transition */
   transition: text-decoration-color 0.2s, color 0.2s;
 }
 .breadcrumb button:hover:not(:disabled) {
@@ -76,13 +79,13 @@
   cursor: default;
 }
 
-
 .navigator-container {
   padding: 0;
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
   width: 100%;
-  height: 160px;
+  /* FIX: Reduce height by 48px */
+  height: 112px;
   display: flex;
   align-items: center;
 }
@@ -102,7 +105,7 @@
   grid-column: 1 / -1;
   grid-row: 1;
   position: relative;
-  overflow: visible; /* Allow dropdown to show */
+  overflow: visible;
   height: 36px;
 }
 
@@ -136,22 +139,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   box-sizing: border-box;
-  /* FIX: Ensure new nodes get the correct radius immediately */
   border-radius: var(--spacing-2);
 }
 
-/* Secondary Button styles for Last and Connected Nodes (ROCK SOLID FIX) 
-   These inherit core styles from .btn-secondary in AppHeader.css
-*/
 .last-node .node-button, .connected-node .node-button {
-  /* Overrides to ensure consistency with main AppHeader.css .btn-secondary (text variant) */
   padding: calc(var(--spacing-2) + 1px) var(--spacing-3); 
   height: 38px;
-  
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
-  
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
   transform: translateY(0);
   font-weight: 500;
@@ -170,15 +166,23 @@
   transform: translateY(1px);
 }
 
-/* Selected Node styles */
+.node-group.none-state .node-button.disabled-none {
+    background-color: var(--control-bg-disabled_subtle) !important;
+    color: var(--control-fg-disabled) !important;
+    border: 1px dashed var(--control-border-disabled) !important;
+    cursor: default !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 .selected-node .node-button {
-  border: 2px solid var(--control-border-selected); /* 2px solid #155ACA */
-  background: var(--control-bg-selected); /* #F2F7FE */
-  color: var(--control-fg-selected); /* #155ACA */
+  border: 2px solid var(--control-border-selected);
+  background: var(--control-bg-selected);
+  color: var(--control-fg-selected);
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.21px;
-  padding: 0 calc(var(--spacing-3) - 2px); /* 0 10px for 2px border */
+  padding: 0 calc(var(--spacing-3) - 2px);
   cursor: default;
 }
 
@@ -241,6 +245,20 @@
   overflow: hidden;
 }
 
+.dropdown-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-bottom: 1px solid var(--surface-border-secondary);
+}
+.dropdown-header-row h5 {
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--surface-fg-primary);
+}
+
 .dropdown-search {
   display: flex;
   align-items: center;
@@ -291,14 +309,13 @@
 }
 .dropdown-item.navigable:hover {
   background-color: var(--surface-bg-secondary_hover);
-  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 
 .dropdown-item .item-icon { font-size: 20px; }
-.dropdown-item .item-icon.entity { color: #8A2BE2; } /* Purple */
-.dropdown-item .item-icon.collection { color: #008B8B; } /* Teal */
-.dropdown-item .item-icon.transient { color: #2E8B57; } /* Sea Green */
+.dropdown-item .item-icon.entity { color: #8A2BE2; }
+.dropdown-item .item-icon.collection { color: #008B8B; }
+.dropdown-item .item-icon.transient { color: #2E8B57; }
 
 /* --- Component List Styles --- */
 .component-list-container { flex: 1; min-height: 0; overflow-y: auto; }
@@ -319,7 +336,6 @@
   border-radius: 6px;
   margin-bottom: var(--spacing-1);
   cursor: grab;
-  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 .component-list-item:hover { background-color: var(--surface-bg-secondary_hover); }

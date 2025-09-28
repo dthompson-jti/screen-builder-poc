@@ -26,6 +26,9 @@ export class NodeNavigator {
         defaultBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-secondary').trim(),
         defaultBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-secondary').trim(),
         defaultColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-primary').trim(), // Use primary foreground for default
+        disabledBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-disabled_subtle').trim(),
+        disabledBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-disabled').trim(),
+        disabledColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-disabled').trim(),
     };
   }
 
@@ -71,7 +74,16 @@ export class NodeNavigator {
 
     this.elementPool.forEach((node, i) => {
       const dataIndexOffset = i - centerSlot;
-      const dataIndex = (this.selectedIndex + dataIndexOffset + this.nodeData.length * 100) % this.nodeData.length;
+      // Use modulus for cycling only if we are outside the boundary check
+      let dataIndex = this.selectedIndex + dataIndexOffset;
+
+      // Handle cycling boundaries (only cycle if dataIndex is valid, otherwise clamp)
+      if (dataIndex < 0) {
+        dataIndex = this.nodeData.length + dataIndex;
+      } else if (dataIndex >= this.nodeData.length) {
+        dataIndex = dataIndex % this.nodeData.length;
+      }
+
       this._updateNodeState(node, this.nodeData[dataIndex], dataIndexOffset, isInstant);
     });
 
@@ -98,6 +110,16 @@ export class NodeNavigator {
     const button = node.querySelector('.node-button');
     node.className = `node-group ${type}-node`;
     
+    // --- New Boundary Logic: Last Node is Case (index 0) ---
+    if (dataIndexOffset === -1 && this.selectedIndex === 0) {
+        node.className = `node-group last-node none-state`;
+        button.innerHTML = `<span>None</span>`;
+        button.classList.add('disabled-none');
+        gsap.set(button, { clearProps: 'all' });
+        return;
+    } 
+    // --- End New Boundary Logic ---
+
     button.innerHTML = `<span>${data.name}</span>`;
     if (type === 'connected') {
         button.innerHTML = `<span>${data.connections} connections</span>`;
@@ -107,6 +129,7 @@ export class NodeNavigator {
     // to allow CSS classes to take full control.
     if (type === 'selected') {
         button.classList.remove('btn-secondary'); // Ensure it doesn't get secondary button styles
+        button.classList.remove('disabled-none'); // Ensure disabled class is removed
         if (isInstant) {
             gsap.set(button, {
                 borderColor: this.colors.selectedBorder,
@@ -119,6 +142,7 @@ export class NodeNavigator {
         }
     } else {
         button.classList.add('btn-secondary'); // Apply secondary button styles via class
+        button.classList.remove('disabled-none');
         gsap.set(button, { clearProps: 'all' }); // Remove any inline styles from GSAP
     }
   }
@@ -145,19 +169,30 @@ export class NodeNavigator {
     if (connectedNodeButton) {
       connectedNodeButton.classList.toggle('active', isActive);
       // Manually trigger a re-render of the node state to update styles immediately
-      // This is a workaround for vanilla JS animation not reacting to class changes
-      this._updateNodeState(connectedNodeButton.closest('.node-group'), this.nodeData[(this.selectedIndex + 1 + this.nodeData.length * 100) % this.nodeData.length], 1, true);
+      this._updateNodeState(connectedNodeButton.closest('.node-group'), this.nodeData[(this.selectedIndex + 1) % this.nodeData.length], 1, true);
     }
   }
 
   _slide(direction) {
     if (this.isAnimating || !this.layout.slideDistance) return;
-    this.isAnimating = true;
     
     const isBackward = direction === 'backward';
     const directionMultiplier = isBackward ? 1 : -1;
     const centerSlot = Math.floor(this.elementPool.length / 2);
 
+    // --- Boundary Check: Stop at Case node (index 0) ---
+    if (isBackward && this.selectedIndex === 0) {
+        this.isAnimating = false;
+        return;
+    }
+    // --- Boundary Check: Stop at last node ---
+    if (!isBackward && this.selectedIndex === this.nodeData.length - 1) {
+        this.isAnimating = false;
+        return;
+    }
+
+    this.isAnimating = true;
+    
     const oldSelectedNodeButton = this.elementPool[centerSlot].querySelector('.node-button');
     const newSelectedNodeButton = isBackward 
       ? this.elementPool[centerSlot - 1].querySelector('.node-button') 
@@ -165,7 +200,7 @@ export class NodeNavigator {
     
     const tl = gsap.timeline({
       onComplete: () => {
-        const newSelectedIndex = (this.selectedIndex - directionMultiplier + this.nodeData.length) % this.nodeData.length;
+        const newSelectedIndex = this.selectedIndex + (isBackward ? -1 : 1);
         this.selectedIndex = newSelectedIndex;
         
         if (isBackward) { this.track.prepend(this.track.lastElementChild); } 
@@ -233,8 +268,17 @@ export class NodeNavigator {
         btn.parentNode.replaceChild(newBtn, btn);
     });
 
-    const lastNodeButton = this.container.querySelector('.last-node .node-button');
-    if (lastNodeButton) { lastNodeButton.onclick = () => this._slide('backward'); }
+    const lastNodeGroup = this.container.querySelector('.last-node');
+    const lastNodeButton = lastNodeGroup ? lastNodeGroup.querySelector('.node-button') : null;
+
+    if (lastNodeButton) { 
+        // If it's the disabled "None" state, set onclick to null
+        if (lastNodeGroup.classList.contains('none-state')) {
+            lastNodeButton.onclick = null;
+        } else {
+            lastNodeButton.onclick = () => this._slide('backward'); 
+        }
+    }
     
     const connectedNodeButton = this.container.querySelector('.connected-node .node-button');
     if (connectedNodeButton) { 
