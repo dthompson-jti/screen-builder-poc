@@ -1,7 +1,7 @@
 // src/properties-panel/DataBindingModal.tsx
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
-import { Modal } from '../components/Modal';
+import { Modal } from '../components/modal';
 import { DataNavigatorView } from '../component-browser/DataNavigatorView';
 import { SelectableListItem } from '../component-browser/SelectableListItem';
 import {

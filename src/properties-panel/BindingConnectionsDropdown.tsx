@@ -1,5 +1,5 @@
 // src/properties-panel/BindingConnectionsDropdown.tsx
-import { useRef, useEffect } from 'react';
+import { useRef} from 'react';
 import { useOnClickOutside } from '../hooks/useOnClickOutside';
 import { NodeNavigator } from '../component-browser/navigator';
 import { bindingConnectionsData, bindingTreeData } from './dataBindingMockData';
