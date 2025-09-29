@@ -1,4 +1,4 @@
-// src/hooks/useOnClickOutside.ts
+// src/useOnClickOutside.ts
 import { useEffect, RefObject } from 'react';
 
 type AnyEvent = MouseEvent | TouchEvent;

@@ -1,9 +1,9 @@
-// src/editor-canvas/EditorCanvas.tsx
+// src/components/EditorCanvas.tsx
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Active, UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './canvasAtoms';
+import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../state/atoms';
 import { FormComponent } from '../types';
 import { SelectionToolbar } from './SelectionToolbar';
 import './EditorCanvas.css';
@@ -37,13 +37,11 @@ const SortableFormComponent = ({ component, overId, active }: { component: FormC
       ref={setNodeRef}
       style={style}
       {...attributes}
-      // FIX: The listeners must be on the main wrapper for the click vs. drag logic to work correctly on the entire component body.
       {...listeners}
       className={wrapperClassName}
       onClick={(e) => { e.stopPropagation(); setSelectedId(component.id); }}
     >
-      {/* Pass the listeners to the drag handle for visual affordance, but the whole component is draggable */}
-      {isSelected && <SelectionToolbar listeners={listeners} onDelete={handleDelete} />}
+      {isSelected && <SelectionToolbar onDelete={handleDelete} listeners={listeners} />}
       
       <TextInputPreview label={component.name} />
     </div>

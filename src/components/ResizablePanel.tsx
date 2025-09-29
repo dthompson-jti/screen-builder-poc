@@ -1,14 +1,13 @@
-// src/ResizablePanel.tsx
+// src/components/ResizablePanel.tsx
 import React, { useState, useCallback, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { isComponentBrowserVisibleAtom } from './appAtoms';
+import { isComponentBrowserVisibleAtom } from '../state/atoms';
 
 interface ResizablePanelProps {
   initialWidth: number;
   minWidth?: number;
   children: React.ReactNode;
   position?: 'left' | 'right';
-  // FIX: New prop/callback for external control and width tracking
   isAnimatedVisible?: boolean; 
   onWidthChange?: (width: number) => void;
 }
@@ -26,10 +25,8 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   const panelRef = useRef<HTMLDivElement>(null);
   
   const currentVisibility = useAtomValue(isComponentBrowserVisibleAtom);
-  // Determine if this is the left panel that is currently closed based on external control
   const isLeftPanelHidden = position === 'left' && !isAnimatedVisible;
 
-  // Sync width up to parent whenever width changes (for calculating hidden offset)
   React.useEffect(() => {
     if (onWidthChange && !isLeftPanelHidden) {
       onWidthChange(width);
@@ -38,7 +35,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
 
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    // Prevent resizing if the panel is visually hidden
     if (isLeftPanelHidden) return;
     
     isResizing.current = true;
@@ -55,7 +51,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
         
         if (position === 'left') {
           newWidth = startWidth + deltaX;
-          // Prevent resizing below minWidth
           if (newWidth < minWidth && currentVisibility) {
              newWidth = minWidth;
           }
@@ -77,7 +72,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
       
-      // Update parent state with final width after drag stop
       if (onWidthChange) {
         onWidthChange(width);
       }
@@ -103,12 +97,10 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   }
   
   const wrapperStyle: React.CSSProperties = {
-    // FIX: Use 0 width when hidden to enable slide animation
     width: isLeftPanelHidden ? '0px' : `${width}px`,
     position: 'relative',
     flexShrink: 0,
-    overflow: 'hidden', // Essential to hide content when width collapses
-    // FIX: Enable transition on width for animation
+    overflow: 'hidden',
     transition: 'width 0.3s ease-out',
   };
 
@@ -118,20 +110,17 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       style={wrapperStyle}
     >
       <div 
-        // We must ensure the content inside maintains its size even if the container collapses to 0
         style={{ 
           width: `${width}px`, 
           flex: 1, 
           minWidth: 0, 
           height: '100%',
-          // Use transform to hold the content position relative to the main resizable wrapper
           transform: isLeftPanelHidden ? `translateX(-${width}px)` : 'translateX(0)',
           transition: 'transform 0.3s ease-out',
         }}
       >
         {children}
       </div>
-      {/* Hide resizer when panel is closed/being animated */}
       {!isLeftPanelHidden && (
         <div
           className="resizer"

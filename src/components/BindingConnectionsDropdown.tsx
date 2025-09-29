@@ -1,8 +1,9 @@
-// src/properties-panel/BindingConnectionsDropdown.tsx
-import { useRef} from 'react';
-import { useOnClickOutside } from '../hooks/useOnClickOutside';
-import { NodeNavigator } from '../component-browser/navigator';
-import { bindingConnectionsData, bindingTreeData } from './dataBindingMockData';
+// src/components/BindingConnectionsDropdown.tsx
+import { useRef } from 'react';
+import { useOnClickOutside } from '../useOnClickOutside';
+import { NodeNavigator } from './navigator';
+import { bindingConnectionsData, bindingTreeData } from '../data/dataBindingMock';
+import { DropdownItem } from '../types';
 
 interface BindingConnectionsDropdownProps {
   navigator: NodeNavigator | null;
@@ -39,7 +40,7 @@ export const BindingConnectionsDropdown = ({ navigator, selectedNodeId, onClose 
   return (
     <div className="connections-dropdown-container" ref={dropdownRef}>
       <ul className="dropdown-list">
-        {data.entities.map(item => (
+        {data.entities.map((item: DropdownItem) => (
           <li key={item.id} className="dropdown-item navigable" onClick={() => handleItemClick(item.id)}>
             <span className="material-symbols-outlined item-icon entity">crop_square</span>
             <span>{item.name}</span>

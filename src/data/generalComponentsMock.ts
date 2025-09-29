@@ -1,5 +1,5 @@
-// src/component-browser/generalComponentMockData.ts
-import { DraggableComponent } from './mockComponentTree';
+// src/data/generalComponentsMock.ts
+import { DraggableComponent } from '../types';
 
 export const generalComponents: DraggableComponent[] = [
   { id: 'text-input', name: 'Text Input', type: 'widget', icon: 'text_fields' },

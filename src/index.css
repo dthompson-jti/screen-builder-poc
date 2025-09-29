@@ -1,7 +1,7 @@
 /* src/index.css */
 
 /* THE FIX: Import the new, centralized design tokens. */
-@import './styles/design-tokens.css';
+@import './design-tokens.css';
 
 /* THE FIX: Remove the old, scattered design system variables. */
 :root {

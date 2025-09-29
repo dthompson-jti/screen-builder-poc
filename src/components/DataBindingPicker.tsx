@@ -1,4 +1,4 @@
-// src/properties-panel/DataBindingPicker.tsx
+// src/components/DataBindingPicker.tsx
 import { BoundData } from '../types';
 import './DataBindingPicker.css';
 

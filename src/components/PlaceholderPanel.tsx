@@ -1,9 +1,9 @@
-// src/PlaceholderPanel.tsx
+// src/components/PlaceholderPanel.tsx
 import React from 'react';
 import { useSetAtom } from 'jotai';
-import { isComponentBrowserVisibleAtom } from './appAtoms';
+import { isComponentBrowserVisibleAtom } from '../state/atoms';
 import './PlaceholderPanel.css';
-import './component-browser/navigator.css'; // Import styles for header reuse
+import './navigator.css'; // Import styles for header reuse
 
 interface PlaceholderPanelProps {
   title: string;

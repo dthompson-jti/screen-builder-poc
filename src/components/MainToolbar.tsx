@@ -1,9 +1,9 @@
-// src/MainToolbar.tsx
+// src/components/MainToolbar.tsx
 import { useAtom, useAtomValue } from 'jotai';
-import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom } from './appAtoms';
+import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../state/atoms';
 import './MainToolbar.css';
 
-const toolbarItems = [
+const toolbarItems: { id: ToolbarTabId; label: string; icon: string }[] = [
   { id: 'layout', label: 'Layout', icon: 'auto_awesome_mosaic' },
   { id: 'data', label: 'Data fields', icon: 'database' },
   { id: 'general', label: 'General', icon: 'borg' },
@@ -25,12 +25,10 @@ export const MainToolbar = () => {
   
   const toolbarClassName = isCompact ? 'main-toolbar compact' : 'main-toolbar normal';
 
-  const handleTabClick = (id: string) => {
+  const handleTabClick = (id: ToolbarTabId) => {
     if (id === activeTabId) {
-      // If clicking the current active tab, toggle visibility
       setIsPanelVisible(prev => !prev);
     } else {
-      // If clicking a new tab, make it active and ensure panel is open
       setActiveTabId(id);
       setIsPanelVisible(true);
     }
@@ -40,7 +38,6 @@ export const MainToolbar = () => {
     <div className={toolbarClassName}>
       {toolbarItems.map((item, index) => {
         const isActive = item.id === activeTabId;
-        // Panel is open AND the toolbar item is the active tab.
         const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
 
         return (
@@ -57,7 +54,6 @@ export const MainToolbar = () => {
               )}
             </button>
             
-            {/* Dividers appear only in Normal mode, after specific indices (Layout, Templates, Conditions) */}
             {!isCompact && (index === 0 || index === 3 || index === 4) && <div className="toolbar-divider-horizontal" />}
           </div>
         );

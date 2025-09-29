@@ -1,9 +1,9 @@
-// src/properties-panel/DataBindingModal.tsx
+// src/components/DataBindingModal.tsx
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
-import { Modal } from '../components/modal';
-import { DataNavigatorView } from '../component-browser/DataNavigatorView';
-import { SelectableListItem } from '../component-browser/SelectableListItem';
+import { Modal } from './Modal';
+import { DataNavigatorView } from './DataNavigatorView';
+import { SelectableListItem } from './SelectableListItem';
 import {
   dataBindingRequestAtom,
   isDataBindingModalOpenAtom,
@@ -11,12 +11,12 @@ import {
   modalPendingSelectionAtom,
   modalSelectedNodeIdAtom,
   modalComponentSearchQueryAtom,
-} from './dataBindingAtoms';
+} from '../state/atoms';
 import {
   bindingComponentGroups,
   bindingTreeData,
   BindingField,
-} from './dataBindingMockData';
+} from '../data/dataBindingMock';
 import { BindingConnectionsDropdown } from './BindingConnectionsDropdown';
 import { BoundData } from '../types';
 import './DataBindingModal.css';
@@ -97,7 +97,6 @@ export const DataBindingModal = () => {
                 onSelect={handleSelect}
               />
             )}
-            // FIX: Implement the connections dropdown for the modal
             renderConnectionsDropdown={(navigator, selectedNodeId) => (
                 <BindingConnectionsDropdown 
                     navigator={navigator} 

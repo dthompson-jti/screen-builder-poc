@@ -1,25 +1,23 @@
-// src/component-browser/ConnectionsDropdown.tsx
+// src/components/ConnectionsDropdown.tsx
 import { useRef, useEffect, useState } from 'react';
-import { useSetAtom } from 'jotai';
-// FIX: Removed unused 'selectedNodeIdAtom' import
-import { isConnectionsDropdownVisibleAtom } from './browserAtoms';
-import { connectionsDropdownData, componentTreeData, DropdownItem } from './mockComponentTree';
-import { useOnClickOutside } from '../hooks/useOnClickOutside';
+import { componentTreeData, connectionsDropdownData } from '../data/componentBrowserMock';
+import { DropdownItem } from '../types';
+import { useOnClickOutside } from '../useOnClickOutside';
 import { NodeNavigator } from './navigator';
 
 interface ConnectionsDropdownProps {
   navigator: NodeNavigator | null;
   selectedNodeId: string;
+  onClose: () => void;
 }
 
-export const ConnectionsDropdown = ({ navigator, selectedNodeId }: ConnectionsDropdownProps) => {
-  const setIsVisible = useSetAtom(isConnectionsDropdownVisibleAtom);
+export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: ConnectionsDropdownProps) => {
   const data = connectionsDropdownData[selectedNodeId];
   const [query, setQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useOnClickOutside(dropdownRef, () => setIsVisible(false));
+  useOnClickOutside(dropdownRef, onClose);
 
   useEffect(() => {
     if (searchInputRef.current) {
@@ -33,7 +31,7 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId }: ConnectionsDr
       if (targetNode) {
         navigator.navigateToId(targetNode.id);
       }
-      setIsVisible(false);
+      onClose();
     }
   };
 
@@ -50,7 +48,7 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId }: ConnectionsDr
         <h5>Navigate to...</h5>
         <button 
           className="btn-tertiary icon-only" 
-          onClick={() => setIsVisible(false)}
+          onClick={onClose}
           aria-label="Close connections dropdown"
         >
           <span className="material-symbols-outlined">close</span>

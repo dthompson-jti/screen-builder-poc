@@ -1,6 +1,6 @@
-// src/AppHeader.tsx
+// src/components/AppHeader.tsx
 import { useAtom } from 'jotai';
-import { isMenuOpenAtom, appViewModeAtom, AppViewMode } from './appAtoms';
+import { isMenuOpenAtom, appViewModeAtom, AppViewMode } from '../state/atoms';
 import { HeaderMenu } from './HeaderMenu';
 import './AppHeader.css';
 import './HeaderMenu.css'; 

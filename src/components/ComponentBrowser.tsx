@@ -1,9 +1,9 @@
-// src/component-browser/ComponentBrowser.tsx
+// src/components/ComponentBrowser.tsx
 import { useSetAtom, useAtomValue } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
-import { selectedNodeIdAtom, componentSearchQueryAtom } from './browserAtoms';
-import { componentListData, componentTreeData, DraggableComponent } from './mockComponentTree';
-import { isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../appAtoms';
+import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../state/atoms';
+import { componentListData, componentTreeData } from '../data/componentBrowserMock';
+import { DraggableComponent } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
 import './navigator.css';
@@ -40,7 +40,7 @@ export const ComponentBrowser = () => {
       }}
       renderComponentItem={(component) => <DraggableListItem component={component as DraggableComponent} />}
       renderConnectionsDropdown={(navigator, selectedNodeId) => (
-        <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} />
+        <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={() => navigator?.setConnectedNodeActive(false)} />
       )}
       onClosePanel={handleClosePanel}
       showBreadcrumb={isShowBreadcrumb}

@@ -1,4 +1,5 @@
-// src/component-browser/mockComponentTreen.ts
+// src/data/componentBrowserMock.ts
+import { DraggableComponent, ComponentGroup, DropdownItem, ComponentNode } from '../types';
 
 // --- HIERARCHY & INTERFACES ---
 
@@ -12,12 +13,14 @@ const componentTreeBase = [
   { id: 'officer', name: 'Officer' },
 ];
 
-export interface DraggableComponent {
-  id: string; name: string; type: 'field' | 'widget' | 'layout'; icon: string; iconColor?: string;
+// This local interface is no longer needed, as it's imported from ../types
+// export interface ComponentGroup { title: string; components: DraggableComponent[]; }
+
+interface DropdownCategory {
+  entities: DropdownItem[];
+  collections: DropdownItem[];
+  transients: DropdownItem[];
 }
-export interface ComponentGroup { title: string; components: DraggableComponent[]; }
-export interface DropdownItem { id: string; name: string; isNavigable?: boolean; }
-interface DropdownCategory { entities: DropdownItem[]; collections: DropdownItem[]; transients: DropdownItem[]; }
 
 // --- DATA HELPERS ---
 
@@ -93,8 +96,7 @@ export const connectionsDropdownData: Record<string, DropdownCategory> = {
   'officer': { entities: [{id: 'assisting-officer', name: 'Assisting Officer'}], collections: [{id: 'officer-reports', name: 'Officer Reports'}], transients: [{id: 'officer-status', name: 'Officer Status'}] },
 };
 
-// FIX: Dynamically generate componentTreeData with accurate connection counts
-export const componentTreeData = componentTreeBase.map(node => {
+export const componentTreeData: ComponentNode[] = componentTreeBase.map(node => {
   const connections = connectionsDropdownData[node.id];
   const count = connections
     ? connections.entities.length + connections.collections.length + connections.transients.length

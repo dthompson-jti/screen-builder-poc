@@ -3,23 +3,28 @@ import { useState, useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, DragOverEvent, UniqueIdentifier, Active, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { AppHeader } from './AppHeader';
-import { ComponentBrowser } from './component-browser/ComponentBrowser';
-import { GeneralComponentsBrowser } from './component-browser/GeneralComponentsBrowser';
-import { ResizablePanel } from './ResizablePanel.tsx';
-import { EditorCanvas } from './editor-canvas/EditorCanvas.tsx';
-import { TextInputPreview } from './editor-canvas/TextInputPreview.tsx';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './editor-canvas/canvasAtoms.ts';
-import { selectedNodeIdAtom } from './component-browser/browserAtoms.ts';
-import { componentTreeData } from './component-browser/mockComponentTree.ts';
-import { PropertiesPanel } from './properties-panel/PropertiesPanel.tsx';
-import { MainToolbar } from './MainToolbar.tsx';
-import { isComponentBrowserVisibleAtom, activeToolbarTabAtom, appViewModeAtom } from './appAtoms.ts';
-import { FormComponent, BoundData } from './types.ts';
-import { BrowserItemPreview } from './component-browser/BrowserItemPreview.tsx';
-import { PlaceholderPanel } from './PlaceholderPanel.tsx';
-import { FullScreenPlaceholder } from './FullScreenPlaceholder';
-import { DataBindingModal } from './properties-panel/DataBindingModal.tsx';
+import { AppHeader } from './components/AppHeader';
+import { ComponentBrowser } from './components/ComponentBrowser';
+import { GeneralComponentsBrowser } from './components/GeneralComponentsBrowser';
+import { ResizablePanel } from './components/ResizablePanel';
+import { EditorCanvas } from './components/EditorCanvas';
+import { TextInputPreview } from './components/TextInputPreview';
+import { PropertiesPanel } from './components/PropertiesPanel';
+import { MainToolbar } from './components/MainToolbar';
+import { BrowserItemPreview } from './components/BrowserItemPreview';
+import { PlaceholderPanel } from './components/PlaceholderPanel';
+import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
+import { DataBindingModal } from './components/DataBindingModal';
+import { componentTreeData } from './data/componentBrowserMock';
+import {
+  canvasComponentsAtom,
+  selectedCanvasComponentIdAtom,
+  selectedNodeIdAtom,
+  isComponentBrowserVisibleAtom,
+  activeToolbarTabAtom,
+  appViewModeAtom
+} from './state/atoms';
+import { FormComponent, BoundData } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -38,7 +43,7 @@ const MIN_PANEL_WIDTH = 437;
 function App() {
   const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
   const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
-  const [isPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
+  const isPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
   const selectedDataNodeId = useAtomValue(selectedNodeIdAtom);
@@ -82,7 +87,6 @@ function App() {
       const { id, name } = active.data.current;
       const newId = `${id.toString()}-${Date.now()}`;
       
-      // FIX: Determine origin and set binding based on the active tab
       const origin = activeTabId === 'data' ? 'data' : 'general';
       let binding: BoundData | null = null;
       
@@ -156,7 +160,6 @@ function App() {
   const renderLeftPanelContent = () => {
     if (!isPanelVisible) return null;
     
-    // FIX: Render different browsers based on the active tab
     if (activeTabId === 'data') {
       return <ComponentBrowser />;
     }

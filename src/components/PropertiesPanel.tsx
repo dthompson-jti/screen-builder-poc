@@ -1,8 +1,12 @@
-// src/properties-panel/PropertiesPanel.tsx
+// src/components/PropertiesPanel.tsx
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../editor-canvas/canvasAtoms';
-import { dataBindingRequestAtom, dataBindingResultAtom } from './dataBindingAtoms';
+import {
+  canvasComponentsAtom,
+  selectedCanvasComponentIdAtom,
+  dataBindingRequestAtom,
+  dataBindingResultAtom,
+} from '../state/atoms';
 import { DataBindingPicker } from './DataBindingPicker';
 import { StaticBindingDisplay } from './StaticBindingDisplay';
 import './PropertiesPanel.css';

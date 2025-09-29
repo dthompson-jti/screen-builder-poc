@@ -1,9 +1,9 @@
-// src/component-browser/GeneralComponentsBrowser.tsx
+// src/components/GeneralComponentsBrowser.tsx
 import { useSetAtom } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
-import { isComponentBrowserVisibleAtom } from '../appAtoms';
-import { generalComponents } from './generalComponentMockData';
-import { DraggableComponent } from './mockComponentTree';
+import { isComponentBrowserVisibleAtom } from '../state/atoms';
+import { generalComponents } from '../data/generalComponentsMock';
+import { DraggableComponent } from '../types';
 import './navigator.css'; // Re-use styles
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {

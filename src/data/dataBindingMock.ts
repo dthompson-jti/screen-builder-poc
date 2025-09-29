@@ -1,5 +1,5 @@
-// src/properties-panel/dataBindingMockData.ts
-import { ComponentGroup, DraggableComponent, DropdownItem } from "../component-browser/mockComponentTree";
+// src/data/dataBindingMock.ts
+import { ComponentGroup, DraggableComponent, DropdownItem } from '../types';
 
 // A simplified, separate data source for the data binding modal.
 

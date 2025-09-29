@@ -1,22 +1,24 @@
-// src/component-browser/DataNavigatorView.tsx
+// src/components/DataNavigatorView.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from './navigator.js';
 import './navigator.css';
+import { ComponentNode } from '../types';
 
 // --- TYPES ---
 interface BaseComponent { id: string; name: string; }
 interface BaseComponentGroup { title: string; components: BaseComponent[]; }
-interface BaseNode { id: string; name: string; connections: number; }
+// Use ComponentNode from central types to avoid redeclaring BaseNode
+type TNode = ComponentNode;
 
 interface DataNavigatorAtoms {
   selectedNodeIdAtom: PrimitiveAtom<string>;
   searchQueryAtom: PrimitiveAtom<string>;
 }
 
-interface DataNavigatorViewProps<TNode extends BaseNode, TGroup extends BaseComponentGroup> {
+interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   treeData: TNode[];
   componentData: Record<string, TGroup[]>;
   atoms: DataNavigatorAtoms;
@@ -27,7 +29,7 @@ interface DataNavigatorViewProps<TNode extends BaseNode, TGroup extends BaseComp
 }
 
 
-export const DataNavigatorView = <TNode extends BaseNode, TGroup extends BaseComponentGroup>({
+export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   treeData,
   componentData,
   atoms,
@@ -35,7 +37,7 @@ export const DataNavigatorView = <TNode extends BaseNode, TGroup extends BaseCom
   renderConnectionsDropdown,
   onClosePanel,
   showBreadcrumb = true,
-}: DataNavigatorViewProps<TNode, TGroup>) => {
+}: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);

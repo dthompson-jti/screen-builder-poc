@@ -1,5 +1,5 @@
-// src/component-browser/SelectableListItem.tsx
-import { BindingField } from '../properties-panel/dataBindingMockData';
+// src/components/SelectableListItem.tsx
+import { BindingField } from '../data/dataBindingMock';
 
 interface SelectableListItemProps {
   component: BindingField;

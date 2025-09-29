@@ -1,4 +1,4 @@
-// src/properties-panel/StaticBindingDisplay.tsx
+// src/components/StaticBindingDisplay.tsx
 import { BoundData } from '../types';
 import './StaticBindingDisplay.css';
 

@@ -1,25 +1,45 @@
 // src/types.ts
 
-/**
- * Represents the information for a selected data binding.
- */
+// --- Component & Canvas Types ---
+export interface FormComponent {
+  id: string;
+  type: string;
+  name: string;
+  origin: 'data' | 'general';
+  binding: BoundData | null;
+}
+
+// --- Data Binding Types ---
 export interface BoundData {
   nodeId: string;
   nodeName: string;
   fieldId: string;
   fieldName: string;
-  path: string; // e.g., "Arrest > Arrest Date"
+  path: string;
 }
 
-/**
- * Represents a component that has been placed on the editor canvas.
- * It has a unique instance ID.
- */
-export interface FormComponent {
-  id: string;      // Unique instance ID, e.g., "first-name-1678886400000"
-  type: string;    // The original component type, e.g., "first-name"
-  name: string;    // The display name, e.g., "First Name"
-  // FIX: Differentiate between components from the 'data' tab vs 'general' tab
-  origin: 'data' | 'general';
-  binding?: BoundData | null;
+// --- Component Browser & Mock Data Types ---
+export interface DraggableComponent {
+  id: string;
+  name: string;
+  type: 'field' | 'widget' | 'layout';
+  icon: string;
+  iconColor?: string;
+}
+
+export interface ComponentGroup {
+  title: string;
+  components: DraggableComponent[];
+}
+
+export interface DropdownItem {
+  id: string;
+  name: string;
+  isNavigable?: boolean;
+}
+
+export interface ComponentNode {
+  id: string;
+  name: string;
+  connections: number;
 }

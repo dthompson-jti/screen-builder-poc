@@ -1,8 +1,9 @@
-// src/HeaderMenu.tsx
-import { useRef } from 'react'; // FIX: Removed redundant React import
+// src/components/HeaderMenu.tsx
+import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom } from './appAtoms';
-import { useOnClickOutside } from './hooks/useOnClickOutside';
+// UPDATED IMPORTS: Pointing to the new centralized state and root-level hook
+import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom } from '../state/atoms';
+import { useOnClickOutside } from '../useOnClickOutside';
 import './HeaderMenu.css';
 
 const MenuOption = ({ label, isChecked, onClick, disabled }: { label: string, isChecked: boolean, onClick: () => void, disabled?: boolean }) => (
