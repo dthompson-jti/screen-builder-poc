@@ -1,12 +1,13 @@
 // src/components/AppHeader.tsx
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
+import { useEffect, useRef } from 'react';
 import { 
   isMenuOpenAtom, 
   appViewModeAtom, 
   AppViewMode, 
   formNameAtom,
-  focusIntentAtom,
-  isSettingsMenuOpenAtom
+  isSettingsMenuOpenAtom,
+  isEditingFormNameAtom,
 } from '../state/atoms';
 import { HeaderMenu } from './HeaderMenu';
 import { HeaderActionsMenu } from './HeaderActionsMenu';
@@ -17,8 +18,17 @@ export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useAtom(isSettingsMenuOpenAtom);
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
-  const [formName] = useAtom(formNameAtom);
-  const setFocusIntent = useSetAtom(focusIntentAtom);
+  const [formName, setFormName] = useAtom(formNameAtom);
+  const [isEditingName, setIsEditingName] = useAtom(isEditingFormNameAtom);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the input when editing starts
+  useEffect(() => {
+    if (isEditingName && nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select();
+    }
+  }, [isEditingName]);
 
   const handleToggleMenu = () => {
       setIsMenuOpen(p => !p);
@@ -28,10 +38,15 @@ export const AppHeader = () => {
     setViewMode(mode);
   };
 
-  const handleEditNameClick = () => {
-    setViewMode('settings');
-    setFocusIntent('form-name-input');
-  }
+  const handleNameInputBlur = () => {
+    setIsEditingName(false);
+  };
+
+  const handleNameInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
 
   return (
     <header className="app-header">
@@ -59,19 +74,34 @@ export const AppHeader = () => {
       </div>
       <div className="app-header-bottom">
         <div className="sub-header-left">
-          <button className="back-btn">
-            <span className="material-symbols-rounded">chevron_left</span>
-            {/* FIX: Add specific class to the text span */}
-            <span className="btn-text">Back</span>
-          </button>
+          <span className="form-type-display">Case Initiation</span>
         </div>
         <div className="vertical-divider" />
         <div className="sub-header-center">
-          <button className="form-name-editor-btn" onClick={handleEditNameClick}>
-            {/* FIX: Add specific class to the text span */}
-            <span className="btn-text">{formName}</span>
-            <span className="material-symbols-rounded">edit</span>
-          </button>
+          <div className="form-name-editor">
+            {isEditingName ? (
+              <input
+                ref={nameInputRef}
+                type="text"
+                className="form-name-input"
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+                onBlur={handleNameInputBlur}
+                onKeyDown={handleNameInputKeyDown}
+              />
+            ) : (
+              <>
+                <span className="form-name-display">{formName}</span>
+                <button 
+                  className="btn-tertiary icon-only" 
+                  onClick={() => setIsEditingName(true)}
+                  aria-label="Edit form name"
+                >
+                  <span className="material-symbols-rounded">edit</span>
+                </button>
+              </>
+            )}
+          </div>
           <div className="tab-group">
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>

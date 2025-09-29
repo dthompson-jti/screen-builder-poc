@@ -13,9 +13,6 @@ const componentTreeBase = [
   { id: 'officer', name: 'Officer' },
 ];
 
-// This local interface is no longer needed, as it's imported from ../types
-// export interface ComponentGroup { title: string; components: DraggableComponent[]; }
-
 interface DropdownCategory {
   entities: DropdownItem[];
   collections: DropdownItem[];
@@ -26,38 +23,56 @@ interface DropdownCategory {
 
 const createId = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
 
-// Helper to create a DraggableComponent
-const createComponent = (name: string, type: 'field' | 'widget', icon: string, iconColor?: string): DraggableComponent => ({
-  id: createId(name), name, type, icon, iconColor
+// REFACTOR: Helper now accepts node context to create a richer component object
+const createComponent = (
+  name: string, 
+  type: 'field' | 'widget', 
+  icon: string, 
+  node: { id: string, name: string },
+  iconColor?: string
+): DraggableComponent => ({
+  id: createId(name),
+  name,
+  type,
+  icon,
+  iconColor,
+  nodeId: node.id,
+  nodeName: node.name,
+  path: `${node.name} > ${name}`,
 });
 
 // --- FULL DATA FOR "ARREST" NODE ---
-
+const arrestNode = { id: 'arrest', name: 'Arrest' };
 const arrestData = {
-  plainFields: ['Id (PK)', 'Access Level', 'Arrest Date', 'Arrest Time', 'Arrest Type', 'Arresting Agency File Number', 'Booking Number', 'Create User Real Name', 'Create Username', 'Date Created', 'Exchange Id', 'Last Update User Real Name', 'Last Update Username', 'Last Updated', 'Location', 'Memo', 'Roa Access Level', 'Source Case Number', 'Status Date', 'Update Reason'].map(name => createComponent(name, 'field', 'database')),
-  entityFields: ['Arrest Charges', 'Arresting Agency', 'Associated Party', 'Booking Agency', 'Officer'].map(name => createComponent(name, 'field', 'database')),
-  widgets: ['AddCaseSpecialStatusWidget', 'AddJudgeNoteIcon', 'AddNoteIcon', 'AddPartySpecialStatusWidget', 'AddToRelatedCases', 'CaseDisp', 'CaseEMailIcon', 'CaseLabelWidget', 'ClipboardWidget', 'CustomSearchWidget', 'DateCalculator', 'DaysOfWeekWidget', 'DocAddWidget', 'DocumentCrossReferenceWidget', 'DuplicateHighlighterWidget', 'EntityPagingWidget', 'ExternalSystemSearchWidget', 'FeePayment', 'GeneralFee', 'GenerateDocument', 'GenericDownload', 'GenericLookup', 'LookupItemCategoryWidget', 'ModalWidget', 'NoteIcon', 'ObjectAssociationWidget', 'OpenPersonViewWidget', 'PagePrintIcon', 'PanelTotalWidget', 'PartyCrossReferenceWidget', 'PortalKioskPrintRequest', 'QuestionnaireResponseWidget', 'QuickScheduleEvent', 'RelateCasesByPartyWidget', 'RelatedPeerCasesWidget', 'ReservedToScheduledWidget', 'SSRSWidget', 'ScheduleEvent', 'StaticTextWidget', 'TotalWidget', 'UpdateRecordsOnRelatedCases', 'UserNameSearchWidget', 'VacateFutureEventsWidget', 'WorkflowTasks', 'sendEmailWidget', 'sendSmsWidget'].map(name => createComponent(name, 'widget', 'widgets', 'var(--surface-fg-warning-primary)')),
-  transientPlainFields: ['Access Context Mock', 'Access Level Label', 'Access Level Value', 'Audit Values', 'Case Category', 'Case Id', 'Case Status', 'Case Type', 'Created And Last Updated Label', 'Created And Last Updated User And Date Label', 'Created Name', 'Cross Referenced', 'Current Values', 'Description', 'Entity And Id', 'Entity Display Name', 'Entity Id And Title', 'Entity Name', 'Entity Name And Id', 'Entity Short Name', 'Entity Short Name And Id', 'Entity Underscore Id', 'Id And Entity Name', 'Id And Title', 'Inaccessible', 'Last Modified Or Created', 'Last Modified Or Created Date', 'Last Modified Or Created Username', 'Last Updated Name', 'Number Of Parents', 'Person Id', 'Plain Field Values', 'Plain Fields Only', 'RBCInaccessible', 'Related Peer Ids', 'Revision Objects', 'Roa Changes', 'Title', 'Title With Non Case Parent Titles', 'Update Reason Label', 'Xrefs'].map(name => createComponent(name, 'field', 'database', 'var(--surface-fg-tertiary)')),
-  transientEntityFields: ['Access Context', 'Case', 'Closed Work Queues', 'Consolidation Peers', 'Cross Referenced Case Assignments', 'Cross Referenced Documents', 'Cross Referenced Parties', 'Cross Referenced Scheduled Events', 'Current Version', 'Entity', 'Left Cross Referenced Documents', 'Left Cross Referenced Parties', 'Left Cross Referenced Scheduled Events', 'Open Work Queues', 'Parent', 'Previous Version', 'Previous Versions', 'Previous Versions No Tx', 'Related Case Notes', 'Related Judge Notes', 'Related Peer Case Numbers', 'Related Peers', 'Related Roa Messages', 'Related Time Standards', 'Revision Bean Results', 'Right Cross Referenced Documents', 'Right Cross Referenced Parties', 'Right Cross Referenced Scheduled Events', 'Sub Case', 'Sub Case Or Case', 'Work Queues', 'Workflow Tasks'].map(name => createComponent(name, 'field', 'database', 'var(--surface-fg-tertiary)'))
+  plainFields: ['Id (PK)', 'Access Level', 'Arrest Date', 'Arrest Time', 'Arrest Type', 'Arresting Agency File Number', 'Booking Number', 'Create User Real Name', 'Create Username', 'Date Created', 'Exchange Id', 'Last Update User Real Name', 'Last Update Username', 'Last Updated', 'Location', 'Memo', 'Roa Access Level', 'Source Case Number', 'Status Date', 'Update Reason'].map(name => createComponent(name, 'field', 'database', arrestNode)),
+  entityFields: ['Arrest Charges', 'Arresting Agency', 'Associated Party', 'Booking Agency', 'Officer'].map(name => createComponent(name, 'field', 'database', arrestNode)),
+  widgets: ['AddCaseSpecialStatusWidget', 'AddJudgeNoteIcon', 'AddNoteIcon', 'AddPartySpecialStatusWidget', 'AddToRelatedCases', 'CaseDisp', 'CaseEMailIcon', 'CaseLabelWidget', 'ClipboardWidget', 'CustomSearchWidget', 'DateCalculator', 'DaysOfWeekWidget', 'DocAddWidget', 'DocumentCrossReferenceWidget', 'DuplicateHighlighterWidget', 'EntityPagingWidget', 'ExternalSystemSearchWidget', 'FeePayment', 'GeneralFee', 'GenerateDocument', 'GenericDownload', 'GenericLookup', 'LookupItemCategoryWidget', 'ModalWidget', 'NoteIcon', 'ObjectAssociationWidget', 'OpenPersonViewWidget', 'PagePrintIcon', 'PanelTotalWidget', 'PartyCrossReferenceWidget', 'PortalKioskPrintRequest', 'QuestionnaireResponseWidget', 'QuickScheduleEvent', 'RelateCasesByPartyWidget', 'RelatedPeerCasesWidget', 'ReservedToScheduledWidget', 'SSRSWidget', 'ScheduleEvent', 'StaticTextWidget', 'TotalWidget', 'UpdateRecordsOnRelatedCases', 'UserNameSearchWidget', 'VacateFutureEventsWidget', 'WorkflowTasks', 'sendEmailWidget', 'sendSmsWidget'].map(name => createComponent(name, 'widget', 'widgets', arrestNode, 'var(--surface-fg-warning-primary)')),
+  transientPlainFields: ['Access Context Mock', 'Access Level Label', 'Access Level Value', 'Audit Values', 'Case Category', 'Case Id', 'Case Status', 'Case Type', 'Created And Last Updated Label', 'Created And Last Updated User And Date Label', 'Created Name', 'Cross Referenced', 'Current Values', 'Description', 'Entity And Id', 'Entity Display Name', 'Entity Id And Title', 'Entity Name', 'Entity Name And Id', 'Entity Short Name', 'Entity Short Name And Id', 'Entity Underscore Id', 'Id And Entity Name', 'Id And Title', 'Inaccessible', 'Last Modified Or Created', 'Last Modified Or Created Date', 'Last Modified Or Created Username', 'Last Updated Name', 'Number Of Parents', 'Person Id', 'Plain Field Values', 'Plain Fields Only', 'RBCInaccessible', 'Related Peer Ids', 'Revision Objects', 'Roa Changes', 'Title', 'Title With Non Case Parent Titles', 'Update Reason Label', 'Xrefs'].map(name => createComponent(name, 'field', 'database', arrestNode, 'var(--surface-fg-tertiary)')),
+  transientEntityFields: ['Access Context', 'Case', 'Closed Work Queues', 'Consolidation Peers', 'Cross Referenced Case Assignments', 'Cross Referenced Documents', 'Cross Referenced Parties', 'Cross Referenced Scheduled Events', 'Current Version', 'Entity', 'Left Cross Referenced Documents', 'Left Cross Referenced Parties', 'Left Cross Referenced Scheduled Events', 'Open Work Queues', 'Parent', 'Previous Version', 'Previous Versions', 'Previous Versions No Tx', 'Related Case Notes', 'Related Judge Notes', 'Related Peer Case Numbers', 'Related Peers', 'Related Roa Messages', 'Related Time Standards', 'Revision Bean Results', 'Right Cross Referenced Documents', 'Right Cross Referenced Parties', 'Right Cross Referenced Scheduled Events', 'Sub Case', 'Sub Case Or Case', 'Work Queues', 'Workflow Tasks'].map(name => createComponent(name, 'field', 'database', arrestNode, 'var(--surface-fg-tertiary)'))
 };
 
 // --- SIMPLIFIED DATA FOR OTHER NODES ---
 
-const createSampleData = (name: string, entities: string[], collections: string[]) => ({
-  plainFields: [`${name} ID (PK)`, `${name} Date`, `${name} Status`].map(n => createComponent(n, 'field', 'database')),
-  entityFields: entities.map(n => createComponent(n, 'field', 'database')),
-  collectionFields: collections.map(n => createComponent(n, 'field', 'window', '#008B8B')), // Using a distinct icon/color for collections
-  widgets: [`${name} Widget 1`, `${name} Widget 2`].map(n => createComponent(n, 'widget', 'widgets', 'var(--surface-fg-warning-primary)')),
-  transientPlainFields: [`${name} Transient Field 1`, `${name} Transient Field 2`].map(n => createComponent(n, 'field', 'database', 'var(--surface-fg-tertiary)')),
-  transientEntityFields: [`${name} Transient Entity 1`, `${name} Transient Entity 2`].map(n => createComponent(n, 'field', 'database', 'var(--surface-fg-tertiary)'))
+const createSampleData = (node: { id: string, name: string }, entities: string[], collections: string[]) => ({
+  plainFields: [`${node.name} ID (PK)`, `${node.name} Date`, `${node.name} Status`].map(n => createComponent(n, 'field', 'database', node)),
+  entityFields: entities.map(n => createComponent(n, 'field', 'database', node)),
+  collectionFields: collections.map(n => createComponent(n, 'field', 'window', node, '#008B8B')), // Using a distinct icon/color for collections
+  widgets: [`${node.name} Widget 1`, `${node.name} Widget 2`].map(n => createComponent(n, 'widget', 'widgets', node, 'var(--surface-fg-warning-primary)')),
+  transientPlainFields: [`${node.name} Transient Field 1`, `${node.name} Transient Field 2`].map(n => createComponent(n, 'field', 'database', node, 'var(--surface-fg-tertiary)')),
+  transientEntityFields: [`${node.name} Transient Entity 1`, `${node.name} Transient Entity 2`].map(n => createComponent(n, 'field', 'database', node, 'var(--surface-fg-tertiary)'))
 });
 
-const caseData = createSampleData('Case', ['Subcase', 'Case Party'], ['Case Charges']);
-const subcaseData = createSampleData('Subcase', ['Arrest', 'Subcase Party'], ['Subcase Documents']);
-const victimData = createSampleData('Victim', ['Arrest Charges', 'Associated Party'], ['Victim Statements']);
-const arrestChargesData = createSampleData('Arrest Charge', ['Officer', 'Plea Bargain'], ['Court Filings']);
-const officerData = createSampleData('Officer', ['Assisting Officer'], ['Officer Reports']);
+const caseNode = { id: 'case', name: 'Case' };
+const subcaseNode = { id: 'subcase', name: 'Subcase' };
+const victimNode = { id: 'victim', name: 'Victim' };
+const arrestChargesNode = { id: 'arrest-charges', name: 'Arrest Charges' };
+const officerNode = { id: 'officer', name: 'Officer' };
 
+const caseData = createSampleData(caseNode, ['Subcase', 'Case Party'], ['Case Charges']);
+const subcaseData = createSampleData(subcaseNode, ['Arrest', 'Subcase Party'], ['Subcase Documents']);
+const victimData = createSampleData(victimNode, ['Arrest Charges', 'Associated Party'], ['Victim Statements']);
+const arrestChargesData = createSampleData(arrestChargesNode, ['Officer', 'Plea Bargain'], ['Court Filings']);
+const officerData = createSampleData(officerNode, ['Assisting Officer'], ['Officer Reports']);
 
 // --- FINAL EXPORTS ---
 // Helper function to build component groups, now including collections

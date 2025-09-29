@@ -69,85 +69,76 @@
 .sub-header-left, .sub-header-center, .sub-header-right {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
 }
 
+/* FIX: Restore gap for proper button spacing */
 .sub-header-right {
   position: relative;
   gap: var(--spacing-2);
 }
 
+/* FIX: Restore gap for proper button spacing */
+.sub-header-left {
+  gap: var(--spacing-4);
+}
 .sub-header-center {
   flex-grow: 1;
+  gap: var(--spacing-4);
 }
-
-.back-btn {
-  display: inline-flex;
-  padding: var(--spacing-2) var(--spacing-3);
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-1);
-  background: none;
-  border: none;
-  border-radius: var(--spacing-2);
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.back-btn .material-symbols-rounded {
-  font-size: 20px;
-  color: var(--control-fg-tertiary);
-}
-
-/* FIX: Target the specific text class, not all spans */
-.back-btn .btn-text {
-  color: var(--control-fg-tertiary);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.21px;
-}
-.back-btn:hover {
-  background-color: var(--surface-bg-secondary_hover);
-}
-
 
 .vertical-divider {
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
-  margin: 0 var(--spacing-2);
+  /* FIX: Use margin for symmetrical spacing */
+  margin: 0 var(--spacing-4);
 }
 
-.form-name-editor-btn {
+.form-type-display {
+  color: var(--surface-fg-secondary);
+  font-size: 14px;
+  /* FIX: Match font weight to form name */
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+}
+
+.form-name-editor {
   display: inline-flex;
-  padding: var(--spacing-2) var(--spacing-3);
-  justify-content: center;
   align-items: center;
-  gap: var(--spacing-1);
-  background: none;
-  border: none;
-  border-radius: var(--spacing-2);
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.form-name-editor-btn:hover {
-  background-color: var(--surface-bg-secondary_hover);
+  gap: var(--spacing-2);
+  height: 34px; /* Match tertiary button height */
+  padding: 0 var(--spacing-1);
+  width: 250px;
 }
 
-/* FIX: Target the specific text class, not all spans */
-.form-name-editor-btn .btn-text {
-  color: var(--control-fg-tertiary);
+.form-name-display {
+  color: var(--surface-fg-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.form-name-input {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.21px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border-theme);
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-primary);
+  outline: none;
+  width: 100%;
 }
-.form-name-editor-btn .material-symbols-rounded {
-  font-size: 20px;
-  color: var(--control-fg-tertiary);
+.form-name-input:focus {
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
 
 
@@ -181,7 +172,7 @@
 .tab-button.active::after {
   content: '';
   position: absolute;
-  bottom: -9px;
+  bottom: -8px;
   left: 0;
   right: 0;
   height: 2px;

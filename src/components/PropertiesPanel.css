@@ -10,16 +10,17 @@
 
 .panel-header {
   padding: 0;
-  /* FIX: Remove bottom border from header wrapper */
-  border-bottom: none;
   flex-shrink: 0;
+  /* FIX: Move border to this parent container */
+  border-bottom: 1px solid var(--surface-border-secondary);
+  /* FIX: Add position relative for the underline */
+  position: relative;
 }
 
 .panel-tabs { 
   display: flex; 
   position: relative;
-  /* FIX: Add border to the container, not the header */
-  border-bottom: 1px solid var(--surface-border-secondary);
+  /* FIX: Remove border from here */
 }
 .panel-tabs .tab-button {
   flex: 1;
@@ -46,6 +47,7 @@
 
 .tab-underline {
   position: absolute;
+  /* FIX: Change bottom to -1px to align with parent's new border */
   bottom: -1px;
   height: 2px;
   background-color: var(--surface-fg-theme-primary);

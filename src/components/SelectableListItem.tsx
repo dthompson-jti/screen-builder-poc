@@ -1,10 +1,10 @@
 // src/components/SelectableListItem.tsx
-import { BindingField } from '../data/dataBindingMock';
+import { DraggableComponent } from '../types';
 
 interface SelectableListItemProps {
-  component: BindingField;
+  component: DraggableComponent;
   isSelected: boolean;
-  onSelect: (component: BindingField) => void;
+  onSelect: (component: DraggableComponent) => void;
 }
 
 export const SelectableListItem = ({ component, isSelected, onSelect }: SelectableListItemProps) => {

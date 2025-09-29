@@ -61,15 +61,19 @@ const BottomDropZone = ({ overId }: { overId: UniqueIdentifier | null }) => {
 interface EditorCanvasProps {
   overId: UniqueIdentifier | null;
   active: Active | null;
+  isDragging: boolean; // FIX: Add isDragging prop
 }
 
-export const EditorCanvas = ({ overId, active }: EditorCanvasProps) => {
+export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) => {
   const components = useAtomValue(canvasComponentsAtom);
   const [, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
   const { setNodeRef } = useDroppable({ id: 'canvas-drop-area' });
 
+  // FIX: Apply conditional class based on isDragging prop
+  const canvasClassName = `canvas-container ${isDragging ? 'is-dragging' : ''}`;
+
   return (
-    <div className="canvas-container" onClick={() => setSelectedId(null)}>
+    <div className={canvasClassName} onClick={() => setSelectedId(null)}>
       <div className="form-card">
         <h2>Form</h2>
         <div ref={setNodeRef} className="canvas-droppable-area">

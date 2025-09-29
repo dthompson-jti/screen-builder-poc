@@ -1,9 +1,9 @@
 // src/components/BindingConnectionsDropdown.tsx
 import { useRef } from 'react';
 import { useOnClickOutside } from '../useOnClickOutside';
-// FIX: Import from the JS file, which will be typed by the adjacent .d.ts file
 import { NodeNavigator } from './navigator.js';
-import { bindingConnectionsData, bindingTreeData } from '../data/dataBindingMock';
+// REFACTOR: Use the single source of truth for data.
+import { connectionsDropdownData, componentTreeData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
 
 interface BindingConnectionsDropdownProps {
@@ -14,13 +14,15 @@ interface BindingConnectionsDropdownProps {
 
 export const BindingConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: BindingConnectionsDropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const data = bindingConnectionsData[selectedNodeId];
+  // REFACTOR: Use the consolidated connections data.
+  const data = connectionsDropdownData[selectedNodeId];
 
   useOnClickOutside(dropdownRef, onClose);
 
   const handleItemClick = (id: string) => {
     if (navigator) {
-      const targetNode = bindingTreeData.find(node => node.id === id);
+      // REFACTOR: Use the consolidated tree data.
+      const targetNode = componentTreeData.find(node => node.id === id);
       if (targetNode) {
         navigator.navigateToId(targetNode.id);
       }

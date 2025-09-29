@@ -1,8 +1,7 @@
 // src/App.tsx
-import { useState, useEffect } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, DragOverEvent, UniqueIdentifier, Active, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { useEffect } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { AppHeader } from './components/AppHeader';
 import { ComponentBrowser } from './components/ComponentBrowser';
 import { GeneralComponentsBrowser } from './components/GeneralComponentsBrowser';
@@ -16,17 +15,15 @@ import { PlaceholderPanel } from './components/PlaceholderPanel';
 import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
 import { DataBindingModal } from './components/DataBindingModal';
 import { SettingsPage } from './components/SettingsPage';
-import { componentTreeData } from './data/componentBrowserMock';
+import { useCanvasDnd } from './useCanvasDnd';
 import {
   canvasComponentsAtom,
   selectedCanvasComponentIdAtom,
-  selectedNodeIdAtom,
   isComponentBrowserVisibleAtom,
   activeToolbarTabAtom,
   appViewModeAtom,
   isPropertiesPanelVisibleAtom
 } from './state/atoms';
-import { FormComponent, BoundData } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -43,17 +40,14 @@ const INITIAL_PANEL_WIDTH = 456;
 const MIN_PANEL_WIDTH = 437;
 
 function App() {
-  const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
-  // FIX: Remove unused variable declaration
-  const [, setSelectedComponentId] = useAtom(selectedCanvasComponentIdAtom);
+  const canvasComponents = useAtomValue(canvasComponentsAtom);
+  const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
-  const selectedDataNodeId = useAtomValue(selectedNodeIdAtom);
 
-  const [activeItem, setActiveItem] = useState<Active | null>(null);
-  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
+  const { activeItem, overId, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
 
   useEffect(() => {
     if (!isLeftPanelVisible) {
@@ -69,81 +63,6 @@ function App() {
       },
     })
   );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveItem(event.active);
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    const { over } = event;
-    setOverId(over ? over.id : null);
-  };
-  
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { over, active } = event;
-    
-    setActiveItem(null);
-    setOverId(null);
-
-    if (!over) return;
-    
-    if (active.data.current?.isNew) {
-      const { id, name } = active.data.current;
-      const newId = `${id.toString()}-${Date.now()}`;
-      
-      const origin = activeTabId === 'data' ? 'data' : 'general';
-      let binding: BoundData | null = null;
-      
-      if (origin === 'data') {
-        const node = componentTreeData.find(n => n.id === selectedDataNodeId);
-        binding = {
-          nodeId: node?.id || '',
-          nodeName: node?.name || '',
-          fieldId: id.toString(),
-          fieldName: name,
-          path: `${node?.name || ''} > ${name}`
-        };
-      }
-
-      const newComponent: FormComponent = { id: newId, type: id.toString(), name: name, origin, binding };
-
-      if (over.id === 'canvas-drop-area' || over.id === 'bottom-drop-zone') {
-        setCanvasComponents((prev) => [...prev, newComponent]);
-        setSelectedComponentId(newId);
-        return;
-      }
-
-      const overIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id);
-
-      if (overIndex !== -1) {
-        setCanvasComponents((prev: FormComponent[]) => [
-          ...prev.slice(0, overIndex),
-          newComponent,
-          ...prev.slice(overIndex),
-        ]);
-        setSelectedComponentId(newId);
-      }
-      return;
-    }
-    
-    if (active.id !== over.id) {
-      const oldIndex = canvasComponents.findIndex((c: FormComponent) => c.id === active.id);
-      
-      if (over.id === 'bottom-drop-zone') {
-        const newIndex = canvasComponents.length;
-        if (oldIndex !== newIndex) {
-          setCanvasComponents((items) => arrayMove(items, oldIndex, newIndex));
-        }
-        return;
-      }
-      
-      const newIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        setCanvasComponents((items: FormComponent[]) => arrayMove(items, oldIndex, newIndex));
-      }
-    }
-  };
   
   const renderDragOverlay = () => {
     if (!activeItem) return null;
@@ -194,7 +113,8 @@ function App() {
               {renderLeftPanelContent()}
             </ResizablePanel>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <EditorCanvas active={activeItem} overId={overId} />
+              {/* FIX: Pass dragging state to the canvas */}
+              <EditorCanvas active={activeItem} overId={overId} isDragging={!!activeItem} />
             </div>
             <ResizablePanel 
                 initialWidth={300} 

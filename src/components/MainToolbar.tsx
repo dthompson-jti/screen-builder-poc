@@ -3,19 +3,22 @@ import { useAtom, useAtomValue } from 'jotai';
 import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../state/atoms';
 import './MainToolbar.css';
 
-const toolbarItems: { id: ToolbarTabId; label: string; icon: string }[] = [
-  { id: 'layout', label: 'Layout', icon: 'auto_awesome_mosaic' },
-  { id: 'data', label: 'Data fields', icon: 'database' },
-  { id: 'general', label: 'General', icon: 'borg' },
-  
-  // Divider group 1
-  { id: 'templates', label: 'Templates', icon: 'mobile_layout' },
-  
-  // Divider group 2
-  { id: 'conditions', label: 'Conditions', icon: 'arrow_split' },
-  
-  // Divider group 3
-  { id: 'layers', label: 'Layers', icon: 'layers' },
+// FIX: Define groups for better divider placement
+const toolbarGroups: { id: ToolbarTabId; label: string; icon: string }[][] = [
+  [
+    { id: 'layout', label: 'Layout', icon: 'auto_awesome_mosaic' },
+    { id: 'data', label: 'Data fields', icon: 'database' },
+    { id: 'general', label: 'General', icon: 'borg' },
+  ],
+  [
+    { id: 'templates', label: 'Templates', icon: 'mobile_layout' },
+  ],
+  [
+    { id: 'conditions', label: 'Conditions', icon: 'arrow_split' },
+  ],
+  [
+    { id: 'layers', label: 'Layers', icon: 'layers' },
+  ],
 ];
 
 export const MainToolbar = () => {
@@ -34,31 +37,36 @@ export const MainToolbar = () => {
     }
   };
 
+  const renderButton = (item: { id: ToolbarTabId; label: string; icon: string }) => {
+    const isActive = item.id === activeTabId;
+    const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
+    return (
+      <button 
+        key={item.id}
+        className={`toolbar-button ${isCurrentlyActiveAndOpen ? 'active' : ''}`} 
+        title={item.label} 
+        aria-label={item.label}
+        onClick={() => handleTabClick(item.id)}
+      >
+        <span className="material-symbols-rounded">{item.icon}</span>
+        {!isCompact && (
+          <span className="toolbar-label">{item.label}</span>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className={toolbarClassName}>
-      {toolbarItems.map((item, index) => {
-        const isActive = item.id === activeTabId;
-        const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
-
-        return (
-          <div key={item.id} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button 
-              className={`toolbar-button ${isCurrentlyActiveAndOpen ? 'active' : ''}`} 
-              title={item.label} 
-              aria-label={item.label}
-              onClick={() => handleTabClick(item.id)}
-            >
-              <span className="material-symbols-rounded">{item.icon}</span>
-              {!isCompact && (
-                <span className="toolbar-label">{item.label}</span>
-              )}
-            </button>
-            
-            {/* FIX: Remove divider after 'Layout' and adjust others */}
-            {!isCompact && (index === 2 || index === 3 || index === 4) && <div className="toolbar-divider-horizontal" />}
-          </div>
-        );
-      })}
+      {/* FIX: Render by group to correctly place dividers */}
+      {toolbarGroups.map((group, groupIndex) => (
+        <div key={groupIndex} className="toolbar-group">
+          {group.map(renderButton)}
+          {!isCompact && groupIndex < toolbarGroups.length - 1 && (
+            <div className="toolbar-divider-horizontal" />
+          )}
+        </div>
+      ))}
     </div>
   );
 };

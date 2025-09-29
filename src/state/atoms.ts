@@ -17,13 +17,14 @@ export const isToolbarCompactAtom = atom(false);
 export const isShowBreadcrumbAtom = atom(true);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
 export const isComponentBrowserVisibleAtom = atom(true);
-// FIX: New atom to control right panel visibility
 export const isPropertiesPanelVisibleAtom = atom(true);
 
 // =================================================================
 //                         Settings State
 // =================================================================
 export const formNameAtom = atom<string>('<Form name>');
+// FIX: New atom to control inline editing of the form name
+export const isEditingFormNameAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
 export const focusIntentAtom = atom<string | null>(null);
 

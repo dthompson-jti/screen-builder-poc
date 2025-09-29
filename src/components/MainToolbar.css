@@ -18,7 +18,15 @@
 .main-toolbar.normal {
   width: 120px; 
   padding: var(--spacing-4) var(--spacing-2);
-  gap: var(--spacing-4); 
+  gap: 0; /* Let group handle gap */
+}
+
+.toolbar-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
 }
 
 .toolbar-button {
@@ -63,7 +71,6 @@
   padding: 0; 
 }
 .main-toolbar.compact .toolbar-button.active .material-symbols-rounded {
-  /* FIX: Use selected foreground color for icons */
   color: var(--control-fg-selected);
 }
 .main-toolbar.compact .toolbar-button.active:hover {
@@ -102,6 +109,7 @@
 .main-toolbar.normal .toolbar-button.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
+  /* FIX: Adjust padding to compensate for border and align content */
   padding: 0; 
 }
 .main-toolbar.normal .toolbar-button.active:hover {
@@ -109,7 +117,6 @@
 }
 .main-toolbar.normal .toolbar-button.active .material-symbols-rounded,
 .main-toolbar.normal .toolbar-button.active .toolbar-label {
-  /* FIX: Use selected foreground color for icons and labels */
   color: var(--control-fg-selected);
 }
 
@@ -118,5 +125,5 @@
   width: 80%;
   height: 1px;
   background-color: var(--surface-border-secondary);
-  margin: var(--spacing-1) 0;
+  margin: var(--spacing-4) 0;
 }

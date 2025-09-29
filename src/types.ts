@@ -25,6 +25,10 @@ export interface DraggableComponent {
   type: 'field' | 'widget' | 'layout';
   icon: string;
   iconColor?: string;
+  // --- REFACTOR: Add optional properties to support data binding context ---
+  nodeId?: string;
+  nodeName?: string;
+  path?: string;
 }
 
 export interface ComponentGroup {
@@ -40,6 +44,6 @@ export interface DropdownItem {
 
 export interface ComponentNode {
   id: string;
-  name: string;
+  name:string;
   connections: number;
 }

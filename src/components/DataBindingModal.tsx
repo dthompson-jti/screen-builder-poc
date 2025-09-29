@@ -12,13 +12,13 @@ import {
   modalSelectedNodeIdAtom,
   modalComponentSearchQueryAtom,
 } from '../state/atoms';
+// REFACTOR: Use the single, consolidated source of truth for component data.
 import {
-  bindingComponentGroups,
-  bindingTreeData,
-  BindingField,
-} from '../data/dataBindingMock';
+  componentListData,
+  componentTreeData,
+} from '../data/componentBrowserMock';
 import { BindingConnectionsDropdown } from './BindingConnectionsDropdown';
-import { BoundData } from '../types';
+import { BoundData, DraggableComponent } from '../types'; // REFACTOR: Import DraggableComponent
 import './DataBindingModal.css';
 
 export const DataBindingModal = () => {
@@ -61,11 +61,14 @@ export const DataBindingModal = () => {
     handleClose();
   };
 
-  const handleSelect = (component: BindingField) => {
-    const selectedNode = bindingTreeData.find(n => n.id === component.path.split(' > ')[0].toLowerCase());
+  // REFACTOR: Function now accepts the richer DraggableComponent type.
+  const handleSelect = (component: DraggableComponent) => {
+    // All necessary data is already on the component object.
+    if (!component.nodeId || !component.nodeName || !component.path) return;
+    
     const newBinding: BoundData = {
-      nodeId: selectedNode?.id || '',
-      nodeName: selectedNode?.name || '',
+      nodeId: component.nodeId,
+      nodeName: component.nodeName,
       fieldId: component.id,
       fieldName: component.name,
       path: component.path,
@@ -84,15 +87,16 @@ export const DataBindingModal = () => {
         </div>
         <div className="modal-content">
           <DataNavigatorView
-            treeData={bindingTreeData}
-            componentData={bindingComponentGroups}
+            // REFACTOR: Pass the consolidated data to the navigator.
+            treeData={componentTreeData}
+            componentData={componentListData}
             atoms={{
               selectedNodeIdAtom: modalSelectedNodeIdAtom,
               searchQueryAtom: modalComponentSearchQueryAtom,
             }}
             renderComponentItem={(component) => (
               <SelectableListItem
-                component={component as BindingField}
+                component={component as DraggableComponent}
                 isSelected={pendingSelection?.fieldId === component.id}
                 onSelect={handleSelect}
               />
