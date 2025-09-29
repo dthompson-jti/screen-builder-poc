@@ -1,0 +1,19 @@
+/* src/properties-panel/StaticBindingDisplay.css */
+.static-binding-display {
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--surface-bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--surface-border-secondary);
+}
+
+.static-binding-display p {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--surface-fg-primary);
+  font-weight: 500;
+}
+
+.static-binding-display span {
+  font-size: 0.8em;
+  color: var(--surface-fg-secondary);
+}

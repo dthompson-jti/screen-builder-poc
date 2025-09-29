@@ -1,21 +1,25 @@
 // src/App.tsx
-import { useState, useEffect } from 'react'; // FIX: Remove unused 'React' import
+import { useState, useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, DragOverEvent, UniqueIdentifier, Active, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { AppHeader } from './AppHeader';
 import { ComponentBrowser } from './component-browser/ComponentBrowser';
+import { GeneralComponentsBrowser } from './component-browser/GeneralComponentsBrowser';
 import { ResizablePanel } from './ResizablePanel.tsx';
 import { EditorCanvas } from './editor-canvas/EditorCanvas.tsx';
 import { TextInputPreview } from './editor-canvas/TextInputPreview.tsx';
 import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './editor-canvas/canvasAtoms.ts';
+import { selectedNodeIdAtom } from './component-browser/browserAtoms.ts';
+import { componentTreeData } from './component-browser/mockComponentTree.ts';
 import { PropertiesPanel } from './properties-panel/PropertiesPanel.tsx';
 import { MainToolbar } from './MainToolbar.tsx';
 import { isComponentBrowserVisibleAtom, activeToolbarTabAtom, appViewModeAtom } from './appAtoms.ts';
-import { FormComponent } from './types.ts';
+import { FormComponent, BoundData } from './types.ts';
 import { BrowserItemPreview } from './component-browser/BrowserItemPreview.tsx';
 import { PlaceholderPanel } from './PlaceholderPanel.tsx';
-import { FullScreenPlaceholder } from './FullScreenPlaceholder'; // FIX: Remove .tsx extension from import path
+import { FullScreenPlaceholder } from './FullScreenPlaceholder';
+import { DataBindingModal } from './properties-panel/DataBindingModal.tsx';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -37,6 +41,7 @@ function App() {
   const [isPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
+  const selectedDataNodeId = useAtomValue(selectedNodeIdAtom);
 
   const [activeItem, setActiveItem] = useState<Active | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
@@ -76,7 +81,23 @@ function App() {
     if (active.data.current?.isNew) {
       const { id, name } = active.data.current;
       const newId = `${id.toString()}-${Date.now()}`;
-      const newComponent: FormComponent = { id: newId, type: id.toString(), name: name };
+      
+      // FIX: Determine origin and set binding based on the active tab
+      const origin = activeTabId === 'data' ? 'data' : 'general';
+      let binding: BoundData | null = null;
+      
+      if (origin === 'data') {
+        const node = componentTreeData.find(n => n.id === selectedDataNodeId);
+        binding = {
+          nodeId: node?.id || '',
+          nodeName: node?.name || '',
+          fieldId: id.toString(),
+          fieldName: name,
+          path: `${node?.name || ''} > ${name}`
+        };
+      }
+
+      const newComponent: FormComponent = { id: newId, type: id.toString(), name: name, origin, binding };
 
       if (over.id === 'canvas-drop-area' || over.id === 'bottom-drop-zone') {
         setCanvasComponents((prev) => [...prev, newComponent]);
@@ -135,8 +156,12 @@ function App() {
   const renderLeftPanelContent = () => {
     if (!isPanelVisible) return null;
     
+    // FIX: Render different browsers based on the active tab
     if (activeTabId === 'data') {
       return <ComponentBrowser />;
+    }
+    if (activeTabId === 'general') {
+      return <GeneralComponentsBrowser />;
     }
     
     return <PlaceholderPanel title={activeTabId} />;
@@ -180,6 +205,7 @@ function App() {
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} autoScroll={false}>
         <AppHeader />
         {renderMainContent()}
+        <DataBindingModal />
       </DndContext>
     </div>
   )

@@ -1,0 +1,45 @@
+/* src/properties-panel/DataBindingPicker.css */
+.data-binding-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* FIX: Make the entire control clickable */
+.picker-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-1p5) var(--spacing-2) var(--spacing-1p5) var(--spacing-3);
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  background-color: var(--surface-bg-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.picker-control:hover {
+  border-color: var(--surface-border-theme);
+}
+
+.picker-control.unbound {
+  background-color: var(--surface-bg-secondary);
+}
+
+.picker-label {
+  font-size: 0.9em;
+  color: var(--surface-fg-secondary);
+}
+
+.picker-label.bound {
+  color: var(--surface-fg-primary);
+  font-weight: 500;
+}
+
+/* FIX: New style for the helper text below the control */
+.picker-helper-text {
+  font-size: 0.8em;
+  color: var(--surface-fg-secondary);
+  padding-left: var(--spacing-1);
+}

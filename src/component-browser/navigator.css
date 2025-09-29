@@ -13,11 +13,10 @@
 .component-browser-header {
   background: var(--surface-bg-secondary);
   position: relative;
-  /* FIX: Change to flexbox for simpler and more robust alignment */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-4); /* Control padding directly */
+  padding: 0 var(--spacing-4);
   height: 44px;
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
@@ -27,11 +26,6 @@
   margin: 0;
   font-weight: 600;
   font-size: 1.1em;
-  /* No alignment needed, flex container handles it */
-}
-
-.component-browser-header .close-panel-button {
-  /* No alignment needed, flex container handles it */
 }
 
 .breadcrumb-wrapper {
@@ -135,7 +129,6 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
   border-radius: var(--spacing-2);
-  /* FIX: Add properties for text animation */
   position: relative;
   overflow: hidden;
 }
@@ -183,7 +176,6 @@
   cursor: default;
 }
 
-/* FIX: Forcefully remove all interactive hover effects from the selected node. */
 .selected-node .node-button:hover {
   background-color: var(--control-bg-selected);
   border-color: var(--control-border-selected);
@@ -212,7 +204,6 @@
   will-change: transform;
 }
 
-/* FIX: New high-craft arrow styling */
 .nav-arrow {
   position: absolute;
   top: 50%;
@@ -348,6 +339,22 @@
 .component-icon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .component-name { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
 
+.component-list-item.selectable {
+  cursor: pointer;
+}
+.component-list-item.selected {
+  background-color: var(--control-bg-selected);
+  font-weight: 500;
+}
+.component-list-item.selected .component-name {
+  color: var(--control-fg-selected);
+}
+.selection-check {
+  margin-left: auto;
+  color: var(--control-fg-selected);
+}
+
+
 /* --- Search Bar --- */
 .search-bar-container {
   padding: var(--spacing-2) var(--spacing-4);
@@ -359,6 +366,7 @@
 .search-bar-container .material-symbols-outlined {
   color: var(--surface-fg-tertiary);
 }
+/* FIX: Added missing opening brace to fix CSS syntax error */
 .search-bar-container input {
   width: 100%;
   border: none;

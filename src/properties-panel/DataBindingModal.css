@@ -1,0 +1,46 @@
+/* src/properties-panel/DataBindingModal.css */
+
+/* FIX: New file to co-locate styles with the DataBindingModal component. */
+
+.data-binding-modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--surface-bg-secondary);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--surface-border-secondary);
+  flex-shrink: 0;
+  background-color: var(--surface-bg-primary);
+}
+.modal-header h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 0;
+  color: var(--surface-fg-primary);
+}
+.modal-content {
+  flex-grow: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.modal-content .component-browser-container {
+  border-right: none; /* Remove border when inside modal */
+}
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--surface-border-secondary);
+  flex-shrink: 0;
+  background-color: var(--surface-bg-primary);
+}
+.footer-actions-right {
+  display: flex;
+  gap: var(--spacing-2);
+}
