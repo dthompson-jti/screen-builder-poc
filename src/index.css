@@ -1,9 +1,7 @@
 /* src/index.css */
 
-/* THE FIX: Import the new, centralized design tokens. */
 @import './design-tokens.css';
 
-/* THE FIX: Remove the old, scattered design system variables. */
 :root {
   --font-family-sans: 'Inter', sans-serif;
 }
@@ -12,7 +10,6 @@
   box-sizing: border-box;
 }
 
-/* THE FIX: Update body styles to use semantic tokens. */
 body {
   margin: 0;
   font-family: var(--font-family-sans);
@@ -22,7 +19,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.material-symbols-outlined {
+/* FIX: Set Rounded as the default for all material symbols */
+.material-symbols-outlined, .material-symbols-rounded {
+  font-family: 'Material Symbols Rounded', sans-serif;
   font-variation-settings:
   'FILL' 0,
   'wght' 400,
@@ -32,8 +31,14 @@ body {
   font-size: 20px;
 }
 
+/* Specific override for Outlined style if needed */
+.material-symbols-outlined.outlined {
+    font-family: 'Material Symbols Outlined', sans-serif;
+}
+
+
 .resizer {
-  width: 5px;
+  width: 1px;
   cursor: col-resize;
   background-color: var(--surface-border-secondary);
   position: absolute;

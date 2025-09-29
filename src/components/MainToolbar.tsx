@@ -48,13 +48,14 @@ export const MainToolbar = () => {
               aria-label={item.label}
               onClick={() => handleTabClick(item.id)}
             >
-              <span className="material-symbols-outlined">{item.icon}</span>
+              <span className="material-symbols-rounded">{item.icon}</span>
               {!isCompact && (
                 <span className="toolbar-label">{item.label}</span>
               )}
             </button>
             
-            {!isCompact && (index === 0 || index === 3 || index === 4) && <div className="toolbar-divider-horizontal" />}
+            {/* FIX: Remove divider after 'Layout' and adjust others */}
+            {!isCompact && (index === 2 || index === 3 || index === 4) && <div className="toolbar-divider-horizontal" />}
           </div>
         );
       })}

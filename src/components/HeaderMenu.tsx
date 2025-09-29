@@ -1,17 +1,18 @@
 // src/components/HeaderMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-// UPDATED IMPORTS: Pointing to the new centralized state and root-level hook
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom } from '../state/atoms';
+import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../state/atoms';
 import { useOnClickOutside } from '../useOnClickOutside';
 import './HeaderMenu.css';
 
-const MenuOption = ({ label, isChecked, onClick, disabled }: { label: string, isChecked: boolean, onClick: () => void, disabled?: boolean }) => (
+const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
     <button className="menu-option" onClick={onClick} disabled={disabled}>
-        <span className="material-symbols-outlined checkmark">
-            {isChecked ? 'check' : ''}
+        {/* FIX: Use a container to enforce consistent spacing */}
+        <span className="checkmark-container">
+            {isChecked && <span className="material-symbols-rounded">check</span>}
         </span>
         <span>{label}</span>
+        {hotkey && <span className="hotkey">{hotkey}</span>}
     </button>
 );
 
@@ -19,9 +20,9 @@ export const HeaderMenu = () => {
     const [, setIsMenuOpen] = useAtom(isMenuOpenAtom);
     const [isCompact, setIsCompact] = useAtom(isToolbarCompactAtom);
     const [isShowBreadcrumb, setIsShowBreadcrumb] = useAtom(isShowBreadcrumbAtom);
+    const [layoutMode, setLayoutMode] = useAtom(settingsLayoutModeAtom);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Close menu when clicking outside
     useOnClickOutside(menuRef, () => setIsMenuOpen(false));
 
     const handleToggleCompact = () => {
@@ -33,9 +34,17 @@ export const HeaderMenu = () => {
         setIsShowBreadcrumb(p => !p);
         setIsMenuOpen(false);
     };
+    
+    const handleToggleLayoutMode = () => {
+        setLayoutMode(p => p === 'single-column' ? 'two-column' : 'single-column');
+        setIsMenuOpen(false);
+    }
 
     return (
         <div className="header-menu-popover" ref={menuRef}>
+            <MenuOption label="Undo" onClick={() => {}} hotkey="Ctrl+Z" disabled />
+            <MenuOption label="Redo" onClick={() => {}} hotkey="Ctrl+Y" disabled />
+            <div className="menu-divider"></div>
             <MenuOption 
                 label="Compact left menu"
                 isChecked={isCompact}
@@ -46,13 +55,20 @@ export const HeaderMenu = () => {
                 isChecked={isShowBreadcrumb}
                 onClick={handleToggleBreadcrumb}
             />
+            <MenuOption 
+                label="Show settings in two columns"
+                isChecked={layoutMode === 'two-column'}
+                onClick={handleToggleLayoutMode}
+            />
             <div className="menu-divider"></div>
             <MenuOption 
-                label="Placeholder Option"
+                label="Show version history"
                 isChecked={false}
                 onClick={() => {}}
                 disabled
             />
+            <MenuOption label="Export" onClick={() => {}} disabled />
+            <MenuOption label="Import" onClick={() => {}} disabled />
         </div>
     );
 };

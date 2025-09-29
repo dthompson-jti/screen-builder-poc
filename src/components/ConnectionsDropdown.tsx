@@ -3,7 +3,8 @@ import { useRef, useEffect, useState } from 'react';
 import { componentTreeData, connectionsDropdownData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
 import { useOnClickOutside } from '../useOnClickOutside';
-import { NodeNavigator } from './navigator';
+// FIX: Import from the JS file, which will be typed by the adjacent .d.ts file
+import { NodeNavigator } from './navigator.js';
 
 interface ConnectionsDropdownProps {
   navigator: NodeNavigator | null;
@@ -51,12 +52,12 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
           onClick={onClose}
           aria-label="Close connections dropdown"
         >
-          <span className="material-symbols-outlined">close</span>
+          <span className="material-symbols-rounded">close</span>
         </button>
       </div>
       
       <div className="dropdown-search">
-        <span className="material-symbols-outlined">search</span>
+        <span className="material-symbols-rounded">search</span>
         <input 
           ref={searchInputRef}
           type="text" 
@@ -69,21 +70,21 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
         {filteredEntities.length > 0 && <li className="dropdown-header">Entities</li>}
         {filteredEntities.map((item: DropdownItem) => (
           <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-outlined item-icon entity">crop_square</span>
+            <span className="material-symbols-rounded item-icon entity">crop_square</span>
             <span>{item.name}</span>
           </li>
         ))}
         {filteredCollections.length > 0 && <li className="dropdown-header">Collections</li>}
         {filteredCollections.map((item: DropdownItem) => (
           <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-outlined item-icon collection">window</span>
+            <span className="material-symbols-rounded item-icon collection">window</span>
             <span>{item.name}</span>
           </li>
         ))}
         {filteredTransients.length > 0 && <li className="dropdown-header">Transients</li>}
         {filteredTransients.map((item: DropdownItem) => (
           <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-outlined item-icon transient">data_object</span>
+            <span className="material-symbols-rounded item-icon transient">data_object</span>
             <span>{item.name}</span>
           </li>
         ))}

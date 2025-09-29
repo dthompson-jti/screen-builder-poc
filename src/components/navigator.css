@@ -22,10 +22,18 @@
   flex-shrink: 0;
 }
 
+/* FIX: Standardize panel header font styles */
 .component-browser-header h4 {
   margin: 0;
+  overflow: hidden;
+  color: var(--surface-fg-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  font-size: 1.1em;
+  line-height: 20px;
+  letter-spacing: -0.21px;
 }
 
 .breadcrumb-wrapper {
@@ -43,7 +51,7 @@
   color: var(--surface-fg-secondary);
   margin: 0; 
 }
-.breadcrumb .material-symbols-outlined { font-size: 16px; }
+.breadcrumb .material-symbols-rounded { font-size: 16px; }
 .breadcrumb button {
   background: none;
   border: none;
@@ -263,7 +271,7 @@
   padding: var(--spacing-2) var(--spacing-3);
   border-bottom: 1px solid var(--surface-border-secondary);
 }
-.dropdown-search .material-symbols-outlined { color: var(--surface-fg-tertiary); }
+.dropdown-search .material-symbols-rounded { color: var(--surface-fg-tertiary); }
 .dropdown-search input {
   border: none;
   background: none;
@@ -363,10 +371,9 @@
   align-items: center;
   gap: var(--spacing-2);
 }
-.search-bar-container .material-symbols-outlined {
+.search-bar-container .material-symbols-rounded {
   color: var(--surface-fg-tertiary);
 }
-/* FIX: Added missing opening brace to fix CSS syntax error */
 .search-bar-container input {
   width: 100%;
   border: none;

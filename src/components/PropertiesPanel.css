@@ -9,31 +9,49 @@
 }
 
 .panel-header {
-  padding: var(--spacing-4);
-  border-bottom: 1px solid var(--surface-border-secondary);
+  padding: 0;
+  /* FIX: Remove bottom border from header wrapper */
+  border-bottom: none;
   flex-shrink: 0;
 }
-.panel-header h3 {
-  margin: 0 0 var(--spacing-4) 0;
-  font-size: 1.1em;
-  font-weight: 600;
-  color: var(--surface-fg-primary);
+
+.panel-tabs { 
+  display: flex; 
+  position: relative;
+  /* FIX: Add border to the container, not the header */
+  border-bottom: 1px solid var(--surface-border-secondary);
 }
-.panel-tabs { display: flex; gap: var(--spacing-2); }
 .panel-tabs .tab-button {
-  padding: var(--spacing-1p5) var(--spacing-3);
-  font-size: 0.9em;
-  font-weight: 500;
+  flex: 1;
+  padding: var(--spacing-3) 0;
+  font-size: 14px;
+  font-weight: 600;
   border: none;
   background: none;
-  border-radius: 6px;
   color: var(--surface-fg-secondary);
   cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
 }
-.panel-tabs .tab-button.active {
-  background-color: var(--control-bg-secondary);
+.panel-tabs .tab-button:hover:not(:disabled) {
   color: var(--surface-fg-primary);
 }
+.panel-tabs .tab-button.active {
+  color: var(--surface-fg-theme-primary);
+}
+.panel-tabs .tab-button:disabled {
+  color: var(--control-fg-disabled);
+  cursor: not-allowed;
+}
+
+.tab-underline {
+  position: absolute;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--surface-fg-theme-primary);
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
 
 .panel-content { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
 .prop-section { margin-bottom: var(--spacing-6); }
@@ -99,10 +117,8 @@
   color: var(--surface-fg-secondary);
   padding: var(--spacing-6);
 }
-.properties-panel-placeholder .material-symbols-outlined {
+.properties-panel-placeholder .material-symbols-rounded {
   font-size: 48px;
   margin-bottom: var(--spacing-4);
   color: var(--surface-fg-tertiary);
 }
-
-/* FIX: Remove styles that were moved to DataBindingModal.css */

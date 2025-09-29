@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useState, useEffect } from 'react';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, DragOverEvent, UniqueIdentifier, Active, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { AppHeader } from './components/AppHeader';
@@ -15,6 +15,7 @@ import { BrowserItemPreview } from './components/BrowserItemPreview';
 import { PlaceholderPanel } from './components/PlaceholderPanel';
 import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
 import { DataBindingModal } from './components/DataBindingModal';
+import { SettingsPage } from './components/SettingsPage';
 import { componentTreeData } from './data/componentBrowserMock';
 import {
   canvasComponentsAtom,
@@ -22,7 +23,8 @@ import {
   selectedNodeIdAtom,
   isComponentBrowserVisibleAtom,
   activeToolbarTabAtom,
-  appViewModeAtom
+  appViewModeAtom,
+  isPropertiesPanelVisibleAtom
 } from './state/atoms';
 import { FormComponent, BoundData } from './types';
 
@@ -42,8 +44,10 @@ const MIN_PANEL_WIDTH = 437;
 
 function App() {
   const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
-  const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
-  const isPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
+  // FIX: Remove unused variable declaration
+  const [, setSelectedComponentId] = useAtom(selectedCanvasComponentIdAtom);
+  const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
+  const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
   const selectedDataNodeId = useAtomValue(selectedNodeIdAtom);
@@ -52,11 +56,11 @@ function App() {
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
-    if (!isPanelVisible) {
+    if (!isLeftPanelVisible) {
       setSelectedComponentId(null);
     }
-  }, [isPanelVisible, setSelectedComponentId]);
-
+  }, [isLeftPanelVisible, setSelectedComponentId]);
+  
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -158,7 +162,7 @@ function App() {
   };
 
   const renderLeftPanelContent = () => {
-    if (!isPanelVisible) return null;
+    if (!isLeftPanelVisible) return null;
     
     if (activeTabId === 'data') {
       return <ComponentBrowser />;
@@ -175,7 +179,7 @@ function App() {
       case 'preview':
         return <FullScreenPlaceholder icon="visibility" title="Preview Mode" message="This is a placeholder for the form preview." />;
       case 'settings':
-        return <FullScreenPlaceholder icon="settings" title="Settings" message="This is a placeholder for the form settings." />;
+        return <SettingsPage />;
       case 'editor':
       default:
         return (
@@ -185,14 +189,19 @@ function App() {
               initialWidth={INITIAL_PANEL_WIDTH} 
               minWidth={MIN_PANEL_WIDTH} 
               position="left"
-              isAnimatedVisible={isPanelVisible}
+              isAnimatedVisible={isLeftPanelVisible}
             >
               {renderLeftPanelContent()}
             </ResizablePanel>
             <div style={{ flex: 1, minWidth: 0 }}>
               <EditorCanvas active={activeItem} overId={overId} />
             </div>
-            <ResizablePanel initialWidth={300} minWidth={280} position="right">
+            <ResizablePanel 
+                initialWidth={300} 
+                minWidth={280} 
+                position="right"
+                isAnimatedVisible={isRightPanelVisible}
+            >
               <PropertiesPanel />
             </ResizablePanel>
             <DragOverlay dropAnimation={dropAnimation}>

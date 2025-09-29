@@ -1,7 +1,8 @@
 // src/components/BindingConnectionsDropdown.tsx
 import { useRef } from 'react';
 import { useOnClickOutside } from '../useOnClickOutside';
-import { NodeNavigator } from './navigator';
+// FIX: Import from the JS file, which will be typed by the adjacent .d.ts file
+import { NodeNavigator } from './navigator.js';
 import { bindingConnectionsData, bindingTreeData } from '../data/dataBindingMock';
 import { DropdownItem } from '../types';
 
@@ -42,7 +43,7 @@ export const BindingConnectionsDropdown = ({ navigator, selectedNodeId, onClose 
       <ul className="dropdown-list">
         {data.entities.map((item: DropdownItem) => (
           <li key={item.id} className="dropdown-item navigable" onClick={() => handleItemClick(item.id)}>
-            <span className="material-symbols-outlined item-icon entity">crop_square</span>
+            <span className="material-symbols-rounded item-icon entity">crop_square</span>
             <span>{item.name}</span>
           </li>
         ))}

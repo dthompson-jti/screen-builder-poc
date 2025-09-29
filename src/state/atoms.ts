@@ -8,13 +8,24 @@ import { FormComponent, BoundData, ComponentGroup, DraggableComponent } from '..
 // =================================================================
 export type AppViewMode = 'editor' | 'preview' | 'settings';
 export type ToolbarTabId = 'layout' | 'data' | 'general' | 'templates' | 'conditions' | 'layers';
+export type SettingsLayoutMode = 'single-column' | 'two-column';
 
 export const appViewModeAtom = atom<AppViewMode>('editor');
 export const isMenuOpenAtom = atom(false);
+export const isSettingsMenuOpenAtom = atom(false);
 export const isToolbarCompactAtom = atom(false);
 export const isShowBreadcrumbAtom = atom(true);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
 export const isComponentBrowserVisibleAtom = atom(true);
+// FIX: New atom to control right panel visibility
+export const isPropertiesPanelVisibleAtom = atom(true);
+
+// =================================================================
+//                         Settings State
+// =================================================================
+export const formNameAtom = atom<string>('<Form name>');
+export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
+export const focusIntentAtom = atom<string | null>(null);
 
 // =================================================================
 //                         Canvas State

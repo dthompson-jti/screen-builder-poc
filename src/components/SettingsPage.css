@@ -1,0 +1,144 @@
+/* src/components/SettingsPage.css */
+.settings-page-wrapper {
+  flex-grow: 1;
+  display: flex;
+  background-color: var(--surface-bg-primary);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.settings-navigator-container {
+  width: 280px;
+  flex-shrink: 0;
+  background-color: var(--surface-bg-primary);
+  border-right: 1px solid var(--surface-border-secondary);
+  padding: var(--spacing-8) var(--spacing-6);
+}
+
+.settings-navigator-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  position: sticky;
+  top: var(--spacing-8);
+}
+
+.settings-navigator-list a {
+  display: block;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--surface-fg-secondary);
+  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s;
+  cursor: pointer;
+  border-left: 6px solid transparent;
+}
+
+.settings-navigator-list a:hover {
+  background-color: var(--surface-bg-secondary_hover);
+  color: var(--surface-fg-primary);
+}
+
+.settings-navigator-list a.active {
+  background-color: var(--control-bg-selected);
+  color: var(--control-fg-selected);
+  font-weight: 600;
+  /* FIX: Add left border for active state */
+  border-left-color: var(--control-border-selected);
+}
+
+.settings-content-container {
+  flex-grow: 1;
+  padding: var(--spacing-8);
+  overflow-y: auto;
+}
+
+.settings-form-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.settings-form-container[data-layout='two-column'] {
+  column-count: 2;
+  column-gap: var(--spacing-12);
+}
+
+.settings-form-container[data-layout='two-column'] .settings-section {
+  break-inside: avoid;
+}
+
+
+@media (max-width: 1200px) {
+  .settings-form-container[data-layout='two-column'] {
+    column-count: 1;
+  }
+}
+
+.settings-section {
+  margin-bottom: 0;
+  padding-bottom: var(--spacing-10);
+}
+
+.settings-section h2 {
+  font-size: 1.25em;
+  font-weight: 600;
+  color: var(--surface-fg-primary);
+  margin: 0 0 var(--spacing-6) 0;
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--surface-border-secondary);
+}
+
+.settings-form-grid {
+  display: grid;
+  gap: var(--spacing-6);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1p5);
+}
+
+.form-field label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+}
+
+.form-field label .required-asterisk {
+  color: var(--surface-fg-alert-primary);
+  margin-left: 2px;
+}
+
+.form-field input[type="text"],
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-family: var(--font-family-sans);
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-primary);
+}
+.form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-field-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.form-field-checkbox label {
+  cursor: pointer;
+}

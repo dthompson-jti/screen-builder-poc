@@ -24,18 +24,19 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   const isResizing = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
   
-  const currentVisibility = useAtomValue(isComponentBrowserVisibleAtom);
-  const isLeftPanelHidden = position === 'left' && !isAnimatedVisible;
+  // This atom is only for the left panel logic.
+  const isLeftPanelBrowserVisible = useAtomValue(isComponentBrowserVisibleAtom);
+  const isPanelHidden = !isAnimatedVisible;
 
   React.useEffect(() => {
-    if (onWidthChange && !isLeftPanelHidden) {
+    if (onWidthChange && !isPanelHidden) {
       onWidthChange(width);
     }
-  }, [width, onWidthChange, isLeftPanelHidden]);
+  }, [width, onWidthChange, isPanelHidden]);
 
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (isLeftPanelHidden) return;
+    if (isPanelHidden) return;
     
     isResizing.current = true;
     document.body.style.cursor = 'col-resize';
@@ -51,7 +52,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
         
         if (position === 'left') {
           newWidth = startWidth + deltaX;
-          if (newWidth < minWidth && currentVisibility) {
+          if (newWidth < minWidth && isLeftPanelBrowserVisible) {
              newWidth = minWidth;
           }
         } else {
@@ -79,13 +80,14 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-  }, [minWidth, width, position, onWidthChange, currentVisibility, isLeftPanelHidden]);
+  }, [minWidth, width, position, onWidthChange, isLeftPanelBrowserVisible, isPanelHidden]);
 
   const resizerStyle: React.CSSProperties = {
     position: 'absolute',
     top: 0,
     bottom: 0,
-    width: '5px',
+    // FIX: Resizer is now 1px wide
+    width: '1px',
     cursor: 'col-resize',
     zIndex: 100,
   };
@@ -97,7 +99,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   }
   
   const wrapperStyle: React.CSSProperties = {
-    width: isLeftPanelHidden ? '0px' : `${width}px`,
+    width: isPanelHidden ? '0px' : `${width}px`,
     position: 'relative',
     flexShrink: 0,
     overflow: 'hidden',
@@ -115,13 +117,13 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
           flex: 1, 
           minWidth: 0, 
           height: '100%',
-          transform: isLeftPanelHidden ? `translateX(-${width}px)` : 'translateX(0)',
+          transform: isPanelHidden ? `translateX(-${width}px)` : 'translateX(0)',
           transition: 'transform 0.3s ease-out',
         }}
       >
         {children}
       </div>
-      {!isLeftPanelHidden && (
+      {!isPanelHidden && (
         <div
           className="resizer"
           style={resizerStyle}

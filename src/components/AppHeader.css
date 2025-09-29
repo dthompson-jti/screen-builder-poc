@@ -10,16 +10,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* FIX: Adjust horizontal padding to use spacing-5 for 20px */
   padding: var(--spacing-2) var(--spacing-5);
-  border-bottom: 1px solid var(--surface-border-secondary);
+  border-bottom: none;
 }
 
-/* FIX: New style for the container holding menu button and title */
 .app-header-left-group {
   display: flex;
   align-items: center;
-  /* FIX: Spacing between menu button and title is 16px (var(--spacing-4)) */
   gap: var(--spacing-4); 
   position: relative;
 }
@@ -75,34 +72,84 @@
   gap: var(--spacing-4);
 }
 
+.sub-header-right {
+  position: relative;
+  gap: var(--spacing-2);
+}
+
 .sub-header-center {
   flex-grow: 1;
 }
 
-.link-button {
-  display: flex;
+.back-btn {
+  display: inline-flex;
+  padding: var(--spacing-2) var(--spacing-3);
+  justify-content: center;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--spacing-1);
   background: none;
   border: none;
-  color: var(--surface-fg-secondary);
+  border-radius: var(--spacing-2);
   cursor: pointer;
-  font-weight: 500;
-  transition: color 0.2s;
+  transition: background-color 0.2s;
 }
+
+.back-btn .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--control-fg-tertiary);
+}
+
+/* FIX: Target the specific text class, not all spans */
+.back-btn .btn-text {
+  color: var(--control-fg-tertiary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+}
+.back-btn:hover {
+  background-color: var(--surface-bg-secondary_hover);
+}
+
 
 .vertical-divider {
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
+  margin: 0 var(--spacing-2);
 }
 
-.form-name-editor {
-  display: flex;
+.form-name-editor-btn {
+  display: inline-flex;
+  padding: var(--spacing-2) var(--spacing-3);
+  justify-content: center;
   align-items: center;
-  gap: var(--spacing-2);
-  color: var(--surface-fg-primary);
+  gap: var(--spacing-1);
+  background: none;
+  border: none;
+  border-radius: var(--spacing-2);
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
+.form-name-editor-btn:hover {
+  background-color: var(--surface-bg-secondary_hover);
+}
+
+/* FIX: Target the specific text class, not all spans */
+.form-name-editor-btn .btn-text {
+  color: var(--control-fg-tertiary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+}
+.form-name-editor-btn .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--control-fg-tertiary);
+}
+
 
 .tab-group {
   display: flex;
@@ -119,8 +166,6 @@
   position: relative;
   cursor: pointer;
   transition: color 0.2s;
-
-  /* FIX: Update text styles */
   color: var(--surface-fg-quaternary);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -130,7 +175,6 @@
 }
 
 .tab-button.active, .tab-button:hover {
-  /* FIX: Update active and hover color */
   color: var(--surface-fg-theme-strong);
 }
 
@@ -141,7 +185,6 @@
   left: 0;
   right: 0;
   height: 2px;
-  /* FIX: Update underline color */
   background-color: var(--surface-fg-theme-strong);
 }
 
@@ -157,6 +200,7 @@
   transform: translateY(0);
   box-sizing: border-box;
   line-height: 1;
+  border: none;
 }
 
 /* --- Primary Button --- */
@@ -165,67 +209,50 @@
   height: 38px;
   background-color: var(--control-bg-theme);
   color: var(--control-fg-on-solid);
-  border: 2px solid var(--control-border-primary); 
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
+  border: 1px solid var(--control-border-primary);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--control-bg-theme-hover);
-  box-shadow: 
-    inset 0 1px 0 0 var(--control-border-primary-hover),
-    inset 0 -3px 0 0 var(--control-border-primary-hover),
-    inset 1px 0 0 0 var(--control-border-primary-hover),
-    inset -1px 0 0 0 var(--control-border-primary-hover);
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
-  border-color: transparent;
+  border-color: var(--control-border-primary-hover);
+  box-shadow: inset 0 -3px 0 0 var(--control-border-primary-hover);
 }
 
 .btn-primary:active:not(:disabled) {
   background-color: var(--control-bg-theme-pressed);
+  border-color: var(--control-border-primary-pressed);
   transform: translateY(1px);
-  box-shadow: 
-    inset 0 1px 0 0 var(--control-border-primary-pressed), 
-    inset 0 -2px 0 0 var(--control-border-primary-pressed),
-    inset 1px 0 0 0 var(--control-border-primary-pressed),
-    inset -1px 0 0 0 var(--control-border-primary-pressed);
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4);
-  border-color: transparent; 
+  box-shadow: inset 0 -1px 0 0 var(--control-border-primary-pressed);
 }
 
 /* --- Secondary Button --- */
 .btn-secondary {
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
+  padding: var(--spacing-2) var(--spacing-4); 
   height: 38px; 
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
+  box-shadow: none;
 }
 
 .btn-secondary.icon-only {
-  padding: calc(var(--spacing-1p5) + 1px);
-  height: 34px;
+  width: 38px;
+  padding: var(--spacing-2);
 }
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
-  box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
-}
-.btn-secondary.icon-only:hover:not(:disabled) {
-  padding: calc(var(--spacing-1p5) + 1px);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-hover);
 }
 
 .btn-secondary:active:not(:disabled), .btn-secondary.active {
   background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
+  box-shadow: inset 0 -1px 0 0 var(--control-border-secondary-pressed);
   transform: translateY(1px);
 }
-.btn-secondary.icon-only:active:not(:disabled), .btn-secondary.icon-only.active {
-  padding: calc(var(--spacing-1p5) + 1px);
-}
-
 
 /* --- Tertiary Button Styles --- */
 .btn-tertiary {
@@ -235,13 +262,11 @@
   font-weight: 500;
   cursor: pointer;
   background: none;
-  
-  /* FIX: Use transparent border for sizing consistency */
   border: 1px solid transparent; 
   height: 34px;
   border-radius: var(--spacing-2); 
   padding: var(--spacing-1p5); 
-  color: var(--surface-fg-tertiary);
+  color: var(--surface-fg-secondary);
   transition: background-color 0.2s, box-shadow 0.1s, transform 0.1s ease-out, color 0.2s, border-color 0.2s;
   box-sizing: border-box;
   transform: translateY(0);
@@ -250,24 +275,23 @@
 .btn-tertiary.icon-text {
   padding: var(--spacing-1p5) var(--spacing-2);
   gap: var(--spacing-2);
+  color: var(--surface-fg-tertiary);
 }
 .btn-tertiary.icon-only {
   padding: var(--spacing-1p5);
 }
 
 .btn-tertiary:hover:not(:disabled) {
-  /* FIX: New two-part border effect */
   background-color: var(--control-bg-tertiary-hover); 
   color: var(--control-fg-tertiary-hover);
   border-color: var(--control-border-tertiary-faint-hover);
-  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
 }
 
 .btn-tertiary:active:not(:disabled) {
-  /* FIX: New two-part border effect for pressed state */
   transform: translateY(1px);
   background-color: var(--control-bg-tertiary-pressed);
-  color: var(--control-fg-tertiary-hover); /* Spec says use hover color */
+  color: var(--control-fg-tertiary-hover);
   border-color: var(--control-border-tertiary-faint-pressed);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
+  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
 }
