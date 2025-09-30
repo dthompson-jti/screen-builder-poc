@@ -1,0 +1,46 @@
+/* src/components/NameEditorPopover.css */
+
+.name-editor-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1000;
+    width: 320px;
+    background-color: var(--surface-bg-primary);
+    border-radius: var(--spacing-2);
+    box-shadow: var(--surface-shadow-xl);
+    padding: var(--spacing-4);
+    border: 1px solid var(--surface-border-primary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.name-editor-popover label {
+    font-size: 0.9em;
+    font-weight: 500;
+    color: var(--surface-fg-primary);
+}
+
+.name-editor-popover input {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--surface-border-primary);
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: var(--font-family-sans);
+    background-color: var(--surface-bg-primary);
+    color: var(--surface-fg-primary);
+    outline: none;
+}
+
+.name-editor-popover input:focus {
+    border-color: var(--surface-border-theme);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+}

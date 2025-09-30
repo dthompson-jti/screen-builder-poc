@@ -1,16 +1,18 @@
 // src/components/AppHeader.tsx
 import { useAtom } from 'jotai';
-import { useEffect, useRef } from 'react';
+import { useRef, useState, useLayoutEffect } from 'react';
 import { 
   isMenuOpenAtom, 
   appViewModeAtom, 
   AppViewMode, 
   formNameAtom,
   isSettingsMenuOpenAtom,
-  isEditingFormNameAtom,
+  isNameEditorPopoverOpenAtom,
 } from '../state/atoms';
 import { HeaderMenu } from './HeaderMenu';
 import { HeaderActionsMenu } from './HeaderActionsMenu';
+// FIX: Add .tsx extension to resolve module import error
+import { NameEditorPopover } from './NameEditorPopover.tsx';
 import './AppHeader.css';
 import './HeaderMenu.css'; 
 
@@ -18,17 +20,23 @@ export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useAtom(isSettingsMenuOpenAtom);
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
-  const [formName, setFormName] = useAtom(formNameAtom);
-  const [isEditingName, setIsEditingName] = useAtom(isEditingFormNameAtom);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const [formName] = useAtom(formNameAtom);
+  const [isNameEditorOpen, setIsNameEditorOpen] = useAtom(isNameEditorPopoverOpenAtom);
 
-  // Auto-focus the input when editing starts
-  useEffect(() => {
-    if (isEditingName && nameInputRef.current) {
-      nameInputRef.current.focus();
-      nameInputRef.current.select();
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [underlineStyle, setUnderlineStyle] = useState({});
+
+  useLayoutEffect(() => {
+    if (tabsContainerRef.current) {
+      const activeTabNode = tabsContainerRef.current.querySelector<HTMLButtonElement>(`.tab-button.active`);
+      if (activeTabNode) {
+        setUnderlineStyle({
+          left: activeTabNode.offsetLeft,
+          width: activeTabNode.offsetWidth,
+        });
+      }
     }
-  }, [isEditingName]);
+  }, [viewMode]);
 
   const handleToggleMenu = () => {
       setIsMenuOpen(p => !p);
@@ -36,16 +44,6 @@ export const AppHeader = () => {
     
   const handleTabClick = (mode: AppViewMode) => {
     setViewMode(mode);
-  };
-
-  const handleNameInputBlur = () => {
-    setIsEditingName(false);
-  };
-
-  const handleNameInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      setIsEditingName(false);
-    }
   };
 
   return (
@@ -79,38 +77,26 @@ export const AppHeader = () => {
         <div className="vertical-divider" />
         <div className="sub-header-center">
           <div className="form-name-editor">
-            {isEditingName ? (
-              <input
-                ref={nameInputRef}
-                type="text"
-                className="form-name-input"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                onBlur={handleNameInputBlur}
-                onKeyDown={handleNameInputKeyDown}
-              />
-            ) : (
-              <>
-                <span className="form-name-display">{formName}</span>
-                <button 
-                  className="btn-tertiary icon-only" 
-                  onClick={() => setIsEditingName(true)}
-                  aria-label="Edit form name"
-                >
-                  <span className="material-symbols-rounded">edit</span>
-                </button>
-              </>
-            )}
+            <span className="form-name-display">{formName}</span>
+            <button 
+              className="btn-tertiary icon-only" 
+              onClick={() => setIsNameEditorOpen(p => !p)}
+              aria-label="Edit form name"
+            >
+              <span className="material-symbols-rounded">edit</span>
+            </button>
+            {isNameEditorOpen && <NameEditorPopover />}
           </div>
-          <div className="tab-group">
+          <div className="tab-group" ref={tabsContainerRef}>
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>
             <button className={`tab-button ${viewMode === 'settings' ? 'active' : ''}`} onClick={() => handleTabClick('settings')}>Settings</button>
+            <div className="tab-underline" style={underlineStyle} />
           </div>
         </div>
         <div className="sub-header-right">
           <button className="btn btn-primary">Save</button>
-          <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
+          <button className="btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
             <span className="material-symbols-rounded">more_horiz</span>
           </button>
           {isSettingsMenuOpen && <HeaderActionsMenu />}

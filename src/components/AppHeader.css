@@ -71,13 +71,11 @@
   align-items: center;
 }
 
-/* FIX: Restore gap for proper button spacing */
 .sub-header-right {
   position: relative;
   gap: var(--spacing-2);
 }
 
-/* FIX: Restore gap for proper button spacing */
 .sub-header-left {
   gap: var(--spacing-4);
 }
@@ -90,14 +88,12 @@
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
-  /* FIX: Use margin for symmetrical spacing */
   margin: 0 var(--spacing-4);
 }
 
 .form-type-display {
   color: var(--surface-fg-secondary);
   font-size: 14px;
-  /* FIX: Match font weight to form name */
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.21px;
@@ -109,7 +105,7 @@
   gap: var(--spacing-2);
   height: 34px; /* Match tertiary button height */
   padding: 0 var(--spacing-1);
-  width: 250px;
+  position: relative; /* For popover positioning */
 }
 
 .form-name-display {
@@ -121,26 +117,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 200px; /* Prevent extremely long names from breaking layout */
 }
-
-.form-name-input {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.21px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--surface-border-theme);
-  background-color: var(--surface-bg-primary);
-  color: var(--surface-fg-primary);
-  outline: none;
-  width: 100%;
-}
-.form-name-input:focus {
-  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
-}
-
 
 .tab-group {
   display: flex;
@@ -148,6 +126,8 @@
   gap: var(--spacing-2);
   margin-left: auto;
   margin-right: auto;
+  /* FIX: Add position relative for the underline */
+  position: relative;
 }
 
 .tab-button {
@@ -157,6 +137,7 @@
   position: relative;
   cursor: pointer;
   transition: color 0.2s;
+  /* FIX: Standardize inactive color */
   color: var(--surface-fg-quaternary);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -165,124 +146,26 @@
   letter-spacing: -0.21px;
 }
 
-.tab-button.active, .tab-button:hover {
+/* FIX: Standardize hover color to be less jarring */
+.tab-button:hover:not(.active) {
+  color: var(--surface-fg-secondary);
+}
+
+.tab-button.active {
   color: var(--surface-fg-theme-strong);
 }
 
-.tab-button.active::after {
-  content: '';
+/* FIX: Remove pseudo-element in favor of a dedicated div */
+/* .tab-button.active::after ... */
+
+/* FIX: New style for the dedicated underline element */
+.tab-underline {
   position: absolute;
-  bottom: -8px;
-  left: 0;
-  right: 0;
+  /* This offset aligns the 2px underline with the 1px parent border */
+  bottom: -11px;
   height: 2px;
   background-color: var(--surface-fg-theme-strong);
+  transition: left 0.3s ease, width 0.3s ease;
 }
 
-/* --- Standardized Button Styles --- */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: var(--spacing-2);
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
-  transform: translateY(0);
-  box-sizing: border-box;
-  line-height: 1;
-  border: none;
-}
-
-/* --- Primary Button --- */
-.btn-primary {
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
-  height: 38px;
-  background-color: var(--control-bg-theme);
-  color: var(--control-fg-on-solid);
-  border: 1px solid var(--control-border-primary);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-primary);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: var(--control-bg-theme-hover);
-  border-color: var(--control-border-primary-hover);
-  box-shadow: inset 0 -3px 0 0 var(--control-border-primary-hover);
-}
-
-.btn-primary:active:not(:disabled) {
-  background-color: var(--control-bg-theme-pressed);
-  border-color: var(--control-border-primary-pressed);
-  transform: translateY(1px);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-primary-pressed);
-}
-
-/* --- Secondary Button --- */
-.btn-secondary {
-  padding: var(--spacing-2) var(--spacing-4); 
-  height: 38px; 
-  background-color: var(--control-bg-secondary);
-  color: var(--surface-fg-primary);
-  border: 1px solid var(--control-border-secondary); 
-  box-shadow: none;
-}
-
-.btn-secondary.icon-only {
-  width: 38px;
-  padding: var(--spacing-2);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: var(--control-bg-secondary-hover);
-  border-color: var(--control-border-secondary-hover);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-hover);
-}
-
-.btn-secondary:active:not(:disabled), .btn-secondary.active {
-  background-color: var(--control-bg-secondary-pressed);
-  border-color: var(--control-border-secondary-pressed);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-secondary-pressed);
-  transform: translateY(1px);
-}
-
-/* --- Tertiary Button Styles --- */
-.btn-tertiary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  cursor: pointer;
-  background: none;
-  border: 1px solid transparent; 
-  height: 34px;
-  border-radius: var(--spacing-2); 
-  padding: var(--spacing-1p5); 
-  color: var(--surface-fg-secondary);
-  transition: background-color 0.2s, box-shadow 0.1s, transform 0.1s ease-out, color 0.2s, border-color 0.2s;
-  box-sizing: border-box;
-  transform: translateY(0);
-}
-
-.btn-tertiary.icon-text {
-  padding: var(--spacing-1p5) var(--spacing-2);
-  gap: var(--spacing-2);
-  color: var(--surface-fg-tertiary);
-}
-.btn-tertiary.icon-only {
-  padding: var(--spacing-1p5);
-}
-
-.btn-tertiary:hover:not(:disabled) {
-  background-color: var(--control-bg-tertiary-hover); 
-  color: var(--control-fg-tertiary-hover);
-  border-color: var(--control-border-tertiary-faint-hover);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
-}
-
-.btn-tertiary:active:not(:disabled) {
-  transform: translateY(1px);
-  background-color: var(--control-bg-tertiary-pressed);
-  color: var(--control-fg-tertiary-hover);
-  border-color: var(--control-border-tertiary-faint-pressed);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
-}
+/* --- NOTE: Standardized Button Styles moved to buttons.css --- */
