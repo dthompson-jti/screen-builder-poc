@@ -4,8 +4,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { isComponentBrowserVisibleAtom } from '../state/atoms';
 import { generalComponents } from '../data/generalComponentsMock';
 import { DraggableComponent } from '../types';
-import { PanelHeader } from './PanelHeader'; // FIX: Import new reusable component
-import './panel.css';
+import './navigator.css'; // Re-use styles
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -21,6 +20,7 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
     <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
+      {/* FIX: Standardize icon class */}
       <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
       <span className="component-name">{component.name}</span>
     </li>
@@ -36,8 +36,18 @@ export const GeneralComponentsBrowser = () => {
 
   return (
     <div className="component-browser-container">
-      {/* FIX: Use the reusable PanelHeader component */}
-      <PanelHeader title="General Components" onClose={handleClosePanel} />
+      <div className="component-browser-header">
+        <h4>General Components</h4>
+        <button 
+          className="btn-tertiary icon-only close-panel-button" 
+          title="Close Panel" 
+          aria-label="Close Panel"
+          onClick={handleClosePanel}
+        >
+          {/* FIX: Standardize icon class */}
+          <span className="material-symbols-rounded">close</span>
+        </button>
+      </div>
       <div className="component-list-container">
         <ul className="component-list">
           <li>

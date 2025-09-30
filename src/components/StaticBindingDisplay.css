@@ -1,4 +1,4 @@
-/* src/properties-panel/StaticBindingDisplay.css */
+/* src/components/StaticBindingDisplay.css */
 .static-binding-display {
   padding: var(--spacing-2) var(--spacing-3);
   background-color: var(--surface-bg-secondary);

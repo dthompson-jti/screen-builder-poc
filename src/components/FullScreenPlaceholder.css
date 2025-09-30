@@ -26,7 +26,7 @@
   gap: var(--spacing-4);
 }
 
-.fullscreen-placeholder-card .material-symbols-outlined {
+.fullscreen-placeholder-card .material-symbols-rounded {
   font-size: 48px;
   color: var(--surface-fg-tertiary);
 }

@@ -14,17 +14,14 @@ export const appViewModeAtom = atom<AppViewMode>('editor');
 export const isMenuOpenAtom = atom(false);
 export const isSettingsMenuOpenAtom = atom(false);
 export const isToolbarCompactAtom = atom(false);
-// FIX: Set initial state to not show breadcrumb
 export const isShowBreadcrumbAtom = atom(false);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
-// FIX: Set initial state to hide left panel
 export const isComponentBrowserVisibleAtom = atom(false);
 export const isPropertiesPanelVisibleAtom = atom(true);
 
 // =================================================================
 //                         Settings State
 // =================================================================
-// FIX: Update initial form name and add popover atom
 export const formNameAtom = atom<string>("Dave's Form");
 export const isNameEditorPopoverOpenAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');

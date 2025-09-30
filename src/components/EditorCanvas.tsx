@@ -61,7 +61,7 @@ const BottomDropZone = ({ overId }: { overId: UniqueIdentifier | null }) => {
 interface EditorCanvasProps {
   overId: UniqueIdentifier | null;
   active: Active | null;
-  isDragging: boolean; // FIX: Add isDragging prop
+  isDragging: boolean;
 }
 
 export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) => {
@@ -69,7 +69,6 @@ export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) 
   const [, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
   const { setNodeRef } = useDroppable({ id: 'canvas-drop-area' });
 
-  // FIX: Apply conditional class based on isDragging prop
   const canvasClassName = `canvas-container ${isDragging ? 'is-dragging' : ''}`;
 
   return (

@@ -1,4 +1,4 @@
-// src/editor-canvas/ComponentPreview.tsx
+// src/components/ComponentPreview.tsx
 import './ComponentPreview.css';
 
 interface ComponentPreviewProps {

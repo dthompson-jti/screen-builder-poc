@@ -25,7 +25,7 @@ export interface DraggableComponent {
   type: 'field' | 'widget' | 'layout';
   icon: string;
   iconColor?: string;
-  // --- REFACTOR: Add optional properties to support data binding context ---
+  // REFACTOR: Add optional properties to support data binding context
   nodeId?: string;
   nodeName?: string;
   path?: string;

@@ -1,4 +1,4 @@
-/* src/properties-panel/PropertiesPanel.css */
+/* src/components/PropertiesPanel.css */
 .properties-panel-container {
   display: flex;
   flex-direction: column;
@@ -11,49 +11,19 @@
 .panel-header {
   padding: 0;
   flex-shrink: 0;
-  /* FIX: Move border to this parent container */
   border-bottom: 1px solid var(--surface-border-secondary);
-  /* FIX: Add position relative for the underline */
   position: relative;
 }
 
+/* 
+  NOTE: All tab-related styles (.panel-tabs, .tab-button, .tab-underline) 
+  have been REMOVED from this file and moved to the new shared tabs.css. 
+  The .panel-tabs class remains as a structural element.
+*/
 .panel-tabs { 
   display: flex; 
   position: relative;
-  /* FIX: Remove border from here */
 }
-.panel-tabs .tab-button {
-  flex: 1;
-  padding: var(--spacing-3) 0;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  background: none;
-  color: var(--surface-fg-secondary);
-  cursor: pointer;
-  position: relative;
-  transition: color 0.2s;
-}
-.panel-tabs .tab-button:hover:not(:disabled) {
-  color: var(--surface-fg-primary);
-}
-.panel-tabs .tab-button.active {
-  color: var(--surface-fg-theme-primary);
-}
-.panel-tabs .tab-button:disabled {
-  color: var(--control-fg-disabled);
-  cursor: not-allowed;
-}
-
-.tab-underline {
-  position: absolute;
-  /* FIX: Change bottom to -1px to align with parent's new border */
-  bottom: -1px;
-  height: 2px;
-  background-color: var(--surface-fg-theme-primary);
-  transition: left 0.3s ease, width 0.3s ease;
-}
-
 
 .panel-content { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
 .prop-section { margin-bottom: var(--spacing-6); }

@@ -6,7 +6,7 @@ import { useOnClickOutside } from '../useOnClickOutside';
 import './HeaderMenu.css';
 
 const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
-    <button className="menu-option" onClick={onClick} disabled={disabled}>
+    <button className="btn btn-tertiary menu-option" onClick={onClick} disabled={disabled}>
         <span className="checkmark-container">
             {isChecked && <span className="material-symbols-rounded">check</span>}
         </span>
@@ -41,7 +41,6 @@ export const HeaderMenu = () => {
 
     return (
         <div className="header-menu-popover" ref={menuRef}>
-            {/* FIX: Reorder menu items and add divider */}
             <MenuOption label="Undo" onClick={() => {}} hotkey="Ctrl+Z" disabled />
             <MenuOption label="Redo" onClick={() => {}} hotkey="Ctrl+Y" disabled />
             <div className="menu-divider"></div>

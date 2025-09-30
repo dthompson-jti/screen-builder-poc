@@ -3,18 +3,17 @@ import { useAtom, useAtomValue } from 'jotai';
 import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../state/atoms';
 import './MainToolbar.css';
 
-// FIX: Define groups for better divider placement
 const toolbarGroups: { id: ToolbarTabId; label: string; icon: string }[][] = [
   [
     { id: 'layout', label: 'Layout', icon: 'auto_awesome_mosaic' },
     { id: 'data', label: 'Data fields', icon: 'database' },
-    { id: 'general', label: 'General', icon: 'borg' },
+    { id: 'general', label: 'General', icon: 'widgets' },
   ],
   [
-    { id: 'templates', label: 'Templates', icon: 'mobile_layout' },
+    { id: 'templates', label: 'Templates', icon: 'file_present' },
   ],
   [
-    { id: 'conditions', label: 'Conditions', icon: 'arrow_split' },
+    { id: 'conditions', label: 'Conditions', icon: 'account_tree' },
   ],
   [
     { id: 'layers', label: 'Layers', icon: 'layers' },
@@ -58,7 +57,6 @@ export const MainToolbar = () => {
 
   return (
     <div className={toolbarClassName}>
-      {/* FIX: Render by group to correctly place dividers */}
       {toolbarGroups.map((group, groupIndex) => (
         <div key={groupIndex} className="toolbar-group">
           {group.map(renderButton)}

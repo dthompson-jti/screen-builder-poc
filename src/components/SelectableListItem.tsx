@@ -13,9 +13,10 @@ export const SelectableListItem = ({ component, isSelected, onSelect }: Selectab
 
   return (
     <li onClick={() => onSelect(component)} className={className}>
-      <span className="material-symbols-outlined component-icon" style={iconStyle}>{component.icon}</span>
+      {/* FIX: Standardize icon class */}
+      <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
       <span className="component-name">{component.name}</span>
-      {isSelected && <span className="material-symbols-outlined selection-check">check_circle</span>}
+      {isSelected && <span className="material-symbols-rounded selection-check">check_circle</span>}
     </li>
   );
 };

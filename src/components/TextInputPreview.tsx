@@ -1,4 +1,4 @@
-// src/editor-canvas/TextInputPreview.tsx
+// src/components/TextInputPreview.tsx
 import './TextInputPreview.css';
 
 export const TextInputPreview = ({ label }: { label: string }) => (

@@ -1,0 +1,65 @@
+/* src/components/tabs.css */
+/* NEW FILE: Single source of truth for all tab component styles. */
+
+.tab-group, .panel-tabs {
+  display: flex;
+  position: relative; /* Positioning context for the underline */
+}
+
+.tab-group {
+  gap: var(--spacing-2);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tab-button {
+  padding: var(--spacing-1p5) var(--spacing-3);
+  background: none;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: color 0.2s;
+  color: var(--surface-fg-quaternary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+}
+
+/* PropertiesPanel uses a flex-grow tab, so we need a specific rule */
+.panel-tabs .tab-button {
+  flex: 1;
+  padding: var(--spacing-3) 0;
+}
+
+/* Consistent hover and active states for ALL tabs */
+.tab-button.active, .tab-button:hover:not(:disabled) {
+  color: var(--surface-fg-theme-strong);
+}
+
+.tab-button:disabled {
+  color: var(--control-fg-disabled);
+  cursor: not-allowed;
+}
+
+/* FIX: New shared border element that replaces parent border-bottom */
+.tab-bar-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--surface-border-secondary);
+  z-index: 1;
+}
+
+/* FIX: Universal underline style, now sits on top of the new bar line */
+.tab-underline {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background-color: var(--surface-fg-theme-strong);
+  transition: left 0.3s ease, width 0.3s ease;
+  z-index: 2; /* Ensures it is painted on top of the tab-bar-line */
+}

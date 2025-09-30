@@ -86,7 +86,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
     position: 'absolute',
     top: 0,
     bottom: 0,
-    // FIX: Resizer is now 1px wide
     width: '1px',
     cursor: 'col-resize',
     zIndex: 100,

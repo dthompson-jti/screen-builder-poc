@@ -1,4 +1,4 @@
-/* src/editor-canvas/EditorCanvas.css */
+/* src/components/EditorCanvas.css */
 .canvas-container {
   width: 100%;
   height: 100%;
@@ -14,7 +14,6 @@
   max-width: 800px;
   margin: 0 auto;
   box-shadow: var(--surface-shadow-lg);
-  /* FIX: Add transition for smooth color change */
   transition: background-color 0.2s ease, border-color 0.2s ease;
   border: 1px solid transparent;
 }
@@ -25,7 +24,6 @@
   color: var(--surface-fg-primary);
 }
 
-/* FIX: Style for when a component is being dragged over the canvas */
 .canvas-container.is-dragging .form-card {
   background-color: var(--primitives-theme-25);
   border-color: var(--primitives-theme-200);

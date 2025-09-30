@@ -10,10 +10,10 @@ import {
 } from '../state/atoms';
 import { DataBindingPicker } from './DataBindingPicker';
 import { StaticBindingDisplay } from './StaticBindingDisplay';
-// FIX: Correct the import path for FullScreenPlaceholder
 import { FullScreenPlaceholder } from './FullScreenPlaceholder';
+import { PanelHeader } from './PanelHeader';
 import './PropertiesPanel.css';
-import './navigator.css'; // For header styles
+import './panel.css';
 
 type ActiveTab = 'general' | 'advanced';
 
@@ -25,7 +25,6 @@ export const PropertiesPanel = () => {
   const setIsPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('general');
-  // FIX: Use a single ref for the container, not an array
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
 
@@ -140,22 +139,11 @@ export const PropertiesPanel = () => {
 
   return (
     <div className="properties-panel-container">
-      <div className="component-browser-header">
-        <h4>{panelTitle}</h4>
-        <button 
-          className="btn-tertiary icon-only close-panel-button" 
-          title="Close Panel" 
-          aria-label="Close Panel"
-          onClick={() => setIsPanelVisible(false)}
-        >
-          <span className="material-symbols-rounded">close</span>
-        </button>
-      </div>
+      <PanelHeader title={panelTitle} onClose={() => setIsPanelVisible(false)} />
 
       {selectedComponent ? (
         <>
           <div className="panel-header">
-            {/* FIX: Use the container ref here */}
             <div className="panel-tabs" ref={tabsContainerRef}>
               <button 
                 className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
@@ -169,6 +157,8 @@ export const PropertiesPanel = () => {
               >
                 Advanced
               </button>
+              {/* FIX: Add the new shared border and underline elements */}
+              <div className="tab-bar-line" />
               <div className="tab-underline" style={underlineStyle} />
             </div>
           </div>

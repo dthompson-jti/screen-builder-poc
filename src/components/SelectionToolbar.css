@@ -1,8 +1,7 @@
-/* src/editor-canvas/SelectionToolbar.css */
+/* src/components/SelectionToolbar.css */
 .selection-toolbar {
   position: absolute;
   top: -44px;
-  /* THE FIX: Left-align the toolbar to match the new mockup. */
   left: 0;
   transform: none;
   display: flex;
@@ -20,7 +19,6 @@
   cursor: grab;
   padding: var(--spacing-1p5);
   border-radius: 6px;
-  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 
@@ -33,7 +31,7 @@
   background-color: var(--primitives-dark-tint-700);
 }
 
-.toolbar-drag-handle .material-symbols-outlined {
+.toolbar-drag-handle .material-symbols-rounded {
   display: block;
 }
 
@@ -55,7 +53,6 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85em;
-  /* FIX: Add transition */
   transition: background-color 0.2s;
 }
 

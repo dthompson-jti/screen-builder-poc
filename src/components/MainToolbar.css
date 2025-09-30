@@ -1,4 +1,4 @@
-/* src/MainToolbar.css */
+/* src/components/MainToolbar.css */
 .main-toolbar {
   /* Default (Compact) Styling */
   width: 60px; 
@@ -60,6 +60,9 @@
 }
 .main-toolbar.compact .toolbar-button .material-symbols-rounded {
   font-size: 24px;
+  color: var(--surface-fg-quaternary);
+}
+.main-toolbar.compact .toolbar-button:hover:not(.active):not(:disabled) .material-symbols-rounded {
   color: var(--surface-fg-secondary);
 }
 
@@ -95,21 +98,26 @@
 
 .main-toolbar.normal .toolbar-button .material-symbols-rounded {
     font-size: 24px;
-    color: var(--surface-fg-secondary);
+    color: var(--surface-fg-quaternary);
 }
 
 .toolbar-label {
   font-size: 14px; 
   font-weight: 500;
-  color: var(--surface-fg-secondary);
+  color: var(--surface-fg-quaternary);
   line-height: 1;
 }
+
+.main-toolbar.normal .toolbar-button:hover:not(.active):not(:disabled) .material-symbols-rounded,
+.main-toolbar.normal .toolbar-button:hover:not(.active):not(:disabled) .toolbar-label {
+  color: var(--surface-fg-secondary);
+}
+
 
 /* Normal Active State */
 .main-toolbar.normal .toolbar-button.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
-  /* FIX: Adjust padding to compensate for border and align content */
   padding: 0; 
 }
 .main-toolbar.normal .toolbar-button.active:hover {

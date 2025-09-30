@@ -7,7 +7,7 @@ import {
   canvasComponentsAtom,
   selectedCanvasComponentIdAtom,
   activeToolbarTabAtom,
-} from './state/atoms'; // This path is correct as useCanvasDnd.ts is in src/
+} from './state/atoms';
 import { FormComponent, BoundData, DraggableComponent } from './types';
 
 /**

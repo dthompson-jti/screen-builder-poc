@@ -1,55 +1,91 @@
-/* src/PlaceholderPanel.css */
-
-/* Reuse styles from component-browser/navigator.css for container and header */
-.placeholder-panel-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    background-color: var(--surface-bg-primary);
-    font-family: var(--font-family-sans);
-    border-right: 1px solid var(--surface-border-secondary);
+/* src/components/PropertiesPanel.css */
+.properties-panel-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-bg-primary);
+  height: 100%;
+  border-left: 1px solid var(--surface-border-secondary);
+  font-family: var(--font-family-sans);
 }
 
-.placeholder-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--surface-fg-secondary);
-    padding: var(--spacing-6);
+.panel-header {
+  padding: 0;
+  flex-shrink: 0;
+  /* FIX: The border is REMOVED. The new tab-bar-line will render it. */
+  position: relative;
 }
 
-.placeholder-content .material-symbols-outlined {
-    font-size: 48px;
-    margin-bottom: var(--spacing-4);
-    color: var(--surface-fg-tertiary);
+.panel-tabs { 
+  display: flex; 
+  position: relative;
 }
 
-.placeholder-content p {
-    margin: 0;
-    font-size: 1em;
+.panel-content { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
+.prop-section { margin-bottom: var(--spacing-6); }
+.prop-section h4 {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--surface-fg-secondary);
+  text-transform: uppercase;
+  margin: 0 0 var(--spacing-3) 0;
+  border-bottom: 1px solid var(--surface-border-secondary);
+  padding-bottom: var(--spacing-2);
+}
+.prop-item, .prop-item-toggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
+.prop-item label, .prop-item-toggle label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+}
+.prop-item input, .prop-item select {
+  font-family: var(--font-family-sans);
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  font-size: 0.9em;
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-primary);
 }
 
-/* Ensure the shared header styles work (Updated for flexbox alignment) */
-.component-browser-header {
-    background: var(--surface-bg-secondary);
-    position: relative;
-    /* FIX: Change to flexbox for simpler and more robust alignment */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--spacing-4); /* Control padding directly */
-    height: 44px;
-    border-bottom: 1px solid var(--surface-border-secondary);
-    flex-shrink: 0;
+.prop-item input:disabled, .prop-item select:disabled {
+  background-color: var(--control-bg-disabled_subtle);
+  color: var(--control-fg-disabled);
+  border-color: var(--control-border-disabled);
 }
 
-.component-browser-header h4 {
-    margin: 0;
-    font-weight: 600;
-    font-size: 1.1em;
-    color: var(--surface-fg-primary);
+
+.prop-item-toggle { flex-direction: row; justify-content: space-between; align-items: center; }
+.toggle-switch {
+  width: 36px;
+  height: 20px;
+  background-color: var(--control-border-disabled);
+  border-radius: 10px;
+  padding: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.toggle-knob {
+  width: 16px;
+  height: 16px;
+  background-color: var(--primitives-base-white);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle-switch.disabled { opacity: 0.5; cursor: not-allowed; }
+
+.properties-panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--surface-fg-secondary);
+  padding: var(--spacing-6);
+}
+.properties-panel-placeholder .material-symbols-rounded {
+  font-size: 48px;
+  margin-bottom: var(--spacing-4);
+  color: var(--surface-fg-tertiary);
 }

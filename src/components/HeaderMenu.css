@@ -19,22 +19,14 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* FIX: Refactor .menu-option to use button primitives for consistency */
 .menu-option {
     width: 100%;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-2);
-    margin: var(--spacing-0p5) 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
+    justify-content: flex-start; /* Align content to the left */
     text-align: left;
     font-size: 0.9em;
-    font-family: var(--font-family-sans);
-    color: var(--surface-fg-primary);
-    transition: background-color 0.2s;
+    margin: var(--spacing-0p5) 0;
+    /* The .btn-tertiary class will now handle colors, hover, padding, etc. */
 }
 
 .menu-option:hover:not(:disabled) {
@@ -46,7 +38,6 @@
     cursor: not-allowed;
 }
 
-/* FIX: New container to enforce consistent alignment */
 .checkmark-container {
     width: 20px;
     height: 20px;

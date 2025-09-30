@@ -20,7 +20,7 @@ export const DataBindingPicker = ({ binding, onOpen }: DataBindingPickerProps) =
         </span>
         {/* FIX: The button is now just a visual affordance */}
         <button className="btn-tertiary icon-only" aria-label="Select data binding" tabIndex={-1} style={{pointerEvents: 'none'}}>
-          <span className="material-symbols-outlined">more_horiz</span>
+          <span className="material-symbols-rounded">more_horiz</span>
         </button>
       </div>
       {/* FIX: Show the full path in helper text below */}

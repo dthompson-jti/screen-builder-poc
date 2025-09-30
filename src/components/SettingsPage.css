@@ -49,7 +49,6 @@
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
   font-weight: 600;
-  /* FIX: Add left border for active state */
   border-left-color: var(--control-border-selected);
 }
 

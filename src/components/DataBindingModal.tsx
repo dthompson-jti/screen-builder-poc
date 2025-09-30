@@ -12,14 +12,13 @@ import {
   modalSelectedNodeIdAtom,
   modalComponentSearchQueryAtom,
 } from '../state/atoms';
-// REFACTOR: Use the single, consolidated source of truth for component data.
 import {
   componentListData,
   componentTreeData,
 } from '../data/componentBrowserMock';
 import { BindingConnectionsDropdown } from './BindingConnectionsDropdown';
-import { BoundData, DraggableComponent } from '../types'; // REFACTOR: Import DraggableComponent
-import './DataBindingModal.css';
+import { BoundData, DraggableComponent } from '../types';
+import './DataBindingModal.css'; // FIX: Import new co-located stylesheet
 
 export const DataBindingModal = () => {
   const isOpen = useAtomValue(isDataBindingModalOpenAtom);
@@ -61,9 +60,7 @@ export const DataBindingModal = () => {
     handleClose();
   };
 
-  // REFACTOR: Function now accepts the richer DraggableComponent type.
   const handleSelect = (component: DraggableComponent) => {
-    // All necessary data is already on the component object.
     if (!component.nodeId || !component.nodeName || !component.path) return;
     
     const newBinding: BoundData = {
@@ -82,12 +79,12 @@ export const DataBindingModal = () => {
         <div className="modal-header">
           <h3>Select Data Binding</h3>
           <button className="btn-tertiary icon-only" onClick={handleClose} aria-label="Close">
-            <span className="material-symbols-outlined">close</span>
+            {/* FIX: Standardize icon class */}
+            <span className="material-symbols-rounded">close</span>
           </button>
         </div>
         <div className="modal-content">
           <DataNavigatorView
-            // REFACTOR: Pass the consolidated data to the navigator.
             treeData={componentTreeData}
             componentData={componentListData}
             atoms={{

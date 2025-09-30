@@ -11,7 +11,6 @@ interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps) => {
-  // FIX: Add atom setter to re-open the panel
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
   const handleSettingsClick = () => {

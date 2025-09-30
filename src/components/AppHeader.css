@@ -1,4 +1,4 @@
-/* src/AppHeader.css */
+/* src/components/AppHeader.css */
 
 .app-header {
   flex-shrink: 0;
@@ -34,50 +34,30 @@
   gap: var(--spacing-2);
 }
 
-.icon-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-1p5);
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  opacity: 0.7;
-  color: var(--surface-fg-secondary);
-  transition: opacity 0.2s, background-color 0.2s;
-}
-
-.icon-button:hover:not(:disabled) {
-  background-color: var(--control-bg-secondary-hover);
-  opacity: 1;
-}
-
-.icon-button.small {
-  padding: var(--spacing-1);
-}
-
 .app-header-bottom {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-2) var(--spacing-6);
-  border-bottom: 1px solid var(--surface-border-secondary);
+  /* FIX: The border is REMOVED. The new tab-bar-line will render it. */
   font-size: 0.9em;
 }
 
 .sub-header-left, .sub-header-center, .sub-header-right {
   display: flex;
   align-items: center;
+  /* Apply vertical padding to children instead of the parent */
+  padding-top: var(--spacing-2);
+  padding-bottom: var(--spacing-2);
 }
 
 .sub-header-right {
   position: relative;
   gap: var(--spacing-2);
+  padding-right: var(--spacing-6);
 }
 
 .sub-header-left {
   gap: var(--spacing-4);
+  padding-left: var(--spacing-6);
 }
 .sub-header-center {
   flex-grow: 1;
@@ -119,53 +99,3 @@
   text-overflow: ellipsis;
   max-width: 200px; /* Prevent extremely long names from breaking layout */
 }
-
-.tab-group {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  margin-left: auto;
-  margin-right: auto;
-  /* FIX: Add position relative for the underline */
-  position: relative;
-}
-
-.tab-button {
-  padding: var(--spacing-1p5) var(--spacing-3);
-  background: none;
-  border: none;
-  position: relative;
-  cursor: pointer;
-  transition: color 0.2s;
-  /* FIX: Standardize inactive color */
-  color: var(--surface-fg-quaternary);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.21px;
-}
-
-/* FIX: Standardize hover color to be less jarring */
-.tab-button:hover:not(.active) {
-  color: var(--surface-fg-secondary);
-}
-
-.tab-button.active {
-  color: var(--surface-fg-theme-strong);
-}
-
-/* FIX: Remove pseudo-element in favor of a dedicated div */
-/* .tab-button.active::after ... */
-
-/* FIX: New style for the dedicated underline element */
-.tab-underline {
-  position: absolute;
-  /* This offset aligns the 2px underline with the 1px parent border */
-  bottom: -11px;
-  height: 2px;
-  background-color: var(--surface-fg-theme-strong);
-  transition: left 0.3s ease, width 0.3s ease;
-}
-
-/* --- NOTE: Standardized Button Styles moved to buttons.css --- */

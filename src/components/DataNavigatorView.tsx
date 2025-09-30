@@ -4,13 +4,14 @@ import { useAtom } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from './navigator.js';
+import { PanelHeader } from './PanelHeader'; // FIX: Import new reusable component
+import './panel.css';
 import './navigator.css';
 import { ComponentNode } from '../types';
 
 // --- TYPES ---
 interface BaseComponent { id: string; name: string; }
 interface BaseComponentGroup { title: string; components: BaseComponent[]; }
-// Use ComponentNode from central types to avoid redeclaring BaseNode
 type TNode = ComponentNode;
 
 interface DataNavigatorAtoms {
@@ -100,13 +101,9 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
 
   return (
     <div className="component-browser-container">
+      {/* FIX: Use the reusable PanelHeader component when onClosePanel is provided */}
       {onClosePanel && (
-        <div className="component-browser-header">
-          <h4 style={{ color: 'var(--surface-fg-secondary)' }}>Data navigator</h4>
-          <button className="btn-tertiary icon-only close-panel-button" title="Close Panel" aria-label="Close Panel" onClick={onClosePanel}>
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </div>
+        <PanelHeader title="Data navigator" onClose={onClosePanel} />
       )}
 
       {showBreadcrumb && (
@@ -118,7 +115,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
                   <button className={index === breadcrumbPath.length - 1 ? 'active' : ''} onClick={() => handleBreadcrumbClick(node.id)} disabled={index === breadcrumbPath.length - 1}>
                     {node.name}
                   </button>
-                  {index < breadcrumbPath.length - 1 && <span className="material-symbols-outlined">chevron_right</span>}
+                  {index < breadcrumbPath.length - 1 && <span className="material-symbols-rounded">chevron_right</span>}
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -142,7 +139,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
       </div>
 
       <div className="search-bar-container">
-        <span className="material-symbols-outlined">search</span>
+        <span className="material-symbols-rounded">search</span>
         <input type="text" placeholder={searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 

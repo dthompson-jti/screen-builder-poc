@@ -3,7 +3,6 @@ import { useRef, useEffect, useState } from 'react';
 import { componentTreeData, connectionsDropdownData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
 import { useOnClickOutside } from '../useOnClickOutside';
-// FIX: Import from the JS file, which will be typed by the adjacent .d.ts file
 import { NodeNavigator } from './navigator.js';
 
 interface ConnectionsDropdownProps {

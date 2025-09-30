@@ -113,7 +113,6 @@ function App() {
               {renderLeftPanelContent()}
             </ResizablePanel>
             <div style={{ flex: 1, minWidth: 0 }}>
-              {/* FIX: Pass dragging state to the canvas */}
               <EditorCanvas active={activeItem} overId={overId} isDragging={!!activeItem} />
             </div>
             <ResizablePanel 

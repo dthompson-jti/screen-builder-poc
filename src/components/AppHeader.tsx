@@ -1,6 +1,6 @@
 // src/components/AppHeader.tsx
 import { useAtom } from 'jotai';
-import { useRef, useState, useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { 
   isMenuOpenAtom, 
   appViewModeAtom, 
@@ -11,7 +11,6 @@ import {
 } from '../state/atoms';
 import { HeaderMenu } from './HeaderMenu';
 import { HeaderActionsMenu } from './HeaderActionsMenu';
-// FIX: Add .tsx extension to resolve module import error
 import { NameEditorPopover } from './NameEditorPopover.tsx';
 import './AppHeader.css';
 import './HeaderMenu.css'; 
@@ -51,7 +50,7 @@ export const AppHeader = () => {
       <div className="app-header-top">
         <div className="app-header-left-group"> 
           <button 
-            className="btn-tertiary icon-only" 
+            className="btn btn-tertiary icon-only" 
             title="Toggle Menu" 
             aria-label="Toggle Menu"
             onClick={handleToggleMenu}
@@ -62,10 +61,10 @@ export const AppHeader = () => {
           <h1 className="app-header-title">Screen Studio</h1>
         </div>
         <div className="app-header-actions">
-          <button className="btn-tertiary icon-only" disabled title="Help" aria-label="Help">
-            <span className="material-symbols-rounded">help_outline</span>
+          <button className="btn btn-tertiary icon-only" disabled title="Help" aria-label="Help">
+            <span className="material-symbols-rounded">help</span>
           </button>
-          <button className="btn-tertiary icon-only" disabled title="Close" aria-label="Close">
+          <button className="btn btn-tertiary icon-only" disabled title="Close" aria-label="Close">
             <span className="material-symbols-rounded">close</span>
           </button>
         </div>
@@ -79,7 +78,7 @@ export const AppHeader = () => {
           <div className="form-name-editor">
             <span className="form-name-display">{formName}</span>
             <button 
-              className="btn-tertiary icon-only" 
+              className="btn btn-tertiary icon-only" 
               onClick={() => setIsNameEditorOpen(p => !p)}
               aria-label="Edit form name"
             >
@@ -91,12 +90,14 @@ export const AppHeader = () => {
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>
             <button className={`tab-button ${viewMode === 'settings' ? 'active' : ''}`} onClick={() => handleTabClick('settings')}>Settings</button>
+            {/* FIX: Add the new shared border and underline elements */}
+            <div className="tab-bar-line" />
             <div className="tab-underline" style={underlineStyle} />
           </div>
         </div>
         <div className="sub-header-right">
           <button className="btn btn-primary">Save</button>
-          <button className="btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
+          <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
             <span className="material-symbols-rounded">more_horiz</span>
           </button>
           {isSettingsMenuOpen && <HeaderActionsMenu />}

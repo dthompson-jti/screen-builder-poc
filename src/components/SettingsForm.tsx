@@ -1,5 +1,4 @@
 // src/components/SettingsForm.tsx
-// FIX: Remove unused React import
 import { useEffect, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { formNameAtom, focusIntentAtom } from '../state/atoms';

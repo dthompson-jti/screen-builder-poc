@@ -6,7 +6,8 @@ import { componentListData, componentTreeData } from '../data/componentBrowserMo
 import { DraggableComponent } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
-import './navigator.css';
+import './panel.css'; // FIX: Import shared panel styles
+import './navigator.css'; // FIX: Import navigator-specific styles
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -16,7 +17,7 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
     <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
-      <span className="material-symbols-outlined component-icon" style={iconStyle}>{component.icon}</span>
+      <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
       <span className="component-name">{component.name}</span>
     </li>
   );

@@ -12,7 +12,8 @@ export const FullScreenPlaceholder: React.FC<FullScreenPlaceholderProps> = ({ ic
   return (
     <div className="fullscreen-placeholder-wrapper">
       <div className="fullscreen-placeholder-card">
-        <span className="material-symbols-outlined">{icon}</span>
+        {/* FIX: Standardize icon class */}
+        <span className="material-symbols-rounded">{icon}</span>
         <h3>{title}</h3>
         <p>{message}</p>
       </div>
