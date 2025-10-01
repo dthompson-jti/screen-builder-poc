@@ -32,7 +32,7 @@ export const PropertiesPanel = () => {
 
   useLayoutEffect(() => {
     if (tabsContainerRef.current) {
-      const activeTabNode = tabsContainerRef.current.querySelector<HTMLButtonElement>(`.tab-button.${activeTab}`);
+      const activeTabNode = tabsContainerRef.current.querySelector<HTMLButtonElement>(`.tab-button.active`);
       if (activeTabNode) {
         setUnderlineStyle({
           left: activeTabNode.offsetLeft,
@@ -157,8 +157,7 @@ export const PropertiesPanel = () => {
               >
                 Advanced
               </button>
-              {/* FIX: Add the new shared border and underline elements */}
-              <div className="tab-bar-line" />
+              {/* FIX: Remove the tab-bar-line element. The underline is now standalone. */}
               <div className="tab-underline" style={underlineStyle} />
             </div>
           </div>

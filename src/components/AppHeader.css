@@ -37,14 +37,15 @@
 .app-header-bottom {
   display: flex;
   align-items: center;
-  /* FIX: The border is REMOVED. The new tab-bar-line will render it. */
+  /* FIX: Restore the global, full-width border. */
+  border-bottom: 1px solid var(--surface-border-secondary);
   font-size: 0.9em;
 }
 
 .sub-header-left, .sub-header-center, .sub-header-right {
   display: flex;
   align-items: center;
-  /* Apply vertical padding to children instead of the parent */
+  /* FIX: Restore padding to create space between content and the new border. */
   padding-top: var(--spacing-2);
   padding-bottom: var(--spacing-2);
 }

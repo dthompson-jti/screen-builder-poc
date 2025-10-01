@@ -90,8 +90,7 @@ export const AppHeader = () => {
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>
             <button className={`tab-button ${viewMode === 'settings' ? 'active' : ''}`} onClick={() => handleTabClick('settings')}>Settings</button>
-            {/* FIX: Add the new shared border and underline elements */}
-            <div className="tab-bar-line" />
+            {/* FIX: Remove the tab-bar-line element. The underline is now standalone. */}
             <div className="tab-underline" style={underlineStyle} />
           </div>
         </div>

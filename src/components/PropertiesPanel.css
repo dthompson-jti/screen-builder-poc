@@ -11,18 +11,17 @@
 .panel-header {
   padding: 0;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--surface-border-secondary);
   position: relative;
+  display: flex;
+  min-height: 45px; /* Aligns with other header heights */
+  /* FIX: Restore the border for this specific panel header. */
+  border-bottom: 1px solid var(--surface-border-secondary);
 }
 
-/* 
-  NOTE: All tab-related styles (.panel-tabs, .tab-button, .tab-underline) 
-  have been REMOVED from this file and moved to the new shared tabs.css. 
-  The .panel-tabs class remains as a structural element.
-*/
 .panel-tabs { 
   display: flex; 
   position: relative;
+  width: 100%;
 }
 
 .panel-content { padding: var(--spacing-4); flex: 1; overflow-y: auto; }

@@ -19,14 +19,15 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX: Refactor .menu-option to use button primitives for consistency */
 .menu-option {
     width: 100%;
-    justify-content: flex-start; /* Align content to the left */
+    /* FIX: Explicitly override the .btn default to left-align content. */
+    justify-content: flex-start;
+    /* FIX: Restore the gap between the checkmark container and the text label. */
+    gap: var(--spacing-2);
     text-align: left;
     font-size: 0.9em;
     margin: var(--spacing-0p5) 0;
-    /* The .btn-tertiary class will now handle colors, hover, padding, etc. */
 }
 
 .menu-option:hover:not(:disabled) {
@@ -43,7 +44,7 @@
     height: 20px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* FIX: Remove horizontal centering to align the checkmark to the left. */
     color: var(--surface-fg-theme-primary);
 }
 
