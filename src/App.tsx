@@ -1,4 +1,8 @@
 // src/App.tsx
+// This is the main application component.
+// NOTE: This file is at the root of /src, so imports from sibling directories
+// like /state or /components will start with './'.
+
 import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';

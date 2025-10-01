@@ -1,13 +1,13 @@
 // src/useCanvasDnd.ts
 import { useState } from 'react';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { Active, DataRef, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './state/atoms';
 import { FormComponent } from './types';
 
 export const useCanvasDnd = () => {
-  const setCanvasComponents = useSetAtom(canvasComponentsAtom);
+  const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
   const setSelectedId = useSetAtom(selectedCanvasComponentIdAtom);
   
   const [activeItem, setActiveItem] = useState<Active | null>(null);
@@ -68,8 +68,9 @@ export const useCanvasDnd = () => {
         }
     }
 
+    const overIndex = findComponentIndex(over.id);
+
     setCanvasComponents((prev) => {
-      const overIndex = findComponentIndex(over.id, prev);
       const newIndex = overIndex !== -1 ? overIndex : prev.length;
       const updatedComponents = [...prev.slice(0, newIndex), newComponent, ...prev.slice(newIndex)];
       setSelectedId(newComponent.id);
@@ -79,27 +80,24 @@ export const useCanvasDnd = () => {
   
   const handleReorderComponent = (active: Active, over: Over) => {
     if (active.id !== over.id) {
-      setCanvasComponents((items) => {
-        const oldIndex = findComponentIndex(active.id, items);
-        let newIndex = findComponentIndex(over.id, items);
+      const oldIndex = findComponentIndex(active.id);
+      let newIndex = findComponentIndex(over.id);
 
-        if (over.id === 'bottom-drop-zone') {
-          newIndex = items.length;
-        }
-        
-        if (oldIndex !== -1 && newIndex !== -1) {
-          return arrayMove(items, oldIndex, newIndex);
-        }
-        return items;
-      });
+      if (over.id === 'bottom-drop-zone') {
+        newIndex = canvasComponents.length;
+      }
+      
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setCanvasComponents((items) => arrayMove(items, oldIndex, newIndex));
+      }
     }
   };
   
-  const findComponentIndex = (id: UniqueIdentifier, components: FormComponent[]) => {
+  const findComponentIndex = (id: UniqueIdentifier) => {
     if (id === 'bottom-drop-zone' || id === 'canvas-drop-area') {
-      return components.length;
+      return canvasComponents.length;
     }
-    return components.findIndex(c => c.id === id);
+    return canvasComponents.findIndex(c => c.id === id);
   };
   
   const resetState = () => {
