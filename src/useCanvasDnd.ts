@@ -6,7 +6,6 @@ import { arrayMove } from '@dnd-kit/sortable';
 import {
   canvasComponentsAtom,
   selectedCanvasComponentIdAtom,
-  activeToolbarTabAtom,
 } from './state/atoms';
 import { FormComponent, BoundData, DraggableComponent } from './types';
 
@@ -16,8 +15,7 @@ import { FormComponent, BoundData, DraggableComponent } from './types';
 export const useCanvasDnd = () => {
   const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
   const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
-  const [activeTabId] = useAtom(activeToolbarTabAtom);
-
+  
   const [activeItem, setActiveItem] = useState<Active | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
 
@@ -40,9 +38,12 @@ export const useCanvasDnd = () => {
     
     // --- Logic for adding a NEW component from the browser ---
     if (active.data.current?.isNew) {
-      const draggedData = active.data.current as DraggableComponent;
+      const draggedData = active.data.current as DraggableComponent & { origin: 'data' | 'general' };
       const newId = `${draggedData.id}-${Date.now()}`;
-      const origin = activeTabId === 'data' ? 'data' : 'general';
+      
+      // FIX: Use the intrinsic `origin` from the draggable data payload,
+      // instead of relying on the active tab's ambient state.
+      const origin = draggedData.origin;
       
       let binding: BoundData | null = null;
       if (origin === 'data' && draggedData.nodeId && draggedData.nodeName && draggedData.path) {

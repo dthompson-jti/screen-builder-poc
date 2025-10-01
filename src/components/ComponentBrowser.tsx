@@ -12,7 +12,8 @@ import './navigator.css';
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `draggable-${component.id}`,
-    data: { type: component.type, name: component.name, icon: component.icon, id: component.id, isNew: true },
+    // FIX: Add the intrinsic `origin` property to the draggable data payload.
+    data: { ...component, isNew: true, origin: 'data' },
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
@@ -40,7 +41,6 @@ export const ComponentBrowser = () => {
         searchQueryAtom: componentSearchQueryAtom,
       }}
       renderComponentItem={(component) => <DraggableListItem component={component as DraggableComponent} />}
-      // FIX: Accept the complete onClose handler from the render prop and pass it down.
       renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
         <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />
       )}
