@@ -18,9 +18,7 @@ import './panel.css';
 
 type ActiveTab = 'general' | 'advanced';
 
-// FIX: Create a stable, memoized sub-component for the panel's content.
-// This is the architecturally correct way to handle conditional rendering and prevent
-// React's reconciler from getting confused and unmounting sibling elements.
+// FIX: Update component to correctly render based on component.origin
 const PanelContent = React.memo(({ 
   selectedComponent,
   activeTab,
@@ -32,6 +30,7 @@ const PanelContent = React.memo(({
 }) => {
   
   const renderBindingControl = () => {
+    // FIX: Check component origin to determine which control to render
     if (selectedComponent.origin === 'general') {
       return (
         <div className="prop-item">
@@ -43,9 +42,11 @@ const PanelContent = React.memo(({
         </div>
       );
     }
+    // FIX: Check component origin to determine which control to render
     if (selectedComponent.origin === 'data') {
       return (
         <div className="prop-item">
+          {/* No label needed per spec, section header serves as label */}
           <StaticBindingDisplay binding={selectedComponent.binding} />
         </div>
       );
@@ -172,7 +173,6 @@ export const PropertiesPanel = () => {
             </div>
           </div>
           <div className="panel-content">
-            {/* FIX: Render the new stable component instead of calling a function. */}
             <PanelContent 
               selectedComponent={selectedComponent} 
               activeTab={activeTab}

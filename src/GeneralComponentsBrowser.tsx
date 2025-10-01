@@ -4,7 +4,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { isComponentBrowserVisibleAtom } from '../state/atoms';
 import { generalComponents } from '../data/generalComponentsMock';
 import { DraggableComponent } from '../types';
-import './navigator.css'; // Re-use styles
+import { PanelHeader } from './PanelHeader';
+import './panel.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -14,13 +15,13 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
       name: component.name, 
       icon: component.icon, 
       id: component.id, 
-      isNew: true 
+      isNew: true,
+      origin: 'general',
     },
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
     <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
-      {/* FIX: Standardize icon class */}
       <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
       <span className="component-name">{component.name}</span>
     </li>
@@ -36,23 +37,12 @@ export const GeneralComponentsBrowser = () => {
 
   return (
     <div className="component-browser-container">
-      <div className="component-browser-header">
-        <h4>General Components</h4>
-        <button 
-          className="btn-tertiary icon-only close-panel-button" 
-          title="Close Panel" 
-          aria-label="Close Panel"
-          onClick={handleClosePanel}
-        >
-          {/* FIX: Standardize icon class */}
-          <span className="material-symbols-rounded">close</span>
-        </button>
-      </div>
+      <PanelHeader title="General Components" onClose={handleClosePanel} />
       <div className="component-list-container">
         <ul className="component-list">
           <li>
             <ul>
-              {generalComponents.map((component) => (
+              {generalComponents.map((component: DraggableComponent) => (
                 <DraggableListItem key={component.id} component={component} />
               ))}
             </ul>

@@ -1,31 +1,12 @@
 // src/types.ts
 
-// --- Component & Canvas Types ---
-export interface FormComponent {
-  id: string;
-  type: string;
-  name: string;
-  origin: 'data' | 'general';
-  binding: BoundData | null;
-}
-
-// --- Data Binding Types ---
-export interface BoundData {
-  nodeId: string;
-  nodeName: string;
-  fieldId: string;
-  fieldName: string;
-  path: string;
-}
-
-// --- Component Browser & Mock Data Types ---
 export interface DraggableComponent {
   id: string;
   name: string;
-  type: 'field' | 'widget' | 'layout';
+  type: 'widget' | 'field';
   icon: string;
   iconColor?: string;
-  // REFACTOR: Add optional properties to support data binding context
+  // Properties for data binding modal
   nodeId?: string;
   nodeName?: string;
   path?: string;
@@ -36,6 +17,22 @@ export interface ComponentGroup {
   components: DraggableComponent[];
 }
 
+export interface BoundData {
+  nodeId: string;
+  nodeName: string;
+  fieldId: string;
+  fieldName: string;
+  path: string;
+}
+
+export interface FormComponent {
+  id: string;
+  name: string;
+  type: 'widget' | 'field';
+  binding?: BoundData | null;
+  origin?: 'data' | 'general'; // FIX: Add origin property
+}
+
 export interface DropdownItem {
   id: string;
   name: string;
@@ -44,6 +41,6 @@ export interface DropdownItem {
 
 export interface ComponentNode {
   id: string;
-  name:string;
+  name: string;
   connections: number;
 }

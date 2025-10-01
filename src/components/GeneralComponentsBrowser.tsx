@@ -4,7 +4,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { isComponentBrowserVisibleAtom } from '../state/atoms';
 import { generalComponents } from '../data/generalComponentsMock';
 import { DraggableComponent } from '../types';
-import { PanelHeader } from './PanelHeader'; // FIX: Import new reusable component
+import { PanelHeader } from './PanelHeader';
 import './panel.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
@@ -15,12 +15,14 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
       name: component.name, 
       icon: component.icon, 
       id: component.id, 
-      isNew: true 
+      isNew: true,
+      origin: 'general', // FIX: Added origin property
     },
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
     <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
+      {/* FIX: Standardize icon class */}
       <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
       <span className="component-name">{component.name}</span>
     </li>
