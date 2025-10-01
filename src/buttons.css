@@ -78,6 +78,8 @@
   background: none;
   border: 1px solid transparent; 
   color: var(--surface-fg-secondary);
+  /* FIX: Restore the border-radius that was inadvertently removed. */
+  border-radius: var(--spacing-2);
 }
 .btn-tertiary.icon-text {
   padding: var(--spacing-1p5) var(--spacing-2);

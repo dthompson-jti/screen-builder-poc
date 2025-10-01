@@ -19,11 +19,10 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.menu-option {
+/* FIX: Use a more specific selector to robustly override the base .btn style */
+.header-menu-popover .menu-option {
     width: 100%;
-    /* FIX: Explicitly override the .btn default to left-align content. */
     justify-content: flex-start;
-    /* FIX: Restore the gap between the checkmark container and the text label. */
     gap: var(--spacing-2);
     text-align: left;
     font-size: 0.9em;
@@ -44,7 +43,6 @@
     height: 20px;
     display: flex;
     align-items: center;
-    /* FIX: Remove horizontal centering to align the checkmark to the left. */
     color: var(--surface-fg-theme-primary);
 }
 

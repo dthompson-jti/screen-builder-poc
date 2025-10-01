@@ -56,10 +56,10 @@ export class NodeNavigator {
   _applySemanticText() {
     const connectionsNode = this.container.querySelector('.connections-node');
     if (connectionsNode) {
-        const selectedData = this.nodeData[this.selectedIndex];
         const textSpan = connectionsNode.querySelector('span');
-        if (selectedData && textSpan) {
-            textSpan.innerText = `${selectedData.connections} connections`;
+        if (textSpan) {
+            // FIX: Change text to "View Relations" and add a dropdown icon
+            textSpan.innerHTML = 'View Relations <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
         }
     }
   }
@@ -124,8 +124,8 @@ export class NodeNavigator {
     }
 
     if (isInstant) {
-      // The Connections button is always blanked initially; its text is set by animations.
-      textSpan.innerText = (type === 'connections') ? '' : newText;
+      // The Connections button is always blanked initially; its text is set by animations/semantic text.
+      textSpan.innerHTML = (type === 'connections') ? '' : newText;
       gsap.set(button, { clearProps: 'all' });
       if (type === 'selected') {
         Object.assign(button.style, { borderColor: this.colors.selectedBorder, backgroundColor: this.colors.selectedBg, color: this.colors.selectedColor, borderWidth: '2px', padding: '6px 11px', transform: 'translateY(0)' });
@@ -159,16 +159,14 @@ export class NodeNavigator {
     // --- Phase 0: Pre-Animation Setup ---
     this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: targetId } }));
     
-    // Instantly blank the current connections button text. It will slide out blank.
     const connectionsNode = this.container.querySelector('.connections-node');
     if (connectionsNode) {
-      connectionsNode.querySelector('span').innerText = '';
+      connectionsNode.querySelector('span').innerHTML = '';
     }
-    // If moving forward, also blank the node that will slide INTO view.
     if (!isBackward) {
       const incomingNode = this.elementPool[centerSlot + 2];
       if (incomingNode) {
-        incomingNode.querySelector('span').innerText = '';
+        incomingNode.querySelector('span').innerHTML = '';
       }
     }
 
@@ -184,15 +182,13 @@ export class NodeNavigator {
         // Phase 2 Step 2: Reset layout instantly.
         this._updateLayoutAndPositionElements(true, false);
 
-        // Phase 2 Step 3: Begin the cross-fade on the new Connections button.
+        // Phase 2 Step 3: Instantly update the connections button text.
+        // FIX: Remove text cross-fade animation and set innerHTML directly.
         const newConnectionsNode = this.container.querySelector('.connections-node');
         if (newConnectionsNode) {
-            const selectedData = this.nodeData[this.selectedIndex];
             const textSpan = newConnectionsNode.querySelector('span');
-            if (selectedData && textSpan) {
-                const newText = `${selectedData.connections} connections`;
-                gsap.set(textSpan, { text: newText, opacity: 0 });
-                gsap.to(textSpan, { opacity: 1, duration: 0.2, ease: 'power2.out', delay: 0.05 });
+            if (textSpan) {
+                textSpan.innerHTML = 'View Relations <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
             }
         }
 

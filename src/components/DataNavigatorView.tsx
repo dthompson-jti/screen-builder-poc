@@ -4,7 +4,7 @@ import { useAtom } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from './navigator.js';
-import { PanelHeader } from './PanelHeader'; // FIX: Import new reusable component
+import { PanelHeader } from './PanelHeader';
 import './panel.css';
 import './navigator.css';
 import { ComponentNode } from '../types';
@@ -101,7 +101,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
 
   return (
     <div className="component-browser-container">
-      {/* FIX: Use the reusable PanelHeader component when onClosePanel is provided */}
       {onClosePanel && (
         <PanelHeader title="Data navigator" onClose={onClosePanel} />
       )}
@@ -134,7 +133,10 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
             </div>
             <div className="static-label last-node-label">Last node</div>
             <div className="static-label selected-node-label">Selected node</div>
-            <div className="static-label connected-node-label">Connections</div>
+            {/* FIX: Change the static subtext to be dynamic */}
+            <div className="static-label connected-node-label">
+              {selectedNode ? `${selectedNode.connections} Relations` : 'Relations'}
+            </div>
         </div>
       </div>
 

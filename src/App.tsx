@@ -36,8 +36,9 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-const INITIAL_PANEL_WIDTH = 456; 
-const MIN_PANEL_WIDTH = 437;
+// FIX: Increase both initial and min width by 32px.
+const INITIAL_PANEL_WIDTH = 488; 
+const MIN_PANEL_WIDTH = 501;
 
 function App() {
   const canvasComponents = useAtomValue(canvasComponentsAtom);
