@@ -40,7 +40,8 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const lowerCaseQuery = query.toLowerCase();
   const filteredEntities = data.entities.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredCollections = data.collections.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
-  const filteredTransients = data.transients.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
+  // FIX: Access the correct property 'transientEntityFields' instead of 'transients'
+  const filteredTransientEntities = data.transientEntityFields.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
 
   return (
     <div className="connections-dropdown-container" ref={dropdownRef}>
@@ -80,8 +81,9 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
             <span>{item.name}</span>
           </li>
         ))}
-        {filteredTransients.length > 0 && <li className="dropdown-header">Transients</li>}
-        {filteredTransients.map((item: DropdownItem) => (
+        {/* FIX: Update the header and map over the correctly named variable */}
+        {filteredTransientEntities.length > 0 && <li className="dropdown-header">Transient Entity Fields</li>}
+        {filteredTransientEntities.map((item: DropdownItem) => (
           <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
             <span className="material-symbols-rounded item-icon transient">data_object</span>
             <span>{item.name}</span>

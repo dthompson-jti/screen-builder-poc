@@ -16,7 +16,8 @@ import {
   componentListData,
   componentTreeData,
 } from '../data/componentBrowserMock';
-import { BindingConnectionsDropdown } from './BindingConnectionsDropdown';
+// FIX: Import the primary, corrected ConnectionsDropdown component
+import { ConnectionsDropdown } from './ConnectionsDropdown';
 import { BoundData, DraggableComponent } from '../types';
 import './DataBindingModal.css';
 
@@ -29,10 +30,8 @@ export const DataBindingModal = () => {
   const setSearchQuery = useSetAtom(modalComponentSearchQueryAtom);
 
   useEffect(() => {
-    // When the modal opens, set its internal state from the request
     if (request) {
       setPendingSelection(request.currentBinding || null);
-      // Reset navigation state each time
       setSelectedNodeId('arrest');
       setSearchQuery('');
     }
@@ -97,9 +96,9 @@ export const DataBindingModal = () => {
                 onSelect={handleSelect}
               />
             )}
-            // FIX: Accept the complete onClose handler from the render prop and pass it down.
+            // FIX: Use the primary, corrected ConnectionsDropdown component
             renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
-                <BindingConnectionsDropdown 
+                <ConnectionsDropdown 
                     navigator={navigator} 
                     selectedNodeId={selectedNodeId} 
                     onClose={onClose}
