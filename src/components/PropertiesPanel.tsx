@@ -18,9 +18,6 @@ import './panel.css';
 
 type ActiveTab = 'general' | 'advanced';
 
-// FIX: Create a stable, memoized sub-component for the panel's content.
-// This is the architecturally correct way to handle conditional rendering and prevent
-// React's reconciler from getting confused and unmounting sibling elements.
 const PanelContent = React.memo(({ 
   selectedComponent,
   activeTab,
@@ -137,14 +134,14 @@ export const PropertiesPanel = () => {
     }
   }, [bindingResult, setAllComponents, setBindingResult]);
 
-  const handleOpenBindingModal = () => {
+  const handleOpenBindingModal = React.useCallback(() => {
     if (selectedComponent) {
       setBindingRequest({
         componentId: selectedComponent.id,
         currentBinding: selectedComponent.binding,
       });
     }
-  };
+  }, [selectedComponent, setBindingRequest]);
 
   const panelTitle = selectedComponent ? selectedComponent.name : "No item selected";
 
@@ -171,8 +168,10 @@ export const PropertiesPanel = () => {
               <div className="tab-underline" style={underlineStyle} />
             </div>
           </div>
-          <div className="panel-content">
-            {/* FIX: Render the new stable component instead of calling a function. */}
+          {/* FIX: Add a `key` prop to the content container. This forces React to */}
+          {/* completely re-mount the content when the selected component ID changes, */}
+          {/* guaranteeing a correct render and bypassing the reconciliation bug. */}
+          <div className="panel-content" key={selectedComponent.id}>
             <PanelContent 
               selectedComponent={selectedComponent} 
               activeTab={activeTab}
