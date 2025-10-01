@@ -1,19 +1,16 @@
 /* src/components/StaticBindingDisplay.css */
 .static-binding-display {
-  padding: var(--spacing-2) var(--spacing-3);
-  background-color: var(--surface-bg-secondary);
-  border-radius: 6px;
-  border: 1px solid var(--surface-border-secondary);
-}
-
-.static-binding-display p {
-  margin: 0;
+  /* FIX: Remove all box styling (background, border, padding) to render as plain text. */
+  /* The parent .prop-item provides the correct layout and spacing. */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--surface-fg-tertiary); /* Use tertiary color as requested */
   font-size: 0.9em;
-  color: var(--surface-fg-primary);
   font-weight: 500;
 }
 
-.static-binding-display span {
-  font-size: 0.8em;
-  color: var(--surface-fg-secondary);
+/* FIX: Style for the chevron icon */
+.static-binding-display .chevron {
+  font-size: 18px;
 }

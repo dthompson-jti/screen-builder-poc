@@ -6,8 +6,8 @@ import { componentListData, componentTreeData } from '../data/componentBrowserMo
 import { DraggableComponent } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
-import './panel.css'; // FIX: Import shared panel styles
-import './navigator.css'; // FIX: Import navigator-specific styles
+import './panel.css';
+import './navigator.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -40,8 +40,9 @@ export const ComponentBrowser = () => {
         searchQueryAtom: componentSearchQueryAtom,
       }}
       renderComponentItem={(component) => <DraggableListItem component={component as DraggableComponent} />}
-      renderConnectionsDropdown={(navigator, selectedNodeId) => (
-        <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={() => navigator?.setConnectedNodeActive(false)} />
+      // FIX: Accept the complete onClose handler from the render prop and pass it down.
+      renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
+        <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />
       )}
       onClosePanel={handleClosePanel}
       showBreadcrumb={isShowBreadcrumb}

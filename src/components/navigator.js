@@ -58,8 +58,8 @@ export class NodeNavigator {
     if (connectionsNode) {
         const textSpan = connectionsNode.querySelector('span');
         if (textSpan) {
-            // FIX: Change text to "View Relations" and add a dropdown icon
-            textSpan.innerHTML = 'View Relations <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
+            // FIX: Change text to "View Related"
+            textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
         }
     }
   }
@@ -124,7 +124,6 @@ export class NodeNavigator {
     }
 
     if (isInstant) {
-      // The Connections button is always blanked initially; its text is set by animations/semantic text.
       textSpan.innerHTML = (type === 'connections') ? '' : newText;
       gsap.set(button, { clearProps: 'all' });
       if (type === 'selected') {
@@ -156,7 +155,6 @@ export class NodeNavigator {
     const animationDistance = this.layout.slideDistance * (isBackward ? 1 : -1);
     const centerSlot = Math.floor(this.poolSize / 2);
 
-    // --- Phase 0: Pre-Animation Setup ---
     this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: targetId } }));
     
     const connectionsNode = this.container.querySelector('.connections-node');
@@ -173,22 +171,19 @@ export class NodeNavigator {
     const tl = gsap.timeline({
       onComplete: () => {
         this.selectedIndex = targetIndex;
-        // Phase 2 Step 1: Reorder DOM for infinite scroll
         if (isBackward) {
             for (let i = 0; i < Math.abs(indexDifference); i++) { this.track.prepend(this.track.lastElementChild); }
         } else {
             for (let i = 0; i < indexDifference; i++) { this.track.appendChild(this.track.firstElementChild); }
         }
-        // Phase 2 Step 2: Reset layout instantly.
         this._updateLayoutAndPositionElements(true, false);
 
-        // Phase 2 Step 3: Instantly update the connections button text.
-        // FIX: Remove text cross-fade animation and set innerHTML directly.
         const newConnectionsNode = this.container.querySelector('.connections-node');
         if (newConnectionsNode) {
             const textSpan = newConnectionsNode.querySelector('span');
             if (textSpan) {
-                textSpan.innerHTML = 'View Relations <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
+                // FIX: Update text to "View Related"
+                textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
             }
         }
 
@@ -196,7 +191,6 @@ export class NodeNavigator {
       }
     });
 
-    // Phase 1: The Slide Animation
     tl.to(this.track, { x: `+=${animationDistance}`, duration: this.duration, ease: this.ease }, 0);
 
     this.elementPool.forEach((node, i) => {

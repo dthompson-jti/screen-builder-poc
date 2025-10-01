@@ -14,7 +14,6 @@
   position: relative;
   display: flex;
   min-height: 45px; /* Aligns with other header heights */
-  /* FIX: Restore the border for this specific panel header. */
   border-bottom: 1px solid var(--surface-border-secondary);
 }
 
@@ -36,6 +35,10 @@
   padding-bottom: var(--spacing-2);
 }
 .prop-item, .prop-item-toggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
+
+/* FIX: Remove the special direct-child selector, as it's no longer needed. */
+/* The .prop-item wrapper now provides the correct margin automatically. */
+
 .prop-item label, .prop-item-toggle label {
   font-size: 0.9em;
   font-weight: 500;

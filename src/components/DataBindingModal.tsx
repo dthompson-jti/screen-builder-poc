@@ -18,7 +18,7 @@ import {
 } from '../data/componentBrowserMock';
 import { BindingConnectionsDropdown } from './BindingConnectionsDropdown';
 import { BoundData, DraggableComponent } from '../types';
-import './DataBindingModal.css'; // FIX: Import new co-located stylesheet
+import './DataBindingModal.css';
 
 export const DataBindingModal = () => {
   const isOpen = useAtomValue(isDataBindingModalOpenAtom);
@@ -79,7 +79,6 @@ export const DataBindingModal = () => {
         <div className="modal-header">
           <h3>Select Data Binding</h3>
           <button className="btn-tertiary icon-only" onClick={handleClose} aria-label="Close">
-            {/* FIX: Standardize icon class */}
             <span className="material-symbols-rounded">close</span>
           </button>
         </div>
@@ -98,11 +97,12 @@ export const DataBindingModal = () => {
                 onSelect={handleSelect}
               />
             )}
-            renderConnectionsDropdown={(navigator, selectedNodeId) => (
+            // FIX: Accept the complete onClose handler from the render prop and pass it down.
+            renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
                 <BindingConnectionsDropdown 
                     navigator={navigator} 
                     selectedNodeId={selectedNodeId} 
-                    onClose={() => navigator?.setConnectedNodeActive(false)}
+                    onClose={onClose}
                 />
             )}
             showBreadcrumb={true}

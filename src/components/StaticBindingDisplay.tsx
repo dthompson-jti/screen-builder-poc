@@ -11,10 +11,12 @@ export const StaticBindingDisplay = ({ binding }: StaticBindingDisplayProps) => 
     return null;
   }
 
+  // FIX: Render the Node Name > Field Name format
   return (
     <div className="static-binding-display">
-      <p>{binding.fieldName}</p>
-      <span>{binding.path}</span>
+      <span>{binding.nodeName}</span>
+      <span className="material-symbols-rounded chevron">chevron_right</span>
+      <span>{binding.fieldName}</span>
     </div>
   );
 };

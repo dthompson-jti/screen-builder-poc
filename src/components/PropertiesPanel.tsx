@@ -1,5 +1,5 @@
 // src/components/PropertiesPanel.tsx
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
   canvasComponentsAtom,
@@ -12,10 +12,92 @@ import { DataBindingPicker } from './DataBindingPicker';
 import { StaticBindingDisplay } from './StaticBindingDisplay';
 import { FullScreenPlaceholder } from './FullScreenPlaceholder';
 import { PanelHeader } from './PanelHeader';
+import { FormComponent } from '../types';
 import './PropertiesPanel.css';
 import './panel.css';
 
 type ActiveTab = 'general' | 'advanced';
+
+// FIX: Create a stable, memoized sub-component for the panel's content.
+// This is the architecturally correct way to handle conditional rendering and prevent
+// React's reconciler from getting confused and unmounting sibling elements.
+const PanelContent = React.memo(({ 
+  selectedComponent,
+  activeTab,
+  onOpenBindingModal 
+}: { 
+  selectedComponent: FormComponent,
+  activeTab: ActiveTab,
+  onOpenBindingModal: () => void
+}) => {
+  
+  const renderBindingControl = () => {
+    if (selectedComponent.origin === 'general') {
+      return (
+        <div className="prop-item">
+          <label>Data binding</label>
+          <DataBindingPicker 
+            binding={selectedComponent.binding}
+            onOpen={onOpenBindingModal}
+          />
+        </div>
+      );
+    }
+    if (selectedComponent.origin === 'data') {
+      return (
+        <div className="prop-item">
+          <StaticBindingDisplay binding={selectedComponent.binding} />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  if (activeTab === 'general') {
+    return (
+      <>
+        <div className="prop-section">
+          <h4>Data</h4>
+          {renderBindingControl()}
+        </div>
+        <div className="prop-section">
+          <h4>Display</h4>
+          <div className="prop-item">
+            <label>Placeholder text</label>
+            <input type="text" value="Enter placeholder text" disabled />
+          </div>
+          <div className="prop-item">
+            <label>Label</label>
+            <input type="text" value={selectedComponent.name} disabled />
+          </div>
+          <div className="prop-item">
+            <label>Label position</label>
+            <select disabled><option>Left</option></select>
+          </div>
+          <div className="prop-item-toggle">
+            <label>Required</label>
+            <div className="toggle-switch disabled">
+              <div className="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (activeTab === 'advanced') {
+    return (
+      <FullScreenPlaceholder 
+        icon="construction"
+        title="Under Construction"
+        message="Advanced settings will be available here soon."
+      />
+    );
+  }
+
+  return null;
+});
+
 
 export const PropertiesPanel = () => {
   const selectedId = useAtomValue(selectedCanvasComponentIdAtom);
@@ -64,78 +146,7 @@ export const PropertiesPanel = () => {
     }
   };
 
-  const renderBindingControl = () => {
-    if (!selectedComponent) return null;
-
-    if (selectedComponent.origin === 'general') {
-      return (
-        <div className="prop-item">
-          <label>Data binding</label>
-          <DataBindingPicker 
-            binding={selectedComponent.binding}
-            onOpen={handleOpenBindingModal}
-          />
-        </div>
-      );
-    }
-
-    if (selectedComponent.origin === 'data') {
-      return (
-        <div className="prop-item">
-          <label>Data binding</label>
-          <StaticBindingDisplay binding={selectedComponent.binding} />
-        </div>
-      );
-    }
-
-    return null;
-  };
-
   const panelTitle = selectedComponent ? selectedComponent.name : "No item selected";
-
-  const renderContent = () => {
-    if (activeTab === 'general') {
-      return (
-        <>
-          <div className="prop-section">
-            <h4>Data</h4>
-            {renderBindingControl()}
-          </div>
-          <div className="prop-section">
-            <h4>Display</h4>
-            <div className="prop-item">
-              <label>Placeholder text</label>
-              <input type="text" value="Enter placeholder text" disabled />
-            </div>
-            <div className="prop-item">
-              <label>Label</label>
-              <input type="text" value={selectedComponent?.name} disabled />
-            </div>
-            <div className="prop-item">
-              <label>Label position</label>
-              <select disabled><option>Left</option></select>
-            </div>
-            <div className="prop-item-toggle">
-              <label>Required</label>
-              <div className="toggle-switch disabled">
-                <div className="toggle-knob"></div>
-              </div>
-            </div>
-          </div>
-        </>
-      );
-    }
-    if (activeTab === 'advanced') {
-      return (
-        <FullScreenPlaceholder 
-          icon="construction"
-          title="Under Construction"
-          message="Advanced settings will be available here soon."
-        />
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="properties-panel-container">
@@ -157,12 +168,16 @@ export const PropertiesPanel = () => {
               >
                 Advanced
               </button>
-              {/* FIX: Remove the tab-bar-line element. The underline is now standalone. */}
               <div className="tab-underline" style={underlineStyle} />
             </div>
           </div>
           <div className="panel-content">
-            {renderContent()}
+            {/* FIX: Render the new stable component instead of calling a function. */}
+            <PanelContent 
+              selectedComponent={selectedComponent} 
+              activeTab={activeTab}
+              onOpenBindingModal={handleOpenBindingModal}
+            />
           </div>
         </>
       ) : (

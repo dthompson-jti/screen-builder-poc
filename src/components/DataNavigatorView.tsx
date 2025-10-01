@@ -24,7 +24,7 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   componentData: Record<string, TGroup[]>;
   atoms: DataNavigatorAtoms;
   renderComponentItem: (component: TGroup['components'][0]) => React.ReactNode;
-  renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string) => React.ReactNode;
+  renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string, onClose: () => void) => React.ReactNode;
   onClosePanel?: () => void;
   showBreadcrumb?: boolean;
 }
@@ -81,6 +81,13 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
     }
   }, [isDropdownVisible]);
 
+  const handleCloseDropdown = () => {
+    setIsDropdownVisible(false);
+    if (instanceRef.current) {
+      instanceRef.current.setConnectedNodeActive(false);
+    }
+  };
+
   const handleBreadcrumbClick = (nodeId: string) => {
     if (instanceRef.current) {
       instanceRef.current.navigateToId(nodeId);
@@ -129,13 +136,13 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
                 <div className="nav-arrow-gap" id="arrow-gap-1"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
                 <div className="nav-arrow-gap" id="arrow-gap-2"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
               </div>
-              {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId)}
+              {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
             </div>
             <div className="static-label last-node-label">Last node</div>
             <div className="static-label selected-node-label">Selected node</div>
-            {/* FIX: Change the static subtext to be dynamic */}
+            {/* FIX: Update subtext to "xx Related nodes" */}
             <div className="static-label connected-node-label">
-              {selectedNode ? `${selectedNode.connections} Relations` : 'Relations'}
+              {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
             </div>
         </div>
       </div>
