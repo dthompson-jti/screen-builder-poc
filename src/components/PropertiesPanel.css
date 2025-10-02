@@ -36,31 +36,13 @@
 }
 .prop-item, .prop-item-toggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
 
-/* FIX: Remove the special direct-child selector, as it's no longer needed. */
-/* The .prop-item wrapper now provides the correct margin automatically. */
-
 .prop-item label, .prop-item-toggle label {
   font-size: 0.9em;
   font-weight: 500;
   color: var(--surface-fg-primary);
 }
-.prop-item input, .prop-item select {
-  font-family: var(--font-family-sans);
-  width: 100%;
-  padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid var(--surface-border-primary);
-  border-radius: 6px;
-  font-size: 0.9em;
-  background-color: var(--surface-bg-primary);
-  color: var(--surface-fg-primary);
-}
 
-.prop-item input:disabled, .prop-item select:disabled {
-  background-color: var(--control-bg-disabled_subtle);
-  color: var(--control-fg-disabled);
-  border-color: var(--control-border-disabled);
-}
-
+/* REMOVED: Base input and select styles are now centralized in src/forms.css */
 
 .prop-item-toggle { flex-direction: row; justify-content: space-between; align-items: center; }
 .toggle-switch {

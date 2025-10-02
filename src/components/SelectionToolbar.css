@@ -9,7 +9,7 @@
   background-color: var(--surface-bg-brand-solid);
   border-radius: var(--spacing-2);
   padding: var(--spacing-1);
-  color: var(--surface-fg-primary_on-brand);
+  color: var(--surface-fg-primary_on_brand);
   z-index: 10;
   box-shadow: var(--surface-shadow-md);
   gap: var(--spacing-1);
@@ -33,6 +33,8 @@
 
 .toolbar-drag-handle .material-symbols-rounded {
   display: block;
+  /* FIX: Ensure the drag handle icon color is white */
+  color: var(--control-fg-on-solid);
 }
 
 .toolbar-divider {
@@ -42,20 +44,37 @@
   margin: 0 var(--spacing-1);
 }
 
-.toolbar-action-button {
+.btn-on-solid {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: var(--spacing-1p5) var(--spacing-2);
   background-color: transparent;
-  border: none;
-  color: var(--surface-fg-primary_on-brand);
+  color: var(--control-fg-on-solid);
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85em;
-  transition: background-color 0.2s;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transform: translateY(0);
+  transition: all 0.15s ease-out;
 }
 
-.toolbar-action-button:hover {
-  background-color: var(--primitives-dark-tint-800);
+.btn-on-solid:hover {
+  background: var(--control-bg-tertiary);
+  border-top: 1px solid var(--control-border-tertiary-faint-hover);
+  border-left: 1px solid var(--control-border-tertiary-faint-hover);
+  border-right: 1px solid var(--control-border-tertiary-faint-hover);
+  border-bottom: 1px solid transparent;
+  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
+  color: var(--control-fg-on-solid);
+}
+
+.btn-on-solid:active {
+  background: var(--control-bg-tertiary-pressed);
+  border-top: 1px solid var(--control-border-tertiary-faint-pressed);
+  border-left: 1px solid var(--control-border-tertiary-faint-pressed);
+  border-right: 1px solid var(--control-border-tertiary-faint-pressed);
+  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
+  transform: translateY(1px);
 }

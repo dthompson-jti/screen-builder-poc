@@ -63,7 +63,6 @@
   border-radius: var(--spacing-2);
   position: relative;
   overflow: hidden;
-  /* Add base button styles here to avoid relying on .btn-secondary */
   padding: 7px var(--spacing-3);
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
@@ -99,7 +98,6 @@
     transform: none !important;
 }
 
-/* FIX: Use a combined selector to ensure the selected node NEVER shows a hover state. */
 .selected-node .node-button,
 .selected-node .node-button:hover {
   padding: 6px calc(var(--spacing-3) - 1px);
@@ -110,7 +108,6 @@
   line-height: 20px;
   letter-spacing: -0.21px;
   cursor: default;
-  /* Explicitly override any potential hover effects */
   box-shadow: none;
   transform: translateY(0);
 }
@@ -222,6 +219,7 @@
   text-transform: uppercase;
 }
 
+/* Base item style, inherits from .menu-item */
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -231,14 +229,20 @@
   font-size: 0.9em;
   color: var(--surface-fg-secondary);
   cursor: not-allowed;
+  border-left: 3px solid transparent;
+  transition: background-color 0.2s, border-left-color 0.2s;
 }
+
 .dropdown-item.navigable {
   color: var(--surface-fg-primary);
   cursor: pointer;
 }
+
 .dropdown-item.navigable:hover {
-  background-color: var(--surface-bg-secondary_hover);
-  transition: background-color 0.2s;
+  background-color: var(--control-bg-tertiary-hover);
+  border-left-color: var(--control-border-tertiary-hover);
 }
 
-.dropdown-item .item-icon { font-size: 20px; }
+.dropdown-item .item-icon { 
+    font-size: 20px;
+}

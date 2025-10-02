@@ -1,0 +1,97 @@
+/* src/forms.css */
+/* NEW FILE: Centralized styles for all standard form elements. */
+
+/* --- Base Text Inputs, Selects, Textareas --- */
+/* (Styles moved from PropertiesPanel.css and SettingsPage.css) */
+input[type="text"],
+select,
+textarea {
+  font-family: var(--font-family-sans);
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  font-size: 0.9em;
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--surface-border-theme);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+}
+
+input[type="text"]:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: var(--control-bg-disabled_subtle);
+  color: var(--control-fg-disabled);
+  border-color: var(--control-border-disabled);
+  cursor: not-allowed;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* --- Custom Checkbox Component --- */
+/* (Styles adapted from the example project and aligned to this project's tokens) */
+
+input[type="checkbox"] {
+    /* Reset and Sizing */
+    appearance: none;
+    margin: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    
+    /* Layout for custom SVG checkmark */
+    display: grid;
+    place-content: center;
+    
+    /* Base (Unchecked) State */
+    border: 1px solid var(--control-border-secondary);
+    background: var(--surface-bg-primary);
+    transition: all 0.1s ease-in-out;
+}
+
+/* The custom checkmark SVG, hidden by default */
+input[type="checkbox"]::before {
+    content: "";
+    width: 12px;
+    height: 9px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    /* The SVG checkmark from the example, with stroke color set to our on-solid token (#FFFFFF) */
+    background-image: url("data:image/svg+xml,%3csvg width='12' height='9' viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10.6666 1.5L4.24992 7.91667L1.33325 5' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Unchecked Hover State */
+input[type="checkbox"]:not(:checked):hover {
+    border: 1.5px solid var(--control-border-secondary-hover);
+    background: var(--control-bg-secondary-hover);
+}
+
+/* Checked State */
+input[type="checkbox"]:checked {
+    border: 1.5px solid transparent;
+    background: var(--control-bg-theme);
+}
+
+/* Checked Hover State */
+input[type="checkbox"]:checked:hover {
+    background: var(--control-bg-theme-pressed);
+}
+
+/* Show the checkmark when the checkbox is checked */
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}

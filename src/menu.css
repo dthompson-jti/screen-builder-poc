@@ -1,0 +1,60 @@
+/* src/menu.css */
+/* NEW FILE: Centralized, global styles for all popover menu items. */
+
+.menu-item {
+    /* Base Layout & Typography */
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    gap: var(--spacing-2);
+    font-size: 0.9em;
+    font-weight: 500;
+    font-family: var(--font-family-sans);
+    
+    /* Reset Button Appearance */
+    background: none;
+    border: none;
+    cursor: pointer;
+    
+    /* Spacing & Sizing */
+    padding: var(--spacing-2);
+    margin: var(--spacing-0p5) 0;
+    border-radius: 6px;
+
+    /* Base State for Hover Transition */
+    border-left: 3px solid transparent;
+    transition: background-color 0.2s, border-left-color 0.2s, color 0.2s;
+
+    /* Base Colors */
+    color: var(--surface-fg-primary);
+}
+
+.menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--control-fg-disabled);
+}
+
+/* Hover State for all Menu Items */
+.menu-item:hover:not(:disabled) {
+    background-color: var(--control-bg-tertiary-hover);
+    border-left-color: var(--control-border-tertiary-hover); /* The requested grey border */
+}
+
+/* Specific styling for checkmark alignment if present */
+.menu-item .checkmark-container {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    color: var(--surface-fg-theme-primary);
+}
+
+/* Specific styling for hotkey text if present */
+.menu-item .hotkey {
+    margin-left: auto;
+    color: var(--surface-fg-secondary);
+    font-size: 0.9em;
+    padding-left: var(--spacing-4);
+}

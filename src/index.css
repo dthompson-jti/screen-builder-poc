@@ -1,6 +1,12 @@
 /* src/index.css */
 
+/* 1. Foundational Design Tokens */
 @import './design-tokens.css';
+
+/* 2. Global Styles for HTML elements and common components */
+@import './forms.css'; 
+@import './buttons.css';
+@import './menu.css'; /* Added menu styles */
 
 :root {
   --font-family-sans: 'Inter', sans-serif;
@@ -19,7 +25,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* FIX: Set Rounded as the default for all material symbols */
 .material-symbols-outlined, .material-symbols-rounded {
   font-family: 'Material Symbols Rounded', sans-serif;
   font-variation-settings:
@@ -31,7 +36,6 @@ body {
   font-size: 20px;
 }
 
-/* Specific override for Outlined style if needed */
 .material-symbols-outlined.outlined {
     font-family: 'Material Symbols Outlined', sans-serif;
 }

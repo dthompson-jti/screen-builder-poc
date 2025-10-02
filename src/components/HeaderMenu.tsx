@@ -5,8 +5,9 @@ import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLay
 import { useOnClickOutside } from '../useOnClickOutside';
 import './HeaderMenu.css';
 
+// FIX: Use a dedicated MenuOption component that uses the .menu-item class
 const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
-    <button className="btn btn-tertiary menu-option" onClick={onClick} disabled={disabled}>
+    <button className="menu-item" onClick={onClick} disabled={disabled}>
         <span className="checkmark-container">
             {isChecked && <span className="material-symbols-rounded">check</span>}
         </span>

@@ -115,22 +115,7 @@
   margin-left: 2px;
 }
 
-.form-field input[type="text"],
-.form-field select,
-.form-field textarea {
-  width: 100%;
-  padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid var(--surface-border-primary);
-  border-radius: 6px;
-  font-size: 0.9em;
-  font-family: var(--font-family-sans);
-  background-color: var(--surface-bg-primary);
-  color: var(--surface-fg-primary);
-}
-.form-field textarea {
-  min-height: 80px;
-  resize: vertical;
-}
+/* REMOVED: Base input, select, and textarea styles are now centralized in src/forms.css */
 
 .form-field-checkbox {
   display: flex;

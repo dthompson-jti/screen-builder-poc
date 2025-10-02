@@ -13,12 +13,12 @@ export const HeaderActionsMenu = () => {
 
     return (
         <div className="header-menu-popover" ref={menuRef} style={{left: 'auto', right: 0}}>
-            <button className="btn btn-tertiary menu-option" disabled>
-                {/* FIX: Use consistent checkmark container for alignment */}
+            {/* FIX: Use the consistent .menu-item class instead of button classes */}
+            <button className="menu-item" disabled>
                 <span className="checkmark-container" />
                 <span>Export</span>
             </button>
-            <button className="btn btn-tertiary menu-option" disabled>
+            <button className="menu-item" disabled>
                 <span className="checkmark-container" />
                 <span>Import</span>
             </button>
