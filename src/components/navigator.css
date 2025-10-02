@@ -108,6 +108,7 @@
   cursor: default;
 }
 
+/* FIX: Explicitly set the hover state to match the base state, preventing any visual changes. */
 .selected-node .node-button:hover {
   background-color: var(--control-bg-selected);
   border-color: var(--control-border-selected);

@@ -21,33 +21,54 @@ interface NodeData {
   };
 }
 
+// =================================================================
+//                 ICON & COLOR CONFIGURATION (OKLCH)
+// =================================================================
+// Using OKLCH to ensure consistent perceptual lightness and chroma.
+// Format: oklch(Lightness Chroma Hue)
+const ICONS = {
+  // For Component List
+  PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0 0)' }, // Grey
+  WIDGET: { icon: 'widgets', color: 'oklch(0.65 0.15 100)' }, // Yellow
+  TRANSIENT_PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0.15 160)' }, // Mint-green
+  
+  // For Dropdown
+  ENTITY: { icon: 'grid_on', color: 'oklch(0.65 0.15 260)' }, // Blue
+  COLLECTION: { icon: 'table_rows', color: 'oklch(0.65 0.15 300)' }, // Purple
+  TRANSIENT_ENTITY_FIELD: { icon: 'variables', color: 'oklch(0.65 0.15 140)' }, // Forest-green
+};
+// =================================================================
+
 // --- DATA HELPERS ---
 
 const createId = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
 
-// Helper to create a draggable component for the main list
 const createListComponent = (
   name: string,
   type: 'widget' | 'field',
-  icon: string,
-  node: { id: string, name: string },
-  iconColor?: string
+  category: keyof typeof ICONS,
+  node: { id: string, name: string }
 ): DraggableComponent => ({
   id: createId(name),
   name,
   type,
-  icon,
-  iconColor,
+  icon: ICONS[category].icon,
+  iconColor: ICONS[category].color,
   nodeId: node.id,
   nodeName: node.name,
   path: `${node.name} > ${name}`,
 });
 
-// Helper to create a dropdown item for the "View Related" popover
-const createDropdownItem = (name: string, isNavigable = false): DropdownItem => ({
+const createDropdownItem = (
+  name: string,
+  category: keyof typeof ICONS,
+  isNavigable = false
+): DropdownItem => ({
   id: createId(name),
   name,
   isNavigable,
+  icon: ICONS[category].icon,
+  iconColor: ICONS[category].color,
 });
 
 
@@ -65,35 +86,35 @@ const arrestFullData: NodeData = {
       title: 'Plain Fields',
       components: [
         'Id (PK)', 'Access Level', 'Arrest Date', 'Arrest Time', 'Arrest Type', 'Arresting Agency File Number', 'Booking Number', 'Create User Real Name', 'Create Username', 'Date Created', 'Exchange Id', 'Last Update User Real Name', 'Last Update Username', 'Last Updated', 'Location', 'Memo', 'Roa Access Level', 'Source Case Number', 'Status Date', 'Update Reason'
-      ].map(name => createListComponent(name, 'field', 'database', arrestNode))
+      ].map(name => createListComponent(name, 'field', 'PLAIN_FIELD', arrestNode))
     },
     {
       title: 'Widgets',
       components: [
         'AddCaseSpecialStatusWidget', 'AddJudgeNoteIcon', 'AddNoteIcon', 'AddPartySpecialStatusWidget', 'AddToRelatedCases', 'CaseDisp', 'CaseEMailIcon', 'CaseLabelWidget', 'ClipboardWidget', 'CustomSearchWidget', 'DateCalculator', 'DaysOfWeekWidget', 'DocAddWidget', 'DocumentCrossReferenceWidget', 'DuplicateHighlighterWidget', 'EntityPagingWidget', 'ExternalSystemSearchWidget', 'FeePayment', 'GeneralFee', 'GenerateDocument', 'GenericDownload', 'GenericLookup', 'LookupItemCategoryWidget', 'ModalWidget', 'NoteIcon', 'ObjectAssociationWidget', 'OpenPersonViewWidget', 'PagePrintIcon', 'PanelTotalWidget', 'PartyCrossReferenceWidget', 'PortalKioskPrintRequest', 'QuestionnaireResponseWidget', 'QuickScheduleEvent', 'RelateCasesByPartyWidget', 'RelatedPeerCasesWidget', 'ReservedToScheduledWidget', 'SSRSWidget', 'ScheduleEvent', 'StaticTextWidget', 'TotalWidget', 'UpdateRecordsOnRelatedCases', 'UserNameSearchWidget', 'VacateFutureEventsWidget', 'WorkflowTasks', 'sendEmailWidget', 'sendSmsWidget'
-      ].map(name => createListComponent(name, 'widget', 'widgets', arrestNode, 'var(--surface-fg-warning-primary)'))
+      ].map(name => createListComponent(name, 'widget', 'WIDGET', arrestNode))
     },
     {
       title: 'Transient Plain Fields',
       components: [
         'Access Context Mock', 'Access Level Label', 'Access Level Value', 'Audit Values', 'Case Category', 'Case Id', 'Case Status', 'Case Type', 'Created And Last Updated Label', 'Created And Last Updated User And Date Label', 'Created Name', 'Cross Referenced', 'Current Values', 'Description', 'Entity And Id', 'Entity Display Name', 'Entity Id And Title', 'Entity Name', 'Entity Name And Id', 'Entity Short Name', 'Entity Short Name And Id', 'Entity Underscore Id', 'Id And Entity Name', 'Id And Title', 'Inaccessible', 'Last Modified Or Created', 'Last Modified Or Created Date', 'Last Modified Or Created Username', 'Last Updated Name', 'Number Of Parents', 'Person Id', 'Plain Field Values', 'Plain Fields Only', 'RBCInaccessible', 'Related Peer Ids', 'Revision Objects', 'Roa Changes', 'Title', 'Title With Non Case Parent Titles', 'Update Reason Label', 'Xrefs'
-      ].map(name => createListComponent(`${name} (transient)`, 'field', 'database', arrestNode, 'var(--surface-fg-tertiary)'))
+      ].map(name => createListComponent(`${name} (transient)`, 'field', 'TRANSIENT_PLAIN_FIELD', arrestNode))
     }
   ],
   dropdown: {
     entities: [
-      createDropdownItem('Victim', true),
-      createDropdownItem('Arresting Agency'),
-      createDropdownItem('Associated Party'),
-      createDropdownItem('Booking Agency'),
-      createDropdownItem('Officer', true)
+      createDropdownItem('Victim', 'ENTITY', true),
+      createDropdownItem('Arresting Agency', 'ENTITY'),
+      createDropdownItem('Associated Party', 'ENTITY'),
+      createDropdownItem('Booking Agency', 'ENTITY'),
+      createDropdownItem('Officer', 'ENTITY', true)
     ],
     collections: [
-      createDropdownItem('Arrest Charges', true)
+      createDropdownItem('Arrest Charges', 'COLLECTION', true)
     ],
     transientEntityFields: [
       'Access Context', 'Case', 'Closed Work Queues', 'Consolidation Peers', 'Cross Referenced Case Assignments', 'Cross Referenced Documents', 'Cross Referenced Parties', 'Cross Referenced Scheduled Events', 'Current Version', 'Entity', 'Left Cross Referenced Documents', 'Left Cross Referenced Parties', 'Left Cross Referenced Scheduled Events', 'Open Work Queues', 'Parent', 'Previous Version', 'Previous Versions', 'Previous Versions No Tx', 'Related Case Notes', 'Related Judge Notes', 'Related Peer Case Numbers', 'Related Peers', 'Related Roa Messages', 'Related Time Standards', 'Revision Bean Results', 'Right Cross Referenced Documents', 'Right Cross Referenced Parties', 'Right Cross Referenced Scheduled Events', 'Sub Case', 'Sub Case Or Case', 'Work Queues', 'Workflow Tasks'
-    ].map(name => createDropdownItem(`${name} (transient)`))
+    ].map(name => createDropdownItem(`${name} (transient)`, 'TRANSIENT_ENTITY_FIELD'))
   }
 };
 
@@ -101,54 +122,53 @@ const arrestFullData: NodeData = {
 //                     OTHER SIMPLIFIED NODES
 // -----------------------------------------------------------------
 
-const createSimplifiedNodeData = (node: {id: string, name: string}, relations: {entities: DropdownItem[], collections: DropdownItem[]}): NodeData => ({
+const createSimplifiedNodeData = (node: {id: string, name: string}, relations: {entities: string[], collections: string[]}, nav: Record<string, boolean>): NodeData => ({
   list: [
-    { title: 'Plain Fields', components: [`${node.name} ID (PK)`, `${node.name} Date`, `${node.name} Status`].map(n => createListComponent(n, 'field', 'database', node))},
-    { title: 'Widgets', components: [`${node.name} Widget 1`, `GenerateDocument`].map(n => createListComponent(n, 'widget', 'widgets', node, 'var(--surface-fg-warning-primary)')) },
-    { title: 'Transient Plain Fields', components: [`${node.name} Category (transient)`, `${node.name} Type (transient)`].map(n => createListComponent(n, 'field', 'database', node, 'var(--surface-fg-tertiary)'))}
+    { title: 'Plain Fields', components: [`${node.name} ID (PK)`, `${node.name} Date`, `${node.name} Status`].map(n => createListComponent(n, 'field', 'PLAIN_FIELD', node))},
+    { title: 'Widgets', components: [`${node.name} Widget 1`, `GenerateDocument`].map(n => createListComponent(n, 'widget', 'WIDGET', node)) },
+    { title: 'Transient Plain Fields', components: [`${node.name} Category (transient)`, `${node.name} Type (transient)`].map(n => createListComponent(n, 'field', 'TRANSIENT_PLAIN_FIELD', node))}
   ],
   dropdown: {
-    entities: relations.entities,
-    collections: relations.collections,
-    transientEntityFields: [`${node.name} Related Notes (transient)`, `${node.name} History (transient)`].map(n => createDropdownItem(n))
+    entities: relations.entities.map(name => createDropdownItem(name, 'ENTITY', !!nav[name])),
+    collections: relations.collections.map(name => createDropdownItem(name, 'COLLECTION', !!nav[name])),
+    transientEntityFields: [`${node.name} Related Notes (transient)`, `${node.name} History (transient)`].map(n => createDropdownItem(n, 'TRANSIENT_ENTITY_FIELD'))
   }
 });
 
 const caseNode = { id: 'case', name: 'Case' };
 const caseData = createSimplifiedNodeData(caseNode, {
-  entities: [createDropdownItem('Subcase', true), createDropdownItem('Case Party')],
-  collections: [createDropdownItem('Case Charges')]
-});
+  entities: ['Subcase', 'Case Party'],
+  collections: ['Case Charges']
+}, { 'Subcase': true });
 
 const subcaseNode = { id: 'subcase', name: 'Subcase' };
 const subcaseData = createSimplifiedNodeData(subcaseNode, {
-  entities: [createDropdownItem('Arrest', true), createDropdownItem('Subcase Party')],
-  collections: [createDropdownItem('Subcase Documents')]
-});
+  entities: ['Arrest', 'Subcase Party'],
+  collections: ['Subcase Documents']
+}, { 'Arrest': true });
 
 const victimNode = { id: 'victim', name: 'Victim' };
 const victimData = createSimplifiedNodeData(victimNode, {
-  entities: [createDropdownItem('Associated Party')],
-  collections: [createDropdownItem('Victim Statements'), createDropdownItem('Arrest Charges', true)]
-});
+  entities: ['Associated Party'],
+  collections: ['Victim Statements', 'Arrest Charges']
+}, { 'Arrest Charges': true });
 
 const arrestChargesNode = { id: 'arrest-charges', name: 'Arrest Charges' };
 const arrestChargesData = createSimplifiedNodeData(arrestChargesNode, {
-  entities: [createDropdownItem('Officer', true), createDropdownItem('Plea Bargain')],
-  collections: [createDropdownItem('Court Filings')]
-});
+  entities: ['Officer', 'Plea Bargain'],
+  collections: ['Court Filings']
+}, { 'Officer': true });
 
 const officerNode = { id: 'officer', name: 'Officer' };
 const officerData = createSimplifiedNodeData(officerNode, {
-  entities: [createDropdownItem('Assisting Officer')],
-  collections: [createDropdownItem('Officer Reports')]
-});
+  entities: ['Assisting Officer'],
+  collections: ['Officer Reports']
+}, {});
 
 // =================================================================
 //                         FINAL EXPORTS
 // =================================================================
 
-// Export 1: Data for the "Data fields" component list
 export const componentListData: Record<string, ComponentGroup[]> = {
   'case': caseData.list,
   'subcase': subcaseData.list,
@@ -158,7 +178,6 @@ export const componentListData: Record<string, ComponentGroup[]> = {
   'officer': officerData.list,
 };
 
-// Export 2: Data for the "View Related" dropdown
 export const connectionsDropdownData: Record<string, NodeData['dropdown']> = {
   'case': caseData.dropdown,
   'subcase': subcaseData.dropdown,
@@ -168,7 +187,6 @@ export const connectionsDropdownData: Record<string, NodeData['dropdown']> = {
   'officer': officerData.dropdown,
 };
 
-// Export 3: Data for the navigator tree itself, with connection counts
 export const componentTreeData: ComponentNode[] = componentTreeBase.map(node => {
   const connections = connectionsDropdownData[node.id];
   const count = connections

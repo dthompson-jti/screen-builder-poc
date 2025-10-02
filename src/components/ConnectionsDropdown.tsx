@@ -40,8 +40,20 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const lowerCaseQuery = query.toLowerCase();
   const filteredEntities = data.entities.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredCollections = data.collections.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
-  // FIX: Access the correct property 'transientEntityFields' instead of 'transients'
   const filteredTransientEntities = data.transientEntityFields.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
+
+  // Helper to render a list of items
+  const renderListItems = (items: DropdownItem[]) => {
+    return items.map((item: DropdownItem) => (
+      <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
+        {/* FIX: Render icon and color dynamically from the data object */}
+        <span className="material-symbols-rounded item-icon" style={{ color: item.iconColor }}>
+          {item.icon}
+        </span>
+        <span>{item.name}</span>
+      </li>
+    ));
+  };
 
   return (
     <div className="connections-dropdown-container" ref={dropdownRef}>
@@ -68,27 +80,13 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
       </div>
       <ul className="dropdown-list">
         {filteredEntities.length > 0 && <li className="dropdown-header">Entities</li>}
-        {filteredEntities.map((item: DropdownItem) => (
-          <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-rounded item-icon entity">crop_square</span>
-            <span>{item.name}</span>
-          </li>
-        ))}
+        {renderListItems(filteredEntities)}
+        
         {filteredCollections.length > 0 && <li className="dropdown-header">Collections</li>}
-        {filteredCollections.map((item: DropdownItem) => (
-          <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-rounded item-icon collection">window</span>
-            <span>{item.name}</span>
-          </li>
-        ))}
-        {/* FIX: Update the header and map over the correctly named variable */}
+        {renderListItems(filteredCollections)}
+
         {filteredTransientEntities.length > 0 && <li className="dropdown-header">Transient Entity Fields</li>}
-        {filteredTransientEntities.map((item: DropdownItem) => (
-          <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-            <span className="material-symbols-rounded item-icon transient">data_object</span>
-            <span>{item.name}</span>
-          </li>
-        ))}
+        {renderListItems(filteredTransientEntities)}
       </ul>
     </div>
   );

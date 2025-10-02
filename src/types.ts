@@ -30,13 +30,16 @@ export interface FormComponent {
   name: string;
   type: 'widget' | 'field';
   binding?: BoundData | null;
-  origin?: 'data' | 'general'; // FIX: Add origin property
+  origin?: 'data' | 'general';
 }
 
 export interface DropdownItem {
   id: string;
   name: string;
   isNavigable?: boolean;
+  // FIX: Add icon and color for dynamic rendering
+  icon: string;
+  iconColor: string;
 }
 
 export interface ComponentNode {
