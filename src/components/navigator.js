@@ -1,4 +1,4 @@
-// src/navigator.js
+// src/components/navigator.js
 import { gsap } from 'gsap';
 import { TextPlugin } from 'gsap/TextPlugin';
 
@@ -20,17 +20,6 @@ export class NodeNavigator {
     this.elementPool = [];
 
     this.layout = { slotWidth: 0, gap: 0, slideDistance: 0 };
-    this.colors = {
-        selectedBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-selected').trim(),
-        selectedBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-selected').trim(),
-        selectedColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-selected').trim(),
-        defaultBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-secondary').trim(),
-        defaultBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-secondary').trim(),
-        defaultColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-primary').trim(),
-        disabledBg: getComputedStyle(document.documentElement).getPropertyValue('--control-bg-disabled_subtle').trim(),
-        disabledBorder: getComputedStyle(document.documentElement).getPropertyValue('--control-border-disabled').trim(),
-        disabledColor: getComputedStyle(document.documentElement).getPropertyValue('--control-fg-disabled').trim(),
-    };
   }
 
   init(initialNodeId, nodeData) {
@@ -58,7 +47,6 @@ export class NodeNavigator {
     if (connectionsNode) {
         const textSpan = connectionsNode.querySelector('span');
         if (textSpan) {
-            // FIX: Change text to "View Related"
             textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
         }
     }
@@ -110,6 +98,10 @@ export class NodeNavigator {
     const button = node.querySelector('.node-button');
     const textSpan = node.querySelector('span');
     
+    // FIX: Remove all inline styles to rely on CSS classes
+    button.removeAttribute('style');
+    button.className = 'node-button'; // Reset classes
+
     let type = 'offscreen';
     if (dataIndexOffset === -1) type = 'last';
     else if (dataIndexOffset === 0) type = 'selected';
@@ -119,27 +111,18 @@ export class NodeNavigator {
     
     let newText = data ? data.name : '';
     if (dataIndexOffset === -1 && this.selectedIndex === 0) {
-        node.className = `node-group last-node none-state`;
+        node.classList.add('none-state');
         newText = 'None';
     }
 
     if (isInstant) {
       textSpan.innerHTML = (type === 'connections') ? '' : newText;
-      gsap.set(button, { clearProps: 'all' });
-      if (type === 'selected') {
-        Object.assign(button.style, { borderColor: this.colors.selectedBorder, backgroundColor: this.colors.selectedBg, color: this.colors.selectedColor, borderWidth: '2px', padding: '6px 11px', transform: 'translateY(0)' });
-      } else {
+      if (type !== 'selected') {
         button.classList.add('btn-secondary');
-        if (node.classList.contains('none-state')) button.classList.add('disabled-none');
+        if (node.classList.contains('none-state')) {
+          button.classList.add('disabled-none');
+        }
       }
-    }
-  }
-
-  navigate(direction) {
-    const targetIndex = this.selectedIndex + (direction === 'backward' ? -1 : 1);
-    const targetId = this.nodeData[targetIndex]?.id;
-    if (targetId) {
-      this.navigateToId(targetId);
     }
   }
   
@@ -153,7 +136,6 @@ export class NodeNavigator {
     const indexDifference = targetIndex - this.selectedIndex;
     const isBackward = indexDifference < 0;
     const animationDistance = this.layout.slideDistance * (isBackward ? 1 : -1);
-    const centerSlot = Math.floor(this.poolSize / 2);
 
     this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: targetId } }));
     
@@ -162,7 +144,7 @@ export class NodeNavigator {
       connectionsNode.querySelector('span').innerHTML = '';
     }
     if (!isBackward) {
-      const incomingNode = this.elementPool[centerSlot + 2];
+      const incomingNode = this.elementPool[Math.floor(this.poolSize / 2) + 2];
       if (incomingNode) {
         incomingNode.querySelector('span').innerHTML = '';
       }
@@ -176,13 +158,14 @@ export class NodeNavigator {
         } else {
             for (let i = 0; i < indexDifference; i++) { this.track.appendChild(this.track.firstElementChild); }
         }
+        
+        // FIX: Update state using classes *after* animation completes.
         this._updateLayoutAndPositionElements(true, false);
 
         const newConnectionsNode = this.container.querySelector('.connections-node');
         if (newConnectionsNode) {
             const textSpan = newConnectionsNode.querySelector('span');
             if (textSpan) {
-                // FIX: Update text to "View Related"
                 textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
             }
         }
@@ -191,21 +174,8 @@ export class NodeNavigator {
       }
     });
 
+    // FIX: Only animate the track position. State changes will happen instantly onComplete.
     tl.to(this.track, { x: `+=${animationDistance}`, duration: this.duration, ease: this.ease }, 0);
-
-    this.elementPool.forEach((node, i) => {
-        const button = node.querySelector('.node-button');
-        const currentOffset = i - centerSlot;
-        const futureOffset = currentOffset + (isBackward ? 1 : -1);
-        
-        if (futureOffset === 0) {
-             button.classList.remove('btn-secondary');
-             tl.to(button, { borderColor: this.colors.selectedBorder, backgroundColor: this.colors.selectedBg, color: this.colors.selectedColor, borderWidth: '2px', padding: '6px 11px', duration: this.duration, ease: this.ease }, 0);
-        } else {
-             button.classList.add('btn-secondary');
-             tl.to(button, { borderColor: this.colors.defaultBorder, backgroundColor: this.colors.defaultBg, color: this.colors.defaultColor, borderWidth: '1px', padding: '7px 12px', duration: this.duration, ease: this.ease }, 0);
-        }
-    });
   }
 
   setConnectedNodeActive(isActive) {
@@ -238,6 +208,16 @@ export class NodeNavigator {
         if(connectionsNodeButton){
             connectionsNodeButton.onclick = () => this.container.dispatchEvent(new CustomEvent('toggleConnectionsDropdown', { bubbles: true }));
         }
+    }
+  }
+
+  navigate(direction) {
+    const targetIndex = this.selectedIndex + (direction === 'backward' ? -1 : 1);
+    if (targetIndex >= 0 && targetIndex < this.nodeData.length) {
+      const targetId = this.nodeData[targetIndex]?.id;
+      if (targetId) {
+        this.navigateToId(targetId);
+      }
     }
   }
 }

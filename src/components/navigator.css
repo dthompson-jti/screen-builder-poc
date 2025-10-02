@@ -1,5 +1,5 @@
 /* src/components/navigator.css */
-/* FIX: This file now ONLY contains styles for the NodeNavigator widget itself. */
+/* This file contains styles for the NodeNavigator widget. */
 
 .navigator-container {
   padding: 0;
@@ -63,25 +63,27 @@
   border-radius: var(--spacing-2);
   position: relative;
   overflow: hidden;
-}
-
-.last-node .node-button, .connections-node .node-button {
+  /* Add base button styles here to avoid relying on .btn-secondary */
   padding: 7px var(--spacing-3);
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out, border-color 0.2s;
   transform: translateY(0);
   font-weight: 500;
+  cursor: pointer;
 }
 
-.last-node .node-button:hover, .connections-node .node-button:hover {
+.last-node .node-button:hover, 
+.connections-node .node-button:hover {
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
 }
 
-.last-node .node-button:active, .connections-node .node-button:active, .connections-node .node-button.active {
+.last-node .node-button:active, 
+.connections-node .node-button:active, 
+.connections-node .node-button.active {
   background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
@@ -97,7 +99,9 @@
     transform: none !important;
 }
 
-.selected-node .node-button {
+/* FIX: Use a combined selector to ensure the selected node NEVER shows a hover state. */
+.selected-node .node-button,
+.selected-node .node-button:hover {
   padding: 6px calc(var(--spacing-3) - 1px);
   border: 2px solid var(--control-border-selected);
   background: var(--control-bg-selected);
@@ -106,12 +110,7 @@
   line-height: 20px;
   letter-spacing: -0.21px;
   cursor: default;
-}
-
-/* FIX: Explicitly set the hover state to match the base state, preventing any visual changes. */
-.selected-node .node-button:hover {
-  background-color: var(--control-bg-selected);
-  border-color: var(--control-border-selected);
+  /* Explicitly override any potential hover effects */
   box-shadow: none;
   transform: translateY(0);
 }
@@ -243,6 +242,3 @@
 }
 
 .dropdown-item .item-icon { font-size: 20px; }
-.dropdown-item .item-icon.entity { color: #8A2BE2; }
-.dropdown-item .item-icon.collection { color: #008B8B; }
-.dropdown-item .item-icon.transient { color: #2E8B57; }
