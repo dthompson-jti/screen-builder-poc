@@ -1,0 +1,45 @@
+/* src/scrollbars.css */
+/* This file contains the global styles for custom scrollbars. */
+
+/* 1. BASE STYLES FOR ALL SCROLLBARS (WebKit & Firefox) */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primitives-dark-tint-700);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primitives-grey-400);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primitives-grey-400) transparent;
+}
+
+
+/* 2. UTILITY CLASS FOR "STEALTH" OVERLAY SCROLLBARS */
+/* This uses the padding/margin trick to make the scrollbar float over content. */
+
+.stealth-scrollbar {
+  /* Create a "gutter" for the scrollbar to live in, pushing it outside the content flow */
+  padding-right: 16px;
+}
+
+.stealth-scrollbar > * {
+  /* Pull the content back into the padded gutter area */
+  margin-right: -16px;
+}

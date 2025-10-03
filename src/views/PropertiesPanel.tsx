@@ -107,7 +107,7 @@ export const PropertiesPanel = () => {
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
 
-  const selectedComponent = allComponents.find((c) => c.id === selectedId);
+  const selectedComponent = allComponents.find((c: FormComponent) => c.id === selectedId);
 
   useLayoutEffect(() => {
     if (tabsContainerRef.current) {
@@ -123,7 +123,7 @@ export const PropertiesPanel = () => {
 
   useEffect(() => {
     if (bindingResult) {
-      const componentName = allComponents.find((c) => c.id === bindingResult.componentId)?.name || 'component';
+      const componentName = allComponents.find((c: FormComponent) => c.id === bindingResult.componentId)?.name || 'component';
       
       commitAction({
         action: { type: 'COMPONENT_UPDATE_BINDING', payload: bindingResult },
@@ -166,7 +166,7 @@ export const PropertiesPanel = () => {
               </button>
               <div className="tab-underline" style={underlineStyle} />
           </div>
-          <div className={styles.panelContent}>
+          <div className={`${styles.panelContent} stealth-scrollbar`}>
             <PanelContent 
               selectedComponent={selectedComponent} 
               activeTab={activeTab}

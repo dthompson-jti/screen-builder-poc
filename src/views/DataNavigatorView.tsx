@@ -26,7 +26,7 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string, onClose: () => void) => React.ReactNode;
   onClosePanel?: () => void;
   showBreadcrumb?: boolean;
-  isInsideModal?: boolean; // FIX: Add new prop
+  isInsideModal?: boolean;
 }
 
 interface NavigateEvent extends Event {
@@ -44,7 +44,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   renderConnectionsDropdown,
   onClosePanel,
   showBreadcrumb = true,
-  isInsideModal = false, // FIX: Set default value
+  isInsideModal = false,
 }: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
@@ -113,7 +113,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
     exit: { opacity: 0, x: 10, transition: { type: 'tween', ease: 'easeInOut', duration: 0.3 }},
   };
 
-  // FIX: Conditionally apply a class for when the component is used inside the modal
   const containerClasses = `${panelStyles.componentBrowserContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
 
   return (
@@ -128,7 +127,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
             <AnimatePresence>
               {breadcrumbPath.map((node, index) => (
                 <motion.div key={node.id} custom={index} variants={breadcrumbVariants} initial="hidden" animate="visible" exit="exit" style={{ display: 'flex', alignItems: 'center' }}>
-                  {/* FIX: Correctly apply the active class from the CSS module */}
                   <button className={index === breadcrumbPath.length - 1 ? panelStyles.active : ''} onClick={() => handleBreadcrumbClick(node.id)} disabled={index === breadcrumbPath.length - 1}>
                     {node.name}
                   </button>
@@ -164,7 +162,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         <input type="text" placeholder={searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
-      <div className={panelStyles.componentListContainer}>
+      <div className={`${panelStyles.componentListContainer} stealth-scrollbar`}>
         <ul className={panelStyles.componentList}>
           {filteredGroups.map((group) => (
             <li key={group.title}>
