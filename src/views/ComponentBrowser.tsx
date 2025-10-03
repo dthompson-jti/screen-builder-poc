@@ -1,13 +1,13 @@
-// src/components/ComponentBrowser.tsx
+// src/views/ComponentBrowser.tsx
 import { useSetAtom, useAtomValue } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
-import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../state/atoms';
+import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../data/atoms';
 import { componentListData, componentTreeData } from '../data/componentBrowserMock';
 import { DraggableComponent } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
-import { ConnectionsDropdown } from './ConnectionsDropdown';
-import './panel.css';
-import './navigator.css';
+import { ConnectionsDropdown } from '../components/ConnectionsDropdown';
+import '../components/panel.css';
+import '../components/navigator.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({

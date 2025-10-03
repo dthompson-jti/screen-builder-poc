@@ -1,24 +1,20 @@
-// src/GeneralComponentsBrowser.tsx
-// Displays a list of draggable "General" components.
-// NOTE: This file is at the root of /src, so imports from sibling directories
-// like /state or /data will start with './'.
-
+// src/views/GeneralComponentsBrowser.tsx
 import { useSetAtom } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
-import { isComponentBrowserVisibleAtom } from './state/atoms';
-import { generalComponents } from './data/generalComponentsMock';
-import { DraggableComponent } from './types';
-import { PanelHeader } from './components/PanelHeader';
-import './panel.css';
+import { isComponentBrowserVisibleAtom } from '../data/atoms';
+import { generalComponents } from '../data/generalComponentsMock';
+import { DraggableComponent } from '../types';
+import { PanelHeader } from '../components/PanelHeader';
+import '../components/panel.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `draggable-${component.id}`,
-    data: { 
-      type: component.type, 
-      name: component.name, 
-      icon: component.icon, 
-      id: component.id, 
+    data: {
+      type: component.type,
+      name: component.name,
+      icon: component.icon,
+      id: component.id,
       isNew: true,
       origin: 'general',
     },

@@ -6,20 +6,20 @@
 import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { AppHeader } from './components/AppHeader';
-import { ComponentBrowser } from './components/ComponentBrowser';
-import { GeneralComponentsBrowser } from './components/GeneralComponentsBrowser';
+import { AppHeader } from './views/AppHeader';
+import { ComponentBrowser } from './views/ComponentBrowser';
+import { GeneralComponentsBrowser } from './views/GeneralComponentsBrowser';
 import { ResizablePanel } from './components/ResizablePanel';
-import { EditorCanvas } from './components/EditorCanvas';
+import { EditorCanvas } from './views/EditorCanvas';
 import { TextInputPreview } from './components/TextInputPreview';
-import { PropertiesPanel } from './components/PropertiesPanel';
-import { MainToolbar } from './components/MainToolbar';
+import { PropertiesPanel } from './views/PropertiesPanel';
+import { MainToolbar } from './views/MainToolbar';
 import { BrowserItemPreview } from './components/BrowserItemPreview';
 import { PlaceholderPanel } from './components/PlaceholderPanel';
 import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
 import { DataBindingModal } from './components/DataBindingModal';
-import { SettingsPage } from './components/SettingsPage';
-import { useCanvasDnd } from './useCanvasDnd';
+import { SettingsPage } from './views/SettingsPage';
+import { useCanvasDnd } from './data/useCanvasDnd';
 import {
   canvasComponentsAtom,
   selectedCanvasComponentIdAtom,
@@ -27,7 +27,7 @@ import {
   activeToolbarTabAtom,
   appViewModeAtom,
   isPropertiesPanelVisibleAtom
-} from './state/atoms';
+} from './data/atoms';
 
 const dropAnimation: DropAnimation = {
   duration: 0,

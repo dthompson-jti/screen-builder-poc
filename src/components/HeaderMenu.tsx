@@ -1,8 +1,8 @@
 // src/components/HeaderMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../state/atoms';
-import { useOnClickOutside } from '../useOnClickOutside';
+import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
+import { useOnClickOutside } from '../data/useOnClickOutside';
 import './HeaderMenu.css';
 
 // FIX: Use a dedicated MenuOption component that uses the .menu-item class

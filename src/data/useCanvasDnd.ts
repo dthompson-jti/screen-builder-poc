@@ -1,10 +1,10 @@
-// src/useCanvasDnd.ts
+// src/data/useCanvasDnd.ts
 import { useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { Active, DataRef, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './state/atoms';
-import { FormComponent } from './types';
+import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './atoms';
+import { FormComponent } from '../types';
 
 export const useCanvasDnd = () => {
   const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
@@ -46,7 +46,7 @@ export const useCanvasDnd = () => {
     const activeData = data.current;
     if (!activeData) return;
 
-    let newComponent: FormComponent = {
+    const newComponent: FormComponent = {
       id: `comp-${Date.now()}`,
       name: activeData.name,
       type: activeData.type,

@@ -1,6 +1,6 @@
-// src/state/atoms.ts
+// src/data/atoms.ts
 import { atom } from 'jotai';
-import { componentListData } from '../data/componentBrowserMock';
+import { componentListData } from './componentBrowserMock';
 import { FormComponent, BoundData, ComponentGroup, DraggableComponent } from '../types';
 
 // =================================================================

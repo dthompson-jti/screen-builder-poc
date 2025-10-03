@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Modal } from './Modal';
-import { DataNavigatorView } from './DataNavigatorView';
+import { DataNavigatorView } from '../views/DataNavigatorView';
 import { SelectableListItem } from './SelectableListItem';
 import {
   dataBindingRequestAtom,
@@ -11,12 +11,11 @@ import {
   modalPendingSelectionAtom,
   modalSelectedNodeIdAtom,
   modalComponentSearchQueryAtom,
-} from '../state/atoms';
+} from '../data/atoms';
 import {
   componentListData,
   componentTreeData,
 } from '../data/componentBrowserMock';
-// FIX: Import the primary, corrected ConnectionsDropdown component
 import { ConnectionsDropdown } from './ConnectionsDropdown';
 import { BoundData, DraggableComponent } from '../types';
 import './DataBindingModal.css';
@@ -96,7 +95,6 @@ export const DataBindingModal = () => {
                 onSelect={handleSelect}
               />
             )}
-            // FIX: Use the primary, corrected ConnectionsDropdown component
             renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
                 <ConnectionsDropdown 
                     navigator={navigator} 
@@ -110,8 +108,8 @@ export const DataBindingModal = () => {
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={handleUnbind}>Unbind</button>
           <div className="footer-actions-right">
-            <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleApply}>Apply</button>
+            <button className="btn-secondary" onClick={handleClose}>Cancel</button>
+            <button className="btn-primary" onClick={handleApply}>Apply</button>
           </div>
         </div>
       </div>

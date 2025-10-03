@@ -1,13 +1,13 @@
-// src/components/EditorCanvas.tsx
+// src/views/EditorCanvas.tsx
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Active, UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../state/atoms';
+import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../data/atoms';
 import { FormComponent } from '../types';
-import { SelectionToolbar } from './SelectionToolbar';
+import { SelectionToolbar } from '../components/SelectionToolbar';
 import './EditorCanvas.css';
-import { TextInputPreview } from './TextInputPreview';
+import { TextInputPreview } from '../components/TextInputPreview';
 
 const SortableFormComponent = ({ component, overId, active }: { component: FormComponent, overId: UniqueIdentifier | null, active: Active | null }) => {
   const [selectedId, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);

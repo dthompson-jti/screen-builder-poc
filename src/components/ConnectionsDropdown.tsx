@@ -2,8 +2,8 @@
 import { useRef, useEffect, useState } from 'react';
 import { componentTreeData, connectionsDropdownData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
-import { useOnClickOutside } from '../useOnClickOutside';
-import { NodeNavigator } from './navigator.js';
+import { useOnClickOutside } from '../data/useOnClickOutside';
+import { NodeNavigator } from '../data/navigator.js';
 
 interface ConnectionsDropdownProps {
   navigator: NodeNavigator | null;

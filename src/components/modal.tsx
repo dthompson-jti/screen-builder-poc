@@ -1,6 +1,6 @@
 // src/components/Modal.tsx
 import React, { useRef, useEffect } from 'react';
-import { useOnClickOutside } from '../useOnClickOutside';
+import { useOnClickOutside } from '../data/useOnClickOutside';
 import './Modal.css';
 
 interface ModalProps {

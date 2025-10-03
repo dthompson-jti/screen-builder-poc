@@ -1,8 +1,8 @@
 // src/components/HeaderActionsMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { isSettingsMenuOpenAtom } from '../state/atoms';
-import { useOnClickOutside } from '../useOnClickOutside';
+import { isSettingsMenuOpenAtom } from '../data/atoms';
+import { useOnClickOutside } from '../data/useOnClickOutside';
 import './HeaderMenu.css';
 
 export const HeaderActionsMenu = () => {

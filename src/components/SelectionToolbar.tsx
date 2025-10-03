@@ -3,7 +3,7 @@
 import { DraggableSyntheticListeners } from '@dnd-kit/core';
 import { HTMLAttributes } from 'react';
 import { useSetAtom } from 'jotai';
-import { isPropertiesPanelVisibleAtom } from '../state/atoms';
+import { isPropertiesPanelVisibleAtom } from '../data/atoms';
 import './SelectionToolbar.css';
 
 interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {

@@ -1,12 +1,12 @@
-// src/components/DataNavigatorView.tsx
+// src/views/DataNavigatorView.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
-import { NodeNavigator } from './navigator.js';
-import { PanelHeader } from './PanelHeader';
-import './panel.css';
-import './navigator.css';
+import { NodeNavigator } from '../data/navigator.js';
+import { PanelHeader } from '../components/PanelHeader';
+import '../components/panel.css';
+import '../components/navigator.css';
 import { ComponentNode } from '../types';
 
 // --- TYPES ---
@@ -27,6 +27,12 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string, onClose: () => void) => React.ReactNode;
   onClosePanel?: () => void;
   showBreadcrumb?: boolean;
+}
+
+interface NavigateEvent extends Event {
+  detail: {
+    id: string;
+  };
 }
 
 
@@ -58,7 +64,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         instanceRef.current = navigator;
         navigator.init(selectedNodeId, treeData);
         
-        const handleNavigate = (event: any) => {
+        const handleNavigate = (event: NavigateEvent) => {
           setIsDropdownVisible(false);
           setSelectedNodeId(event.detail.id);
         };
@@ -69,7 +75,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
           }
         };
         
-        mountRef.current.addEventListener('navigate', handleNavigate);
+        mountRef.current.addEventListener('navigate', handleNavigate as EventListener);
         mountRef.current.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,7 +146,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
             </div>
             <div className="static-label last-node-label">Last node</div>
             <div className="static-label selected-node-label">Selected node</div>
-            {/* FIX: Update subtext to "xx Related nodes" */}
             <div className="static-label connected-node-label">
               {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
             </div>

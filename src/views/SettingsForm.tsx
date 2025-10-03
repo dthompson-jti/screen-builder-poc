@@ -1,7 +1,7 @@
-// src/components/SettingsForm.tsx
+// src/views/SettingsForm.tsx
 import { useEffect, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { formNameAtom, focusIntentAtom } from '../state/atoms';
+import { formNameAtom, focusIntentAtom } from '../data/atoms';
 import { settingsData, SettingsSection, SettingsField } from '../data/settingsMock';
 import './SettingsPage.css';
 

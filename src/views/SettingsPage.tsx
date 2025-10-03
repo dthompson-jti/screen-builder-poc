@@ -1,11 +1,11 @@
-// src/components/SettingsPage.tsx
+// src/views/SettingsPage.tsx
 import { useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { settingsLayoutModeAtom } from '../state/atoms';
+import { settingsLayoutModeAtom } from '../data/atoms';
 import { SettingsNavigator } from './SettingsNavigator';
 import { SettingsForm } from './SettingsForm';
 import { settingsData } from '../data/settingsMock';
-import { useScrollSpy } from './useScrollSpy';
+import { useScrollSpy } from '../data/useScrollSpy';
 import './SettingsPage.css';
 
 export const SettingsPage = () => {

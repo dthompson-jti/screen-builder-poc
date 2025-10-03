@@ -1,4 +1,4 @@
-// src/components/PropertiesPanel.tsx
+// src/views/PropertiesPanel.tsx
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
@@ -7,14 +7,14 @@ import {
   dataBindingRequestAtom,
   dataBindingResultAtom,
   isPropertiesPanelVisibleAtom,
-} from '../state/atoms';
-import { DataBindingPicker } from './DataBindingPicker';
-import { StaticBindingDisplay } from './StaticBindingDisplay';
-import { FullScreenPlaceholder } from './FullScreenPlaceholder';
-import { PanelHeader } from './PanelHeader';
+} from '../data/atoms';
+import { DataBindingPicker } from '../components/DataBindingPicker';
+import { StaticBindingDisplay } from '../components/StaticBindingDisplay';
+import { FullScreenPlaceholder } from '../components/FullScreenPlaceholder';
+import { PanelHeader } from '../components/PanelHeader';
 import { FormComponent } from '../types';
 import './PropertiesPanel.css';
-import './panel.css';
+import '../components/panel.css';
 
 type ActiveTab = 'general' | 'advanced';
 

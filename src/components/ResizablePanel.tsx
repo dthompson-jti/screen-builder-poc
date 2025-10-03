@@ -1,7 +1,7 @@
 // src/components/ResizablePanel.tsx
 import React, { useState, useCallback, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { isComponentBrowserVisibleAtom } from '../state/atoms';
+import { isComponentBrowserVisibleAtom } from '../data/atoms';
 
 interface ResizablePanelProps {
   initialWidth: number;

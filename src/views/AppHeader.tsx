@@ -1,4 +1,4 @@
-// src/components/AppHeader.tsx
+// src/views/AppHeader.tsx
 import { useAtom } from 'jotai';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { 
@@ -8,12 +8,12 @@ import {
   formNameAtom,
   isSettingsMenuOpenAtom,
   isNameEditorPopoverOpenAtom,
-} from '../state/atoms';
-import { HeaderMenu } from './HeaderMenu';
-import { HeaderActionsMenu } from './HeaderActionsMenu';
-import { NameEditorPopover } from './NameEditorPopover.tsx';
+} from '../data/atoms';
+import { HeaderMenu } from '../components/HeaderMenu';
+import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
+import { NameEditorPopover } from '../components/NameEditorPopover.tsx';
 import './AppHeader.css';
-import './HeaderMenu.css'; 
+import '../components/HeaderMenu.css'; 
 
 export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);

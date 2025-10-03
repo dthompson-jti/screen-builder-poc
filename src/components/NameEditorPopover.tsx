@@ -1,8 +1,8 @@
 // src/components/NameEditorPopover.tsx
 import { useRef, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { formNameAtom, isNameEditorPopoverOpenAtom } from '../state/atoms';
-import { useOnClickOutside } from '../useOnClickOutside';
+import { formNameAtom, isNameEditorPopoverOpenAtom } from '../data/atoms';
+import { useOnClickOutside } from '../data/useOnClickOutside';
 import './NameEditorPopover.css';
 
 export const NameEditorPopover = () => {

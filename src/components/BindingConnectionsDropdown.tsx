@@ -1,7 +1,7 @@
 // src/components/BindingConnectionsDropdown.tsx
 import { useRef } from 'react';
-import { useOnClickOutside } from '../useOnClickOutside';
-import { NodeNavigator } from './navigator.js';
+import { useOnClickOutside } from '../data/useOnClickOutside';
+import { NodeNavigator } from '../data/navigator.js';
 import { connectionsDropdownData, componentTreeData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
 

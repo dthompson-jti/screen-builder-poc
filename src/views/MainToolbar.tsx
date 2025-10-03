@@ -1,6 +1,6 @@
-// src/components/MainToolbar.tsx
+// src/views/MainToolbar.tsx
 import { useAtom, useAtomValue } from 'jotai';
-import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../state/atoms';
+import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../data/atoms';
 import './MainToolbar.css';
 
 const toolbarGroups: { id: ToolbarTabId; label: string; icon: string }[][] = [

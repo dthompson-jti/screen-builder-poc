@@ -1,7 +1,7 @@
 // src/components/PlaceholderPanel.tsx
 import React from 'react';
 import { useSetAtom } from 'jotai';
-import { isComponentBrowserVisibleAtom } from '../state/atoms';
+import { isComponentBrowserVisibleAtom } from '../data/atoms';
 import { PanelHeader } from './PanelHeader';
 import './PlaceholderPanel.css';
 import './panel.css';

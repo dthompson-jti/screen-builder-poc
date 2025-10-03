@@ -1,4 +1,4 @@
-// src/components/useScrollSpy.ts
+// src/data/useScrollSpy.ts
 import { useState, useEffect, useRef, RefObject } from 'react';
 
 export const useScrollSpy = (
