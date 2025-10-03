@@ -13,8 +13,19 @@ interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {
 export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps) => {
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
-  const handleSettingsClick = () => {
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent parent's onClick from firing
     setIsPropertiesPanelVisible(true);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent parent's onClick from firing
+    onDelete();
+  };
+  
+  // Generic handler for disabled buttons to also stop propagation
+  const handleDisabledClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -27,13 +38,13 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
         <span className="material-symbols-rounded">settings</span>
         <span>Settings</span>
       </button>
-      <button className="btn btn-tertiary on-solid" aria-label="Duplicate component">
+      <button className="btn btn-tertiary on-solid" onClick={handleDisabledClick} aria-label="Duplicate component">
         <span className="material-symbols-rounded">content_copy</span>
       </button>
-      <button className="btn btn-tertiary on-solid" onClick={onDelete} aria-label="Delete component">
+      <button className="btn btn-tertiary on-solid" onClick={handleDeleteClick} aria-label="Delete component">
         <span className="material-symbols-rounded">delete</span>
       </button>
-      <button className="btn btn-tertiary on-solid" aria-label="More component options">
+      <button className="btn btn-tertiary on-solid" onClick={handleDisabledClick} aria-label="More component options">
         <span className="material-symbols-rounded">more_vert</span>
       </button>
     </div>
