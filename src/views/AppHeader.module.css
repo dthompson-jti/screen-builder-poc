@@ -4,21 +4,29 @@
   flex-shrink: 0;
   background-color: var(--surface-bg-primary);
   font-family: var(--font-family-sans);
-}
-
-.appHeaderTop {
+  border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-5);
-  border-bottom: none;
+  padding: 0 var(--spacing-2) 0 var(--spacing-4);
+  height: 56px;
 }
 
-.appHeaderLeftGroup {
+.headerLeft, .headerRight {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4); 
-  position: relative;
+}
+
+.headerLeft {
+  gap: var(--spacing-4);
+  position: relative; /* For menu popover */
+}
+
+/* REMOVED .headerCenter as it is no longer used */
+
+.headerRight {
+  gap: var(--spacing-2);
+  position: relative; /* FIX: This contains the popover menu */
 }
 
 .appHeaderTitle {
@@ -28,63 +36,19 @@
   margin: 0;
 }
 
-.appHeaderActions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.appHeaderBottom {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--surface-border-secondary);
-  font-size: 0.9em;
-}
-
-.subHeaderLeft, .subHeaderCenter, .subHeaderRight {
-  display: flex;
-  align-items: center;
-  padding-top: var(--spacing-2);
-  padding-bottom: var(--spacing-2);
-}
-
-.subHeaderRight {
-  position: relative;
-  gap: var(--spacing-2);
-  padding-right: var(--spacing-6);
-}
-
-.subHeaderLeft {
-  gap: var(--spacing-4);
-  padding-left: var(--spacing-6);
-}
-.subHeaderCenter {
-  flex-grow: 1;
-  gap: var(--spacing-4);
-}
-
 .verticalDivider {
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
-  margin: 0 var(--spacing-4);
-}
-
-.formTypeDisplay {
-  color: var(--surface-fg-secondary);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.21px;
 }
 
 .formNameEditor {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
-  height: 34px; /* Match tertiary button height */
+  height: 34px;
   padding: 0 var(--spacing-1);
-  position: relative; /* For popover positioning */
+  position: relative;
 }
 
 .formNameDisplay {
@@ -96,5 +60,5 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px; /* Prevent extremely long names from breaking layout */
+  max-width: 200px;
 }

@@ -1,19 +1,30 @@
 /* src/views/SettingsPage.module.css */
 .settingsPageWrapper {
-  flex-grow: 1;
   display: flex;
-  background-color: var(--surface-bg-primary);
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-color: var(--surface-bg-secondary);
+}
+
+/* --- Single Column Layout (with Nav) --- */
+.singleColumnLayout {
+  justify-content: flex-start; /* Anchor nav to the left */
 }
 
 .settingsNavigatorContainer {
-  width: 280px;
+  width: 296px;
   flex-shrink: 0;
+  height: 100%;
   background-color: var(--surface-bg-primary);
-  border-right: 1px solid var(--surface-border-secondary);
+  border-right: 1px solid var(--surface-border-primary);
   padding: var(--spacing-8) var(--spacing-6);
+}
+
+/* --- Two Column Layout (Centered) --- */
+.twoColumnLayout {
+  justify-content: center;
+  padding: var(--spacing-8);
 }
 
 .settingsNavigatorList {
@@ -24,17 +35,19 @@
   flex-direction: column;
   gap: var(--spacing-1);
   position: sticky;
-  top: var(--spacing-8);
+  top: 0;
 }
 
 .settingsNavigatorList a {
-  display: block;
-  padding: var(--spacing-2) var(--spacing-3);
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 var(--spacing-3) 0 12px;
   border-radius: 6px;
   text-decoration: none;
-  font-size: 0.9em;
-  font-weight: 500;
-  color: var(--surface-fg-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--surface-fg-tertiary);
   transition: background-color 0.2s, color 0.2s, border-left-color 0.2s;
   cursor: pointer;
   border-left: 6px solid transparent;
@@ -54,27 +67,54 @@
 
 .settingsContentContainer {
   flex-grow: 1;
-  padding: var(--spacing-8);
+  height: 100%;
   overflow-y: auto;
+  /* Add flex properties to center the form panel */
+  display: flex;
+  justify-content: center;
+}
+.settingsContentContainer::-webkit-scrollbar {
+  display: none;
+}
+.settingsContentContainer {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .settingsFormContainer {
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: var(--spacing-6);
+  height: fit-content;
+  margin: var(--spacing-8) 0; /* Add vertical margin for spacing from header/bottom */
 }
 
-.settingsFormContainer[data-layout='two-column'] {
+/* Apply panel styles only in single-column mode */
+.singleColumnLayout .settingsFormContainer {
+  width: 600px;
+  background-color: var(--surface-bg-primary);
+  border-radius: var(--spacing-3);
+  box-shadow: var(--surface-shadow-lg);
+  border: 1px solid var(--surface-border-secondary);
+}
+
+/* Apply two-column styles */
+.twoColumnLayout .settingsFormContainer {
+  max-width: 1240px;
+  width: 100%;
   column-count: 2;
   column-gap: var(--spacing-12);
 }
 
-.settingsFormContainer[data-layout='two-column'] .settingsSection {
+.twoColumnLayout .settingsSection {
+  background-color: var(--surface-bg-primary);
+  border-radius: var(--spacing-3);
+  box-shadow: var(--surface-shadow-lg);
+  border: 1px solid var(--surface-border-secondary);
+  padding: var(--spacing-6);
   break-inside: avoid;
 }
 
-
 @media (max-width: 1200px) {
-  .settingsFormContainer[data-layout='two-column'] {
+  .twoColumnLayout .settingsFormContainer {
     column-count: 1;
   }
 }
@@ -82,6 +122,10 @@
 .settingsSection {
   margin-bottom: 0;
   padding-bottom: var(--spacing-10);
+}
+
+.settingsSection:last-of-type {
+  padding-bottom: var(--spacing-4);
 }
 
 .settingsSection h2 {

@@ -18,6 +18,13 @@ textarea {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* FIX: Add a hover state to make fields more responsive */
+input[type="text"]:not(:disabled):hover,
+select:not(:disabled):hover,
+textarea:not(:disabled):hover {
+    border-color: var(--surface-border-theme-hover);
+}
+
 input[type="text"]:focus,
 select:focus,
 textarea:focus {
