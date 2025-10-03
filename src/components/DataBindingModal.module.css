@@ -1,46 +1,52 @@
-/* src/components/DataBindingModal.css */
-
-/* FIX: New file to co-locate styles with the DataBindingModal component. */
-
-.data-binding-modal-container {
+/* src/components/DataBindingModal.module.css */
+.dataBindingModalContainer {
   display: flex;
   flex-direction: column;
   height: 100%;
   background-color: var(--surface-bg-secondary);
+  overflow: hidden; 
 }
-.modal-header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
-  background-color: var(--surface-bg-primary);
+  background-color: var(--surface-bg-secondary);
 }
-.modal-header h3 {
+.modalHeader h3 {
   font-size: 1.2em;
   font-weight: 600;
   margin: 0;
   color: var(--surface-fg-primary);
 }
-.modal-content {
-  flex-grow: 1;
+
+.modalContent {
+  flex: 1 1 0;
   min-height: 0;
   overflow: hidden;
+  background-color: var(--surface-bg-primary);
 }
-.modal-content .component-browser-container {
-  border-right: none; /* Remove border when inside modal */
+
+.modalContent > * {
+    height: 100%;
+    width: 100%;
 }
-.modal-footer {
+
+.modalFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-3) var(--spacing-4);
   border-top: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
-  background-color: var(--surface-bg-primary);
+  background-color: var(--surface-bg-secondary);
 }
-.footer-actions-right {
+.footerActionsRight {
   display: flex;
   gap: var(--spacing-2);
 }
+
+/* FIX: REMOVED all "button" and "button:hover" styles from this file
+   to allow global .btn classes to apply correctly. */

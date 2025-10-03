@@ -1,6 +1,5 @@
 /* src/views/MainToolbar.module.css */
 .mainToolbar {
-  /* Default (Compact) Styling */
   width: 60px; 
   height: 100%;
   background-color: var(--surface-bg-primary);
@@ -14,11 +13,10 @@
   transition: width 0.3s ease; 
 }
 
-/* Normal (Expanded) Mode */
 .mainToolbar.normal {
   width: 120px; 
   padding: var(--spacing-4) var(--spacing-2);
-  gap: 0; /* Let group handle gap */
+  gap: 0;
 }
 
 .toolbarGroup {
@@ -30,7 +28,6 @@
 }
 
 .toolbarButton {
-  /* Base button properties */
   border: none;
   background-color: transparent;
   border-radius: var(--spacing-2);
@@ -39,82 +36,63 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s, opacity 0.2s, color 0.2s, width 0.3s ease, height 0.3s ease, padding 0.3s ease, border 0.2s;
-  opacity: 0.8;
-  flex-direction: row; /* Default: Icon only, centered */
   box-sizing: border-box;
+  /* FIX: Set the base color context on the button itself */
+  color: var(--surface-fg-quaternary);
 }
 
-/* Inactive/Hover States (Both Modes) */
+.toolbarButton .material-symbols-rounded {
+  font-size: 24px;
+  /* FIX: Icon color will now inherit from the button's color property */
+  color: inherit; 
+  transition: color 0.2s;
+}
+
 .toolbarButton:hover:not(.active):not(:disabled) {
   background-color: var(--control-bg-secondary-hover);
-  opacity: 1;
+  /* FIX: Set the hover color on the button */
+  color: var(--surface-fg-secondary);
 }
 
-/* ---------------------------------
-   COMPACT MODE STYLING (Icon Only)
-   --------------------------------- */
+.toolbarButton.active {
+  /* FIX: Set the active color on the button */
+  color: var(--control-fg-selected);
+}
+
 .mainToolbar.compact .toolbarButton {
   width: 44px;
   height: 44px;
   border: 1px solid transparent;
 }
-.mainToolbar.compact .toolbarButton .material-symbols-rounded {
-  font-size: 24px;
-  color: var(--surface-fg-quaternary);
-}
-.mainToolbar.compact .toolbarButton:hover:not(.active):not(:disabled) .material-symbols-rounded {
-  color: var(--surface-fg-secondary);
-}
 
-/* Compact Active State (Styled like selected node) */
 .mainToolbar.compact .toolbarButton.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
-  opacity: 1;
   padding: 0; 
-}
-.mainToolbar.compact .toolbarButton.active .material-symbols-rounded {
-  color: var(--control-fg-selected);
 }
 .mainToolbar.compact .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);
 }
 
-
-/* ---------------------------------
-   NORMAL MODE STYLING (Icon + Text)
-   --------------------------------- */
 .mainToolbar.normal .toolbarButton {
   width: 100%;
   height: 72px; 
   flex-direction: column;
   justify-content: center;
   gap: var(--spacing-1);
-  opacity: 1; 
   padding: 1px 0;
   border: 1px solid transparent; 
-  color: var(--surface-fg-primary); 
-}
-
-.mainToolbar.normal .toolbarButton .material-symbols-rounded {
-    font-size: 24px;
-    color: var(--surface-fg-quaternary);
 }
 
 .toolbarLabel {
   font-size: 14px; 
   font-weight: 500;
-  color: var(--surface-fg-quaternary);
+  /* FIX: Label color also inherits from the button's color property */
+  color: inherit;
   line-height: 1;
+  transition: color 0.2s;
 }
 
-.mainToolbar.normal .toolbarButton:hover:not(.active):not(:disabled) .material-symbols-rounded,
-.mainToolbar.normal .toolbarButton:hover:not(.active):not(:disabled) .toolbarLabel {
-  color: var(--surface-fg-secondary);
-}
-
-
-/* Normal Active State */
 .mainToolbar.normal .toolbarButton.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
@@ -123,12 +101,7 @@
 .mainToolbar.normal .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);
 }
-.mainToolbar.normal .toolbarButton.active .material-symbols-rounded,
-.mainToolbar.normal .toolbarButton.active .toolbarLabel {
-  color: var(--control-fg-selected);
-}
 
-/* Dividers for Normal Mode */
 .toolbarDividerHorizontal {
   width: 80%;
   height: 1px;

@@ -1,0 +1,17 @@
+/* src/debug.module.css */
+/* Add these classes to elements to visualize their boundaries and layout */
+
+/* Shows the outline of a flex container */
+.flexContainer {
+    outline: 2px solid red !important;
+}
+
+/* Shows the outline of direct children of a flex container */
+.flexContainer > * {
+    outline: 1px solid blue !important;
+}
+
+/* Shows the outline of any element */
+.outline {
+    outline: 2px solid limegreen !important;
+}

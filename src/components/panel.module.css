@@ -9,6 +9,11 @@
   border-right: 1px solid var(--surface-border-secondary);
 }
 
+/* FIX: New rule to remove the border when the navigator is inside a modal */
+.componentBrowserContainer.insideModal {
+  border-right: none;
+}
+
 .componentBrowserHeader {
   background: var(--surface-bg-secondary);
   position: relative;
@@ -65,8 +70,9 @@
 .breadcrumb button:hover:not(:disabled) {
   text-decoration-color: var(--surface-fg-secondary);
 }
-.breadcrumb button.active { 
-  color: var(--surface-fg-theme-primary); 
+/* FIX: Change selector from 'button.active' to just '.active' for modularity */
+.breadcrumb .active { 
+  color: var(--surface-fg-theme-strong); 
   font-weight: 600; 
   cursor: default;
   text-decoration: none;

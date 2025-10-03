@@ -81,35 +81,37 @@ export const DataBindingModal = () => {
           </button>
         </div>
         <div className={styles.modalContent}>
-          <DataNavigatorView
-            treeData={componentTreeData}
-            componentData={componentListData}
-            atoms={{
-              selectedNodeIdAtom: modalSelectedNodeIdAtom,
-              searchQueryAtom: modalComponentSearchQueryAtom,
-            }}
-            renderComponentItem={(component) => (
-              <SelectableListItem
-                component={component as DraggableComponent}
-                isSelected={pendingSelection?.fieldId === component.id}
-                onSelect={handleSelect}
-              />
-            )}
-            renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
-                <ConnectionsDropdown 
-                    navigator={navigator} 
-                    selectedNodeId={selectedNodeId} 
-                    onClose={onClose}
+            <DataNavigatorView
+              treeData={componentTreeData}
+              componentData={componentListData}
+              atoms={{
+                selectedNodeIdAtom: modalSelectedNodeIdAtom,
+                searchQueryAtom: modalComponentSearchQueryAtom,
+              }}
+              renderComponentItem={(component) => (
+                <SelectableListItem
+                  component={component as DraggableComponent}
+                  isSelected={pendingSelection?.fieldId === component.id}
+                  onSelect={handleSelect}
                 />
-            )}
-            showBreadcrumb={true}
-          />
+              )}
+              renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
+                  <ConnectionsDropdown 
+                      navigator={navigator} 
+                      selectedNodeId={selectedNodeId} 
+                      onClose={onClose}
+                  />
+              )}
+              showBreadcrumb={true}
+              isInsideModal={true}
+            />
         </div>
         <div className={styles.modalFooter}>
+          {/* FIX: Apply global button classes directly */}
           <button className="btn btn-secondary" onClick={handleUnbind}>Unbind</button>
           <div className={styles.footerActionsRight}>
-            <button className="btn-secondary" onClick={handleClose}>Cancel</button>
-            <button className="btn-primary" onClick={handleApply}>Apply</button>
+            <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleApply}>Apply</button>
           </div>
         </div>
       </div>
