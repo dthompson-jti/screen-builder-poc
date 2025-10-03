@@ -25,8 +25,8 @@
 }
 
 .canvasContainer.isDragging .formCard {
-  background-color: var(--primitives-theme-25);
-  border-color: var(--primitives-theme-200);
+  background-color: var(--primitives-theme-50);
+  border-color: var(--primitives-theme-300);
 }
 
 .canvasDroppableArea {
@@ -44,8 +44,14 @@
   cursor: grab;
 }
 
+/* FIX: Use the correct primary hover token for the default hover state */
 .formComponentWrapper:hover:not(.selected) {
-  background-color: var(--surface-bg-secondary_hover);
+  background-color: var(--surface-bg-primary_hover);
+}
+
+/* This rule is now redundant with the one above, but we keep it for specificity if needed later. */
+.canvasContainer.isDragging .formComponentWrapper:hover:not(.selected) {
+  background-color: var(--surface-bg-primary_hover);
 }
 
 .formComponentWrapper.selected {

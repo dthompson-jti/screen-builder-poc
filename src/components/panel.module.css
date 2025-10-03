@@ -9,7 +9,6 @@
   border-right: 1px solid var(--surface-border-secondary);
 }
 
-/* FIX: New rule to remove the border when the navigator is inside a modal */
 .componentBrowserContainer.insideModal {
   border-right: none;
 }
@@ -70,7 +69,6 @@
 .breadcrumb button:hover:not(:disabled) {
   text-decoration-color: var(--surface-fg-secondary);
 }
-/* FIX: Change selector from 'button.active' to just '.active' for modularity */
 .breadcrumb .active { 
   color: var(--surface-fg-theme-strong); 
   font-weight: 600; 
@@ -102,7 +100,8 @@
   cursor: grab;
   transition: background-color 0.2s;
 }
-.componentListItem:hover { background-color: var(--surface-bg-secondary_hover); }
+/* FIX: Use the correct primary hover token */
+.componentListItem:hover { background-color: var(--surface-bg-primary_hover); }
 .componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
 

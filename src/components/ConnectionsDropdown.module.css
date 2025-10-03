@@ -80,9 +80,10 @@
   cursor: pointer;
 }
 
+/* FIX: Use the correct primary hover token and a matching border color */
 .dropdownItem.navigable:hover {
-  background-color: var(--control-bg-tertiary-hover);
-  border-left-color: var(--control-border-tertiary-hover);
+  background-color: var(--surface-bg-primary_hover);
+  border-left-color: var(--surface-border-theme);
 }
 
 .itemIcon { 
