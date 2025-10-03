@@ -1,6 +1,6 @@
 // src/components/StaticBindingDisplay.tsx
 import { BoundData } from '../types';
-import './StaticBindingDisplay.css';
+import styles from './StaticBindingDisplay.module.css';
 
 interface StaticBindingDisplayProps {
   binding: BoundData | null | undefined;
@@ -11,11 +11,10 @@ export const StaticBindingDisplay = ({ binding }: StaticBindingDisplayProps) => 
     return null;
   }
 
-  // FIX: Render the Node Name > Field Name format
   return (
-    <div className="static-binding-display">
+    <div className={styles.staticBindingDisplay}>
       <span>{binding.nodeName}</span>
-      <span className="material-symbols-rounded chevron">chevron_right</span>
+      <span className={`material-symbols-rounded ${styles.chevron}`}>chevron_right</span>
       <span>{binding.fieldName}</span>
     </div>
   );

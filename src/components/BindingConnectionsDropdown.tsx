@@ -4,6 +4,7 @@ import { useOnClickOutside } from '../data/useOnClickOutside';
 import { NodeNavigator } from '../data/navigator.js';
 import { connectionsDropdownData, componentTreeData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
+import styles from './ConnectionsDropdown.module.css';
 
 interface BindingConnectionsDropdownProps {
   navigator: NodeNavigator | null;
@@ -29,8 +30,8 @@ export const BindingConnectionsDropdown = ({ navigator, selectedNodeId, onClose 
 
   if (!data || data.entities.length === 0) {
     return (
-       <div className="connections-dropdown-container" ref={dropdownRef}>
-         <div className="placeholder-content" style={{padding: 'var(--spacing-4)', height: 'auto'}}>
+       <div className={styles.connectionsDropdownContainer} ref={dropdownRef}>
+         <div className={styles.placeholderContent}>
             <p>No forward connections.</p>
          </div>
       </div>
@@ -38,12 +39,13 @@ export const BindingConnectionsDropdown = ({ navigator, selectedNodeId, onClose 
   }
 
   return (
-    <div className="connections-dropdown-container" ref={dropdownRef}>
-      <ul className="dropdown-list">
+    <div className={styles.connectionsDropdownContainer} ref={dropdownRef}>
+      <ul className={styles.dropdownList}>
         {data.entities.map((item: DropdownItem) => (
-          <li key={item.id} className="dropdown-item navigable" onClick={() => handleItemClick(item.id)}>
-            {/* FIX: Standardize icon class */}
-            <span className="material-symbols-rounded item-icon entity">crop_square</span>
+          <li key={item.id} className={`${styles.dropdownItem} ${styles.navigable}`} onClick={() => handleItemClick(item.id)}>
+            <span className={`material-symbols-rounded ${styles.itemIcon}`} style={{ color: item.iconColor }}>
+              {item.icon}
+            </span>
             <span>{item.name}</span>
           </li>
         ))}

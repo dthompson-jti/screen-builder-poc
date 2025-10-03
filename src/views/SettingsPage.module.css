@@ -1,5 +1,5 @@
-/* src/components/SettingsPage.css */
-.settings-page-wrapper {
+/* src/views/SettingsPage.module.css */
+.settingsPageWrapper {
   flex-grow: 1;
   display: flex;
   background-color: var(--surface-bg-primary);
@@ -8,7 +8,7 @@
   overflow: hidden;
 }
 
-.settings-navigator-container {
+.settingsNavigatorContainer {
   width: 280px;
   flex-shrink: 0;
   background-color: var(--surface-bg-primary);
@@ -16,7 +16,7 @@
   padding: var(--spacing-8) var(--spacing-6);
 }
 
-.settings-navigator-list {
+.settingsNavigatorList {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -27,7 +27,7 @@
   top: var(--spacing-8);
 }
 
-.settings-navigator-list a {
+.settingsNavigatorList a {
   display: block;
   padding: var(--spacing-2) var(--spacing-3);
   border-radius: 6px;
@@ -40,51 +40,51 @@
   border-left: 6px solid transparent;
 }
 
-.settings-navigator-list a:hover {
+.settingsNavigatorList a:hover {
   background-color: var(--surface-bg-secondary_hover);
   color: var(--surface-fg-primary);
 }
 
-.settings-navigator-list a.active {
+.settingsNavigatorList a.active {
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
   font-weight: 600;
   border-left-color: var(--control-border-selected);
 }
 
-.settings-content-container {
+.settingsContentContainer {
   flex-grow: 1;
   padding: var(--spacing-8);
   overflow-y: auto;
 }
 
-.settings-form-container {
+.settingsFormContainer {
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.settings-form-container[data-layout='two-column'] {
+.settingsFormContainer[data-layout='two-column'] {
   column-count: 2;
   column-gap: var(--spacing-12);
 }
 
-.settings-form-container[data-layout='two-column'] .settings-section {
+.settingsFormContainer[data-layout='two-column'] .settingsSection {
   break-inside: avoid;
 }
 
 
 @media (max-width: 1200px) {
-  .settings-form-container[data-layout='two-column'] {
+  .settingsFormContainer[data-layout='two-column'] {
     column-count: 1;
   }
 }
 
-.settings-section {
+.settingsSection {
   margin-bottom: 0;
   padding-bottom: var(--spacing-10);
 }
 
-.settings-section h2 {
+.settingsSection h2 {
   font-size: 1.25em;
   font-weight: 600;
   color: var(--surface-fg-primary);
@@ -93,36 +93,34 @@
   border-bottom: 1px solid var(--surface-border-secondary);
 }
 
-.settings-form-grid {
+.settingsFormGrid {
   display: grid;
   gap: var(--spacing-6);
 }
 
-.form-field {
+.formField {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1p5);
 }
 
-.form-field label {
+.formField label {
   font-size: 0.9em;
   font-weight: 500;
   color: var(--surface-fg-primary);
 }
 
-.form-field label .required-asterisk {
+.formField label .requiredAsterisk {
   color: var(--surface-fg-alert-primary);
   margin-left: 2px;
 }
 
-/* REMOVED: Base input, select, and textarea styles are now centralized in src/forms.css */
-
-.form-field-checkbox {
+.formFieldCheckbox {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
 }
 
-.form-field-checkbox label {
+.formFieldCheckbox label {
   cursor: pointer;
 }

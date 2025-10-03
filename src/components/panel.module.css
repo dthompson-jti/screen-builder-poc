@@ -1,7 +1,5 @@
-/* src/components/panel.css */
-/* NEW FILE: Contains shared styles for panel containers, headers, lists, and search bars, extracted from navigator.css */
-
-.component-browser-container {
+/* src/components/panel.module.css */
+.componentBrowserContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -11,7 +9,7 @@
   border-right: 1px solid var(--surface-border-secondary);
 }
 
-.component-browser-header {
+.componentBrowserHeader {
   background: var(--surface-bg-secondary);
   position: relative;
   display: flex;
@@ -23,7 +21,7 @@
   flex-shrink: 0;
 }
 
-.component-browser-header h4 {
+.componentBrowserHeader h4 {
   margin: 0;
   overflow: hidden;
   color: var(--surface-fg-primary);
@@ -36,7 +34,7 @@
   letter-spacing: -0.21px;
 }
 
-.breadcrumb-wrapper {
+.breadcrumbWrapper {
     padding: var(--spacing-2) var(--spacing-4);
     border-bottom: 1px solid var(--surface-border-secondary);
     flex-shrink: 0;
@@ -78,10 +76,10 @@
 }
 
 /* --- Component List Styles --- */
-.component-list-container { flex: 1; min-height: 0; overflow-y: auto; }
-.component-list, .component-list ul { list-style: none; margin: 0; padding: 0; }
-.component-list > li { padding: var(--spacing-2) var(--spacing-4); }
-.list-group-title {
+.componentListContainer { flex: 1; min-height: 0; overflow-y: auto; }
+.componentList, .componentList ul { list-style: none; margin: 0; padding: 0; }
+.componentList > li { padding: var(--spacing-2) var(--spacing-4); }
+.listGroupTitle {
   font-size: 0.8em;
   font-weight: 600;
   color: var(--surface-fg-secondary);
@@ -89,7 +87,7 @@
   text-transform: uppercase;
 }
 
-.component-list-item {
+.componentListItem {
   display: flex;
   align-items: center;
   padding: var(--spacing-2);
@@ -98,37 +96,37 @@
   cursor: grab;
   transition: background-color 0.2s;
 }
-.component-list-item:hover { background-color: var(--surface-bg-secondary_hover); }
-.component-icon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
-.component-name { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
+.componentListItem:hover { background-color: var(--surface-bg-secondary_hover); }
+.componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
+.componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
 
-.component-list-item.selectable {
+.componentListItem.selectable {
   cursor: pointer;
 }
-.component-list-item.selected {
+.componentListItem.selected {
   background-color: var(--control-bg-selected);
   font-weight: 500;
 }
-.component-list-item.selected .component-name {
+.componentListItem.selected .componentName {
   color: var(--control-fg-selected);
 }
-.selection-check {
+.selectionCheck {
   margin-left: auto;
   color: var(--control-fg-selected);
 }
 
 /* --- Search Bar --- */
-.search-bar-container {
+.searchBarContainer {
   padding: var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
 }
-.search-bar-container .material-symbols-rounded {
+.searchBarContainer .material-symbols-rounded {
   color: var(--surface-fg-tertiary);
 }
-.search-bar-container input {
+.searchBarContainer input {
   width: 100%;
   border: none;
   background: none;
@@ -136,6 +134,6 @@
   font-size: 0.9em;
   color: var(--surface-fg-primary);
 }
-.search-bar-container input::placeholder {
+.searchBarContainer input::placeholder {
   color: var(--control-fg-placeholder);
 }

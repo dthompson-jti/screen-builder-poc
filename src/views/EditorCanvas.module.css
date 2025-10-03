@@ -1,5 +1,5 @@
-/* src/components/EditorCanvas.css */
-.canvas-container {
+/* src/views/EditorCanvas.module.css */
+.canvasContainer {
   width: 100%;
   height: 100%;
   background-color: var(--surface-bg-tertiary);
@@ -7,7 +7,7 @@
   overflow-y: auto;
 }
 
-.form-card {
+.formCard {
   background-color: var(--surface-bg-primary);
   border-radius: var(--spacing-3);
   padding: var(--spacing-6);
@@ -17,23 +17,23 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
   border: 1px solid transparent;
 }
-.form-card h2 {
+.formCard h2 {
   font-size: 1.5em;
   font-weight: 600;
   margin: 0 0 var(--spacing-6) 0;
   color: var(--surface-fg-primary);
 }
 
-.canvas-container.is-dragging .form-card {
+.canvasContainer.isDragging .formCard {
   background-color: var(--primitives-theme-25);
   border-color: var(--primitives-theme-200);
 }
 
-.canvas-droppable-area {
+.canvasDroppableArea {
   min-height: 400px;
 }
 
-.form-component-wrapper {
+.formComponentWrapper {
   padding: var(--spacing-3);
   margin: 0;
   border: 1px solid transparent;
@@ -44,17 +44,17 @@
   cursor: grab;
 }
 
-.form-component-wrapper:hover:not(.selected) {
+.formComponentWrapper:hover:not(.selected) {
   background-color: var(--surface-bg-secondary_hover);
 }
 
-.form-component-wrapper.selected {
+.formComponentWrapper.selected {
   border: 2px solid var(--control-border-selected);
   background-color: var(--control-bg-selected);
   padding: calc(var(--spacing-3) - 1px);
 }
 
-.form-component-wrapper.show-drop-indicator::before {
+.formComponentWrapper.showDropIndicator::before {
   content: '';
   position: absolute;
   top: -3px;
@@ -67,11 +67,11 @@
 }
 
 
-.bottom-drop-zone {
+.bottomDropZone {
   position: relative;
   height: 20px;
 }
-.bottom-drop-zone.show-drop-indicator::before {
+.bottomDropZone.showDropIndicator::before {
   content: '';
   position: absolute;
   top: 0;

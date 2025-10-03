@@ -1,6 +1,6 @@
-/* src/components/Modal.css */
+/* src/components/modal.module.css */
 
-.modal-backdrop {
+.modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   justify-content: center;
 }
 
-.modal-container {
+.modalContainer {
   background-color: var(--surface-bg-primary);
   border-radius: var(--spacing-3);
   box-shadow: var(--surface-shadow-2xl);

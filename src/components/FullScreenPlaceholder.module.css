@@ -1,6 +1,6 @@
-/* src/FullScreenPlaceholder.css */
+/* src/components/FullScreenPlaceholder.module.css */
 
-.fullscreen-placeholder-wrapper {
+.fullscreenPlaceholderWrapper {
   flex-grow: 1;
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@
   overflow-y: auto;
 }
 
-.fullscreen-placeholder-card {
+.fullscreenPlaceholderCard {
   background-color: var(--surface-bg-primary);
   border-radius: var(--spacing-3);
   padding: var(--spacing-8);
@@ -26,19 +26,19 @@
   gap: var(--spacing-4);
 }
 
-.fullscreen-placeholder-card .material-symbols-rounded {
+.fullscreenPlaceholderCard .material-symbols-rounded {
   font-size: 48px;
   color: var(--surface-fg-tertiary);
 }
 
-.fullscreen-placeholder-card h3 {
+.fullscreenPlaceholderCard h3 {
   font-size: 1.5em;
   font-weight: 600;
   margin: 0;
   color: var(--surface-fg-primary);
 }
 
-.fullscreen-placeholder-card p {
+.fullscreenPlaceholderCard p {
   margin: 0;
   color: var(--surface-fg-secondary);
   line-height: 1.5;

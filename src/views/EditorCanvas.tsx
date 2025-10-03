@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../data/atoms';
 import { FormComponent } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
-import './EditorCanvas.css';
+import styles from './EditorCanvas.module.css';
 import { TextInputPreview } from '../components/TextInputPreview';
 
 const SortableFormComponent = ({ component, overId, active }: { component: FormComponent, overId: UniqueIdentifier | null, active: Active | null }) => {
@@ -30,7 +30,7 @@ const SortableFormComponent = ({ component, overId, active }: { component: FormC
     setSelectedId(null); // Deselect after deleting.
   };
   
-  const wrapperClassName = `form-component-wrapper ${isSelected ? 'selected' : ''} ${showIndicator ? 'show-drop-indicator' : ''}`;
+  const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''} ${showIndicator ? styles.showDropIndicator : ''}`;
 
   return (
     <div
@@ -51,7 +51,7 @@ const SortableFormComponent = ({ component, overId, active }: { component: FormC
 const BottomDropZone = ({ overId }: { overId: UniqueIdentifier | null }) => {
   const { setNodeRef } = useDroppable({ id: 'bottom-drop-zone' });
   const showIndicator = overId === 'bottom-drop-zone';
-  const zoneClassName = `bottom-drop-zone ${showIndicator ? 'show-drop-indicator' : ''}`;
+  const zoneClassName = `${styles.bottomDropZone} ${showIndicator ? styles.showDropIndicator : ''}`;
 
   return (
     <div ref={setNodeRef} className={zoneClassName} />
@@ -69,13 +69,13 @@ export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) 
   const [, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
   const { setNodeRef } = useDroppable({ id: 'canvas-drop-area' });
 
-  const canvasClassName = `canvas-container ${isDragging ? 'is-dragging' : ''}`;
+  const canvasClassName = `${styles.canvasContainer} ${isDragging ? styles.isDragging : ''}`;
 
   return (
     <div className={canvasClassName} onClick={() => setSelectedId(null)}>
-      <div className="form-card">
+      <div className={styles.formCard}>
         <h2>Form</h2>
-        <div ref={setNodeRef} className="canvas-droppable-area">
+        <div ref={setNodeRef} className={styles.canvasDroppableArea}>
           <SortableContext items={components.map(c => c.id)} strategy={verticalListSortingStrategy}>
             {components.map((component) => (
               <SortableFormComponent key={component.id} component={component} overId={overId} active={active} />

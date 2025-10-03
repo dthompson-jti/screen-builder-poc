@@ -1,7 +1,8 @@
 /* src/components/navigator.css */
 /* This file contains styles for the NodeNavigator widget. */
 
-.navigator-container {
+/* The .node-navigator class provides a manual scope for these styles */
+.node-navigator .navigator-container {
   padding: 0;
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
@@ -11,7 +12,7 @@
   align-items: center;
 }
 
-#navigator-grid {
+.node-navigator #navigator-grid {
   display: grid;
   width: 100%;
   padding: 0 var(--spacing-4);
@@ -22,7 +23,7 @@
   position: relative;
 }
 
-#nodes-viewport {
+.node-navigator #nodes-viewport {
   grid-column: 1 / -1;
   grid-row: 1;
   position: relative;
@@ -30,7 +31,7 @@
   height: 36px;
 }
 
-#nodes-track {
+.node-navigator #nodes-track {
   position: absolute;
   top: 0;
   left: 0;
@@ -39,7 +40,7 @@
   display: flex;
 }
 
-.node-group {
+.node-navigator .node-group {
   position: absolute;
   top: 0;
   height: 36px;
@@ -47,7 +48,7 @@
   justify-content: center;
 }
 
-.node-button {
+.node-navigator .node-button {
   height: 100%;
   width: 100%;
   font-family: var(--font-family-sans);
@@ -73,23 +74,23 @@
   cursor: pointer;
 }
 
-.last-node .node-button:hover, 
-.connections-node .node-button:hover {
+.node-navigator .last-node .node-button:hover, 
+.node-navigator .connections-node .node-button:hover {
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -3px 0 0 var(--control-border-secondary-hover);
 }
 
-.last-node .node-button:active, 
-.connections-node .node-button:active, 
-.connections-node .node-button.active {
+.node-navigator .last-node .node-button:active, 
+.node-navigator .connections-node .node-button:active, 
+.node-navigator .connections-node .node-button.active {
   background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
   transform: translateY(1px);
 }
 
-.node-group.none-state .node-button.disabled-none {
+.node-navigator .node-group.none-state .node-button.disabled-none {
     background-color: var(--control-bg-disabled_subtle) !important;
     color: var(--control-fg-disabled) !important;
     border: 1px dashed var(--control-border-disabled) !important;
@@ -98,8 +99,8 @@
     transform: none !important;
 }
 
-.selected-node .node-button,
-.selected-node .node-button:hover {
+.node-navigator .selected-node .node-button,
+.node-navigator .selected-node .node-button:hover {
   padding: 6px calc(var(--spacing-3) - 1px);
   border: 2px solid var(--control-border-selected);
   background: var(--control-bg-selected);
@@ -112,7 +113,7 @@
   transform: translateY(0);
 }
 
-.static-label {
+.node-navigator .static-label {
   grid-row: 3;
   color: var(--surface-fg-secondary);
   font-size: 0.8em;
@@ -122,18 +123,18 @@
   text-overflow: ellipsis;
 }
 
-.static-label.last-node-label { grid-column: 1; }
-.static-label.selected-node-label { grid-column: 2; }
-.static-label.connected-node-label { grid-column: 3; }
+.node-navigator .static-label.last-node-label { grid-column: 1; }
+.node-navigator .static-label.selected-node-label { grid-column: 2; }
+.node-navigator .static-label.connected-node-label { grid-column: 3; }
 
-.nav-arrow-gap {
+.node-navigator .nav-arrow-gap {
   position: absolute;
   top: 0;
   height: 100%;
   will-change: transform;
 }
 
-.nav-arrow {
+.node-navigator .nav-arrow {
   position: absolute;
   top: 50%;
   left: 8px;
@@ -144,7 +145,7 @@
   opacity: 1;
   transition: opacity 0.3s ease;
 }
-.nav-arrow::after {
+.node-navigator .nav-arrow::after {
   content: '';
   position: absolute;
   top: -3.25px;
@@ -155,94 +156,4 @@
   border-right: 1.5px solid var(--surface-fg-tertiary);
   transform: rotate(45deg);
 }
-.nav-arrow.left { display: none; }
-
-/* --- Dropdown Styles --- */
-.connections-dropdown-container {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 300px;
-  background-color: var(--surface-bg-primary);
-  border-radius: 8px;
-  box-shadow: var(--surface-shadow-xl);
-  border: 1px solid var(--surface-border-primary);
-  z-index: 100;
-  overflow: hidden;
-}
-
-.dropdown-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-3);
-  border-bottom: 1px solid var(--surface-border-secondary);
-}
-.dropdown-header-row h5 {
-  margin: 0;
-  font-size: 0.9em;
-  font-weight: 600;
-  color: var(--surface-fg-primary);
-}
-
-.dropdown-search {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-3);
-  border-bottom: 1px solid var(--surface-border-secondary);
-}
-.dropdown-search .material-symbols-rounded { color: var(--surface-fg-tertiary); }
-.dropdown-search input {
-  border: none;
-  background: none;
-  width: 100%;
-  font-size: 0.9em;
-  outline: none;
-  color: var(--surface-fg-primary);
-}
-.dropdown-search input::placeholder { color: var(--control-fg-placeholder); }
-
-.dropdown-list {
-  list-style: none;
-  margin: 0;
-  padding: var(--spacing-2);
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.dropdown-header {
-  font-size: 0.8em;
-  font-weight: 600;
-  color: var(--surface-fg-secondary);
-  padding: var(--spacing-2) var(--spacing-2);
-  text-transform: uppercase;
-}
-
-/* Base item style, inherits from .menu-item */
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-2);
-  border-radius: 6px;
-  font-size: 0.9em;
-  color: var(--surface-fg-secondary);
-  cursor: not-allowed;
-  border-left: 3px solid transparent;
-  transition: background-color 0.2s, border-left-color 0.2s;
-}
-
-.dropdown-item.navigable {
-  color: var(--surface-fg-primary);
-  cursor: pointer;
-}
-
-.dropdown-item.navigable:hover {
-  background-color: var(--control-bg-tertiary-hover);
-  border-left-color: var(--control-border-tertiary-hover);
-}
-
-.dropdown-item .item-icon { 
-    font-size: 20px;
-}
+.node-navigator .nav-arrow.left { display: none; }

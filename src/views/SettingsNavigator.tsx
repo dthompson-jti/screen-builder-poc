@@ -1,5 +1,6 @@
-// src/components/SettingsNavigator.tsx
+// src/views/SettingsNavigator.tsx
 import { SettingsSection } from '../data/settingsMock';
+import styles from './SettingsPage.module.css';
 
 interface SettingsNavigatorProps {
   sections: SettingsSection[];
@@ -16,12 +17,12 @@ export const SettingsNavigator = ({ sections, activeSectionId }: SettingsNavigat
   };
 
   return (
-    <nav className="settings-navigator-container">
-      <ul className="settings-navigator-list">
+    <nav className={styles.settingsNavigatorContainer}>
+      <ul className={styles.settingsNavigatorList}>
         {sections.map((section) => (
           <li key={section.id}>
             <a
-              className={activeSectionId === section.id ? 'active' : ''}
+              className={activeSectionId === section.id ? styles.active : ''}
               onClick={() => handleNavClick(section.id)}
             >
               {section.title}

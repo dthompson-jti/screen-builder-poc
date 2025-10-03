@@ -1,5 +1,6 @@
 // src/components/SelectableListItem.tsx
 import { DraggableComponent } from '../types';
+import panelStyles from './panel.module.css';
 
 interface SelectableListItemProps {
   component: DraggableComponent;
@@ -9,14 +10,13 @@ interface SelectableListItemProps {
 
 export const SelectableListItem = ({ component, isSelected, onSelect }: SelectableListItemProps) => {
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
-  const className = `component-list-item selectable ${isSelected ? 'selected' : ''}`;
+  const className = `${panelStyles.componentListItem} ${panelStyles.selectable} ${isSelected ? panelStyles.selected : ''}`;
 
   return (
     <li onClick={() => onSelect(component)} className={className}>
-      {/* FIX: Standardize icon class */}
-      <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
-      <span className="component-name">{component.name}</span>
-      {isSelected && <span className="material-symbols-rounded selection-check">check_circle</span>}
+      <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
+      <span className={panelStyles.componentName}>{component.name}</span>
+      {isSelected && <span className={`material-symbols-rounded ${panelStyles.selectionCheck}`}>check_circle</span>}
     </li>
   );
 };

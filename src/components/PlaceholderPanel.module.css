@@ -1,0 +1,26 @@
+/* src/components/PlaceholderPanel.module.css */
+.placeholderPanelContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-bg-primary);
+  height: 100%;
+  border-left: 1px solid var(--surface-border-secondary);
+  font-family: var(--font-family-sans);
+}
+
+.placeholderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--surface-fg-secondary);
+  padding: var(--spacing-6);
+}
+
+.placeholderContent .material-symbols-rounded {
+  font-size: 48px;
+  margin-bottom: var(--spacing-4);
+  color: var(--surface-fg-tertiary);
+}

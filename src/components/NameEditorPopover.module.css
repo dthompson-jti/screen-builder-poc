@@ -1,6 +1,6 @@
-/* src/components/NameEditorPopover.css */
+/* src/components/NameEditorPopover.module.css */
 
-.name-editor-popover {
+.nameEditorPopover {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
@@ -22,13 +22,13 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.name-editor-popover label {
+.nameEditorPopover label {
     font-size: 0.9em;
     font-weight: 500;
     color: var(--surface-fg-primary);
 }
 
-.name-editor-popover input {
+.nameEditorPopover input {
     width: 100%;
     padding: var(--spacing-2) var(--spacing-3);
     border: 1px solid var(--surface-border-primary);
@@ -40,7 +40,7 @@
     outline: none;
 }
 
-.name-editor-popover input:focus {
+.nameEditorPopover input:focus {
     border-color: var(--surface-border-theme);
     box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }

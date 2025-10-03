@@ -1,5 +1,5 @@
 // src/components/ComponentPreview.tsx
-import './ComponentPreview.css';
+import styles from './ComponentPreview.module.css';
 
 interface ComponentPreviewProps {
   name: string;
@@ -8,9 +8,9 @@ interface ComponentPreviewProps {
 
 export const ComponentPreview = ({ name, type }: ComponentPreviewProps) => {
   return (
-    <div className="component-preview">
-      <p className="component-preview-name">{name}</p>
-      <span className="component-preview-type">{type}</span>
+    <div className={styles.componentPreview}>
+      <p className={styles.componentPreviewName}>{name}</p>
+      <span className={styles.componentPreviewType}>{type}</span>
     </div>
   );
 };

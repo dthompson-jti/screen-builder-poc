@@ -1,7 +1,7 @@
 // src/views/MainToolbar.tsx
 import { useAtom, useAtomValue } from 'jotai';
 import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../data/atoms';
-import './MainToolbar.css';
+import styles from './MainToolbar.module.css';
 
 const toolbarGroups: { id: ToolbarTabId; label: string; icon: string }[][] = [
   [
@@ -25,7 +25,7 @@ export const MainToolbar = () => {
   const [activeTabId, setActiveTabId] = useAtom(activeToolbarTabAtom);
   const [isPanelVisible, setIsPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
   
-  const toolbarClassName = isCompact ? 'main-toolbar compact' : 'main-toolbar normal';
+  const toolbarClassName = `${styles.mainToolbar} ${isCompact ? styles.compact : styles.normal}`;
 
   const handleTabClick = (id: ToolbarTabId) => {
     if (id === activeTabId) {
@@ -39,17 +39,18 @@ export const MainToolbar = () => {
   const renderButton = (item: { id: ToolbarTabId; label: string; icon: string }) => {
     const isActive = item.id === activeTabId;
     const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
+    const buttonClasses = `${styles.toolbarButton} ${isCurrentlyActiveAndOpen ? styles.active : ''}`;
     return (
       <button 
         key={item.id}
-        className={`toolbar-button ${isCurrentlyActiveAndOpen ? 'active' : ''}`} 
+        className={buttonClasses} 
         title={item.label} 
         aria-label={item.label}
         onClick={() => handleTabClick(item.id)}
       >
         <span className="material-symbols-rounded">{item.icon}</span>
         {!isCompact && (
-          <span className="toolbar-label">{item.label}</span>
+          <span className={styles.toolbarLabel}>{item.label}</span>
         )}
       </button>
     );
@@ -58,10 +59,10 @@ export const MainToolbar = () => {
   return (
     <div className={toolbarClassName}>
       {toolbarGroups.map((group, groupIndex) => (
-        <div key={groupIndex} className="toolbar-group">
+        <div key={groupIndex} className={styles.toolbarGroup}>
           {group.map(renderButton)}
           {!isCompact && groupIndex < toolbarGroups.length - 1 && (
-            <div className="toolbar-divider-horizontal" />
+            <div className={styles.toolbarDividerHorizontal} />
           )}
         </div>
       ))}

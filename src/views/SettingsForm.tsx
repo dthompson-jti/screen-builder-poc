@@ -3,42 +3,42 @@ import { useEffect, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { formNameAtom, focusIntentAtom } from '../data/atoms';
 import { settingsData, SettingsSection, SettingsField } from '../data/settingsMock';
-import './SettingsPage.css';
+import styles from './SettingsPage.module.css';
 
 // Generic field renderer
 const renderGenericField = (field: SettingsField) => {
   const label = (
     <label htmlFor={field.id}>
       {field.label}
-      {field.required && <span className="required-asterisk"> *</span>}
+      {field.required && <span className={styles.requiredAsterisk}> *</span>}
     </label>
   );
 
   switch (field.type) {
     case 'checkbox':
       return (
-        <div key={field.id} className="form-field-checkbox">
+        <div key={field.id} className={styles.formFieldCheckbox}>
           <input type="checkbox" id={field.id} />
           {label}
         </div>
       );
     case 'text':
       return (
-        <div key={field.id} className="form-field">
+        <div key={field.id} className={styles.formField}>
           {label}
           <input type="text" id={field.id} placeholder={field.placeholder} />
         </div>
       );
     case 'textarea':
       return (
-        <div key={field.id} className="form-field">
+        <div key={field.id} className={styles.formField}>
           {label}
           <textarea id={field.id} placeholder={field.placeholder} />
         </div>
       );
     case 'select':
       return (
-        <div key={field.id} className="form-field">
+        <div key={field.id} className={styles.formField}>
           {label}
           <select id={field.id}>
             {field.placeholder && <option value="">{field.placeholder}</option>}
@@ -65,18 +65,18 @@ export const SettingsForm = ({ layout }: { layout: 'single-column' | 'two-column
   }, [focusIntent, setFocusIntent]);
 
   return (
-    <div className="settings-form-container" data-layout={layout}>
+    <div className={styles.settingsFormContainer} data-layout={layout}>
       {settingsData.map((section: SettingsSection) => (
-        <section key={section.id} id={section.id} className="settings-section">
+        <section key={section.id} id={section.id} className={styles.settingsSection}>
           <h2>{section.title}</h2>
-          <div className="settings-form-grid">
+          <div className={styles.settingsFormGrid}>
             {section.fields.map(field => {
               if (field.id === 'name') {
                 return (
-                  <div key={field.id} className="form-field">
+                  <div key={field.id} className={styles.formField}>
                     <label htmlFor={field.id}>
                       {field.label}
-                      {field.required && <span className="required-asterisk"> *</span>}
+                      {field.required && <span className={styles.requiredAsterisk}> *</span>}
                     </label>
                     <input
                       ref={nameInputRef}

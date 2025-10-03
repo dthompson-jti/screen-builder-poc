@@ -1,5 +1,5 @@
-/* src/components/MainToolbar.css */
-.main-toolbar {
+/* src/views/MainToolbar.module.css */
+.mainToolbar {
   /* Default (Compact) Styling */
   width: 60px; 
   height: 100%;
@@ -15,13 +15,13 @@
 }
 
 /* Normal (Expanded) Mode */
-.main-toolbar.normal {
+.mainToolbar.normal {
   width: 120px; 
   padding: var(--spacing-4) var(--spacing-2);
   gap: 0; /* Let group handle gap */
 }
 
-.toolbar-group {
+.toolbarGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -29,7 +29,7 @@
   gap: var(--spacing-4);
 }
 
-.toolbar-button {
+.toolbarButton {
   /* Base button properties */
   border: none;
   background-color: transparent;
@@ -45,7 +45,7 @@
 }
 
 /* Inactive/Hover States (Both Modes) */
-.toolbar-button:hover:not(.active):not(:disabled) {
+.toolbarButton:hover:not(.active):not(:disabled) {
   background-color: var(--control-bg-secondary-hover);
   opacity: 1;
 }
@@ -53,30 +53,30 @@
 /* ---------------------------------
    COMPACT MODE STYLING (Icon Only)
    --------------------------------- */
-.main-toolbar.compact .toolbar-button {
+.mainToolbar.compact .toolbarButton {
   width: 44px;
   height: 44px;
   border: 1px solid transparent;
 }
-.main-toolbar.compact .toolbar-button .material-symbols-rounded {
+.mainToolbar.compact .toolbarButton .material-symbols-rounded {
   font-size: 24px;
   color: var(--surface-fg-quaternary);
 }
-.main-toolbar.compact .toolbar-button:hover:not(.active):not(:disabled) .material-symbols-rounded {
+.mainToolbar.compact .toolbarButton:hover:not(.active):not(:disabled) .material-symbols-rounded {
   color: var(--surface-fg-secondary);
 }
 
 /* Compact Active State (Styled like selected node) */
-.main-toolbar.compact .toolbar-button.active {
+.mainToolbar.compact .toolbarButton.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
   opacity: 1;
   padding: 0; 
 }
-.main-toolbar.compact .toolbar-button.active .material-symbols-rounded {
+.mainToolbar.compact .toolbarButton.active .material-symbols-rounded {
   color: var(--control-fg-selected);
 }
-.main-toolbar.compact .toolbar-button.active:hover {
+.mainToolbar.compact .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);
 }
 
@@ -84,7 +84,7 @@
 /* ---------------------------------
    NORMAL MODE STYLING (Icon + Text)
    --------------------------------- */
-.main-toolbar.normal .toolbar-button {
+.mainToolbar.normal .toolbarButton {
   width: 100%;
   height: 72px; 
   flex-direction: column;
@@ -96,40 +96,40 @@
   color: var(--surface-fg-primary); 
 }
 
-.main-toolbar.normal .toolbar-button .material-symbols-rounded {
+.mainToolbar.normal .toolbarButton .material-symbols-rounded {
     font-size: 24px;
     color: var(--surface-fg-quaternary);
 }
 
-.toolbar-label {
+.toolbarLabel {
   font-size: 14px; 
   font-weight: 500;
   color: var(--surface-fg-quaternary);
   line-height: 1;
 }
 
-.main-toolbar.normal .toolbar-button:hover:not(.active):not(:disabled) .material-symbols-rounded,
-.main-toolbar.normal .toolbar-button:hover:not(.active):not(:disabled) .toolbar-label {
+.mainToolbar.normal .toolbarButton:hover:not(.active):not(:disabled) .material-symbols-rounded,
+.mainToolbar.normal .toolbarButton:hover:not(.active):not(:disabled) .toolbarLabel {
   color: var(--surface-fg-secondary);
 }
 
 
 /* Normal Active State */
-.main-toolbar.normal .toolbar-button.active {
+.mainToolbar.normal .toolbarButton.active {
   background-color: var(--control-bg-selected);
   border: 2px solid var(--control-border-selected);
   padding: 0; 
 }
-.main-toolbar.normal .toolbar-button.active:hover {
+.mainToolbar.normal .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);
 }
-.main-toolbar.normal .toolbar-button.active .material-symbols-rounded,
-.main-toolbar.normal .toolbar-button.active .toolbar-label {
+.mainToolbar.normal .toolbarButton.active .material-symbols-rounded,
+.mainToolbar.normal .toolbarButton.active .toolbarLabel {
   color: var(--control-fg-selected);
 }
 
 /* Dividers for Normal Mode */
-.toolbar-divider-horizontal {
+.toolbarDividerHorizontal {
   width: 80%;
   height: 1px;
   background-color: var(--surface-border-secondary);

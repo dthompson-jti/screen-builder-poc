@@ -13,12 +13,10 @@ import { StaticBindingDisplay } from '../components/StaticBindingDisplay';
 import { FullScreenPlaceholder } from '../components/FullScreenPlaceholder';
 import { PanelHeader } from '../components/PanelHeader';
 import { FormComponent } from '../types';
-import './PropertiesPanel.css';
-import '../components/panel.css';
+import styles from './PropertiesPanel.module.css';
 
 type ActiveTab = 'general' | 'advanced';
 
-// FIX: Update component to correctly render based on component.origin
 const PanelContent = React.memo(({ 
   selectedComponent,
   activeTab,
@@ -30,10 +28,9 @@ const PanelContent = React.memo(({
 }) => {
   
   const renderBindingControl = () => {
-    // FIX: Check component origin to determine which control to render
     if (selectedComponent.origin === 'general') {
       return (
-        <div className="prop-item">
+        <div className={styles.propItem}>
           <label>Data binding</label>
           <DataBindingPicker 
             binding={selectedComponent.binding}
@@ -42,11 +39,9 @@ const PanelContent = React.memo(({
         </div>
       );
     }
-    // FIX: Check component origin to determine which control to render
     if (selectedComponent.origin === 'data') {
       return (
-        <div className="prop-item">
-          {/* No label needed per spec, section header serves as label */}
+        <div className={styles.propItem}>
           <StaticBindingDisplay binding={selectedComponent.binding} />
         </div>
       );
@@ -57,28 +52,28 @@ const PanelContent = React.memo(({
   if (activeTab === 'general') {
     return (
       <>
-        <div className="prop-section">
+        <div className={styles.propSection}>
           <h4>Data</h4>
           {renderBindingControl()}
         </div>
-        <div className="prop-section">
+        <div className={styles.propSection}>
           <h4>Display</h4>
-          <div className="prop-item">
+          <div className={styles.propItem}>
             <label>Placeholder text</label>
             <input type="text" value="Enter placeholder text" disabled />
           </div>
-          <div className="prop-item">
+          <div className={styles.propItem}>
             <label>Label</label>
             <input type="text" value={selectedComponent.name} disabled />
           </div>
-          <div className="prop-item">
+          <div className={styles.propItem}>
             <label>Label position</label>
             <select disabled><option>Left</option></select>
           </div>
-          <div className="prop-item-toggle">
+          <div className={styles.propItemToggle}>
             <label>Required</label>
-            <div className="toggle-switch disabled">
-              <div className="toggle-knob"></div>
+            <div className={`${styles.toggleSwitch} ${styles.disabled}`}>
+              <div className={styles.toggleKnob}></div>
             </div>
           </div>
         </div>
@@ -150,13 +145,12 @@ export const PropertiesPanel = () => {
   const panelTitle = selectedComponent ? selectedComponent.name : "No item selected";
 
   return (
-    <div className="properties-panel-container">
+    <div className={styles.propertiesPanelContainer}>
       <PanelHeader title={panelTitle} onClose={() => setIsPanelVisible(false)} />
 
       {selectedComponent ? (
         <>
-          <div className="panel-header">
-            <div className="panel-tabs" ref={tabsContainerRef}>
+          <div className={`${styles.panelHeader} panel-tabs`} ref={tabsContainerRef}>
               <button 
                 className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
                 onClick={() => setActiveTab('general')}
@@ -170,9 +164,8 @@ export const PropertiesPanel = () => {
                 Advanced
               </button>
               <div className="tab-underline" style={underlineStyle} />
-            </div>
           </div>
-          <div className="panel-content">
+          <div className={styles.panelContent}>
             <PanelContent 
               selectedComponent={selectedComponent} 
               activeTab={activeTab}
@@ -181,7 +174,7 @@ export const PropertiesPanel = () => {
           </div>
         </>
       ) : (
-        <div className="properties-panel-placeholder">
+        <div className={styles.propertiesPanelPlaceholder}>
           <span className="material-symbols-rounded">touch_app</span>
           <p>Select a component on the canvas to see its properties.</p>
         </div>

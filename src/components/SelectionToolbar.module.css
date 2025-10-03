@@ -1,5 +1,5 @@
-/* src/components/SelectionToolbar.css */
-.selection-toolbar {
+/* src/components/SelectionToolbar.module.css */
+.selectionToolbar {
   position: absolute;
   top: -44px;
   left: 0;
@@ -15,36 +15,35 @@
   gap: var(--spacing-1);
 }
 
-.toolbar-drag-handle {
+.toolbarDragHandle {
   cursor: grab;
   padding: var(--spacing-1p5);
   border-radius: 6px;
   transition: background-color 0.2s;
 }
 
-.toolbar-drag-handle:hover {
+.toolbarDragHandle:hover {
   background-color: var(--primitives-dark-tint-800);
 }
 
-.toolbar-drag-handle:active {
+.toolbarDragHandle:active {
   cursor: grabbing;
   background-color: var(--primitives-dark-tint-700);
 }
 
-.toolbar-drag-handle .material-symbols-rounded {
+.toolbarDragHandle .material-symbols-rounded {
   display: block;
-  /* FIX: Ensure the drag handle icon color is white */
   color: var(--control-fg-on-solid);
 }
 
-.toolbar-divider {
+.toolbarDivider {
   width: 1px;
   height: 20px;
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
 }
 
-.btn-on-solid {
+.btnOnSolid {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -60,7 +59,7 @@
   transition: all 0.15s ease-out;
 }
 
-.btn-on-solid:hover {
+.btnOnSolid:hover {
   background: var(--control-bg-tertiary);
   border-top: 1px solid var(--control-border-tertiary-faint-hover);
   border-left: 1px solid var(--control-border-tertiary-faint-hover);
@@ -70,7 +69,7 @@
   color: var(--control-fg-on-solid);
 }
 
-.btn-on-solid:active {
+.btnOnSolid:active {
   background: var(--control-bg-tertiary-pressed);
   border-top: 1px solid var(--control-border-tertiary-faint-pressed);
   border-left: 1px solid var(--control-border-tertiary-faint-pressed);

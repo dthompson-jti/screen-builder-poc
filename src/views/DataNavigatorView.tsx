@@ -5,8 +5,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from '../data/navigator.js';
 import { PanelHeader } from '../components/PanelHeader';
-import '../components/panel.css';
-import '../components/navigator.css';
+import panelStyles from '../components/panel.module.css';
 import { ComponentNode } from '../types';
 
 // --- TYPES ---
@@ -113,14 +112,14 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   };
 
   return (
-    <div className="component-browser-container">
+    <div className={panelStyles.componentBrowserContainer}>
       {onClosePanel && (
         <PanelHeader title="Data navigator" onClose={onClosePanel} />
       )}
 
       {showBreadcrumb && (
-        <div className="breadcrumb-wrapper">
-          <div className="breadcrumb">
+        <div className={panelStyles.breadcrumbWrapper}>
+          <div className={panelStyles.breadcrumb}>
             <AnimatePresence>
               {breadcrumbPath.map((node, index) => (
                 <motion.div key={node.id} custom={index} variants={breadcrumbVariants} initial="hidden" animate="visible" exit="exit" style={{ display: 'flex', alignItems: 'center' }}>
@@ -135,33 +134,36 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         </div>
       )}
 
-      <div className="navigator-container">
-        <div id="navigator-grid" ref={mountRef}>
-            <div id="nodes-viewport">
-              <div id="nodes-track">
-                <div className="nav-arrow-gap" id="arrow-gap-1"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
-                <div className="nav-arrow-gap" id="arrow-gap-2"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+      {/* The .node-navigator class scopes the global navigator.css styles */}
+      <div className="node-navigator">
+        <div className="navigator-container">
+          <div id="navigator-grid" ref={mountRef}>
+              <div id="nodes-viewport">
+                <div id="nodes-track">
+                  <div className="nav-arrow-gap" id="arrow-gap-1"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+                  <div className="nav-arrow-gap" id="arrow-gap-2"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+                </div>
+                {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
               </div>
-              {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
-            </div>
-            <div className="static-label last-node-label">Last node</div>
-            <div className="static-label selected-node-label">Selected node</div>
-            <div className="static-label connected-node-label">
-              {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
-            </div>
+              <div className="static-label last-node-label">Last node</div>
+              <div className="static-label selected-node-label">Selected node</div>
+              <div className="static-label connected-node-label">
+                {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
+              </div>
+          </div>
         </div>
       </div>
 
-      <div className="search-bar-container">
+      <div className={panelStyles.searchBarContainer}>
         <span className="material-symbols-rounded">search</span>
         <input type="text" placeholder={searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
-      <div className="component-list-container">
-        <ul className="component-list">
+      <div className={panelStyles.componentListContainer}>
+        <ul className={panelStyles.componentList}>
           {filteredGroups.map((group) => (
             <li key={group.title}>
-              <h5 className="list-group-title">{group.title}</h5>
+              <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
               <ul>
                 {group.components.map((component) => (
                   <React.Fragment key={component.id}>

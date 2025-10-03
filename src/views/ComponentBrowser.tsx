@@ -6,8 +6,7 @@ import { componentListData, componentTreeData } from '../data/componentBrowserMo
 import { DraggableComponent } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
 import { ConnectionsDropdown } from '../components/ConnectionsDropdown';
-import '../components/panel.css';
-import '../components/navigator.css';
+import panelStyles from '../components/panel.module.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -18,8 +17,8 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
       icon: component.icon, 
       id: component.id, 
       isNew: true,
-      origin: 'data', // FIX: Added origin property
-      data: { // Pass node info for binding creation
+      origin: 'data',
+      data: {
         nodeId: component.nodeId,
         nodeName: component.nodeName
       }
@@ -27,9 +26,9 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
-    <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
-      <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
-      <span className="component-name">{component.name}</span>
+    <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className={panelStyles.componentListItem}>
+      <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
+      <span className={panelStyles.componentName}>{component.name}</span>
     </li>
   );
 };

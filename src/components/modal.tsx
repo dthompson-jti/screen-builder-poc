@@ -1,7 +1,7 @@
 // src/components/Modal.tsx
 import React, { useRef, useEffect } from 'react';
 import { useOnClickOutside } from '../data/useOnClickOutside';
-import './Modal.css';
+import styles from './Modal.module.css';
 
 interface ModalProps {
   isOpen: boolean;
@@ -35,10 +35,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, width =
   }
 
   return (
-    <div className="modal-backdrop">
+    <div className={styles.modalBackdrop}>
       <div 
         ref={modalRef} 
-        className="modal-container"
+        className={styles.modalContainer}
         style={{ width, height }}
         role="dialog"
         aria-modal="true"

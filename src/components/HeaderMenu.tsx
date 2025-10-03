@@ -3,9 +3,8 @@ import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
 import { useOnClickOutside } from '../data/useOnClickOutside';
-import './HeaderMenu.css';
+import styles from './HeaderMenu.module.css';
 
-// FIX: Use a dedicated MenuOption component that uses the .menu-item class
 const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
     <button className="menu-item" onClick={onClick} disabled={disabled}>
         <span className="checkmark-container">
@@ -41,10 +40,10 @@ export const HeaderMenu = () => {
     }
 
     return (
-        <div className="header-menu-popover" ref={menuRef}>
+        <div className={styles.headerMenuPopover} ref={menuRef}>
             <MenuOption label="Undo" onClick={() => {}} hotkey="Ctrl+Z" disabled />
             <MenuOption label="Redo" onClick={() => {}} hotkey="Ctrl+Y" disabled />
-            <div className="menu-divider"></div>
+            <div className={styles.menuDivider}></div>
             <MenuOption 
                 label="Compact left menu"
                 isChecked={isCompact}
@@ -60,7 +59,7 @@ export const HeaderMenu = () => {
                 isChecked={layoutMode === 'two-column'}
                 onClick={handleToggleLayoutMode}
             />
-            <div className="menu-divider"></div>
+            <div className={styles.menuDivider}></div>
             <MenuOption 
                 label="Show version history"
                 isChecked={false}

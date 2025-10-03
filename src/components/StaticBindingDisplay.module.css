@@ -1,0 +1,13 @@
+/* src/components/StaticBindingDisplay.module.css */
+.staticBindingDisplay {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--surface-fg-tertiary);
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.chevron {
+  font-size: 18px;
+}

@@ -1,6 +1,6 @@
-// src/FullScreenPlaceholder.tsx
+// src/components/FullScreenPlaceholder.tsx
 import React from 'react';
-import './FullScreenPlaceholder.css';
+import styles from './FullScreenPlaceholder.module.css'; // <--- CORRECTED IMPORT
 
 interface FullScreenPlaceholderProps {
   icon: string;
@@ -10,9 +10,9 @@ interface FullScreenPlaceholderProps {
 
 export const FullScreenPlaceholder: React.FC<FullScreenPlaceholderProps> = ({ icon, title, message }) => {
   return (
-    <div className="fullscreen-placeholder-wrapper">
-      <div className="fullscreen-placeholder-card">
-        {/* FIX: Standardize icon class */}
+    <div className={styles.fullscreenPlaceholderWrapper}>
+      <div className={styles.fullscreenPlaceholderCard}>
+        {/* The material-symbols-rounded class is global, so it doesn't need 'styles.' prefix */}
         <span className="material-symbols-rounded">{icon}</span>
         <h3>{title}</h3>
         <p>{message}</p>

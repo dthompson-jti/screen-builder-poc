@@ -1,12 +1,11 @@
-/* src/components/DataBindingPicker.css */
-.data-binding-picker {
+/* src/components/DataBindingPicker.module.css */
+.dataBindingPicker {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* FIX: Make the entire control clickable */
-.picker-control {
+.pickerControl {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,26 +18,25 @@
   cursor: pointer;
 }
 
-.picker-control:hover {
+.pickerControl:hover {
   border-color: var(--surface-border-theme);
 }
 
-.picker-control.unbound {
+.pickerControl.unbound {
   background-color: var(--surface-bg-secondary);
 }
 
-.picker-label {
+.pickerLabel {
   font-size: 0.9em;
   color: var(--surface-fg-secondary);
 }
 
-.picker-label.bound {
+.pickerLabel.bound {
   color: var(--surface-fg-primary);
   font-weight: 500;
 }
 
-/* FIX: New style for the helper text below the control */
-.picker-helper-text {
+.pickerHelperText {
   font-size: 0.8em;
   color: var(--surface-fg-secondary);
   padding-left: var(--spacing-1);

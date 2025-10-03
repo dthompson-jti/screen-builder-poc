@@ -6,7 +6,7 @@ import { SettingsNavigator } from './SettingsNavigator';
 import { SettingsForm } from './SettingsForm';
 import { settingsData } from '../data/settingsMock';
 import { useScrollSpy } from '../data/useScrollSpy';
-import './SettingsPage.css';
+import styles from './SettingsPage.module.css';
 
 export const SettingsPage = () => {
     const layoutMode = useAtomValue(settingsLayoutModeAtom);
@@ -17,18 +17,18 @@ export const SettingsPage = () => {
     const sectionIds = useMemo(() => settingsData.map(s => s.id), []);
     
     const activeSectionId = useScrollSpy(sectionIds, { 
-      root: contentContainerRef.current, // Observe within the container
+      root: contentContainerRef.current,
       rootMargin: '-20% 0px -75% 0px',
       threshold: 0
     }, contentContainerRef);
 
 
     return (
-        <div className="settings-page-wrapper">
+        <div className={styles.settingsPageWrapper}>
             {showNavigator && (
                 <SettingsNavigator sections={settingsData} activeSectionId={activeSectionId} />
             )}
-            <div ref={contentContainerRef} className="settings-content-container">
+            <div ref={contentContainerRef} className={styles.settingsContentContainer}>
                 <SettingsForm layout={layoutMode} />
             </div>
         </div>

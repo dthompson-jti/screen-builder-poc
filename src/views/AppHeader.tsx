@@ -11,9 +11,8 @@ import {
 } from '../data/atoms';
 import { HeaderMenu } from '../components/HeaderMenu';
 import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
-import { NameEditorPopover } from '../components/NameEditorPopover.tsx';
-import './AppHeader.css';
-import '../components/HeaderMenu.css'; 
+import { NameEditorPopover } from '../components/NameEditorPopover';
+import styles from './AppHeader.module.css';
 
 export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
@@ -46,9 +45,9 @@ export const AppHeader = () => {
   };
 
   return (
-    <header className="app-header">
-      <div className="app-header-top">
-        <div className="app-header-left-group"> 
+    <header className={styles.appHeader}>
+      <div className={styles.appHeaderTop}>
+        <div className={styles.appHeaderLeftGroup}> 
           <button 
             className="btn btn-tertiary icon-only" 
             title="Toggle Menu" 
@@ -58,9 +57,9 @@ export const AppHeader = () => {
             <span className="material-symbols-rounded">menu</span>
           </button>
           {isMenuOpen && <HeaderMenu />}
-          <h1 className="app-header-title">Screen Studio</h1>
+          <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
         </div>
-        <div className="app-header-actions">
+        <div className={styles.appHeaderActions}>
           <button className="btn btn-tertiary icon-only" disabled title="Help" aria-label="Help">
             <span className="material-symbols-rounded">help</span>
           </button>
@@ -69,14 +68,14 @@ export const AppHeader = () => {
           </button>
         </div>
       </div>
-      <div className="app-header-bottom">
-        <div className="sub-header-left">
-          <span className="form-type-display">Case Initiation</span>
+      <div className={styles.appHeaderBottom}>
+        <div className={styles.subHeaderLeft}>
+          <span className={styles.formTypeDisplay}>Case Initiation</span>
         </div>
-        <div className="vertical-divider" />
-        <div className="sub-header-center">
-          <div className="form-name-editor">
-            <span className="form-name-display">{formName}</span>
+        <div className={styles.verticalDivider} />
+        <div className={styles.subHeaderCenter}>
+          <div className={styles.formNameEditor}>
+            <span className={styles.formNameDisplay}>{formName}</span>
             <button 
               className="btn btn-tertiary icon-only" 
               onClick={() => setIsNameEditorOpen(p => !p)}
@@ -90,11 +89,10 @@ export const AppHeader = () => {
             <button className={`tab-button ${viewMode === 'editor' ? 'active' : ''}`} onClick={() => handleTabClick('editor')}>Edit</button>
             <button className={`tab-button ${viewMode === 'preview' ? 'active' : ''}`} onClick={() => handleTabClick('preview')}>Preview</button>
             <button className={`tab-button ${viewMode === 'settings' ? 'active' : ''}`} onClick={() => handleTabClick('settings')}>Settings</button>
-            {/* FIX: Remove the tab-bar-line element. The underline is now standalone. */}
             <div className="tab-underline" style={underlineStyle} />
           </div>
         </div>
-        <div className="sub-header-right">
+        <div className={styles.subHeaderRight}>
           <button className="btn btn-primary">Save</button>
           <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
             <span className="material-symbols-rounded">more_horiz</span>

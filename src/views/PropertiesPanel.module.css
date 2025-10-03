@@ -1,5 +1,5 @@
-/* src/components/PropertiesPanel.css */
-.properties-panel-container {
+/* src/views/PropertiesPanel.module.css */
+.propertiesPanelContainer {
   display: flex;
   flex-direction: column;
   background-color: var(--surface-bg-primary);
@@ -8,24 +8,19 @@
   font-family: var(--font-family-sans);
 }
 
-.panel-header {
+.panelHeader {
   padding: 0;
   flex-shrink: 0;
   position: relative;
   display: flex;
-  min-height: 45px; /* Aligns with other header heights */
+  min-height: 45px;
   border-bottom: 1px solid var(--surface-border-secondary);
-}
-
-.panel-tabs { 
-  display: flex; 
-  position: relative;
   width: 100%;
 }
 
-.panel-content { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
-.prop-section { margin-bottom: var(--spacing-6); }
-.prop-section h4 {
+.panelContent { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
+.propSection { margin-bottom: var(--spacing-6); }
+.propSection h4 {
   font-size: 0.8em;
   font-weight: 600;
   color: var(--surface-fg-secondary);
@@ -34,18 +29,16 @@
   border-bottom: 1px solid var(--surface-border-secondary);
   padding-bottom: var(--spacing-2);
 }
-.prop-item, .prop-item-toggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
+.propItem, .propItemToggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
 
-.prop-item label, .prop-item-toggle label {
+.propItem label, .propItemToggle label {
   font-size: 0.9em;
   font-weight: 500;
   color: var(--surface-fg-primary);
 }
 
-/* REMOVED: Base input and select styles are now centralized in src/forms.css */
-
-.prop-item-toggle { flex-direction: row; justify-content: space-between; align-items: center; }
-.toggle-switch {
+.propItemToggle { flex-direction: row; justify-content: space-between; align-items: center; }
+.toggleSwitch {
   width: 36px;
   height: 20px;
   background-color: var(--control-border-disabled);
@@ -54,16 +47,16 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.toggle-knob {
+.toggleKnob {
   width: 16px;
   height: 16px;
   background-color: var(--primitives-base-white);
   border-radius: 50%;
   transition: transform 0.2s;
 }
-.toggle-switch.disabled { opacity: 0.5; cursor: not-allowed; }
+.toggleSwitch.disabled { opacity: 0.5; cursor: not-allowed; }
 
-.properties-panel-placeholder {
+.propertiesPanelPlaceholder {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,7 +66,7 @@
   color: var(--surface-fg-secondary);
   padding: var(--spacing-6);
 }
-.properties-panel-placeholder .material-symbols-rounded {
+.propertiesPanelPlaceholder .material-symbols-rounded {
   font-size: 48px;
   margin-bottom: var(--spacing-4);
   color: var(--surface-fg-tertiary);

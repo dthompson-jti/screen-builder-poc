@@ -1,6 +1,6 @@
 // src/components/PanelHeader.tsx
 import React from 'react';
-import './panel.css'; // Uses shared panel styles
+import panelStyles from './panel.module.css'; // Uses shared panel styles
 
 interface PanelHeaderProps {
   title: string;
@@ -9,7 +9,7 @@ interface PanelHeaderProps {
 
 export const PanelHeader: React.FC<PanelHeaderProps> = ({ title, onClose }) => {
   return (
-    <div className="component-browser-header">
+    <div className={panelStyles.componentBrowserHeader}>
       <h4>{title}</h4>
       <button 
         className="btn-tertiary icon-only close-panel-button" 

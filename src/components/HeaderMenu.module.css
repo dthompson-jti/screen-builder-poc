@@ -1,6 +1,6 @@
-/* src/components/HeaderMenu.css */
+/* src/components/HeaderMenu.module.css */
 
-.header-menu-popover {
+.headerMenuPopover {
     position: absolute;
     top: calc(100% + 2px); 
     left: 0;
@@ -19,9 +19,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* REMOVED: All .menu-option styles have been moved to the global menu.css file */
-
-.menu-divider {
+.menuDivider {
     height: 1px;
     background-color: var(--surface-border-secondary);
     margin: var(--spacing-1) 0;

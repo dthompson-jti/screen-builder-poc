@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { isSettingsMenuOpenAtom } from '../data/atoms';
 import { useOnClickOutside } from '../data/useOnClickOutside';
-import './HeaderMenu.css';
+import menuStyles from './HeaderMenu.module.css';
 
 export const HeaderActionsMenu = () => {
     const [, setIsMenuOpen] = useAtom(isSettingsMenuOpenAtom);
@@ -12,8 +12,7 @@ export const HeaderActionsMenu = () => {
     useOnClickOutside(menuRef, () => setIsMenuOpen(false));
 
     return (
-        <div className="header-menu-popover" ref={menuRef} style={{left: 'auto', right: 0}}>
-            {/* FIX: Use the consistent .menu-item class instead of button classes */}
+        <div className={menuStyles.headerMenuPopover} ref={menuRef} style={{left: 'auto', right: 0}}>
             <button className="menu-item" disabled>
                 <span className="checkmark-container" />
                 <span>Export</span>

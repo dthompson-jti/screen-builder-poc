@@ -1,12 +1,12 @@
-/* src/components/AppHeader.css */
+/* src/views/AppHeader.module.css */
 
-.app-header {
+.appHeader {
   flex-shrink: 0;
   background-color: var(--surface-bg-primary);
   font-family: var(--font-family-sans);
 }
 
-.app-header-top {
+.appHeaderTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -14,65 +14,63 @@
   border-bottom: none;
 }
 
-.app-header-left-group {
+.appHeaderLeftGroup {
   display: flex;
   align-items: center;
   gap: var(--spacing-4); 
   position: relative;
 }
 
-.app-header-title {
+.appHeaderTitle {
   font-size: 1.25em;
   font-weight: 500;
   color: var(--surface-fg-primary);
   margin: 0;
 }
 
-.app-header-actions {
+.appHeaderActions {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
 }
 
-.app-header-bottom {
+.appHeaderBottom {
   display: flex;
   align-items: center;
-  /* FIX: Restore the global, full-width border. */
   border-bottom: 1px solid var(--surface-border-secondary);
   font-size: 0.9em;
 }
 
-.sub-header-left, .sub-header-center, .sub-header-right {
+.subHeaderLeft, .subHeaderCenter, .subHeaderRight {
   display: flex;
   align-items: center;
-  /* FIX: Restore padding to create space between content and the new border. */
   padding-top: var(--spacing-2);
   padding-bottom: var(--spacing-2);
 }
 
-.sub-header-right {
+.subHeaderRight {
   position: relative;
   gap: var(--spacing-2);
   padding-right: var(--spacing-6);
 }
 
-.sub-header-left {
+.subHeaderLeft {
   gap: var(--spacing-4);
   padding-left: var(--spacing-6);
 }
-.sub-header-center {
+.subHeaderCenter {
   flex-grow: 1;
   gap: var(--spacing-4);
 }
 
-.vertical-divider {
+.verticalDivider {
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
   margin: 0 var(--spacing-4);
 }
 
-.form-type-display {
+.formTypeDisplay {
   color: var(--surface-fg-secondary);
   font-size: 14px;
   font-weight: 600;
@@ -80,7 +78,7 @@
   letter-spacing: -0.21px;
 }
 
-.form-name-editor {
+.formNameEditor {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
@@ -89,7 +87,7 @@
   position: relative; /* For popover positioning */
 }
 
-.form-name-display {
+.formNameDisplay {
   color: var(--surface-fg-primary);
   font-size: 14px;
   font-weight: 600;

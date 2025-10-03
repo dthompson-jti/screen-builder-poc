@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { formNameAtom, isNameEditorPopoverOpenAtom } from '../data/atoms';
 import { useOnClickOutside } from '../data/useOnClickOutside';
-import './NameEditorPopover.css';
+import styles from './NameEditorPopover.module.css';
 
 export const NameEditorPopover = () => {
     const [name, setName] = useAtom(formNameAtom);
@@ -27,7 +27,7 @@ export const NameEditorPopover = () => {
     };
 
     return (
-        <div className="name-editor-popover" ref={popoverRef}>
+        <div className={styles.nameEditorPopover} ref={popoverRef}>
             <label htmlFor="popover-form-name">Form name</label>
             <input
                 id="popover-form-name"

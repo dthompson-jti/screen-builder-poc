@@ -5,7 +5,7 @@ import { isComponentBrowserVisibleAtom } from '../data/atoms';
 import { generalComponents } from '../data/generalComponentsMock';
 import { DraggableComponent } from '../types';
 import { PanelHeader } from '../components/PanelHeader';
-import '../components/panel.css';
+import panelStyles from '../components/panel.module.css';
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -21,9 +21,9 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
-    <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="component-list-item">
-      <span className="material-symbols-rounded component-icon" style={iconStyle}>{component.icon}</span>
-      <span className="component-name">{component.name}</span>
+    <li ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className={panelStyles.componentListItem}>
+      <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
+      <span className={panelStyles.componentName}>{component.name}</span>
     </li>
   );
 };
@@ -36,10 +36,10 @@ export const GeneralComponentsBrowser = () => {
   }
 
   return (
-    <div className="component-browser-container">
+    <div className={panelStyles.componentBrowserContainer}>
       <PanelHeader title="General Components" onClose={handleClosePanel} />
-      <div className="component-list-container">
-        <ul className="component-list">
+      <div className={panelStyles.componentListContainer}>
+        <ul className={panelStyles.componentList}>
           <li>
             <ul>
               {generalComponents.map((component: DraggableComponent) => (

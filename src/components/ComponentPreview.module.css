@@ -1,5 +1,5 @@
-/* src/components/ComponentPreview.css */
-.component-preview {
+/* src/components/ComponentPreview.module.css */
+.componentPreview {
   padding: var(--spacing-4);
   background-color: var(--surface-bg-primary);
   border: 1px solid var(--surface-border-secondary);
@@ -11,14 +11,14 @@
   min-width: 200px;
 }
 
-.component-preview-name {
+.componentPreviewName {
   margin: 0;
   font-size: 0.9em;
   font-family: var(--font-family-sans);
   color: var(--surface-fg-primary);
 }
 
-.component-preview-type {
+.componentPreviewType {
   font-size: 0.8em;
   color: var(--surface-fg-secondary);
   background-color: var(--surface-bg-tertiary);

@@ -4,6 +4,7 @@ import { componentTreeData, connectionsDropdownData } from '../data/componentBro
 import { DropdownItem } from '../types';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import { NodeNavigator } from '../data/navigator.js';
+import styles from './ConnectionsDropdown.module.css';
 
 interface ConnectionsDropdownProps {
   navigator: NodeNavigator | null;
@@ -42,12 +43,10 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const filteredCollections = data.collections.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredTransientEntities = data.transientEntityFields.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
 
-  // Helper to render a list of items
   const renderListItems = (items: DropdownItem[]) => {
     return items.map((item: DropdownItem) => (
-      <li key={item.id} className={`dropdown-item ${item.isNavigable ? 'navigable' : ''}`} onClick={() => handleItemClick(item)}>
-        {/* FIX: Render icon and color dynamically from the data object */}
-        <span className="material-symbols-rounded item-icon" style={{ color: item.iconColor }}>
+      <li key={item.id} className={`${styles.dropdownItem} ${item.isNavigable ? styles.navigable : ''}`} onClick={() => handleItemClick(item)}>
+        <span className={`material-symbols-rounded ${styles.itemIcon}`} style={{ color: item.iconColor }}>
           {item.icon}
         </span>
         <span>{item.name}</span>
@@ -56,8 +55,8 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   };
 
   return (
-    <div className="connections-dropdown-container" ref={dropdownRef}>
-      <div className="dropdown-header-row">
+    <div className={styles.connectionsDropdownContainer} ref={dropdownRef}>
+      <div className={styles.dropdownHeaderRow}>
         <h5>Navigate to...</h5>
         <button 
           className="btn-tertiary icon-only" 
@@ -68,7 +67,7 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
         </button>
       </div>
       
-      <div className="dropdown-search">
+      <div className={styles.dropdownSearch}>
         <span className="material-symbols-rounded">search</span>
         <input 
           ref={searchInputRef}
@@ -78,14 +77,14 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      <ul className="dropdown-list">
-        {filteredEntities.length > 0 && <li className="dropdown-header">Entities</li>}
+      <ul className={styles.dropdownList}>
+        {filteredEntities.length > 0 && <li className={styles.dropdownHeader}>Entities</li>}
         {renderListItems(filteredEntities)}
         
-        {filteredCollections.length > 0 && <li className="dropdown-header">Collections</li>}
+        {filteredCollections.length > 0 && <li className={styles.dropdownHeader}>Collections</li>}
         {renderListItems(filteredCollections)}
 
-        {filteredTransientEntities.length > 0 && <li className="dropdown-header">Transient Entity Fields</li>}
+        {filteredTransientEntities.length > 0 && <li className={styles.dropdownHeader}>Transient Entity Fields</li>}
         {renderListItems(filteredTransientEntities)}
       </ul>
     </div>
