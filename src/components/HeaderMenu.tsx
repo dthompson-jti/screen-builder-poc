@@ -40,7 +40,7 @@ export const HeaderMenu = () => {
     }
 
     return (
-        <div className={styles.headerMenuPopover} ref={menuRef}>
+        <div className={`${styles.headerMenuPopover} anim-fadeIn`} ref={menuRef}>
             <MenuOption label="Undo" onClick={() => {}} hotkey="Ctrl+Z" disabled />
             <MenuOption label="Redo" onClick={() => {}} hotkey="Ctrl+Y" disabled />
             <div className={styles.menuDivider}></div>

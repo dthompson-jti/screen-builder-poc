@@ -1,5 +1,4 @@
 /* src/buttons.css */
-/* NEW FILE: Centralized, global button styles extracted from AppHeader.css */
 
 /* --- Base Button --- */
 .btn {
@@ -78,7 +77,6 @@
   background: none;
   border: 1px solid transparent; 
   color: var(--surface-fg-secondary);
-  /* FIX: Restore the border-radius that was inadvertently removed. */
   border-radius: var(--spacing-2);
 }
 .btn-tertiary.icon-text {
@@ -101,4 +99,34 @@
   color: var(--control-fg-tertiary-hover);
   border-color: var(--control-border-tertiary-faint-pressed);
   box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
+}
+
+/* --- Quaternary Button Styles --- */
+.btn-quaternary {
+  padding: var(--spacing-1p5);
+  height: 34px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--control-fg-quaternary);
+  border-radius: var(--spacing-2);
+}
+.btn-quaternary.icon-text {
+  padding: var(--spacing-1p5) var(--spacing-2);
+  gap: var(--spacing-2);
+}
+.btn-quaternary:hover:not(:disabled) {
+  background-color: var(--control-bg-quaternary-hover);
+  color: var(--control-fg-quaternary-hover);
+}
+.btn-quaternary:active:not(:disabled) {
+  transform: translateY(1px);
+  background-color: var(--control-bg-quaternary-pressed);
+}
+
+/* --- Modifiers --- */
+.btn.on-solid {
+  color: var(--control-fg-on-solid);
+}
+.btn.on-solid:hover:not(:disabled) {
+  color: var(--control-fg-on-solid-hover);
 }

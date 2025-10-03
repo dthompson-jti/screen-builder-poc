@@ -282,8 +282,13 @@
   --control-bg-selected: var(--primitives-theme-50);
   --control-bg-selected-hover: var(--primitives-theme-100);
   --control-bg-tertiary: var(--primitives-gray-tint-100);
-  --control-bg-tertiary-hover: var(--primitives-grey-30);
-  --control-bg-tertiary-pressed: var(--primitives-gray-tint-400); /* Mapped to rgba(164, 167, 174, 0.30) */
+  --control-bg-tertiary-hover: var(--primitives-gray-tint-100);
+  --control-bg-tertiary-pressed: var(--primitives-gray-tint-400);
+  --control-bg-quaternary: var(--control-bg-tertiary);
+  --control-bg-quaternary-hover: var(--primitives-gray-tint-300);
+  --control-bg-quaternary-pressed: var(--primitives-gray-tint-400);
+  --control-bg-on-solid-hover: var(--primitives-gray-tint-100);
+  --control-bg-on-solid-pressed: var(--primitives-gray-tint-400);
   --control-bg-disabled: var(--primitives-grey-50);
   --control-bg-disabled_subtle: var(--primitives-grey-30);
   --control-bg-alert: var(--primitives-red-50);
@@ -310,8 +315,8 @@
   --control-fg-secondary_hover: var(--primitives-grey-800);
   --control-fg-tertiary: var(--primitives-grey-600);
   --control-fg-tertiary-hover: var(--primitives-grey-700);
-  --control-fg-quaternary: var(--primitives-grey-500);
-  --control-fg-quaternary-hover: var(--primitives-grey-600);
+  --control-fg-quaternary: var(--control-fg-tertiary);
+  --control-fg-quaternary-hover: var(--control-fg-tertiary-hover);
   --control-fg-senary: var(--primitives-grey-300);
   --control-fg-senary-hover: var(--primitives-grey-400);
   --control-fg-selected: var(--primitives-theme-700);

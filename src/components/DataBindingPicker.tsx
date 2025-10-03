@@ -19,7 +19,7 @@ export const DataBindingPicker = ({ binding, onOpen }: DataBindingPickerProps) =
         <span className={labelClasses}>
           {isBound ? binding.fieldName : 'No data binding'}
         </span>
-        <button className="btn-tertiary icon-only" aria-label="Select data binding" tabIndex={-1} style={{pointerEvents: 'none'}}>
+        <button className="btn btn-quaternary icon-only" aria-label="Select data binding" tabIndex={-1} style={{pointerEvents: 'none'}}>
           <span className="material-symbols-rounded">more_horiz</span>
         </button>
       </div>

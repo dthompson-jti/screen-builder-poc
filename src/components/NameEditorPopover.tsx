@@ -27,7 +27,7 @@ export const NameEditorPopover = () => {
     };
 
     return (
-        <div className={styles.nameEditorPopover} ref={popoverRef}>
+        <div className={`${styles.nameEditorPopover} anim-fadeIn`} ref={popoverRef}>
             <label htmlFor="popover-form-name">Form name</label>
             <input
                 id="popover-form-name"

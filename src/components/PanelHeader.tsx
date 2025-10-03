@@ -12,7 +12,7 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({ title, onClose }) => {
     <div className={panelStyles.componentBrowserHeader}>
       <h4>{title}</h4>
       <button 
-        className="btn-tertiary icon-only close-panel-button" 
+        className="btn btn-quaternary icon-only" 
         title="Close Panel" 
         aria-label="Close Panel"
         onClick={onClose}

@@ -63,7 +63,7 @@ export const AppHeader = () => {
           <button className="btn btn-tertiary icon-only" disabled title="Help" aria-label="Help">
             <span className="material-symbols-rounded">help</span>
           </button>
-          <button className="btn btn-tertiary icon-only" disabled title="Close" aria-label="Close">
+          <button className="btn btn-quaternary icon-only" disabled title="Close" aria-label="Close">
             <span className="material-symbols-rounded">close</span>
           </button>
         </div>
@@ -77,7 +77,7 @@ export const AppHeader = () => {
           <div className={styles.formNameEditor}>
             <span className={styles.formNameDisplay}>{formName}</span>
             <button 
-              className="btn btn-tertiary icon-only" 
+              className="btn btn-quaternary icon-only" 
               onClick={() => setIsNameEditorOpen(p => !p)}
               aria-label="Edit form name"
             >

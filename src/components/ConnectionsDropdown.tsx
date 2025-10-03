@@ -55,11 +55,11 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   };
 
   return (
-    <div className={styles.connectionsDropdownContainer} ref={dropdownRef}>
+    <div className={`${styles.connectionsDropdownContainer} anim-fadeIn`} ref={dropdownRef}>
       <div className={styles.dropdownHeaderRow}>
         <h5>Navigate to...</h5>
         <button 
-          className="btn-tertiary icon-only" 
+          className="btn btn-quaternary icon-only" 
           onClick={onClose}
           aria-label="Close connections dropdown"
         >

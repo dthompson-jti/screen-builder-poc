@@ -26,19 +26,18 @@
   justify-content: center;
 }
 
-/* FIX: Explicitly target the icon within the handle for robust color application. */
 .toolbarDragHandle .material-symbols-rounded {
   color: var(--control-fg-on-solid);
 }
 
 .toolbarDragHandle:hover {
-  background: var(--control-bg-tertiary);
+  background-color: var(--control-bg-on-solid-hover);
   border-color: var(--control-border-tertiary-faint-hover);
 }
 
 .toolbarDragHandle:active {
   cursor: grabbing;
-  background-color: var(--control-bg-tertiary-pressed);
+  background-color: var(--control-bg-on-solid-pressed);
   border-color: var(--control-border-tertiary-faint-pressed);
 }
 
@@ -47,39 +46,4 @@
   height: 20px;
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
-}
-
-.btnOnSolid {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: var(--spacing-1p5) var(--spacing-2);
-  background-color: transparent;
-  color: var(--control-fg-on-solid);
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85em;
-  border: 1px solid transparent;
-  box-shadow: none;
-  transform: translateY(0);
-  transition: all 0.15s ease-out;
-}
-
-.btnOnSolid:hover {
-  background: var(--control-bg-tertiary);
-  border-top: 1px solid var(--control-border-tertiary-faint-hover);
-  border-left: 1px solid var(--control-border-tertiary-faint-hover);
-  border-right: 1px solid var(--control-border-tertiary-faint-hover);
-  border-bottom: 1px solid transparent;
-  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
-  color: var(--control-fg-on-solid);
-}
-
-.btnOnSolid:active {
-  background: var(--control-bg-tertiary-pressed);
-  border-top: 1px solid var(--control-border-tertiary-faint-pressed);
-  border-left: 1px solid var(--control-border-tertiary-faint-pressed);
-  border-right: 1px solid var(--control-border-tertiary-faint-pressed);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
-  transform: translateY(1px);
 }

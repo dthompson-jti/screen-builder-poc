@@ -3,7 +3,10 @@
 /* 1. Foundational Design Tokens */
 @import './design-tokens.css';
 
-/* 2. Global Styles for HTML elements and common components */
+/* 2. Global utility styles */
+@import './animations.css';
+
+/* 3. Global Styles for HTML elements and common components */
 @import './forms.css'; 
 @import './buttons.css';
 @import './menu.css';
