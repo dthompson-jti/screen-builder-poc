@@ -1,11 +1,11 @@
 // src/views/SettingsForm.tsx
 import { useEffect, useRef } from 'react';
-import { useAtom } from 'jotai';
-import { formNameAtom, focusIntentAtom } from '../data/atoms';
+import { useAtom, useAtomValue } from 'jotai';
+import { focusIntentAtom } from '../data/atoms';
+import { formNameAtom } from '../data/historyAtoms';
 import { settingsData, SettingsSection, SettingsField } from '../data/settingsMock';
 import styles from './SettingsPage.module.css';
 
-// Generic field renderer
 const renderGenericField = (field: SettingsField) => {
   const label = (
     <label htmlFor={field.id}>
@@ -51,9 +51,8 @@ const renderGenericField = (field: SettingsField) => {
   }
 };
 
-
 export const SettingsForm = ({ layout }: { layout: 'single-column' | 'two-column' }) => {
-  const [formName, setFormName] = useAtom(formNameAtom);
+  const formName = useAtomValue(formNameAtom);
   const [focusIntent, setFocusIntent] = useAtom(focusIntentAtom);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +69,7 @@ export const SettingsForm = ({ layout }: { layout: 'single-column' | 'two-column
         <section key={section.id} id={section.id} className={styles.settingsSection}>
           <h2>{section.title}</h2>
           <div className={styles.settingsFormGrid}>
-            {section.fields.map(field => {
+            {section.fields.map((field: SettingsField) => {
               if (field.id === 'name') {
                 return (
                   <div key={field.id} className={styles.formField}>
@@ -84,7 +83,7 @@ export const SettingsForm = ({ layout }: { layout: 'single-column' | 'two-column
                       type="text"
                       placeholder={field.placeholder}
                       value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
+                      readOnly // This input is for display/focus only
                     />
                   </div>
                 );

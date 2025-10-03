@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
+import { useUndoRedo } from '../data/useUndoRedo';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import styles from './HeaderMenu.module.css';
 
@@ -22,7 +23,19 @@ export const HeaderMenu = () => {
     const [layoutMode, setLayoutMode] = useAtom(settingsLayoutModeAtom);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const { undo, redo, canUndo, canRedo } = useUndoRedo();
+    const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+
     useOnClickOutside(menuRef, () => setIsMenuOpen(false));
+
+    const handleUndo = () => {
+        undo();
+        setIsMenuOpen(false);
+    }
+    const handleRedo = () => {
+        redo();
+        setIsMenuOpen(false);
+    }
 
     const handleToggleCompact = () => {
         setIsCompact(p => !p);
@@ -40,9 +53,9 @@ export const HeaderMenu = () => {
     }
 
     return (
-        <div className={`${styles.headerMenuPopover} anim-fadeIn`} ref={menuRef}>
-            <MenuOption label="Undo" onClick={() => {}} hotkey="Ctrl+Z" disabled />
-            <MenuOption label="Redo" onClick={() => {}} hotkey="Ctrl+Y" disabled />
+        <div className={styles.headerMenuPopover} ref={menuRef}>
+            <MenuOption label="Undo" onClick={handleUndo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
+            <MenuOption label="Redo" onClick={handleRedo} hotkey={isMac ? "⇧⌘Z" : "Ctrl+Y"} disabled={!canRedo} />
             <div className={styles.menuDivider}></div>
             <MenuOption 
                 label="Compact left menu"

@@ -37,7 +37,6 @@ export interface DropdownItem {
   id: string;
   name: string;
   isNavigable?: boolean;
-  // FIX: Add icon and color for dynamic rendering
   icon: string;
   iconColor: string;
 }

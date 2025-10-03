@@ -1,7 +1,7 @@
 // src/data/atoms.ts
 import { atom } from 'jotai';
 import { componentListData } from './componentBrowserMock';
-import { FormComponent, BoundData, ComponentGroup, DraggableComponent } from '../types';
+import { BoundData, ComponentGroup, DraggableComponent } from '../types';
 
 // =================================================================
 //                         App State
@@ -22,7 +22,7 @@ export const isPropertiesPanelVisibleAtom = atom(true);
 // =================================================================
 //                         Settings State
 // =================================================================
-export const formNameAtom = atom<string>("Dave's Form");
+// NOTE: formNameAtom is now managed in historyAtoms.ts
 export const isNameEditorPopoverOpenAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
 export const focusIntentAtom = atom<string | null>(null);
@@ -30,7 +30,7 @@ export const focusIntentAtom = atom<string | null>(null);
 // =================================================================
 //                         Canvas State
 // =================================================================
-export const canvasComponentsAtom = atom<FormComponent[]>([]);
+// NOTE: canvasComponentsAtom is now managed in historyAtoms.ts
 export const selectedCanvasComponentIdAtom = atom<string | null>(null);
 
 // =================================================================

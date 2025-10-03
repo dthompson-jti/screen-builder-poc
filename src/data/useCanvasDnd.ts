@@ -1,14 +1,15 @@
 // src/data/useCanvasDnd.ts
 import { useState } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Active, DataRef, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from './atoms';
+import { selectedCanvasComponentIdAtom } from './atoms';
+import { commitActionAtom, canvasComponentsAtom } from './historyAtoms';
 import { FormComponent } from '../types';
 
 export const useCanvasDnd = () => {
-  const [canvasComponents, setCanvasComponents] = useAtom(canvasComponentsAtom);
+  const canvasComponents = useAtomValue(canvasComponentsAtom);
   const setSelectedId = useSetAtom(selectedCanvasComponentIdAtom);
+  const commitAction = useSetAtom(commitActionAtom);
   
   const [activeItem, setActiveItem] = useState<Active | null>(null);
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
@@ -67,37 +68,34 @@ export const useCanvasDnd = () => {
             }
         }
     }
+    
+    const overIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id || c.id === over.data?.current?.sortable?.containerId);
 
-    const overIndex = findComponentIndex(over.id);
-
-    setCanvasComponents((prev) => {
-      const newIndex = overIndex !== -1 ? overIndex : prev.length;
-      const updatedComponents = [...prev.slice(0, newIndex), newComponent, ...prev.slice(newIndex)];
-      setSelectedId(newComponent.id);
-      return updatedComponents;
+    commitAction({
+      action: { type: 'COMPONENT_ADD', payload: { component: newComponent, index: overIndex } },
+      message: `Add '${newComponent.name}'`
     });
+
+    setSelectedId(newComponent.id);
   };
   
   const handleReorderComponent = (active: Active, over: Over) => {
     if (active.id !== over.id) {
-      const oldIndex = findComponentIndex(active.id);
-      let newIndex = findComponentIndex(over.id);
+      const oldIndex = canvasComponents.findIndex((c: FormComponent) => c.id === active.id);
+      let newIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id);
 
-      if (over.id === 'bottom-drop-zone') {
-        newIndex = canvasComponents.length;
+      if (over.id === 'bottom-drop-zone' && oldIndex !== -1) {
+        // When dropping at the end, the new index should be the last valid index.
+        newIndex = canvasComponents.length -1;
       }
       
       if (oldIndex !== -1 && newIndex !== -1) {
-        setCanvasComponents((items) => arrayMove(items, oldIndex, newIndex));
+        commitAction({
+          action: { type: 'COMPONENT_REORDER', payload: { oldIndex, newIndex } },
+          message: `Reorder '${active.data.current?.name || 'component'}'`
+        });
       }
     }
-  };
-  
-  const findComponentIndex = (id: UniqueIdentifier) => {
-    if (id === 'bottom-drop-zone' || id === 'canvas-drop-area') {
-      return canvasComponents.length;
-    }
-    return canvasComponents.findIndex(c => c.id === id);
   };
   
   const resetState = () => {

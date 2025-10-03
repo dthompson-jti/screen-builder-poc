@@ -3,7 +3,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Active, UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { canvasComponentsAtom, selectedCanvasComponentIdAtom } from '../data/atoms';
+import { selectedCanvasComponentIdAtom } from '../data/atoms';
+import { canvasComponentsAtom, commitActionAtom } from '../data/historyAtoms';
 import { FormComponent } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
 import styles from './EditorCanvas.module.css';
@@ -11,10 +12,11 @@ import { TextInputPreview } from '../components/TextInputPreview';
 
 const SortableFormComponent = ({ component, overId, active }: { component: FormComponent, overId: UniqueIdentifier | null, active: Active | null }) => {
   const [selectedId, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
-  const setCanvasComponents = useSetAtom(canvasComponentsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
   
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
+    data: { name: component.name }
   });
   
   const style = { 
@@ -26,8 +28,11 @@ const SortableFormComponent = ({ component, overId, active }: { component: FormC
   const showIndicator = overId === component.id && active?.id !== component.id;
 
   const handleDelete = () => {
-    setCanvasComponents((prev) => prev.filter(c => c.id !== component.id));
-    setSelectedId(null); // Deselect after deleting.
+    commitAction({
+      action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
+      message: `Delete '${component.name}'`
+    });
+    setSelectedId(null);
   };
   
   const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''} ${showIndicator ? styles.showDropIndicator : ''}`;
@@ -76,8 +81,8 @@ export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) 
       <div className={styles.formCard}>
         <h2>Form</h2>
         <div ref={setNodeRef} className={styles.canvasDroppableArea}>
-          <SortableContext items={components.map(c => c.id)} strategy={verticalListSortingStrategy}>
-            {components.map((component) => (
+          <SortableContext items={components.map((c: FormComponent) => c.id)} strategy={verticalListSortingStrategy}>
+            {components.map((component: FormComponent) => (
               <SortableFormComponent key={component.id} component={component} overId={overId} active={active} />
             ))}
           </SortableContext>

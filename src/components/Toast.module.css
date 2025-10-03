@@ -1,0 +1,19 @@
+/* src/components/Toast.module.css */
+.toastWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background-color: var(--primitives-grey-900);
+  color: var(--surface-fg-white);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--spacing-2);
+  box-shadow: var(--surface-shadow-lg);
+  font-size: 0.9em;
+  font-weight: 500;
+  border: 1px solid var(--primitives-grey-800);
+}
+
+.toastWrapper .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--surface-fg-secondary);
+}

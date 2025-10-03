@@ -5,10 +5,10 @@ import {
   isMenuOpenAtom, 
   appViewModeAtom, 
   AppViewMode, 
-  formNameAtom,
   isSettingsMenuOpenAtom,
   isNameEditorPopoverOpenAtom,
 } from '../data/atoms';
+import { formNameAtom } from '../data/historyAtoms';
 import { HeaderMenu } from '../components/HeaderMenu';
 import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
 import { NameEditorPopover } from '../components/NameEditorPopover';

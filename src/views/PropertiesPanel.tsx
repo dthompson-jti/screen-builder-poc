@@ -2,12 +2,12 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
-  canvasComponentsAtom,
   selectedCanvasComponentIdAtom,
   dataBindingRequestAtom,
   dataBindingResultAtom,
   isPropertiesPanelVisibleAtom,
 } from '../data/atoms';
+import { canvasComponentsAtom, commitActionAtom } from '../data/historyAtoms';
 import { DataBindingPicker } from '../components/DataBindingPicker';
 import { StaticBindingDisplay } from '../components/StaticBindingDisplay';
 import { FullScreenPlaceholder } from '../components/FullScreenPlaceholder';
@@ -97,7 +97,8 @@ const PanelContent = React.memo(({
 
 export const PropertiesPanel = () => {
   const selectedId = useAtomValue(selectedCanvasComponentIdAtom);
-  const [allComponents, setAllComponents] = useAtom(canvasComponentsAtom);
+  const allComponents = useAtomValue(canvasComponentsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
   const setBindingRequest = useSetAtom(dataBindingRequestAtom);
   const [bindingResult, setBindingResult] = useAtom(dataBindingResultAtom);
   const setIsPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
@@ -106,7 +107,7 @@ export const PropertiesPanel = () => {
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
 
-  const selectedComponent = allComponents.find(c => c.id === selectedId);
+  const selectedComponent = allComponents.find((c) => c.id === selectedId);
 
   useLayoutEffect(() => {
     if (tabsContainerRef.current) {
@@ -122,16 +123,16 @@ export const PropertiesPanel = () => {
 
   useEffect(() => {
     if (bindingResult) {
-      setAllComponents(prev => 
-        prev.map(c => 
-          c.id === bindingResult.componentId 
-          ? { ...c, binding: bindingResult.newBinding } 
-          : c
-        )
-      );
+      const componentName = allComponents.find((c) => c.id === bindingResult.componentId)?.name || 'component';
+      
+      commitAction({
+        action: { type: 'COMPONENT_UPDATE_BINDING', payload: bindingResult },
+        message: `Update binding for '${componentName}'`
+      });
+
       setBindingResult(null);
     }
-  }, [bindingResult, setAllComponents, setBindingResult]);
+  }, [bindingResult, allComponents, setBindingResult, commitAction]);
 
   const handleOpenBindingModal = () => {
     if (selectedComponent) {
