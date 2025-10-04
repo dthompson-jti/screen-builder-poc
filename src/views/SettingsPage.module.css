@@ -24,7 +24,7 @@
 /* --- Two Column Layout (Centered) --- */
 .twoColumnLayout {
   justify-content: center;
-  padding: var(--spacing-8);
+  padding: 0 var(--spacing-8); /* Horizontal padding */
 }
 
 .settingsNavigatorList {
@@ -69,7 +69,6 @@
   flex-grow: 1;
   height: 100%;
   overflow-y: auto;
-  /* Add flex properties to center the form panel */
   display: flex;
   justify-content: center;
 }
@@ -81,10 +80,22 @@
   scrollbar-width: none;
 }
 
-.settingsFormContainer {
-  padding: var(--spacing-6);
+/* New settings frame for two-column layout */
+.settingsFrame {
+  width: 100%;
+  max-width: 1240px;
   height: fit-content;
-  margin: var(--spacing-8) 0; /* Add vertical margin for spacing from header/bottom */
+  margin-top: var(--spacing-8); /* 32px margin from header */
+  margin-bottom: var(--spacing-8);
+  background-color: var(--surface-bg-primary);
+  border-radius: var(--spacing-3);
+  box-shadow: var(--surface-shadow-lg);
+  border: 1px solid var(--surface-border-secondary);
+  padding: var(--spacing-6);
+}
+
+.settingsFormContainer {
+  height: fit-content;
 }
 
 /* Apply panel styles only in single-column mode */
@@ -94,22 +105,19 @@
   border-radius: var(--spacing-3);
   box-shadow: var(--surface-shadow-lg);
   border: 1px solid var(--surface-border-secondary);
+  margin: var(--spacing-8) 0;
+  padding: var(--spacing-6);
 }
 
-/* Apply two-column styles */
+/* Apply two-column styles to the container within the frame */
 .twoColumnLayout .settingsFormContainer {
-  max-width: 1240px;
-  width: 100%;
   column-count: 2;
   column-gap: var(--spacing-12);
 }
 
+
 .twoColumnLayout .settingsSection {
-  background-color: var(--surface-bg-primary);
-  border-radius: var(--spacing-3);
-  box-shadow: var(--surface-shadow-lg);
-  border: 1px solid var(--surface-border-secondary);
-  padding: var(--spacing-6);
+  /* In 2-col, sections are just logical groups, not cards */
   break-inside: avoid;
 }
 

@@ -49,6 +49,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const componentGroups = componentData[selectedNodeId] || [];
   const filteredGroups = !query ? componentGroups : componentGroups.map(group => ({
@@ -156,11 +157,30 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
           </div>
         </div>
       </div>
-
-      <div className={panelStyles.searchBarContainer}>
-        <span className="material-symbols-rounded">search</span>
-        <input type="text" placeholder={searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
+      
+      <div className={panelStyles.searchBarWrapper}>
+        <div className={`${panelStyles.searchBarContainer} ${isSearchFocused ? panelStyles.focused : ''}`}>
+          <span className="material-symbols-rounded">search</span>
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+          />
+          {query && (
+            <button
+              className={`btn btn-quaternary icon-only ${panelStyles.clearButton}`}
+              onClick={() => setQuery('')}
+              aria-label="Clear search"
+            >
+              <span className="material-symbols-rounded">close</span>
+            </button>
+          )}
+        </div>
       </div>
+
 
       <div className={`${panelStyles.componentListContainer} stealth-scrollbar`}>
         <ul className={panelStyles.componentList}>

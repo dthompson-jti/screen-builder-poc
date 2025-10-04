@@ -9,6 +9,7 @@ import { BoundData, ComponentGroup, DraggableComponent } from '../types';
 export type AppViewMode = 'editor' | 'preview' | 'settings';
 export type ToolbarTabId = 'layout' | 'data' | 'general' | 'templates' | 'conditions' | 'layers';
 export type SettingsLayoutMode = 'single-column' | 'two-column';
+export type ScreenType = 'case-init' | 'insert' | 'update' | 'search' | 'folder-view' | 'header-screen';
 
 export const appViewModeAtom = atom<AppViewMode>('editor');
 export const isMenuOpenAtom = atom(false);
@@ -26,6 +27,9 @@ export const isPropertiesPanelVisibleAtom = atom(true);
 export const isNameEditorPopoverOpenAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
 export const focusIntentAtom = atom<string | null>(null);
+export const screenTypeAtom = atom<ScreenType>('case-init');
+export const isScreenTypePopoverOpenAtom = atom(false);
+
 
 // =================================================================
 //                         Canvas State

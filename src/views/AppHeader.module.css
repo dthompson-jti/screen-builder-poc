@@ -22,11 +22,9 @@
   position: relative; /* For menu popover */
 }
 
-/* REMOVED .headerCenter as it is no longer used */
-
 .headerRight {
   gap: var(--spacing-2);
-  position: relative; /* FIX: This contains the popover menu */
+  position: relative;
 }
 
 .appHeaderTitle {
@@ -40,6 +38,10 @@
   width: 1px;
   height: var(--spacing-6);
   background-color: var(--surface-border-secondary);
+}
+
+.screenIdentifier {
+  position: relative; /* Anchor for the popover */
 }
 
 .formNameEditor {

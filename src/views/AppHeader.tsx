@@ -7,11 +7,14 @@ import {
   AppViewMode,
   isSettingsMenuOpenAtom,
   isNameEditorPopoverOpenAtom,
+  isScreenTypePopoverOpenAtom,
 } from '../data/atoms';
 import { formNameAtom } from '../data/historyAtoms';
 import { HeaderMenu } from '../components/HeaderMenu';
 import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
 import { NameEditorPopover } from '../components/NameEditorPopover';
+import { ScreenTypeBadge } from '../components/ScreenTypeBadge';
+import { ScreenTypePopover } from '../components/ScreenTypePopover';
 import styles from './AppHeader.module.css';
 
 export const AppHeader = () => {
@@ -20,6 +23,7 @@ export const AppHeader = () => {
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
   const [formName] = useAtom(formNameAtom);
   const [isNameEditorOpen, setIsNameEditorOpen] = useAtom(isNameEditorPopoverOpenAtom);
+  const [isScreenTypePopoverOpen] = useAtom(isScreenTypePopoverOpenAtom);
 
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
@@ -58,6 +62,10 @@ export const AppHeader = () => {
         {isMenuOpen && <HeaderMenu />}
         <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
         <div className={styles.verticalDivider} />
+        <div className={styles.screenIdentifier}>
+          <ScreenTypeBadge />
+          {isScreenTypePopoverOpen && <ScreenTypePopover />}
+        </div>
         <div className={styles.formNameEditor}>
           <span className={styles.formNameDisplay}>{formName}</span>
           <button

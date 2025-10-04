@@ -1,24 +1,26 @@
 // src/views/SettingsPage.tsx
 import { useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { settingsLayoutModeAtom } from '../data/atoms';
+import { settingsLayoutModeAtom, screenTypeAtom } from '../data/atoms';
 import { SettingsNavigator } from './SettingsNavigator';
 import { SettingsForm } from './SettingsForm';
 import { settingsData } from '../data/settingsMock';
 import { useScrollSpy } from '../data/useScrollSpy';
+import { FullScreenPlaceholder } from '../components/FullScreenPlaceholder';
+import { screenTypeConfig } from '../data/screenTypeConfig';
 import styles from './SettingsPage.module.css';
 
 export const SettingsPage = () => {
     const layoutMode = useAtomValue(settingsLayoutModeAtom);
+    const screenType = useAtomValue(screenTypeAtom);
     const isTwoColumn = layoutMode === 'two-column';
 
     const contentContainerRef = useRef<HTMLDivElement>(null);
 
     const sectionIds = useMemo(() => settingsData.map(s => s.id), []);
 
-    // Only activate the scroll spy in single-column mode
     const activeSectionId = useScrollSpy(
-      isTwoColumn ? [] : sectionIds, // Pass empty array to disable observer
+      isTwoColumn ? [] : sectionIds,
       {
         root: contentContainerRef.current,
         rootMargin: '-20% 0px -75% 0px',
@@ -29,13 +31,41 @@ export const SettingsPage = () => {
 
     const wrapperClasses = `${styles.settingsPageWrapper} ${isTwoColumn ? styles.twoColumnLayout : styles.singleColumnLayout}`;
 
+    const renderForm = () => (
+      <SettingsForm layout={isTwoColumn ? 'two-column' : 'single-column'} />
+    );
+
+    const renderContent = () => {
+      if (screenType === 'case-init') {
+        // In two-column mode, the form is wrapped in a frame
+        if (isTwoColumn) {
+          return (
+            <div className={styles.settingsFrame}>
+              {renderForm()}
+            </div>
+          );
+        }
+        // In single-column mode, the form is its own card
+        return renderForm();
+      }
+      
+      const config = screenTypeConfig[screenType];
+      return (
+        <FullScreenPlaceholder
+          icon="settings"
+          title={`${config.label} Settings`}
+          message={`Configuration for the ${config.label} screen type is not yet available.`}
+        />
+      );
+    };
+
     return (
         <div className={wrapperClasses}>
-            {!isTwoColumn && (
+            {!isTwoColumn && screenType === 'case-init' && (
                 <SettingsNavigator sections={settingsData} activeSectionId={activeSectionId} />
             )}
             <div ref={contentContainerRef} className={styles.settingsContentContainer}>
-                <SettingsForm layout={layoutMode} />
+                {renderContent()}
             </div>
         </div>
     );

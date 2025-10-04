@@ -100,7 +100,6 @@
   cursor: grab;
   transition: background-color 0.2s;
 }
-/* FIX: Use the correct primary hover token */
 .componentListItem:hover { background-color: var(--surface-bg-primary_hover); }
 .componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
@@ -121,16 +120,33 @@
 }
 
 /* --- Search Bar --- */
-.searchBarContainer {
+.searchBarWrapper {
   padding: var(--spacing-2) var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
+}
+
+.searchBarContainer {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
+  /* New styling to look like an input field */
+  background-color: var(--surface-bg-secondary);
+  border-radius: 6px;
+  border: 1px solid var(--surface-bg-secondary);
+  padding: var(--spacing-1p5) var(--spacing-3);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+.searchBarContainer.focused {
+  background-color: var(--surface-bg-primary);
+  border-color: var(--surface-border-theme);
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+}
+
 .searchBarContainer .material-symbols-rounded {
-  color: var(--surface-fg-tertiary);
+  color: var(--surface-fg-quaternary);
 }
+
 .searchBarContainer input {
   width: 100%;
   border: none;
@@ -141,4 +157,19 @@
 }
 .searchBarContainer input::placeholder {
   color: var(--control-fg-placeholder);
+}
+
+.clearButton {
+  /* Re-uses quaternary button styles for consistency */
+  padding: var(--spacing-0p5);
+  height: 24px;
+  width: 24px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--control-fg-quaternary);
+  border-radius: 4px;
+}
+.clearButton:hover:not(:disabled) {
+  background-color: var(--control-bg-quaternary-hover);
+  color: var(--control-fg-quaternary-hover);
 }

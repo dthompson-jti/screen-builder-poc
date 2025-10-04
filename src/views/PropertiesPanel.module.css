@@ -64,7 +64,8 @@
   height: 100%;
   text-align: center;
   color: var(--surface-fg-secondary);
-  padding: var(--spacing-6);
+  /* Unify padding with .panelContent for consistent margins */
+  padding: var(--spacing-4);
 }
 .propertiesPanelPlaceholder .material-symbols-rounded {
   font-size: 48px;
