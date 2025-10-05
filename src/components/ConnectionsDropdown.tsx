@@ -1,9 +1,10 @@
 // src/components/ConnectionsDropdown.tsx
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { componentTreeData, connectionsDropdownData } from '../data/componentBrowserMock';
 import { DropdownItem } from '../types';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import { NodeNavigator } from '../data/navigator.js';
+import { SearchInput } from './SearchInput'; // Import the unified component
 import styles from './ConnectionsDropdown.module.css';
 
 interface ConnectionsDropdownProps {
@@ -16,15 +17,8 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const data = connectionsDropdownData[selectedNodeId];
   const [query, setQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useOnClickOutside(dropdownRef, onClose);
-
-  useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, []);
 
   const handleItemClick = (item: DropdownItem) => {
     if (item.isNavigable && navigator) {
@@ -67,14 +61,14 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
         </button>
       </div>
       
-      <div className={styles.dropdownSearch}>
-        <span className="material-symbols-rounded">search</span>
-        <input 
-          ref={searchInputRef}
-          type="text" 
-          placeholder="Search Connections" 
+      {/* Replace the ad-hoc search with the unified SearchInput component */}
+      <div className={styles.dropdownSearchWrapper}>
+        <SearchInput
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={setQuery}
+          placeholder="Search Connections"
+          variant="integrated"
+          autoFocus={true}
         />
       </div>
       <ul className={styles.dropdownList}>

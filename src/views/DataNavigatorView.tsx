@@ -5,6 +5,8 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from '../data/navigator.js';
 import { PanelHeader } from '../components/PanelHeader';
+import { SearchInput } from '../components/SearchInput';
+import { EmptyStateMessage } from '../components/EmptyStateMessage';
 import panelStyles from '../components/panel.module.css';
 import { ComponentNode } from '../types';
 
@@ -49,7 +51,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const componentGroups = componentData[selectedNodeId] || [];
   const filteredGroups = !query ? componentGroups : componentGroups.map(group => ({
@@ -158,45 +159,35 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         </div>
       </div>
       
-      <div className={panelStyles.searchBarWrapper}>
-        <div className={`${panelStyles.searchBarContainer} ${isSearchFocused ? panelStyles.focused : ''}`}>
-          <span className="material-symbols-rounded">search</span>
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-          />
-          {query && (
-            <button
-              className={`btn btn-quaternary icon-only ${panelStyles.clearButton}`}
-              onClick={() => setQuery('')}
-              aria-label="Clear search"
-            >
-              <span className="material-symbols-rounded">close</span>
-            </button>
-          )}
-        </div>
+      {/* The SearchInput component is now placed inside a simple positioning container */}
+      <div className={panelStyles.searchContainer}>
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder={searchPlaceholder}
+          variant="standalone"
+        />
       </div>
 
-
       <div className={`${panelStyles.componentListContainer} stealth-scrollbar`}>
-        <ul className={panelStyles.componentList}>
-          {filteredGroups.map((group) => (
-            <li key={group.title}>
-              <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
-              <ul>
-                {group.components.map((component) => (
-                  <React.Fragment key={component.id}>
-                    {renderComponentItem(component)}
-                  </React.Fragment>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
+        {query && filteredGroups.length === 0 ? (
+          <EmptyStateMessage query={query} />
+        ) : (
+          <ul className={panelStyles.componentList}>
+            {filteredGroups.map((group) => (
+              <li key={group.title}>
+                <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
+                <ul>
+                  {group.components.map((component) => (
+                    <React.Fragment key={component.id}>
+                      {renderComponentItem(component)}
+                    </React.Fragment>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

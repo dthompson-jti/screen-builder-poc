@@ -1,18 +1,27 @@
 /* src/index.css */
 
+/*
+  FIX: Correct the order of CSS at-rules and use modern layer syntax.
+  1. Define the layer order first. This is allowed at the top.
+  2. Use the `layer(base)` syntax on each @import to assign the entire
+     stylesheet to the 'base' layer. This fixes the build error and
+     ensures these global styles have lower precedence than component styles.
+*/
+@layer base, components;
+
 /* 1. Foundational Design Tokens */
 @import './design-tokens.css';
 
 /* 2. Global utility styles */
-@import './animations.css';
-@import './scrollbars.css'; /* ADDED: Global scrollbar styles */
+@import './animations.css' layer(base);
+@import './scrollbars.css' layer(base);
 
 /* 3. Global Styles for HTML elements and common components */
-@import './forms.css'; 
-@import './buttons.css';
-@import './menu.css';
-@import './tabs.css';
-@import './components/navigator.css'; /* Special case for non-React vanilla JS component */
+@import './forms.css' layer(base);
+@import './buttons.css' layer(base);
+@import './menu.css' layer(base);
+@import './tabs.css' layer(base);
+@import './components/navigator.css' layer(base); /* Special case for non-React vanilla JS component */
 
 :root {
   --font-family-sans: 'Inter', sans-serif;

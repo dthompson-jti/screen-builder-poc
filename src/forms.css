@@ -1,6 +1,12 @@
 /* src/forms.css */
 /* NEW FILE: Centralized styles for all standard form elements. */
 
+/*
+  NOTE: The @layer wrapper is REMOVED from this file.
+  The layering is now handled by the @import rule in index.css,
+  which is a cleaner, more maintainable approach.
+*/
+
 /* --- Base Text Inputs, Selects, Textareas --- */
 /* (Styles moved from PropertiesPanel.css and SettingsPage.css) */
 input[type="text"],

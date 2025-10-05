@@ -1,6 +1,4 @@
 /* src/menu.css */
-/* NEW FILE: Centralized, global styles for all popover menu items. */
-
 .menu-item {
     /* Base Layout & Typography */
     display: flex;
@@ -20,11 +18,11 @@
     /* Spacing & Sizing */
     padding: var(--spacing-2);
     margin: var(--spacing-0p5) 0;
-    border-radius: 6px;
+    border-radius: 8px;
 
     /* Base State for Hover Transition */
     border-left: 3px solid transparent;
-    transition: background-color 0.2s, border-left-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, border-left-color 0.2s, color 0.2s, box-shadow 0.2s;
 
     /* Base Colors */
     color: var(--surface-fg-primary);
@@ -36,10 +34,13 @@
     color: var(--control-fg-disabled);
 }
 
-/* Hover State for all Menu Items */
+/* Corrected Hover State with stronger left border and faint inner border */
 .menu-item:hover:not(:disabled) {
     background-color: var(--control-bg-tertiary-hover);
-    border-left-color: var(--control-border-tertiary-hover); /* The requested grey border */
+    /* The thicker, darker border on the left */
+    border-left-color: var(--control-border-tertiary-hover);
+    /* A faint, 1px inner border using inset box-shadow */
+    box-shadow: inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
 }
 
 /* Specific styling for checkmark alignment if present */

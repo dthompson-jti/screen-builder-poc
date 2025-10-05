@@ -18,7 +18,7 @@ import {
 } from '../data/componentBrowserMock';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
 import { BoundData, DraggableComponent } from '../types';
-import styles from './DataBindingModal.module.css';
+import styles from './DataBindingModal.module.css'; // FIX: Import the new dedicated styles
 
 export const DataBindingModal = () => {
   const isOpen = useAtomValue(isDataBindingModalOpenAtom);
@@ -73,10 +73,11 @@ export const DataBindingModal = () => {
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} width="456px" height="90vh">
+      {/* FIX: Apply the new flexbox layout classes to the modal structure */}
       <div className={styles.dataBindingModalContainer}>
         <div className={styles.modalHeader}>
           <h3>Select Data Binding</h3>
-          <button className="btn-tertiary icon-only" onClick={handleClose} aria-label="Close">
+          <button className="btn btn-tertiary icon-only" onClick={handleClose} aria-label="Close">
             <span className="material-symbols-rounded">close</span>
           </button>
         </div>
@@ -107,7 +108,6 @@ export const DataBindingModal = () => {
             />
         </div>
         <div className={styles.modalFooter}>
-          {/* FIX: Apply global button classes directly */}
           <button className="btn btn-secondary" onClick={handleUnbind}>Unbind</button>
           <div className={styles.footerActionsRight}>
             <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>

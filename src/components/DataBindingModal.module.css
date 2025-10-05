@@ -1,11 +1,20 @@
 /* src/components/DataBindingModal.module.css */
+/* NEW FILE: Dedicated styles for the Data Binding Modal layout. */
+
+/*
+  FIX: Implement a robust flexbox column layout.
+  This ensures the header and footer are always visible, and the
+  content area correctly scrolls without breaking the layout.
+*/
 .dataBindingModalContainer {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background-color: var(--surface-bg-secondary);
-  overflow: hidden; 
+  height: 100%; /* Occupy the full height of the parent Modal container */
+  width: 100%;
+  overflow: hidden; /* Prevent content from spilling out */
 }
+
+/* Header: Fixed height, does not shrink */
 .modalHeader {
   display: flex;
   justify-content: space-between;
@@ -13,27 +22,22 @@
   padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
-  background-color: var(--surface-bg-secondary);
 }
+
 .modalHeader h3 {
-  font-size: 1.2em;
-  font-weight: 600;
   margin: 0;
-  color: var(--surface-fg-primary);
+  font-size: 1.1em;
+  font-weight: 600;
 }
 
+/* Content: Takes all available space, handles its own scrolling */
 .modalContent {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: hidden;
-  background-color: var(--surface-bg-primary);
+  flex: 1; /* Shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+  overflow-y: auto;
+  min-height: 0; /* A critical flexbox property to allow this container to shrink */
 }
 
-.modalContent > * {
-    height: 100%;
-    width: 100%;
-}
-
+/* Footer: Fixed height, does not shrink */
 .modalFooter {
   display: flex;
   justify-content: space-between;
@@ -41,12 +45,9 @@
   padding: var(--spacing-3) var(--spacing-4);
   border-top: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
-  background-color: var(--surface-bg-secondary);
 }
+
 .footerActionsRight {
   display: flex;
   gap: var(--spacing-2);
 }
-
-/* FIX: REMOVED all "button" and "button:hover" styles from this file
-   to allow global .btn classes to apply correctly. */

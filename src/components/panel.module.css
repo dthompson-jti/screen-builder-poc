@@ -119,57 +119,15 @@
   color: var(--control-fg-selected);
 }
 
-/* --- Search Bar --- */
-.searchBarWrapper {
+/* --- Search Container (Layout Only) --- */
+/*
+  FIX: The border-bottom has been REMOVED.
+  This container is now purely for positioning and padding.
+  The SearchInput component is fully responsible for its own appearance,
+  resolving the "double border" bug definitively.
+*/
+.searchContainer {
   padding: var(--spacing-2) var(--spacing-4);
-  border-bottom: 1px solid var(--surface-border-secondary);
-}
-
-.searchBarContainer {
+  /* border-bottom: 1px solid var(--surface-border-secondary); */ /* This line is removed */
   display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  /* New styling to look like an input field */
-  background-color: var(--surface-bg-secondary);
-  border-radius: 6px;
-  border: 1px solid var(--surface-bg-secondary);
-  padding: var(--spacing-1p5) var(--spacing-3);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.searchBarContainer.focused {
-  background-color: var(--surface-bg-primary);
-  border-color: var(--surface-border-theme);
-  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
-}
-
-.searchBarContainer .material-symbols-rounded {
-  color: var(--surface-fg-quaternary);
-}
-
-.searchBarContainer input {
-  width: 100%;
-  border: none;
-  background: none;
-  outline: none;
-  font-size: 0.9em;
-  color: var(--surface-fg-primary);
-}
-.searchBarContainer input::placeholder {
-  color: var(--control-fg-placeholder);
-}
-
-.clearButton {
-  /* Re-uses quaternary button styles for consistency */
-  padding: var(--spacing-0p5);
-  height: 24px;
-  width: 24px;
-  background: none;
-  border: 1px solid transparent;
-  color: var(--control-fg-quaternary);
-  border-radius: 4px;
-}
-.clearButton:hover:not(:disabled) {
-  background-color: var(--control-bg-quaternary-hover);
-  color: var(--control-fg-quaternary-hover);
 }

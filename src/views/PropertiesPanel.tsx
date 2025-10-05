@@ -167,11 +167,19 @@ export const PropertiesPanel = () => {
               <div className="tab-underline" style={underlineStyle} />
           </div>
           <div className={`${styles.panelContent} stealth-scrollbar`}>
-            <PanelContent 
-              selectedComponent={selectedComponent} 
-              activeTab={activeTab}
-              onOpenBindingModal={handleOpenBindingModal}
-            />
+            {/*
+              FIX: Add a single wrapper div directly inside the scroll container.
+              This wrapper becomes the sole direct child, allowing the negative margin
+              from 'stealth-scrollbar > *' to apply correctly without affecting
+              the padding of the outer container.
+            */}
+            <div>
+              <PanelContent 
+                selectedComponent={selectedComponent} 
+                activeTab={activeTab}
+                onOpenBindingModal={handleOpenBindingModal}
+              />
+            </div>
           </div>
         </>
       ) : (
