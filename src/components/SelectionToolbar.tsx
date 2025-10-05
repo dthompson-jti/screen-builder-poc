@@ -14,22 +14,28 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
   const handleSettingsClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent parent's onClick from firing
+    e.stopPropagation();
     setIsPropertiesPanelVisible(true);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent parent's onClick from firing
+    e.stopPropagation();
     onDelete();
   };
   
-  // Generic handler for disabled buttons to also stop propagation
   const handleDisabledClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
   return (
-    <div className={styles.selectionToolbar}>
+    /*
+      FIX: Create an interaction "firewall".
+      By stopping the 'onMouseDown' event on the toolbar's root element,
+      we prevent the parent's dnd-kit listeners from ever receiving the
+      event. This isolates the toolbar's controls, making the buttons
+      inside 100% reliable and resolving the drag-vs-click conflict.
+    */
+    <div className={styles.selectionToolbar} onMouseDown={(e) => e.stopPropagation()}>
       <div className={styles.toolbarDragHandle} {...listeners} aria-label="Drag to reorder">
         <span className="material-symbols-rounded">drag_indicator</span>
       </div>
@@ -41,7 +47,11 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
       <button className="btn btn-tertiary on-solid" onClick={handleDisabledClick} aria-label="Duplicate component">
         <span className="material-symbols-rounded">content_copy</span>
       </button>
-      <button className="btn btn-tertiary on-solid" onClick={handleDeleteClick} aria-label="Delete component">
+      <button 
+        className="btn btn-tertiary on-solid"
+        onClick={handleDeleteClick} 
+        aria-label="Delete component"
+      >
         <span className="material-symbols-rounded">delete</span>
       </button>
       <button className="btn btn-tertiary on-solid" onClick={handleDisabledClick} aria-label="More component options">

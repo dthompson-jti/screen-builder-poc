@@ -120,14 +120,9 @@
 }
 
 /* --- Search Container (Layout Only) --- */
-/*
-  FIX: The border-bottom has been REMOVED.
-  This container is now purely for positioning and padding.
-  The SearchInput component is fully responsible for its own appearance,
-  resolving the "double border" bug definitively.
-*/
 .searchContainer {
   padding: var(--spacing-2) var(--spacing-4);
-  /* border-bottom: 1px solid var(--surface-border-secondary); */ /* This line is removed */
+  /* FIX: Add a bottom border for visual separation */
+  border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
 }

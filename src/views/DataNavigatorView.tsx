@@ -29,6 +29,7 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   onClosePanel?: () => void;
   showBreadcrumb?: boolean;
   isInsideModal?: boolean;
+  autoFocusSearch?: boolean;
 }
 
 interface NavigateEvent extends Event {
@@ -47,6 +48,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   onClosePanel,
   showBreadcrumb = true,
   isInsideModal = false,
+  autoFocusSearch = false,
 }: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
@@ -159,21 +161,24 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         </div>
       </div>
       
-      {/* The SearchInput component is now placed inside a simple positioning container */}
       <div className={panelStyles.searchContainer}>
         <SearchInput
           value={query}
           onChange={setQuery}
           placeholder={searchPlaceholder}
           variant="standalone"
+          autoFocus={autoFocusSearch}
         />
       </div>
 
-      <div className={`${panelStyles.componentListContainer} stealth-scrollbar`}>
+      {/* FIX: Apply the robust scrollbar utility */}
+      <div className={`${panelStyles.componentListContainer} scrollbar-stealth`}>
         {query && filteredGroups.length === 0 ? (
-          <EmptyStateMessage query={query} />
+          <div className="scrollbar-stealth-content">
+            <EmptyStateMessage query={query} />
+          </div>
         ) : (
-          <ul className={panelStyles.componentList}>
+          <ul className={`${panelStyles.componentList} scrollbar-stealth-content`}>
             {filteredGroups.map((group) => (
               <li key={group.title}>
                 <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>

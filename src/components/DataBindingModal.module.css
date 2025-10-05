@@ -1,17 +1,11 @@
 /* src/components/DataBindingModal.module.css */
-/* NEW FILE: Dedicated styles for the Data Binding Modal layout. */
 
-/*
-  FIX: Implement a robust flexbox column layout.
-  This ensures the header and footer are always visible, and the
-  content area correctly scrolls without breaking the layout.
-*/
 .dataBindingModalContainer {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Occupy the full height of the parent Modal container */
+  height: 100%;
   width: 100%;
-  overflow: hidden; /* Prevent content from spilling out */
+  overflow: hidden;
 }
 
 /* Header: Fixed height, does not shrink */
@@ -22,6 +16,8 @@
   padding: var(--spacing-3) var(--spacing-4);
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
+  /* FIX: Change header background color */
+  background-color: var(--surface-bg-secondary);
 }
 
 .modalHeader h3 {
@@ -32,9 +28,11 @@
 
 /* Content: Takes all available space, handles its own scrolling */
 .modalContent {
-  flex: 1; /* Shorthand for flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+  flex: 1;
   overflow-y: auto;
-  min-height: 0; /* A critical flexbox property to allow this container to shrink */
+  min-height: 0;
+  /* FIX: Hide horizontal scrollbar caused by scrollbar utility */
+  overflow-x: hidden;
 }
 
 /* Footer: Fixed height, does not shrink */
@@ -45,6 +43,8 @@
   padding: var(--spacing-3) var(--spacing-4);
   border-top: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
+  /* FIX: Change footer background color */
+  background-color: var(--surface-bg-secondary);
 }
 
 .footerActionsRight {

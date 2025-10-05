@@ -18,7 +18,17 @@
   width: 100%;
 }
 
-.panelContent { padding: var(--spacing-4); flex: 1; overflow-y: auto; }
+/*
+  FIX: Define consistent, symmetric padding here.
+  This rule applies whether the content is scrolling or not,
+  ensuring the padding is always balanced.
+*/
+.panelContent {
+  padding: var(--spacing-4);
+  flex: 1;
+  overflow-y: auto;
+}
+
 .propSection { margin-bottom: var(--spacing-6); }
 .propSection h4 {
   font-size: 0.8em;
@@ -64,8 +74,6 @@
   height: 100%;
   text-align: center;
   color: var(--surface-fg-secondary);
-  /* Unify padding with .panelContent for consistent margins */
-  padding: var(--spacing-4);
 }
 .propertiesPanelPlaceholder .material-symbols-rounded {
   font-size: 48px;

@@ -18,7 +18,7 @@ import {
 } from '../data/componentBrowserMock';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
 import { BoundData, DraggableComponent } from '../types';
-import styles from './DataBindingModal.module.css'; // FIX: Import the new dedicated styles
+import styles from './DataBindingModal.module.css';
 
 export const DataBindingModal = () => {
   const isOpen = useAtomValue(isDataBindingModalOpenAtom);
@@ -72,12 +72,13 @@ export const DataBindingModal = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} width="456px" height="90vh">
-      {/* FIX: Apply the new flexbox layout classes to the modal structure */}
+    /* FIX: Change width to 600px */
+    <Modal isOpen={isOpen} onClose={handleClose} width="600px" height="90vh">
       <div className={styles.dataBindingModalContainer}>
         <div className={styles.modalHeader}>
           <h3>Select Data Binding</h3>
-          <button className="btn btn-tertiary icon-only" onClick={handleClose} aria-label="Close">
+          {/* FIX: Change close button to quaternary style */}
+          <button className="btn btn-quaternary icon-only" onClick={handleClose} aria-label="Close">
             <span className="material-symbols-rounded">close</span>
           </button>
         </div>
@@ -105,6 +106,8 @@ export const DataBindingModal = () => {
               )}
               showBreadcrumb={true}
               isInsideModal={true}
+              /* FIX: Add prop to autofocus the search input on modal open */
+              autoFocusSearch={true}
             />
         </div>
         <div className={styles.modalFooter}>

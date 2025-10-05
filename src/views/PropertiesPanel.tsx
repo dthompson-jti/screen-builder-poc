@@ -110,7 +110,7 @@ export const PropertiesPanel = () => {
   const selectedComponent = allComponents.find((c: FormComponent) => c.id === selectedId);
 
   useLayoutEffect(() => {
-    if (tabsContainerRef.current) {
+    if (tabsContainerRef.current && selectedComponent) {
       const activeTabNode = tabsContainerRef.current.querySelector<HTMLButtonElement>(`.tab-button.active`);
       if (activeTabNode) {
         setUnderlineStyle({
@@ -119,7 +119,7 @@ export const PropertiesPanel = () => {
         });
       }
     }
-  }, [activeTab, selectedId]);
+  }, [activeTab, selectedComponent]);
 
   useEffect(() => {
     if (bindingResult) {
@@ -148,46 +148,45 @@ export const PropertiesPanel = () => {
   return (
     <div className={styles.propertiesPanelContainer}>
       <PanelHeader title={panelTitle} onClose={() => setIsPanelVisible(false)} />
-
-      {selectedComponent ? (
-        <>
-          <div className={`${styles.panelHeader} panel-tabs`} ref={tabsContainerRef}>
-              <button 
-                className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
-                onClick={() => setActiveTab('general')}
-              >
-                General
-              </button>
-              <button 
-                className={`tab-button ${activeTab === 'advanced' ? 'active' : ''}`}
-                onClick={() => setActiveTab('advanced')}
-              >
-                Advanced
-              </button>
-              <div className="tab-underline" style={underlineStyle} />
-          </div>
-          <div className={`${styles.panelContent} stealth-scrollbar`}>
-            {/*
-              FIX: Add a single wrapper div directly inside the scroll container.
-              This wrapper becomes the sole direct child, allowing the negative margin
-              from 'stealth-scrollbar > *' to apply correctly without affecting
-              the padding of the outer container.
-            */}
-            <div>
-              <PanelContent 
-                selectedComponent={selectedComponent} 
-                activeTab={activeTab}
-                onOpenBindingModal={handleOpenBindingModal}
-              />
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className={styles.propertiesPanelPlaceholder}>
-          <span className="material-symbols-rounded">touch_app</span>
-          <p>Select a component on the canvas to see its properties.</p>
+      
+      {selectedComponent && (
+        <div className={`${styles.panelHeader} panel-tabs`} ref={tabsContainerRef}>
+            <button 
+              className={`tab-button ${activeTab === 'general' ? 'active' : ''}`} 
+              onClick={() => setActiveTab('general')}
+            >
+              General
+            </button>
+            <button 
+              className={`tab-button ${activeTab === 'advanced' ? 'active' : ''}`}
+              onClick={() => setActiveTab('advanced')}
+            >
+              Advanced
+            </button>
+            <div className="tab-underline" style={underlineStyle} />
         </div>
       )}
+
+      {/* 
+        FIX: The 'stealth-scrollbar' class has been removed.
+        The container now has consistent padding defined in its CSS module,
+        and the scrollbar will appear naturally without layout shifts
+        thanks to the global 'scrollbar-gutter' style.
+      */}
+      <div className={styles.panelContent}>
+        {selectedComponent ? (
+          <PanelContent 
+            selectedComponent={selectedComponent} 
+            activeTab={activeTab}
+            onOpenBindingModal={handleOpenBindingModal}
+          />
+        ) : (
+          <div className={styles.propertiesPanelPlaceholder}>
+            <span className="material-symbols-rounded">touch_app</span>
+            <p>Select a component on the canvas to see its properties.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
