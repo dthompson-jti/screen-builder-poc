@@ -41,11 +41,16 @@ const SortableFormComponent = ({ component, overId, active }: { component: FormC
     <div
       ref={setNodeRef}
       style={style}
+      // FIX: The drag attributes are still needed here for dnd-kit to identify the node
       {...attributes}
-      {...listeners}
       className={wrapperClassName}
       onClick={(e) => { e.stopPropagation(); setSelectedId(component.id); }}
     >
+      {/* 
+        FIX: Pass the 'listeners' down to the toolbar.
+        The toolbar is now responsible for applying them to the correct drag handle,
+        separating the drag interaction from the button click interactions.
+      */}
       {isSelected && <SelectionToolbar onDelete={handleDelete} listeners={listeners} />}
       
       <TextInputPreview label={component.name} />

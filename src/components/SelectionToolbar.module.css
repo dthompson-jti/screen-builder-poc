@@ -12,7 +12,7 @@
   color: var(--control-fg-on-solid);
   z-index: 10;
   box-shadow: var(--surface-shadow-md);
-  gap: var(--spacing-1);
+  /* FIX: Remove the gap from the root, it will be handled by the actions wrapper */
 }
 
 .toolbarDragHandle {
@@ -46,4 +46,11 @@
   height: 20px;
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
+}
+
+/* FIX: New wrapper for the toolbar buttons to provide spacing and the event firewall */
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
 }
