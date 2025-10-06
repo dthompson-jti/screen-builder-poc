@@ -47,7 +47,8 @@ export const SearchInput = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
-      {value && (
+      {/* FIX: Only render the clear button for the 'standalone' variant. */}
+      {variant === 'standalone' && value && (
         <button
           className={styles.clearButton}
           onClick={() => onChange('')}

@@ -18,6 +18,9 @@
   border-radius: 6px;
   border: 1px solid transparent; /* Default to transparent */
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  /* FIX: Enforce a fixed height to prevent any layout/alignment shift when the clear button appears. */
+  /* This value aligns with the standard 38px height of secondary buttons. */
+  height: 38px;
 }
 
 /* --- Standalone Variant (Left Panel) --- */

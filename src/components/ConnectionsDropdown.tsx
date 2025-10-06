@@ -36,6 +36,9 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const filteredEntities = data.entities.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredCollections = data.collections.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredTransientEntities = data.transientEntityFields.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
+  
+  // FIX: Determine if there are any results to display after filtering.
+  const hasResults = filteredEntities.length > 0 || filteredCollections.length > 0 || filteredTransientEntities.length > 0;
 
   const renderListItems = (items: DropdownItem[]) => {
     return items.map((item: DropdownItem) => (
@@ -71,16 +74,24 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
           autoFocus={true}
         />
       </div>
-      <ul className={styles.dropdownList}>
-        {filteredEntities.length > 0 && <li className={styles.dropdownHeader}>Entities</li>}
-        {renderListItems(filteredEntities)}
-        
-        {filteredCollections.length > 0 && <li className={styles.dropdownHeader}>Collections</li>}
-        {renderListItems(filteredCollections)}
 
-        {filteredTransientEntities.length > 0 && <li className={styles.dropdownHeader}>Transient Entity Fields</li>}
-        {renderListItems(filteredTransientEntities)}
-      </ul>
+      {/* FIX: Conditionally render "no results" message or the list of items. */}
+      {!hasResults && query ? (
+        <div className={styles.placeholderContent}>
+          <p>No matches found for this search</p>
+        </div>
+      ) : (
+        <ul className={styles.dropdownList}>
+          {filteredEntities.length > 0 && <li className={styles.dropdownHeader}>Entities</li>}
+          {renderListItems(filteredEntities)}
+          
+          {filteredCollections.length > 0 && <li className={styles.dropdownHeader}>Collections</li>}
+          {renderListItems(filteredCollections)}
+
+          {filteredTransientEntities.length > 0 && <li className={styles.dropdownHeader}>Transient Entity Fields</li>}
+          {renderListItems(filteredTransientEntities)}
+        </ul>
+      )}
     </div>
   );
 };
