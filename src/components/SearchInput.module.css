@@ -91,14 +91,15 @@
   color: var(--surface-fg-secondary);
   border-radius: var(--spacing-2);
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, transform 0.1s ease-out;
+  /* FIX: Remove transform from transition as it is no longer used. */
+  transition: background-color 0.2s, color 0.2s;
 }
 .clearButton:hover:not(:disabled) {
   background-color: var(--control-bg-tertiary-hover); 
   color: var(--control-fg-tertiary-hover);
 }
 .clearButton:active:not(:disabled) {
-  transform: translateY(1px);
+  /* FIX: Remove transform. */
   background-color: var(--control-bg-tertiary-pressed);
   color: var(--control-fg-tertiary-hover);
 }

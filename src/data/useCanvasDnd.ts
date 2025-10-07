@@ -1,10 +1,11 @@
 // src/data/useCanvasDnd.ts
 import { useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { Active, DataRef, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
+import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
 import { selectedCanvasComponentIdAtom } from './atoms';
 import { commitActionAtom, canvasComponentsAtom } from './historyAtoms';
-import { FormComponent } from '../types';
+// FIX: Import the new DndData type to ensure type safety.
+import { FormComponent, DndData } from '../types';
 
 export const useCanvasDnd = () => {
   const canvasComponents = useAtomValue(canvasComponentsAtom);
@@ -32,10 +33,13 @@ export const useCanvasDnd = () => {
       return;
     }
     
-    const isNew = active.data.current?.isNew;
+    // FIX: Use a type assertion to safely access the data.
+    // This resolves all the `no-unsafe-*` errors in this function.
+    const activeData = active.data.current as DndData;
+    const overData = over.data.current as DndData; // Also type the 'over' data
 
-    if (isNew) {
-      handleAddNewComponent(active.data, over);
+    if (activeData?.isNew) {
+      handleAddNewComponent(activeData, over, overData);
     } else {
       handleReorderComponent(active, over);
     }
@@ -43,8 +47,8 @@ export const useCanvasDnd = () => {
     resetState();
   };
   
-  const handleAddNewComponent = (data: DataRef, over: Over) => {
-    const activeData = data.current;
+  // FIX: Update function signature to accept the typed data
+  const handleAddNewComponent = (activeData: DndData, over: Over, overData: DndData) => {
     if (!activeData) return;
 
     const newComponent: FormComponent = {
@@ -69,7 +73,8 @@ export const useCanvasDnd = () => {
         }
     }
     
-    const overIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id || c.id === over.data?.current?.sortable?.containerId);
+    // FIX: Safely access containerId from the typed overData
+    const overIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id || c.id === overData?.sortable?.containerId);
 
     commitAction({
       action: { type: 'COMPONENT_ADD', payload: { component: newComponent, index: overIndex } },
@@ -92,7 +97,7 @@ export const useCanvasDnd = () => {
       if (oldIndex !== -1 && newIndex !== -1) {
         commitAction({
           action: { type: 'COMPONENT_REORDER', payload: { oldIndex, newIndex } },
-          message: `Reorder '${active.data.current?.name || 'component'}'`
+          message: `Reorder '${(active.data.current as DndData)?.name || 'component'}'`
         });
       }
     }

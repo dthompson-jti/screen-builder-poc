@@ -46,3 +46,25 @@ export interface ComponentNode {
   name: string;
   connections: number;
 }
+
+// FIX: Add a new, central interface for all dnd-kit data payloads.
+// This provides type safety when reading data back from drag events.
+export interface DndData {
+  id: string;
+  name: string;
+  type: 'widget' | 'field';
+  icon: string;
+  isNew: boolean;
+  origin?: 'data' | 'general';
+  // This nested data is specific to items from the 'data' browser
+  data?: {
+    nodeId?: string;
+    nodeName?: string;
+  };
+  // This property is added by dnd-kit's sortable context
+  sortable?: {
+    containerId: string;
+    index: number;
+    items: unknown[];
+  };
+}

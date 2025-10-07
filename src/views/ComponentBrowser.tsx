@@ -49,7 +49,8 @@ export const ComponentBrowser = () => {
         selectedNodeIdAtom: selectedNodeIdAtom,
         searchQueryAtom: componentSearchQueryAtom,
       }}
-      renderComponentItem={(component) => <DraggableListItem component={component as DraggableComponent} />}
+      // FIX: Remove unnecessary type assertion. `component` is already the correct type.
+      renderComponentItem={(component) => <DraggableListItem component={component} />}
       renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
         <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />
       )}

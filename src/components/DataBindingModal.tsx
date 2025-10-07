@@ -92,7 +92,8 @@ export const DataBindingModal = () => {
               }}
               renderComponentItem={(component) => (
                 <SelectableListItem
-                  component={component as DraggableComponent}
+                  // FIX: Remove unnecessary type assertion. `component` is already the correct type.
+                  component={component}
                   isSelected={pendingSelection?.fieldId === component.id}
                   onSelect={handleSelect}
                 />

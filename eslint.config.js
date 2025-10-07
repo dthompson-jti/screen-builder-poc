@@ -9,15 +9,22 @@ export default defineConfig([
   globalIgnores(['dist']),
   {
     files: ['**/*.{ts,tsx}'],
+    // FIX: The `extends` array is updated to use type-aware linting rules.
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
+      // `tseslint.configs.recommended` is replaced with `recommendedTypeChecked`.
+      tseslint.configs.recommendedTypeChecked,
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      // FIX: The `parserOptions` object is added to connect ESLint to TypeScript.
+      parserOptions: {
+        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
 ])

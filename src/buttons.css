@@ -8,8 +8,8 @@
   font-weight: 500;
   cursor: pointer;
   border-radius: var(--spacing-2);
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out, border-color 0.2s;
-  transform: translateY(0);
+  /* FIX: Remove transform from the transition property as it's no longer used on active state. */
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
   box-sizing: border-box;
   line-height: 1;
   border: none;
@@ -40,8 +40,8 @@
 .btn-primary:active:not(:disabled) {
   background-color: var(--control-bg-theme-pressed);
   border-color: var(--control-border-primary-pressed);
-  transform: translateY(1px);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-primary-pressed);
+  /* FIX: Remove transform and match hover state's shadow thickness. */
+  box-shadow: inset 0 -3px 0 0 var(--control-border-primary-pressed);
 }
 
 /* --- Secondary Button --- */
@@ -58,12 +58,11 @@
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-hover);
 }
-/* FIX: Update the active state to use a more visually distinct background color. */
 .btn-secondary:active:not(:disabled), .btn-secondary.active {
   background-color: var(--primitives-grey-100);
   border-color: var(--control-border-secondary-pressed);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-secondary-pressed);
-  transform: translateY(1px);
+  /* FIX: Remove transform and match hover state's shadow thickness. */
+  box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
 }
 .btn-secondary.icon-only {
   width: 38px;
@@ -100,11 +99,15 @@
   box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
 }
 .btn-tertiary:active:not(:disabled) {
-  transform: translateY(1px);
   background-color: var(--control-bg-tertiary-pressed);
   color: var(--control-fg-tertiary-hover);
-  border-color: var(--control-border-tertiary-faint-pressed);
-  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
+  /* FIX: Ensure active border matches hover border style. */
+  border-top: 1px solid var(--control-border-tertiary-faint-pressed);
+  border-right: 1px solid var(--control-border-tertiary-faint-pressed);
+  border-left: 1px solid var(--control-border-tertiary-faint-pressed);
+  border-bottom: 1px solid transparent;
+  /* FIX: Remove transform and match hover state's shadow thickness. */
+  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-pressed);
 }
 
 /* --- Quaternary Button Styles --- */
@@ -125,7 +128,7 @@
   color: var(--control-fg-quaternary-hover);
 }
 .btn-quaternary:active:not(:disabled) {
-  transform: translateY(1px);
+  /* FIX: Remove transform. The background change is the only feedback. */
   background-color: var(--control-bg-quaternary-pressed);
 }
 

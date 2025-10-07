@@ -30,7 +30,8 @@ import {
   isPropertiesPanelVisibleAtom
 } from './data/atoms';
 import { canvasComponentsAtom } from './data/historyAtoms';
-import { FormComponent } from './types';
+// FIX: Import the new DndData type for type safety.
+import { FormComponent, DndData } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -98,12 +99,17 @@ function App() {
   const renderDragOverlay = () => {
     if (!activeItem) return null;
 
-    const isNew = activeItem.data.current?.isNew;
-    const name = activeItem.data.current?.name;
-    const icon = activeItem.data.current?.icon;
+    // FIX: Use a type assertion to safely access the active item's data.
+    // This resolves all the `no-unsafe-*` errors in this function.
+    const activeData = activeItem.data.current as DndData;
+
+    const isNew = activeData?.isNew;
+    const name = activeData?.name;
+    const icon = activeData?.icon;
 
     if (isNew) {
-      return <BrowserItemPreview name={name} icon={icon} />;
+      // FIX: Ensure name and icon are not undefined before passing them.
+      return <BrowserItemPreview name={name ?? ''} icon={icon ?? ''} />;
     } else {
       const activeComponent = canvasComponents.find((c: FormComponent) => c.id === activeItem.id);
       if (!activeComponent) return null;
