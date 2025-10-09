@@ -1,0 +1,51 @@
+/* src/components/PreviewToolbar.module.css */
+/* NEW FILE */
+
+.previewToolbar {
+  flex-shrink: 0;
+  height: 56px;
+  background-color: var(--surface-bg-primary);
+  border-bottom: 1px solid var(--surface-border-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-4);
+  gap: var(--spacing-4);
+}
+
+.toolbarGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.verticalDivider {
+  width: 1px;
+  height: var(--spacing-6);
+  background-color: var(--surface-border-secondary);
+}
+
+.widthInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background-color: var(--surface-bg-secondary);
+  border-radius: 6px;
+  padding: 0 var(--spacing-3);
+  height: 38px;
+}
+
+.widthInput {
+  background: none;
+  border: none;
+  outline: none;
+  width: 50px;
+  font-family: var(--font-family-sans);
+  color: var(--surface-fg-primary);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.widthInputUnit {
+  color: var(--surface-fg-secondary);
+  font-size: 14px;
+}

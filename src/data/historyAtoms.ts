@@ -2,7 +2,7 @@
 import { atom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
-import { BoundData, LayoutComponent, FormComponent, CanvasComponent } from '../types';
+import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties } from '../types';
 import { selectedCanvasComponentIdsAtom } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
@@ -28,8 +28,6 @@ type HistoryData = {
 };
 
 // 2. DEFINE THE ACTION CONTRACT (REDUCER PATTERN)
-// FIX: The payload is now a simple object of primitives, not a complex component type.
-// The reducer is now solely responsible for object construction.
 export type HistoryAction =
   | { type: 'COMPONENT_ADD'; payload: { componentType: 'layout' | 'widget' | 'field'; name: string; origin?: 'data' | 'general'; parentId: string; index: number; } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
@@ -39,6 +37,7 @@ export type HistoryAction =
   | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
   | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<LayoutComponent['properties']>; } }
+  | { type: 'COMPONENT_UPDATE_APPEARANCE'; payload: { componentId: string; newAppearance: Partial<AppearanceProperties>; } }
   | { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT'; payload: { componentId: string; newLayout: Partial<FormComponent['contextualLayout']> } }
   | { type: 'FORM_RENAME'; payload: { newName: string } };
 
@@ -55,7 +54,19 @@ const historyAtom = atom<HistoryData>({
         name: 'Root',
         componentType: 'layout',
         children: [],
-        properties: { arrangement: 'stack', gap: 'md', distribution: 'start', verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto' },
+        properties: { 
+          arrangement: 'stack', 
+          gap: 'md', 
+          distribution: 'start', 
+          verticalAlign: 'stretch', 
+          allowWrapping: false, 
+          columnLayout: 'auto',
+          appearance: {
+            backgroundColor: 'transparent',
+            padding: 'md',
+            border: 'none',
+          }
+        },
       }
     },
   },
@@ -85,6 +96,12 @@ const deleteComponentAndChildren = (
   delete components[componentId];
 };
 
+const defaultAppearance: AppearanceProperties = {
+  backgroundColor: 'transparent',
+  padding: 'none',
+  border: 'none',
+};
+
 // 4. CREATE THE CENTRAL ACTION DISPATCHER (THE REDUCER)
 export const commitActionAtom = atom(
   null,
@@ -109,6 +126,11 @@ export const commitActionAtom = atom(
                 properties: {
                   arrangement: 'stack', gap: 'md', distribution: 'start',
                   verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto',
+                  appearance: {
+                    backgroundColor: 'transparent',
+                    padding: 'md',
+                    border: 'none'
+                  }
                 },
               };
             } else {
@@ -178,7 +200,15 @@ export const commitActionAtom = atom(
               name: 'Layout Container',
               componentType: 'layout',
               children: componentIds,
-              properties: { arrangement: 'stack', gap: 'md', distribution: 'start', verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto' },
+              properties: { 
+                arrangement: 'stack', 
+                gap: 'md', 
+                distribution: 'start', 
+                verticalAlign: 'stretch', 
+                allowWrapping: false, 
+                columnLayout: 'auto',
+                appearance: { ...defaultAppearance, padding: 'md' }
+              },
             };
             presentState.components[newContainerId] = newContainer;
             componentIds.forEach(id => {
@@ -196,6 +226,17 @@ export const commitActionAtom = atom(
             const component = presentState.components[componentId];
             if (component && component.componentType === 'layout') {
               component.properties = { ...component.properties, ...newProperties };
+            }
+            break;
+          }
+          case 'COMPONENT_UPDATE_APPEARANCE': {
+            const { componentId, newAppearance } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (component && component.componentType === 'layout') {
+              component.properties.appearance = { 
+                ...(component.properties.appearance || defaultAppearance), 
+                ...newAppearance 
+              };
             }
             break;
           }

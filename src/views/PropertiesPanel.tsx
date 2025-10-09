@@ -10,10 +10,78 @@ import {
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
 import { DataBindingPicker } from '../components/DataBindingPicker';
 import { PanelHeader } from '../components/PanelHeader';
-import { FormComponent, LayoutComponent } from '../types';
+import { FormComponent, LayoutComponent, AppearanceProperties } from '../types';
 import styles from './PropertiesPanel.module.css';
 
-// --- NEW: Contextual Panel for Children of Grids ---
+const appearanceDefaults: AppearanceProperties = {
+  backgroundColor: 'transparent',
+  padding: 'none',
+  border: 'none',
+};
+
+// --- NEW: Appearance Section Component ---
+const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent }) => {
+  const commitAction = useSetAtom(commitActionAtom);
+  const appearance = component.properties.appearance || appearanceDefaults;
+
+  const handleAppearanceChange = (newAppearance: Partial<AppearanceProperties>) => {
+    commitAction({
+      action: {
+        type: 'COMPONENT_UPDATE_APPEARANCE',
+        payload: { componentId: component.id, newAppearance }
+      },
+      message: `Update appearance for '${component.name}'`
+    });
+  };
+
+  return (
+    <div className={styles.propSection}>
+      <h4>Appearance</h4>
+      <div className={styles.propItem}>
+        <label>Background</label>
+        <select
+          value={appearance.backgroundColor}
+          onChange={e => handleAppearanceChange({ backgroundColor: e.target.value as AppearanceProperties['backgroundColor'] })}
+        >
+          <option value="transparent">Transparent</option>
+          <option value="surface-bg-primary">Primary</option>
+          <option value="surface-bg-secondary">Secondary</option>
+          <option value="surface-bg-tertiary">Tertiary</option>
+          <option value="surface-bg-info">Info</option>
+          <option value="surface-bg-warning">Warning</option>
+          <option value="surface-bg-error-primary">Error</option>
+        </select>
+      </div>
+      <div className={styles.propItem}>
+        <label>Padding</label>
+        <select
+          value={appearance.padding}
+          onChange={e => handleAppearanceChange({ padding: e.target.value as AppearanceProperties['padding'] })}
+        >
+          <option value="none">None</option>
+          <option value="sm">Small (8px)</option>
+          <option value="md">Medium (16px)</option>
+          <option value="lg">Large (24px)</option>
+          <option value="xl">Extra Large (32px)</option>
+        </select>
+      </div>
+      <div className={styles.propItem}>
+        <label>Border</label>
+        <select
+          value={appearance.border}
+          onChange={e => handleAppearanceChange({ border: e.target.value as AppearanceProperties['border'] })}
+        >
+          <option value="none">None</option>
+          <option value="surface-border-secondary">Secondary</option>
+          <option value="surface-border-tertiary">Tertiary</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+
+// --- Contextual Panel for Children of Grids ---
 const ContextualLayoutProperties = ({ component }: { component: FormComponent | LayoutComponent }) => {
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -147,6 +215,7 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
           </select>
         </div>
       </div>
+      <AppearancePropertiesEditor component={component} />
       <ContextualLayoutProperties component={component} />
     </>
   );

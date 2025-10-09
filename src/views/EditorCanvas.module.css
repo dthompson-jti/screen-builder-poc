@@ -5,7 +5,6 @@
   background-color: var(--surface-bg-tertiary);
   padding: var(--spacing-8);
   overflow-y: auto;
-  /* Add position relative for the floating toolbar */
   position: relative;
 }
 
@@ -36,9 +35,8 @@
 }
 
 .formComponentWrapper {
-  /* FIX: Use a 2px transparent border to reserve space and prevent wobble on selection */
   border: 2px solid transparent;
-  padding: calc(var(--spacing-3) - 1px);
+  padding: 0; /* Wrapper no longer controls padding */
   margin: 0;
   border-radius: var(--spacing-2);
   position: relative;
@@ -65,12 +63,21 @@
 
 /* --- Layout Container Styles --- */
 .layoutContainer {
-  /* FIX: Use a 2px dashed border to reserve space and prevent wobble on selection */
+  /* Default dashed border for discoverability */
   border: 2px dashed var(--surface-border-tertiary);
-  padding: calc(var(--spacing-2) - 1px);
-  min-height: 80px;
+  min-height: 40px; /* Reduced min-height */
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, border-style 0.2s;
 }
+
+/* If the user has defined their own border, hide the editor's dashed one */
+.layoutContainer[data-has-user-border="true"] {
+  border-color: transparent;
+}
+.layoutContainer[data-has-user-border="true"]:hover:not(.selected) {
+  /* Show a subtle hover outline so it's still clear what you're hovering */
+  box-shadow: 0 0 0 2px var(--surface-border-primary);
+}
+
 
 .layoutContainer.selected {
   border-style: solid;
@@ -82,7 +89,6 @@
   border-color: var(--surface-border-primary);
 }
 
-/* FIX: Use a new class for the contextual "glow" feedback */
 .layoutContainer.is-over-container {
   background-color: var(--primitives-theme-25);
   border-color: var(--primitives-theme-300);
@@ -94,10 +100,9 @@
   justify-content: center;
   color: var(--surface-fg-tertiary);
   font-size: 0.9em;
-  display: flex; /* Always flex for centering the placeholder text */
+  display: flex;
 }
 
-/* NEW: Style for empty container when a drag is active anywhere */
 .layoutContainerEmpty.drag-active:not(.is-over-container) {
   background-color: var(--surface-bg-secondary_subtle);
   border-style: solid;
@@ -106,23 +111,23 @@
   display: none;
 }
 
-
+/* The inner div that receives user-defined styles */
 .layoutContainerContent {
   width: 100%;
   height: 100%;
-  position: relative; /* Positioning context for the drop indicator */
+  position: relative;
+  border-radius: 6px; /* Match inner radius to outer */
 }
 
-/* FIX: Add styles for the new, unified drop placeholder */
 .dropPlaceholder {
   position: absolute;
   background-color: var(--control-border-primary);
   border-radius: 2px;
   z-index: 1;
-  pointer-events: none; /* Make sure it doesn't interfere with drop events */
+  pointer-events: none;
 }
 
-/* --- NEW: Floating Selection Toolbar Styles --- */
+/* --- Floating Selection Toolbar Styles --- */
 .floatingSelectionToolbar {
   position: absolute;
   bottom: 24px;

@@ -4,7 +4,7 @@
 // like /state or /components will start with './'.
 
 import React, { useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection, Active } from '@dnd-kit/core';
 import { AppHeader } from './views/AppHeader';
 import { ComponentBrowser } from './views/ComponentBrowser';
@@ -17,7 +17,7 @@ import { MainToolbar } from './views/MainToolbar';
 import { BrowserItemPreview } from './components/BrowserItemPreview';
 import { ContainerPreview } from './components/ContainerPreview';
 import { PlaceholderPanel } from './components/PlaceholderPanel';
-import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
+import { PreviewView } from './views/PreviewView';
 import { DataBindingModal } from './components/DataBindingModal';
 import { SettingsPage } from './views/SettingsPage';
 import { ToastContainer } from './components/ToastContainer';
@@ -30,6 +30,10 @@ import {
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
+  previewModeAtom,
+  previewWidthAtom,
+  AppViewMode,
+  PreviewMode,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
@@ -54,9 +58,11 @@ function App() {
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
-  const viewMode = useAtomValue(appViewModeAtom);
+  const [viewMode, setViewMode] = useAtom(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
   const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
+  const [pMode, setPMode] = useAtom(previewModeAtom);
+  const [pWidth, setPWidth] = useAtom(previewWidthAtom);
 
   const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
   const { undo, redo } = useUndoRedo();
@@ -82,6 +88,46 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [undo, redo]);
+
+  // Read state from URL on initial load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view') as AppViewMode;
+    const mode = params.get('mode') as PreviewMode;
+    const width = params.get('width');
+
+    if (view && ['editor', 'preview', 'settings'].includes(view)) {
+      setViewMode(view);
+    }
+    if (mode && ['desktop', 'web'].includes(mode)) {
+      setPMode(mode);
+    }
+    if (width && !isNaN(parseInt(width, 10))) {
+      setPWidth(parseInt(width, 10));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
+
+  // Write state to URL on change
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('view', viewMode);
+
+    if (viewMode === 'preview') {
+      params.set('mode', pMode);
+      if (pMode === 'web') {
+        params.set('width', pWidth.toString());
+      } else {
+        params.delete('width');
+      }
+    } else {
+      params.delete('mode');
+      params.delete('width');
+    }
+    
+    // Use replaceState to avoid cluttering browser history
+    window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
+  }, [viewMode, pMode, pWidth]);
 
   useEffect(() => {
     if (!isLeftPanelVisible) {
@@ -137,7 +183,7 @@ function App() {
   const renderMainContent = () => {
     switch (viewMode) {
       case 'preview':
-        return <FullScreenPlaceholder icon="visibility" title="Preview Mode" message="This is a placeholder for the form preview." />;
+        return <PreviewView />;
       case 'settings':
         return <SettingsPage />;
       case 'editor':

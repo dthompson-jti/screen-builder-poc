@@ -1,5 +1,5 @@
 // src/types.ts
-// NEW FILE: Centralizing core application types as a best practice.
+// Centralizing core application types as a best practice.
 
 export interface BaseComponent {
   id: string;
@@ -9,6 +9,12 @@ export interface BaseComponent {
   contextualLayout?: {
     columnSpan?: number;
   }
+}
+
+export interface AppearanceProperties {
+  backgroundColor: 'transparent' | 'surface-bg-primary' | 'surface-bg-secondary' | 'surface-bg-tertiary' | 'surface-bg-info' | 'surface-bg-warning' | 'surface-bg-error-primary';
+  padding: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  border: 'none' | 'surface-border-secondary' | 'surface-border-tertiary';
 }
 
 export interface LayoutComponent extends BaseComponent {
@@ -21,6 +27,7 @@ export interface LayoutComponent extends BaseComponent {
     verticalAlign: 'start' | 'center' | 'end' | 'stretch';
     allowWrapping: boolean;
     columnLayout: 'auto' | '2-col-50-50' | '3-col-33' | '2-col-split-left';
+    appearance?: AppearanceProperties;
   };
 }
 

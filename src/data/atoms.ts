@@ -105,3 +105,10 @@ export const dataBindingResultAtom = atom<DataBindingResult | null>(null);
 export const modalPendingSelectionAtom = atom<BoundData | null>(null);
 export const modalSelectedNodeIdAtom = atom<string>('arrest');
 export const modalComponentSearchQueryAtom = atom('');
+
+// =================================================================
+//                         Preview Mode State
+// =================================================================
+export type PreviewMode = 'desktop' | 'web';
+export const previewModeAtom = atom<PreviewMode>('desktop');
+export const previewWidthAtom = atom<number>(1280);

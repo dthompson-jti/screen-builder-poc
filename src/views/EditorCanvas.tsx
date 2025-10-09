@@ -11,12 +11,28 @@ import { SelectionToolbar } from '../components/SelectionToolbar';
 import { TextInputPreview } from '../components/TextInputPreview';
 import styles from './EditorCanvas.module.css';
 
+// --- Utility to get appearance styles for the editor ---
+const useAppearanceStyles = (component: LayoutComponent): React.CSSProperties => {
+  const appearance = component.properties.appearance;
+  if (!appearance) return {};
+
+  const spacingMap: { [key: string]: string } = {
+    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
+    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
+  };
+
+  return {
+    backgroundColor: appearance.backgroundColor === 'transparent' ? 'transparent' : `var(--${appearance.backgroundColor})`,
+    padding: spacingMap[appearance.padding] || '0px',
+  };
+};
+
 interface ComponentProps {
   component: CanvasComponent;
   dndListeners?: DraggableSyntheticListeners;
 }
 
-// --- NEW: Floating Toolbar for Multi-Select ---
+// --- Floating Toolbar for Multi-Select ---
 const FloatingSelectionToolbar = () => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -105,7 +121,6 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
     sortableStyle.transform = 'none';
   }
 
-  // Add grid span style if applicable
   if (component.contextualLayout?.columnSpan) {
     sortableStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
   }
@@ -119,7 +134,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
   );
 };
 
-// --- New Drop Placeholder (Line or Block) ---
+// --- Drop Placeholder (Line or Block) ---
 const DropPlaceholder = ({ rect, parentRect }: { rect: ClientRect, parentRect: DOMRect }) => {
   const placeholderStyle: React.CSSProperties = {
     top: `${rect.top - parentRect.top - 2}px`,
@@ -143,6 +158,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   const isRoot = component.id === rootId;
   const isSelected = selectedIds.includes(component.id);
   const contentRef = useRef<HTMLDivElement>(null);
+  const appearanceStyles = useAppearanceStyles(component);
 
   const { setNodeRef } = useDroppable({
     id: component.id,
@@ -183,8 +199,10 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     isOverContainer ? styles['is-over-container'] : '',
     isDragActive ? styles['drag-active'] : '',
   ].filter(Boolean).join(' ');
+  
+  const borderStyle = component.properties.appearance?.border || 'none';
+  const hasUserBorder = borderStyle !== 'none';
 
-  // --- NEW: Dynamic Style Calculation ---
   const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
   const contentStyle: React.CSSProperties = {
     display: 'flex',
@@ -213,19 +231,22 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   const showPlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.rect && parentRect;
 
   return (
-    <div className={containerClasses} onClick={handleSelect}>
-      {/* FIX: Do not render the toolbar for the root component */}
+    <div className={containerClasses} onClick={handleSelect} data-has-user-border={hasUserBorder}>
       {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
-      <div ref={setNodeRef} className={styles.layoutContainerContent}>
-        {!isEmpty && (
-          <div ref={contentRef} style={contentStyle}>
+      <div 
+        ref={setNodeRef} 
+        className={styles.layoutContainerContent} 
+        style={appearanceStyles}
+      >
+        <div ref={contentRef} style={contentStyle}>
+          {!isEmpty && (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (
                 <CanvasNode key={childId} componentId={childId} />
               ))}
             </SortableContext>
-          </div>
-        )}
+          )}
+        </div>
         {showPlaceholder && <DropPlaceholder rect={dropPlaceholder.rect!} parentRect={parentRect} />}
         {isEmpty && !isDragActive && <span className={styles.emptyText}>Drag components here</span>}
       </div>
