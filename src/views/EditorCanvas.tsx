@@ -11,22 +11,6 @@ import { SelectionToolbar } from '../components/SelectionToolbar';
 import { TextInputPreview } from '../components/TextInputPreview';
 import styles from './EditorCanvas.module.css';
 
-// --- Utility to get appearance styles for the editor ---
-const useAppearanceStyles = (component: LayoutComponent): React.CSSProperties => {
-  const appearance = component.properties.appearance;
-  if (!appearance) return {};
-
-  const spacingMap: { [key: string]: string } = {
-    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
-    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
-  };
-
-  return {
-    backgroundColor: appearance.backgroundColor === 'transparent' ? 'transparent' : `var(--${appearance.backgroundColor})`,
-    padding: spacingMap[appearance.padding] || '0px',
-  };
-};
-
 interface ComponentProps {
   component: CanvasComponent;
   dndListeners?: DraggableSyntheticListeners;
@@ -158,7 +142,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   const isRoot = component.id === rootId;
   const isSelected = selectedIds.includes(component.id);
   const contentRef = useRef<HTMLDivElement>(null);
-  const appearanceStyles = useAppearanceStyles(component);
+  const appearance = component.properties.appearance;
 
   const { setNodeRef } = useDroppable({
     id: component.id,
@@ -199,46 +183,54 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     isOverContainer ? styles['is-over-container'] : '',
     isDragActive ? styles['drag-active'] : '',
   ].filter(Boolean).join(' ');
+
+  const spacingMap: { [key: string]: string } = {
+    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
+    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
+  };
   
-  const borderStyle = component.properties.appearance?.border || 'none';
-  const hasUserBorder = borderStyle !== 'none';
+  const contentAppearanceStyle: React.CSSProperties = {
+    padding: spacingMap[appearance?.padding || 'none'],
+  };
 
   const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
-  const contentStyle: React.CSSProperties = {
+  const contentLayoutStyle: React.CSSProperties = {
     display: 'flex',
     gap: gapMap[component.properties.gap] || gapMap.md,
   };
 
   if (component.properties.arrangement === 'stack') {
-    contentStyle.flexDirection = 'column';
+    contentLayoutStyle.flexDirection = 'column';
   } else if (component.properties.arrangement === 'row') {
-    contentStyle.flexDirection = 'row';
-    contentStyle.flexWrap = component.properties.allowWrapping ? 'wrap' : 'nowrap';
-    contentStyle.justifyContent = component.properties.distribution;
-    contentStyle.alignItems = component.properties.verticalAlign;
+    contentLayoutStyle.flexDirection = 'row';
+    contentLayoutStyle.flexWrap = component.properties.allowWrapping ? 'wrap' : 'nowrap';
+    contentLayoutStyle.justifyContent = component.properties.distribution;
+    contentLayoutStyle.alignItems = component.properties.verticalAlign;
   } else if (component.properties.arrangement === 'grid') {
-    contentStyle.display = 'grid';
+    contentLayoutStyle.display = 'grid';
     const gridTemplateMap = {
       'auto': 'repeat(auto-fill, minmax(150px, 1fr))',
       '2-col-50-50': '1fr 1fr',
       '3-col-33': '1fr 1fr 1fr',
       '2-col-split-left': '2fr 1fr',
     };
-    contentStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
+    contentLayoutStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
   }
 
   const parentRect = contentRef.current?.getBoundingClientRect();
   const showPlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.rect && parentRect;
 
   return (
-    <div className={containerClasses} onClick={handleSelect} data-has-user-border={hasUserBorder}>
+    <div className={containerClasses} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
       <div 
         ref={setNodeRef} 
         className={styles.layoutContainerContent} 
-        style={appearanceStyles}
+        style={contentAppearanceStyle}
+        data-appearance-type={appearance?.type || 'transparent'}
+        data-bordered={appearance?.bordered || false}
       >
-        <div ref={contentRef} style={contentStyle}>
+        <div ref={contentRef} style={contentLayoutStyle}>
           {!isEmpty && (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (

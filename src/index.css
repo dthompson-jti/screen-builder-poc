@@ -1,12 +1,5 @@
 /* src/index.css */
 
-/*
-  FIX: Correct the order of CSS at-rules and use modern layer syntax.
-  1. Define the layer order first. This is allowed at the top.
-  2. Use the `layer(base)` syntax on each @import to assign the entire
-     stylesheet to the 'base' layer. This fixes the build error and
-     ensures these global styles have lower precedence than component styles.
-*/
 @layer base, components;
 
 /* 1. Foundational Design Tokens */
@@ -21,7 +14,8 @@
 @import './buttons.css' layer(base);
 @import './menu.css' layer(base);
 @import './tabs.css' layer(base);
-@import './components/navigator.css' layer(base); /* Special case for non-React vanilla JS component */
+@import './components/navigator.css' layer(base);
+@import './views/appearance.css' layer(components); /* NEW: Import appearance styles */
 
 :root {
   --font-family-sans: 'Inter', sans-serif;
@@ -56,5 +50,20 @@ body {
 }
 
 
-/* FIX: Remove the old global resizer styles entirely.
-   This is now handled by the ResizablePanel.module.css file. */
+.resizer {
+  width: 1px;
+  cursor: col-resize;
+  background-color: var(--surface-border-secondary);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: background-color 0.2s, width 0.2s ease, right 0.2s ease;
+}
+
+.resizer:hover {
+  background-color: var(--control-border-primary);
+  width: 4px;
+  right: -2px;
+}

@@ -11,10 +11,13 @@ export interface BaseComponent {
   }
 }
 
+export type AppearanceType = 'transparent' | 'primary' | 'secondary' | 'tertiary' | 'info' | 'warning' | 'error';
+export type AppearancePadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+
 export interface AppearanceProperties {
-  backgroundColor: 'transparent' | 'surface-bg-primary' | 'surface-bg-secondary' | 'surface-bg-tertiary' | 'surface-bg-info' | 'surface-bg-warning' | 'surface-bg-error-primary';
-  padding: 'none' | 'sm' | 'md' | 'lg' | 'xl';
-  border: 'none' | 'surface-border-secondary' | 'surface-border-tertiary';
+  type: AppearanceType;
+  bordered: boolean;
+  padding: AppearancePadding;
 }
 
 export interface LayoutComponent extends BaseComponent {

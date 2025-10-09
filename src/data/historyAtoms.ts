@@ -41,6 +41,12 @@ export type HistoryAction =
   | { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT'; payload: { componentId: string; newLayout: Partial<FormComponent['contextualLayout']> } }
   | { type: 'FORM_RENAME'; payload: { newName: string } };
 
+const defaultAppearance: AppearanceProperties = {
+  type: 'transparent',
+  bordered: false,
+  padding: 'md',
+};
+
 // 3. CREATE THE CORE ATOMS
 const historyAtom = atom<HistoryData>({
   past: [],
@@ -61,11 +67,7 @@ const historyAtom = atom<HistoryData>({
           verticalAlign: 'stretch', 
           allowWrapping: false, 
           columnLayout: 'auto',
-          appearance: {
-            backgroundColor: 'transparent',
-            padding: 'md',
-            border: 'none',
-          }
+          appearance: { ...defaultAppearance }
         },
       }
     },
@@ -96,12 +98,6 @@ const deleteComponentAndChildren = (
   delete components[componentId];
 };
 
-const defaultAppearance: AppearanceProperties = {
-  backgroundColor: 'transparent',
-  padding: 'none',
-  border: 'none',
-};
-
 // 4. CREATE THE CENTRAL ACTION DISPATCHER (THE REDUCER)
 export const commitActionAtom = atom(
   null,
@@ -126,11 +122,7 @@ export const commitActionAtom = atom(
                 properties: {
                   arrangement: 'stack', gap: 'md', distribution: 'start',
                   verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto',
-                  appearance: {
-                    backgroundColor: 'transparent',
-                    padding: 'md',
-                    border: 'none'
-                  }
+                  appearance: { ...defaultAppearance }
                 },
               };
             } else {
@@ -207,7 +199,7 @@ export const commitActionAtom = atom(
                 verticalAlign: 'stretch', 
                 allowWrapping: false, 
                 columnLayout: 'auto',
-                appearance: { ...defaultAppearance, padding: 'md' }
+                appearance: { ...defaultAppearance }
               },
             };
             presentState.components[newContainerId] = newContainer;

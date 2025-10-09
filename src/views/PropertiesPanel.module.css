@@ -18,11 +18,6 @@
   width: 100%;
 }
 
-/*
-  FIX: Define consistent, symmetric padding here.
-  This rule applies whether the content is scrolling or not,
-  ensuring the padding is always balanced.
-*/
 .panelContent {
   padding: var(--spacing-4);
   flex: 1;
@@ -56,7 +51,7 @@
   padding: 2px;
   cursor: pointer;
   transition: background-color 0.2s;
-  display: flex; /* To align the knob */
+  display: flex;
   align-items: center;
 }
 .toggleKnob {
@@ -69,7 +64,6 @@
 }
 .toggleSwitch.disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* NEW: Active state for the toggle switch */
 .toggleSwitch.active {
   background-color: var(--control-bg-theme);
 }
@@ -91,4 +85,43 @@
   font-size: 48px;
   margin-bottom: var(--spacing-4);
   color: var(--surface-fg-tertiary);
+}
+
+/* --- NEW: Style Swatch Styles --- */
+.styleSwatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: var(--spacing-2);
+}
+
+.styleSwatch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid var(--surface-border-secondary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.styleSwatch:hover {
+  border-color: var(--surface-border-primary);
+}
+
+.styleSwatch.selected {
+  border-color: var(--control-border-selected);
+  box-shadow: 0 0 0 2px var(--control-border-selected);
+}
+
+.styleSwatch .checkmark {
+  color: var(--surface-fg-primary);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.styleSwatch.selected .checkmark {
+  opacity: 1;
 }

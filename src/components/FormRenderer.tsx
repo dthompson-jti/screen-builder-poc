@@ -2,32 +2,8 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { canvasComponentsByIdAtom, rootComponentIdAtom } from '../data/historyAtoms';
-import { CanvasComponent, FormComponent, LayoutComponent } from '../types';
+import { FormComponent, LayoutComponent } from '../types';
 import { TextInputPreview } from './TextInputPreview';
-import styles from './FormRenderer.module.css';
-
-// --- Utility to get appearance styles ---
-const useAppearanceStyles = (component: LayoutComponent): React.CSSProperties => {
-  const appearance = component.properties.appearance;
-  if (!appearance) return {};
-
-  const spacingMap: { [key: string]: string } = {
-    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
-    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
-  };
-  
-  const borderMap: { [key: string]: string } = {
-    none: 'none',
-    'surface-border-secondary': '1px solid var(--surface-border-secondary)',
-    'surface-border-tertiary': '1px solid var(--surface-border-tertiary)',
-  };
-
-  return {
-    backgroundColor: appearance.backgroundColor === 'transparent' ? 'transparent' : `var(--${appearance.backgroundColor})`,
-    padding: spacingMap[appearance.padding] || '0px',
-    border: borderMap[appearance.border] || 'none',
-  };
-};
 
 // --- Recursive Render Node ---
 const RenderNode = ({ componentId }: { componentId: string }) => {
@@ -44,9 +20,20 @@ const RenderNode = ({ componentId }: { componentId: string }) => {
 
 // --- Layout Component Preview ---
 const LayoutComponentPreview = ({ component }: { component: LayoutComponent }) => {
-  const appearanceStyles = useAppearanceStyles(component);
+  const appearance = component.properties.appearance;
   
+  const spacingMap: { [key: string]: string } = {
+    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
+    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
+  };
+
   const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
+  
+  const containerStyle: React.CSSProperties = {
+    padding: spacingMap[appearance?.padding || 'none'],
+    borderRadius: 'var(--spacing-2)',
+  };
+
   const contentStyle: React.CSSProperties = {
     display: 'flex',
     gap: gapMap[component.properties.gap] || gapMap.md,
@@ -70,20 +57,23 @@ const LayoutComponentPreview = ({ component }: { component: LayoutComponent }) =
     contentStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
   }
 
-  const wrapperStyle: React.CSSProperties = {
-    ...appearanceStyles,
-    borderRadius: 'var(--spacing-2)', // Add a default radius for visual appeal
-  };
+  const wrapperStyle: React.CSSProperties = {};
   if (component.contextualLayout?.columnSpan) {
     wrapperStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
   }
 
   return (
     <div style={wrapperStyle}>
-      <div style={contentStyle}>
-        {component.children.map(childId => (
-          <RenderNode key={childId} componentId={childId} />
-        ))}
+      <div 
+        style={containerStyle}
+        data-appearance-type={appearance?.type || 'transparent'}
+        data-bordered={appearance?.bordered || false}
+      >
+        <div style={contentStyle}>
+          {component.children.map(childId => (
+            <RenderNode key={childId} componentId={childId} />
+          ))}
+        </div>
       </div>
     </div>
   );

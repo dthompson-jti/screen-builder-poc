@@ -1,0 +1,61 @@
+/* src/views/appearance.css */
+/* NEW FILE */
+/* This file contains the data-attribute-driven styles for component appearance. */
+
+@layer components {
+  /* --- Default (Transparent) --- */
+  [data-appearance-type="transparent"] {
+    background-color: transparent;
+  }
+  [data-appearance-type="transparent"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-tertiary);
+  }
+
+  /* --- Primary --- */
+  [data-appearance-type="primary"] {
+    background-color: var(--surface-bg-primary);
+  }
+  [data-appearance-type="primary"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-secondary);
+  }
+  
+  /* --- Secondary --- */
+  [data-appearance-type="secondary"] {
+    background-color: var(--surface-bg-secondary);
+  }
+  [data-appearance-type="secondary"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-primary);
+  }
+
+  /* --- Tertiary --- */
+  [data-appearance-type="tertiary"] {
+    background-color: var(--surface-bg-tertiary);
+  }
+  [data-appearance-type="tertiary"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-primary);
+  }
+
+  /* --- Info --- */
+  [data-appearance-type="info"] {
+    background-color: var(--surface-bg-info);
+  }
+  [data-appearance-type="info"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-info);
+  }
+
+  /* --- Warning --- */
+  [data-appearance-type="warning"] {
+    background-color: var(--surface-bg-warning-primary);
+  }
+  [data-appearance-type="warning"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-warning);
+  }
+
+  /* --- Error --- */
+  [data-appearance-type="error"] {
+    background-color: var(--surface-bg-error-primary);
+  }
+  [data-appearance-type="error"][data-bordered="true"] {
+    border: 1px solid var(--surface-border-alert_subtle);
+  }
+}

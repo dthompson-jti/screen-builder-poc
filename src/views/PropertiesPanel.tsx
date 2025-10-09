@@ -1,5 +1,5 @@
 // src/views/PropertiesPanel.tsx
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
   selectedCanvasComponentIdsAtom,
@@ -10,16 +10,42 @@ import {
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
 import { DataBindingPicker } from '../components/DataBindingPicker';
 import { PanelHeader } from '../components/PanelHeader';
-import { FormComponent, LayoutComponent, AppearanceProperties } from '../types';
+import { FormComponent, LayoutComponent, AppearanceProperties, AppearanceType } from '../types';
 import styles from './PropertiesPanel.module.css';
 
 const appearanceDefaults: AppearanceProperties = {
-  backgroundColor: 'transparent',
-  padding: 'none',
-  border: 'none',
+  type: 'transparent',
+  bordered: false,
+  padding: 'md',
 };
 
-// --- NEW: Appearance Section Component ---
+const swatchOptions: { id: AppearanceType, label: string }[] = [
+    { id: 'transparent', label: 'Transparent' },
+    { id: 'primary', label: 'Primary' },
+    { id: 'secondary', label: 'Secondary' },
+    { id: 'tertiary', label: 'Tertiary' },
+    { id: 'info', label: 'Info' },
+    { id: 'warning', label: 'Warning' },
+    { id: 'error', label: 'Error' },
+];
+
+// --- NEW: Style Swatch Component ---
+const StyleSwatch = ({ type, isSelected, onClick }: { type: AppearanceType, isSelected: boolean, onClick: () => void }) => {
+  return (
+    <button 
+      className={`${styles.styleSwatch} ${isSelected ? styles.selected : ''}`}
+      onClick={onClick}
+      data-appearance-type={type}
+      data-bordered={true}
+      title={swatchOptions.find(s => s.id === type)?.label}
+    >
+      {isSelected && <span className={`material-symbols-rounded ${styles.checkmark}`}>check</span>}
+    </button>
+  );
+};
+
+
+// --- Appearance Section Component ---
 const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent }) => {
   const commitAction = useSetAtom(commitActionAtom);
   const appearance = component.properties.appearance || appearanceDefaults;
@@ -38,19 +64,26 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
     <div className={styles.propSection}>
       <h4>Appearance</h4>
       <div className={styles.propItem}>
-        <label>Background</label>
-        <select
-          value={appearance.backgroundColor}
-          onChange={e => handleAppearanceChange({ backgroundColor: e.target.value as AppearanceProperties['backgroundColor'] })}
+        <label>Type</label>
+        <div className={styles.styleSwatchGrid}>
+            {swatchOptions.map(swatch => (
+                <StyleSwatch 
+                    key={swatch.id}
+                    type={swatch.id}
+                    isSelected={appearance.type === swatch.id}
+                    onClick={() => handleAppearanceChange({ type: swatch.id })}
+                />
+            ))}
+        </div>
+      </div>
+      <div className={styles.propItemToggle}>
+        <label>Bordered</label>
+        <button 
+          className={`${styles.toggleSwitch} ${appearance.bordered ? styles.active : ''}`}
+          onClick={() => handleAppearanceChange({ bordered: !appearance.bordered })}
         >
-          <option value="transparent">Transparent</option>
-          <option value="surface-bg-primary">Primary</option>
-          <option value="surface-bg-secondary">Secondary</option>
-          <option value="surface-bg-tertiary">Tertiary</option>
-          <option value="surface-bg-info">Info</option>
-          <option value="surface-bg-warning">Warning</option>
-          <option value="surface-bg-error-primary">Error</option>
-        </select>
+          <div className={styles.toggleKnob} />
+        </button>
       </div>
       <div className={styles.propItem}>
         <label>Padding</label>
@@ -63,17 +96,6 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
           <option value="md">Medium (16px)</option>
           <option value="lg">Large (24px)</option>
           <option value="xl">Extra Large (32px)</option>
-        </select>
-      </div>
-      <div className={styles.propItem}>
-        <label>Border</label>
-        <select
-          value={appearance.border}
-          onChange={e => handleAppearanceChange({ border: e.target.value as AppearanceProperties['border'] })}
-        >
-          <option value="none">None</option>
-          <option value="surface-border-secondary">Secondary</option>
-          <option value="surface-border-tertiary">Tertiary</option>
         </select>
       </div>
     </div>
