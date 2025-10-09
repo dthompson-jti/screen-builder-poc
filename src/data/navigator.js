@@ -26,10 +26,31 @@ export class NodeNavigator {
     this.nodeData = nodeData;
     const initialIndex = this.nodeData.findIndex(n => n.id === initialNodeId);
     this.selectedIndex = initialIndex !== -1 ? initialIndex : 0;
-
+    
+    this._setupStaticLabels();
+    
     this._buildElementPool();
     const resizeObserver = new ResizeObserver(() => this._updateLayoutAndPositionElements(true, true));
     resizeObserver.observe(this.container);
+  }
+
+  _setupStaticLabels() {
+      const labels = [
+          { selector: '.last-node-label', full: 'Last node', compact: 'Last' },
+          { selector: '.selected-node-label', full: 'Selected node', compact: 'Selected' },
+          // Connections label is dynamic, so we set up its structure here.
+          { selector: '.connected-node-label', full: 'Related nodes', compact: 'Related' }
+      ];
+      labels.forEach(({ selector, full, compact }) => {
+          const el = this.container.querySelector(selector);
+          if (el) {
+              if (selector === '.connected-node-label') {
+                  el.innerHTML = `<span class="label-full"><span class="connection-count">0</span> ${full}</span><span class="label-compact"><span class="connection-count">0</span> ${compact}</span>`;
+              } else {
+                  el.innerHTML = `<span class="label-full">${full}</span><span class="label-compact">${compact}</span>`;
+              }
+          }
+      });
   }
 
   _buildElementPool() {
@@ -47,7 +68,6 @@ export class NodeNavigator {
     if (connectionsNode) {
         const textSpan = connectionsNode.querySelector('span');
         if (textSpan) {
-            // FIX: Simplify innerHTML. The chevron icon is now handled purely by CSS.
             textSpan.innerHTML = 'View Related';
         }
     }
@@ -63,6 +83,15 @@ export class NodeNavigator {
     this.layout.slotWidth = (viewportWidth - (2 * gap)) / 3;
     this.layout.slideDistance = this.layout.slotWidth + gap;
     this.layout.gap = gap;
+
+    // FIX: Only update the text content of the count, not the whole innerHTML.
+    const selectedNodeData = this.nodeData[this.selectedIndex];
+    if (selectedNodeData) {
+        const countSpans = this.container.querySelectorAll('.connection-count');
+        countSpans.forEach(span => {
+            span.textContent = selectedNodeData.connections;
+        });
+    }
 
     const centerSlot = Math.floor(this.elementPool.length / 2);
 
@@ -165,7 +194,6 @@ export class NodeNavigator {
         if (newConnectionsNode) {
             const textSpan = newConnectionsNode.querySelector('span');
             if (textSpan) {
-                // FIX: Re-apply the simplified text.
                 textSpan.innerHTML = 'View Related';
             }
         }

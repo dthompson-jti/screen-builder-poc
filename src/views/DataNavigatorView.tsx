@@ -117,7 +117,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
     exit: { opacity: 0, x: 10, transition: { type: 'tween', ease: 'easeInOut', duration: 0.3 }},
   };
 
-  // FIX: This new wrapper will establish the CSS container for the navigator component.
   const containerClasses = `${panelStyles.navigatorQueryContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
 
   return (
@@ -153,11 +152,10 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
                 </div>
                 {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
               </div>
-              <div className="static-label last-node-label">Last node</div>
-              <div className="static-label selected-node-label">Selected node</div>
-              <div className="static-label connected-node-label">
-                {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
-              </div>
+              {/* FIX: The innerHTML of these divs will now be set by the navigator.js script */}
+              <div className="static-label last-node-label"></div>
+              <div className="static-label selected-node-label"></div>
+              <div className="static-label connected-node-label"></div>
           </div>
         </div>
       </div>

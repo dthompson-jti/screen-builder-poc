@@ -18,9 +18,10 @@
   padding: 0 var(--spacing-4);
   grid-template-rows: 36px 16px auto;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: start;
+  align-items: center;
   column-gap: var(--spacing-6);
   position: relative;
+  transition: grid-template-rows 0.2s ease-in-out;
 }
 
 .node-navigator #nodes-viewport {
@@ -29,6 +30,7 @@
   position: relative;
   overflow: visible;
   height: 36px;
+  transition: height 0.2s ease-in-out;
 }
 
 .node-navigator #nodes-track {
@@ -46,6 +48,7 @@
   height: 36px;
   display: flex;
   justify-content: center;
+  transition: height 0.2s ease-in-out;
 }
 
 .node-navigator .node-button {
@@ -68,13 +71,20 @@
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
   border: 1px solid var(--control-border-secondary); 
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out, border-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s ease-out, border-color 0.2s, font-size 0.2s ease-in-out, padding 0.2s ease-in-out;
   transform: translateY(0);
   font-weight: 500;
   cursor: pointer;
 }
 
-/* FIX: Add the chevron icon using a robust pseudo-element. */
+.node-navigator .node-button span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
 .node-navigator .connections-node .node-button span::after {
   content: 'keyboard_arrow_down';
   font-family: 'Material Symbols Rounded', sans-serif;
@@ -82,7 +92,10 @@
   vertical-align: bottom;
   font-size: 18px;
   margin-left: var(--spacing-1);
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease, width 0.2s ease, margin-left 0.2s ease;
+  display: inline-block;
+  width: auto;
+  opacity: 1;
 }
 
 
@@ -133,7 +146,19 @@
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: grid;
+  place-items: center;
 }
+
+.node-navigator .label-full,
+.node-navigator .label-compact {
+  grid-area: 1 / 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.node-navigator .label-compact { opacity: 0; }
+.node-navigator .label-full { opacity: 1; }
+
 
 .node-navigator .static-label.last-node-label { grid-column: 1; }
 .node-navigator .static-label.selected-node-label { grid-column: 2; }
@@ -170,9 +195,10 @@
 }
 .node-navigator .nav-arrow.left { display: none; }
 
-@container navigator-panel (max-width: 400px) {
+@container navigator-panel (max-width: 420px) {
   .node-navigator #navigator-grid {
-    grid-template-rows: 54px 16px auto;
+    /* FIX: Reduce the middle row (gap) from 16px to 2px. */
+    grid-template-rows: 54px 2px auto;
   }
   .node-navigator #nodes-viewport,
   .node-navigator .node-group {
@@ -188,27 +214,19 @@
   .node-navigator .selected-node .node-button:hover {
     padding: calc(var(--spacing-1) - 1px) calc(var(--spacing-2) - 1px);
   }
-
-  /* FIX: Correctly hide the original text and show the pseudo-element text. */
+  
   .node-navigator .static-label {
-    font-size: 0; /* Hide original text node */
-  }
-  .node-navigator .static-label::before {
-    font-size: 0.8em; /* Restore the original font-size for the new content */
-    color: var(--surface-fg-secondary);
-  }
-  .node-navigator .last-node-label::before {
-    content: 'Last';
-  }
-  .node-navigator .selected-node-label::before {
-    content: 'Selected';
-  }
-  .node-navigator .connected-node-label::before {
-    content: 'Related';
+      white-space: normal;
+      overflow: visible;
+      text-overflow: initial;
   }
 
-  /* FIX: Hide the chevron pseudo-element in compact mode. */
+  .node-navigator .label-full { opacity: 0; }
+  .node-navigator .label-compact { opacity: 1; }
+
   .node-navigator .connections-node .node-button span::after {
-    display: none;
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
   }
 }
