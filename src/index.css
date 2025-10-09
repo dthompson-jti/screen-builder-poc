@@ -56,23 +56,5 @@ body {
 }
 
 
-.resizer {
-  width: 1px;
-  cursor: col-resize;
-  background-color: var(--surface-border-secondary);
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  /* FIX: Added 'transform' to the transition for smooth centering on hover. */
-  transition: background-color 0.2s, width 0.2s ease, transform 0.2s ease;
-}
-
-.resizer:hover {
-  background-color: var(--control-border-primary);
-  width: 4px;
-  /* FIX: Use a robust transform to center the resizer on hover.
-     This works for both left and right-positioned resizers. */
-  transform: translateX(-1.5px);
-}
+/* FIX: Remove the old global resizer styles entirely.
+   This is now handled by the ResizablePanel.module.css file. */

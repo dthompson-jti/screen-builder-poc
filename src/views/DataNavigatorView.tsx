@@ -117,7 +117,8 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
     exit: { opacity: 0, x: 10, transition: { type: 'tween', ease: 'easeInOut', duration: 0.3 }},
   };
 
-  const containerClasses = `${panelStyles.componentBrowserContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
+  // FIX: This new wrapper will establish the CSS container for the navigator component.
+  const containerClasses = `${panelStyles.navigatorQueryContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
 
   return (
     <div className={containerClasses}>
@@ -171,7 +172,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         />
       </div>
 
-      {/* FIX: Apply the robust scrollbar utility */}
       <div className={`${panelStyles.componentListContainer} scrollbar-stealth`}>
         {query && filteredGroups.length === 0 ? (
           <div className="scrollbar-stealth-content">

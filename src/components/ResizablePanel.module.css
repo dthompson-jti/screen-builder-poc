@@ -1,0 +1,36 @@
+/* src/components/ResizablePanel.module.css */
+/* NEW FILE: Scoped styles for the ResizablePanel component. */
+
+.resizerWrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 9px; /* The larger, invisible hit area */
+  cursor: col-resize;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resizerRight {
+  right: -4px; /* Position the 9px wrapper so it's centered on the panel edge */
+}
+
+.resizerLeft {
+  left: -4px; /* Position the 9px wrapper so it's centered on the panel edge */
+}
+
+.resizerIndicator {
+  width: 1px; /* The thin, visible line */
+  height: 100%;
+  background-color: var(--surface-border-secondary);
+  transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+/* On hover OR when actively dragging, expand the indicator for better visual feedback */
+.resizerWrapper:hover .resizerIndicator,
+.resizerWrapper.active .resizerIndicator {
+  width: 3px;
+  background-color: var(--control-border-primary);
+}

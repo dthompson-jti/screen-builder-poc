@@ -1,7 +1,6 @@
 // src/components/ResizablePanel.tsx
 import React, { useState, useCallback, useRef } from 'react';
-import { useAtomValue } from 'jotai';
-import { isComponentBrowserVisibleAtom } from '../data/atoms';
+import styles from './ResizablePanel.module.css';
 
 interface ResizablePanelProps {
   initialWidth: number;
@@ -9,7 +8,6 @@ interface ResizablePanelProps {
   children: React.ReactNode;
   position?: 'left' | 'right';
   isAnimatedVisible?: boolean; 
-  onWidthChange?: (width: number) => void;
 }
 
 export const ResizablePanel: React.FC<ResizablePanelProps> = ({
@@ -18,22 +16,11 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   children,
   position = 'left',
   isAnimatedVisible = true, 
-  onWidthChange,
 }) => {
   const [width, setWidth] = useState(initialWidth);
   const isResizing = useRef(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  
-  // This atom is only for the left panel logic.
-  const isLeftPanelBrowserVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isPanelHidden = !isAnimatedVisible;
-
-  React.useEffect(() => {
-    if (onWidthChange && !isPanelHidden) {
-      onWidthChange(width);
-    }
-  }, [width, onWidthChange, isPanelHidden]);
-
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isPanelHidden) return;
@@ -42,33 +29,21 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
 
-    // FIX: Disable CSS transition during drag for smooth, responsive resizing.
     if (panelRef.current) {
       panelRef.current.style.transition = 'none';
+      const resizer = panelRef.current.querySelector(`.${styles.resizerWrapper}`);
+      resizer?.classList.add(styles.active);
     }
 
     const startX = e.clientX;
     const startWidth = panelRef.current?.offsetWidth ?? width;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (isResizing.current) {
-        const deltaX = moveEvent.clientX - startX;
-        let newWidth;
-        
-        if (position === 'left') {
-          newWidth = startWidth + deltaX;
-          if (newWidth < minWidth && isLeftPanelBrowserVisible) {
-             newWidth = minWidth;
-          }
-        } else {
-          newWidth = startWidth - deltaX;
-          if (newWidth < minWidth) {
-             newWidth = minWidth;
-          }
-        }
-        
-        setWidth(newWidth);
-      }
+      if (!isResizing.current) return;
+      const deltaX = moveEvent.clientX - startX;
+      let newWidth = position === 'left' ? startWidth + deltaX : startWidth - deltaX;
+      if (newWidth < minWidth) newWidth = minWidth;
+      setWidth(newWidth);
     };
 
     const handleMouseUp = () => {
@@ -76,38 +51,20 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       document.body.style.cursor = 'default';
       document.body.style.userSelect = 'auto';
 
-      // FIX: Restore CSS transition after drag for smooth programmatic animations.
       if (panelRef.current) {
         panelRef.current.style.transition = 'width 0.3s ease-out';
+        const resizer = panelRef.current.querySelector(`.${styles.resizerWrapper}`);
+        resizer?.classList.remove(styles.active);
       }
 
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      
-      if (onWidthChange) {
-        onWidthChange(width);
-      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-  }, [minWidth, width, position, onWidthChange, isLeftPanelBrowserVisible, isPanelHidden]);
+  }, [minWidth, position, isPanelHidden, width]);
 
-  const resizerStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: '1px',
-    cursor: 'col-resize',
-    zIndex: 100,
-  };
-
-  if (position === 'left') {
-    resizerStyle.right = 0;
-  } else {
-    resizerStyle.left = 0;
-  }
-  
   const wrapperStyle: React.CSSProperties = {
     width: isPanelHidden ? '0px' : `${width}px`,
     position: 'relative',
@@ -117,17 +74,14 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   };
 
   return (
-    <div
-      ref={panelRef}
-      style={wrapperStyle}
-    >
+    <div ref={panelRef} style={wrapperStyle}>
       <div 
         style={{ 
           width: `${width}px`, 
-          flex: 1, 
           minWidth: 0, 
           height: '100%',
-          transform: isPanelHidden ? `translateX(-${width}px)` : 'translateX(0)',
+          // FIX: Correctly transform right panel content for exit animation
+          transform: isPanelHidden ? `translateX(${position === 'left' ? '-' : ''}${width}px)` : 'translateX(0)',
           transition: 'transform 0.3s ease-out',
         }}
       >
@@ -135,10 +89,12 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       </div>
       {!isPanelHidden && (
         <div
-          className="resizer"
-          style={resizerStyle}
+          // FIX: Correctly assign positioning class. The left panel needs a right-side resizer, and vice-versa.
+          className={`${styles.resizerWrapper} ${position === 'left' ? styles.resizerRight : styles.resizerLeft}`}
           onMouseDown={handleMouseDown}
-        />
+        >
+          <div className={styles.resizerIndicator} />
+        </div>
       )}
     </div>
   );

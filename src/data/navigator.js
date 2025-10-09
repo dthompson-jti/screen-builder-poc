@@ -47,7 +47,8 @@ export class NodeNavigator {
     if (connectionsNode) {
         const textSpan = connectionsNode.querySelector('span');
         if (textSpan) {
-            textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
+            // FIX: Simplify innerHTML. The chevron icon is now handled purely by CSS.
+            textSpan.innerHTML = 'View Related';
         }
     }
   }
@@ -98,9 +99,8 @@ export class NodeNavigator {
     const button = node.querySelector('.node-button');
     const textSpan = node.querySelector('span');
     
-    // FIX: Remove all inline styles to rely on CSS classes
     button.removeAttribute('style');
-    button.className = 'node-button'; // Reset classes
+    button.className = 'node-button'; 
 
     let type = 'offscreen';
     if (dataIndexOffset === -1) type = 'last';
@@ -159,14 +159,14 @@ export class NodeNavigator {
             for (let i = 0; i < indexDifference; i++) { this.track.appendChild(this.track.firstElementChild); }
         }
         
-        // FIX: Update state using classes *after* animation completes.
         this._updateLayoutAndPositionElements(true, false);
 
         const newConnectionsNode = this.container.querySelector('.connections-node');
         if (newConnectionsNode) {
             const textSpan = newConnectionsNode.querySelector('span');
             if (textSpan) {
-                textSpan.innerHTML = 'View Related <span class="material-symbols-rounded" style="font-size: 18px; vertical-align: bottom;">keyboard_arrow_down</span>';
+                // FIX: Re-apply the simplified text.
+                textSpan.innerHTML = 'View Related';
             }
         }
 
@@ -174,7 +174,6 @@ export class NodeNavigator {
       }
     });
 
-    // FIX: Only animate the track position. State changes will happen instantly onComplete.
     tl.to(this.track, { x: `+=${animationDistance}`, duration: this.duration, ease: this.ease }, 0);
   }
 
