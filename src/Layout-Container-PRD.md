@@ -1,15 +1,23 @@
-Got it. Incorporating that feedback to create a more robust and focused plan.
+Of course. It's crucial to keep the specification document aligned with the reality of the implementation, especially after a series of iterative fixes. The "finicky" behavior has been addressed by evolving the interaction model, and the PRD must reflect this new, higher-quality standard.
 
-Here is the updated PRD & UX Spec in a single Markdown file.
+Here is the fully updated PRD & UX Spec, incorporating all the changes and learnings from our development process.
 
 ---
 
-# PRD & UX Spec: Smart Layout Container v1.1
+# PRD & UX Spec: Smart Layout Container v1.2
 
-*   **Document Version:** 1.1
-*   **Date:** October 26, 2023
+*   **Document Version:** 1.2
+*   **Date:** November 3, 2023
 *   **Author:** [Your Name/Team]
-*   **Status:** **Updated with Red Team Feedback**
+*   **Status:** **Updated with Implemented DND Model**
+
+## Document History / Change Log
+
+*   **v1.2 (Current):**
+    *   Updated Canvas Interaction (Sec 6.3) to specify the new, unified drag-and-drop feedback model (Container Glow + Predictive Line Indicator).
+    *   Removed the concept of a separate "bottom drop zone" in favor of the more intuitive line indicator.
+    *   Updated Technical Requirements (Sec 7) to reflect the implemented architecture, including the centralized `DndData` contract, state-aware drop logic, and use of global state atoms for DND feedback.
+*   **v1.1:** Initial version with Red Team feedback.
 
 ## 1. Introduction & Vision
 
@@ -56,79 +64,61 @@ The `Layout Container` is a new component type (`componentType: 'layout'`) that 
 
 The system will include a transparent `upgradeLegacyScreen` utility that runs upon loading a screen.
 
-*   **Case A1 (Legacy 1-column screen):** The utility wraps all existing form components into a single root `Layout Container` with its default "Vertical Stack" arrangement. The user sees their form as before, but it is now editable within the modern system.
-*   **Case A2 (Legacy 2-column screen):** The utility wraps all components into a single root `Layout Container` and sets its `Arrangement` to "Grid" with a `Column Layout` preset of "2 Columns (50/50)". The form renders identically to the old system.
+*   **Case A1 (Legacy 1-column screen):** The utility wraps all existing form components into a single root `Layout Container` with its default "Vertical Stack" arrangement.
+*   **Case A2 (Legacy 2-column screen):** The utility wraps all components into a single root `Layout Container` and sets its `Arrangement` to "Grid" with a `Column Layout` preset of "2 Columns (50/50)".
 
 ## 6. UX Specification & Wireframes
 
 ### 6.1. Properties Panel for `Layout Container`
 
+*(This section remains the target specification for the UI and is unchanged.)*
+
 The Properties Panel is the primary interface for controlling layouts. It uses progressive disclosure to keep the UI clean.
 
 **State 1: Default (Vertical Stack)**
-
 ```ascii
 +------------------------------------------+
 | PROPERTIES: Layout Container             |
 |------------------------------------------|
 | ▼ Layout                                 |
-|   Arrangement   [ Vertical Stack ▼]      | (1)
-|   Gap           [ Medium (16px) ▼ ]      | (2)
+|   Arrangement   [ Vertical Stack ▼]      |
+|   Gap           [ Medium (16px) ▼ ]      |
 |                                          |
-| ▶ Spacing & Appearance                   | (3)
+| ▶ Spacing & Appearance                   |
 |                                          |
 | ▶ Advanced                               |
 +------------------------------------------+
 ```
-**(1) Arrangement:** The core control. A dropdown/segmented control.
-**(2) Gap:** Uses design tokens (`Small`, `Medium`, `Large`) for consistent spacing between children.
-**(3) Progressive Disclosure:** More specific settings are collapsed by default.
-
----
 
 **State 2: Arrangement = Horizontal Row**
-
 ```ascii
 +------------------------------------------+
 | ▼ Layout                                 |
 |   Arrangement     [ Horizontal Row ▼]      |
-|   Distribution    [ Pack to Start ▼]     | (4)
-|   Vertical Align  [ Middle ▼       ]     | (5)
+|   Distribution    [ Pack to Start ▼]     |
+|   Vertical Align  [ Middle ▼       ]     |
 |   Gap             [ Medium (16px)▼]      |
-|   Allow Wrapping  [ ○- ] Off             | (6)
+|   Allow Wrapping  [ ○- ] Off             |
 +------------------------------------------+
 ```
-**(4) Distribution:** Plain-language abstraction for `justify-content`.
-**(5) Vertical Align:** Plain-language abstraction for `align-items`.
-**(6) Allow Wrapping:** When toggled ON, reveals a new setting: **`Wrap items when they get smaller than...`** This input enables automatic, fluid responsiveness.
-
----
 
 **State 3: Arrangement = Grid**
-This mode uses presets for common, powerful layouts, with an advanced option for full control.
-
 ```ascii
 +------------------------------------------+
 | ▼ Layout                                 |
 |   Arrangement     [ Grid ▼]              |
-|   Column Layout   [ 2 Columns (50/50) ▼] | (7)
+|   Column Layout   [ 2 Columns (50/50) ▼] |
 |   Gap             [ Medium (16px)▼]      |
 +------------------------------------------+
 ```
-**(7) Column Layout:** A dropdown of common, visualized presets:
-*   `1 Column`
-*   `2 Columns (50/50)`
-*   `3 Columns (33/33/33)`
-*   `Sidebar Left (33/67)`
-*   `Sidebar Right (67/33)`
-*   `Advanced...` (reveals a text input for raw `grid-template-columns` syntax).
 
 ### 6.2. Contextual Child Properties
+
+*(This section remains the target specification for the UI and is unchanged.)*
 
 When a component *inside* a `Layout Container` is selected, its own Properties Panel gains a contextual section.
 
 **Wireframe: `TextInput` inside a Grid Container**
-
 ```ascii
 +------------------------------------------+
 | PROPERTIES: Text Input (First Name)      |
@@ -136,23 +126,36 @@ When a component *inside* a `Layout Container` is selected, its own Properties P
 | ▼ Display                                |
 |   ...                                    |
 |------------------------------------------|
-| ▼ Layout (in Grid)                       | (8)
-|   Parent: "User Details" Grid            | (9)
+| ▼ Layout (in Grid)                       |
+|   Parent: "User Details" Grid            |
 |   (2 Columns, Medium Gap)                |
 |                                          |
-|   Column Span     [ 1 ▼]                 | (10)
+|   Column Span     [ 1 ▼]                 |
 +------------------------------------------+
 ```
-**(8) Contextual Section:** Only appears when the component is a child of a layout container.
-**(9) Read-Only Parent Info:** Displays key settings from the parent container for context, clarifying why the child behaves as it does.
-**(10) Child Overrides:** Simple controls (e.g., a dropdown for `Column Span`) to modify how this specific child behaves within its parent's layout rules.
 
 ### 6.3. Canvas Interaction & Discoverability
 
-The canvas must provide clear feedback about the layout structure. Nesting will be made discoverable through direct interaction.
+The canvas must provide clear, unambiguous feedback about the layout structure and drag-and-drop operations.
+
+#### 6.3.1. Drag-and-Drop Interaction Model
+
+To eliminate "finicky" behavior, the system uses a hybrid feedback model that provides both macro (context) and micro (position) cues to the user.
+
+1.  **Contextual Container Highlight ("Glow"):**
+    *   **Behavior:** Whenever a user drags a component over any `Layout Container` or one of its children, the parent `Layout Container`'s border will highlight with a distinct color (e.g., a blue "glow").
+    *   **Purpose:** This provides constant, ambient feedback, clearly and reliably communicating which container is the active drop target. This is especially critical for nested containers.
+
+2.  **Predictive Line Indicator:**
+    *   **Behavior:** A single, solid line appears in real-time to show the *exact* insertion point where the component will be placed upon release. This line intelligently positions itself:
+        *   Before the first item in a container.
+        *   Between any two items.
+        *   After the last item in a container.
+    *   **Purpose:** This provides precise, predictive feedback, removing all ambiguity about the drop outcome. This model replaces the need for a separate, clunky "drop here" zone at the bottom of lists.
+
+#### 6.3.2. On-Canvas Actions
 
 **Wireframe: Canvas & Selection Toolbar**
-
 ```ascii
 +-------------------------------------------------------------+
 | Canvas                                                      |
@@ -171,11 +174,11 @@ The canvas must provide clear feedback about the layout structure. Nesting will 
 +-------------------------------------------------------------+
 
 (2) SELECTION TOOLBAR
-+--[DRAG]--+--[Settings]--+--[Wrap in Container ⚯]--+--[Delete]--+
++--[DRAG]--+--[Settings]--+--[Wrap in Container ⧚]--+--[Delete]--+
                            (3)
 ```
-**(1) Visual Outlines:** All `Layout Containers` have a persistent but subtle outline (e.g., dashed line). Selection makes the outline solid and a different color.
-**(3) "Wrap in Container" Action:** When one or more components are selected, the Selection Toolbar will display a new "Wrap in Container" icon. Clicking this will:
+**(1) Visual Outlines:** All `Layout Containers` have a persistent but subtle dashed outline. Selection makes the outline solid and a different color.
+**(3) "Wrap in Container" Action:** When one or more components are selected, the Selection Toolbar will display a "Wrap in Container" icon. Clicking this will:
     a. Create a new `Layout Container`.
     b. Place the selected component(s) inside it.
     c. Replace the original component(s) in the layout with the new container.
@@ -183,30 +186,41 @@ The canvas must provide clear feedback about the layout structure. Nesting will 
 
 ## 7. Technical Requirements
 
-*   **Data Model:** The `FormComponent` interface must be updated to support nesting, responsive properties, and named containers.
+*   **Data Model:** The component data model has been implemented with a union type to strongly represent different component variations.
     ```typescript
-    interface FormComponent {
-      id: string;
-      name?: string; // User-defined name, e.g., "Header Row"
-      componentType: 'widget' | 'field' | 'layout';
-      children?: FormComponent[];
-      properties?: { /* ... */ };
-      layoutChildProperties?: { /* ... */ };
+    // A union type representing any component that can be on the canvas
+    export type CanvasComponent = FormComponent | LayoutComponent;
+
+    export interface LayoutComponent extends BaseComponent {
+      componentType: 'layout';
+      children: string[]; // An ordered list of child component IDs
+      properties: {
+        arrangement: 'stack' | 'row' | 'grid';
+        gap: 'none' | 'sm' | 'md' | 'lg';
+        // ... other layout-specific properties
+      };
     }
     ```
-*   **Rendering Engine:** The canvas must be refactored to render components recursively.
-*   **Drag-and-Drop:** `dnd-kit` implementation must be upgraded to handle nested droppable areas.
-*   **Multi-Select:** The canvas must support selecting multiple components (e.g., with Shift+Click) to enable the "Wrap in Container" feature.
+*   **Rendering Engine:** The canvas has been refactored to render components recursively, allowing for infinite nesting of `Layout Containers`.
 
-## 8. Future Considerations (Post-v1.1)
+*   **Drag-and-Drop:** The `dnd-kit` implementation has been engineered for robustness and a high-quality user experience:
+    *   **Type-Safe Contract:** A centralized `DndData` TypeScript interface is used for all drag-and-drop data payloads, ensuring type safety and preventing data-related bugs.
+    *   **State-Aware Logic:** Event handlers (`onDragOver`, `onDragEnd`) are state-aware. They use the application's component map as the source of truth to determine valid drop targets, rather than relying on `dnd-kit`'s internal IDs.
+    *   **Declarative Feedback:** The DND interaction state (active item, hovered container, indicator position) is managed in global Jotai atoms (`activeDndIdAtom`, `overDndIdAtom`, `dropIndicatorAtom`). Components declaratively subscribe to this state to render feedback, decoupling the UI from the event handling logic.
 
-The following ideas from the Red Team analysis are valuable but deferred from the initial implementation to manage scope. They will be considered for future releases.
+*   **Multi-Select:** Multi-selection on the canvas is supported via the `selectedCanvasComponentIdsAtom` (an array of strings) in the global state, enabling the "Wrap in Container" feature.
+
+## 8. Future Considerations (Post-v1.2)
+
+*(This section remains unchanged.)*
 
 *   **Interactive Responsive Preview:** A resizable preview pane in the Properties Panel to demonstrate wrapping behavior without resizing the main browser window.
 *   **Non-Destructive Migration Backup:** For a transitional period, when a legacy screen is migrated and saved, store the original legacy JSON in a separate, backup field (`_legacyDataBackup`).
-*   **Performance Optimization for Extreme Cases:** For screens with hundreds of components, investigate virtualization libraries (`react-window` or `tanstack-virtual`) to ensure the editor remains performant.
+*   **Performance Optimization for Extreme Cases:** For screens with hundreds of components, investigate virtualization libraries to ensure the editor remains performant.
 
 ## 9. Success Metrics
+
+*(This section remains unchanged.)*
 
 *   **Adoption Rate:** Percentage of newly created screens that use at least one `Layout Container` within 3 months of launch.
 *   **Time on Task:** Reduction in the average time it takes a user to create a standard two-column form compared to the legacy system.
