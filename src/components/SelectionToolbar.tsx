@@ -47,14 +47,15 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
       <div className={styles.toolbarDivider} />
 
       <div className={styles.toolbarActions} onMouseDown={(e) => e.stopPropagation()}>
-        <button className="btn btn-tertiary on-solid" aria-label="Component settings" onClick={handleSettingsClick}>
+        <button className="btn btn-tertiary on-solid" title="Settings" aria-label="Component settings" onClick={handleSettingsClick}>
           <span className="material-symbols-rounded">settings</span>
         </button>
-        <button className="btn btn-tertiary on-solid" onClick={handleWrapClick} aria-label="Wrap in container">
+        <button className="btn btn-tertiary on-solid" title="Wrap in container" onClick={handleWrapClick} aria-label="Wrap in container">
           <span className="material-symbols-rounded">fullscreen_exit</span>
         </button>
         <button 
           className="btn btn-tertiary on-solid"
+          title="Delete"
           onClick={handleDeleteClick} 
           aria-label="Delete component"
         >

@@ -157,3 +157,47 @@
   transform: rotate(45deg);
 }
 .node-navigator .nav-arrow.left { display: none; }
+
+/* --- COMPACT MODE STYLES --- */
+@media (max-width: 320px) {
+  /* 3. Make node buttons bigger (taller) */
+  .node-navigator #navigator-grid {
+    grid-template-rows: 54px 16px auto;
+  }
+  /* 4. Ensure all nodes have the same height */
+  .node-navigator #nodes-viewport,
+  .node-navigator .node-group {
+    height: 54px;
+  }
+  .node-navigator .node-button {
+    /* 2. Step down button font size */
+    font-size: 13px;
+    /* 3. Accommodate two lines of text */
+    white-space: normal;
+    padding: var(--spacing-1) var(--spacing-2);
+    line-height: 1.3;
+    /* 5. Vertical centering is handled by the existing flex properties */
+  }
+  .node-navigator .selected-node .node-button,
+  .node-navigator .selected-node .node-button:hover {
+    padding: calc(var(--spacing-1) - 1px) calc(var(--spacing-2) - 1px);
+  }
+
+  /* 1. Shorten static labels */
+  .node-navigator .static-label {
+    font-size: 0; /* Hide original text */
+  }
+  .node-navigator .static-label::before {
+    font-size: 11px;
+    color: var(--surface-fg-secondary);
+  }
+  .node-navigator .last-node-label::before {
+    content: 'Last';
+  }
+  .node-navigator .selected-node-label::before {
+    content: 'Selected';
+  }
+  .node-navigator .connected-node-label::before {
+    content: 'Related';
+  }
+}

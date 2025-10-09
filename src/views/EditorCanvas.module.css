@@ -36,13 +36,14 @@
 }
 
 .formComponentWrapper {
-  padding: var(--spacing-3);
+  /* FIX: Use a 2px transparent border to reserve space and prevent wobble on selection */
+  border: 2px solid transparent;
+  padding: calc(var(--spacing-3) - 1px);
   margin: 0;
-  border: 1px solid transparent;
   border-radius: var(--spacing-2);
   position: relative;
   touch-action: none;
-  transition: background-color 0.2s, border-color 0.2s, padding 0.2s, box-shadow 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .sortableItem {
@@ -58,25 +59,22 @@
 }
 
 .formComponentWrapper.selected {
-  border: 2px solid var(--control-border-selected);
+  border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
-  padding: calc(var(--spacing-3) - 1px);
 }
 
 /* --- Layout Container Styles --- */
 .layoutContainer {
-  border: 1px dashed var(--surface-border-tertiary);
-  border-radius: var(--spacing-2);
-  padding: var(--spacing-2);
+  /* FIX: Use a 2px dashed border to reserve space and prevent wobble on selection */
+  border: 2px dashed var(--surface-border-tertiary);
+  padding: calc(var(--spacing-2) - 1px);
   min-height: 80px;
-  /* The display property is now set dynamically via inline styles */
-  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, border-style 0.2s;
 }
 
 .layoutContainer.selected {
   border-style: solid;
   border-width: 2px;
-  padding: calc(var(--spacing-2) - 1px);
 }
 
 .layoutContainer:hover:not(.selected) {

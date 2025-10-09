@@ -42,6 +42,11 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
 
+    // FIX: Disable CSS transition during drag for smooth, responsive resizing.
+    if (panelRef.current) {
+      panelRef.current.style.transition = 'none';
+    }
+
     const startX = e.clientX;
     const startWidth = panelRef.current?.offsetWidth ?? width;
 
@@ -70,6 +75,12 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       isResizing.current = false;
       document.body.style.cursor = 'default';
       document.body.style.userSelect = 'auto';
+
+      // FIX: Restore CSS transition after drag for smooth programmatic animations.
+      if (panelRef.current) {
+        panelRef.current.style.transition = 'width 0.3s ease-out';
+      }
+
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
       
