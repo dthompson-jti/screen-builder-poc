@@ -40,7 +40,7 @@
   border-radius: var(--spacing-2);
   position: relative;
   touch-action: none;
-  transition: background-color 0.2s, border-color 0.2s, padding 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, padding 0.2s, box-shadow 0.2s;
 }
 
 .sortableItem {
@@ -49,19 +49,6 @@
 
 .sortableItem.isDragging {
   opacity: 0;
-}
-
-/* FIX: Add styles for the visual drop indicator */
-.sortableItem.showDropIndicator::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background-color: var(--control-border-primary);
-  border-radius: 2px;
-  z-index: 1;
 }
 
 .formComponentWrapper:not(.layoutContainer):hover:not(.selected) {
@@ -81,7 +68,7 @@
   padding: var(--spacing-2);
   min-height: 80px;
   display: flex;
-  transition: border-color 0.2s, background-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
 .layoutContainer.selected {
@@ -95,6 +82,13 @@
   border-color: var(--surface-border-primary);
 }
 
+/* FIX: Use a new class for the contextual "glow" feedback */
+.layoutContainer.is-over-container {
+  background-color: var(--primitives-theme-25);
+  border-color: var(--primitives-theme-300);
+  box-shadow: inset 0 0 0 2px var(--primitives-theme-200);
+}
+
 .layoutContainerEmpty {
   align-items: center;
   justify-content: center;
@@ -102,8 +96,20 @@
   font-size: 0.9em;
 }
 
-/* Flexbox properties applied via inline styles from component */
 .layoutContainerContent {
   width: 100%;
   height: 100%;
+  position: relative; /* Positioning context for the drop indicator */
+}
+
+/* FIX: Add styles for the new, unified drop indicator line */
+.dropIndicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--control-border-primary);
+  border-radius: 2px;
+  z-index: 1;
+  pointer-events: none; /* Make sure it doesn't interfere with drop events */
 }

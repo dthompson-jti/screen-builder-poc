@@ -41,10 +41,12 @@ export const isScreenTypePopoverOpenAtom = atom(false);
 // The first ID in the array is considered the "primary" selection for the properties panel.
 export const selectedCanvasComponentIdsAtom = atom<string[]>([]);
 
-// FIX: Add atoms to track the global state of a drag-and-drop operation.
-// This allows any component to react to a drag without prop drilling.
+// Atoms to track the global state of a drag-and-drop operation.
 export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
 export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
+
+// FIX: Add a dedicated atom to store the calculated position of the drop indicator line.
+export const dropIndicatorAtom = atom<{ parentId: string; index: number } | null>(null);
 
 
 // =================================================================

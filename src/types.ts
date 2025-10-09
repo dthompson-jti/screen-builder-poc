@@ -78,16 +78,19 @@ export interface ComponentNode {
   connections: number;
 }
 
-// FIX: Add a new, central interface for all dnd-kit data payloads.
+// Add a new, central interface for all dnd-kit data payloads.
 // This provides type safety when reading data back from drag events.
 export interface DndData {
   id: string;
   name: string;
-  type: 'widget' | 'field' | 'layout' | 'container';
+  type: 'widget' | 'field' | 'layout' | 'container' | 'container-drop-zone';
   icon?: string;
   isNew?: boolean;
   origin?: 'data' | 'general';
   childrenCount?: number;
+  // FIX: Add properties specific to the new bottom drop zone
+  parentId?: string;
+  index?: number;
   // This property is added by dnd-kit's sortable context
   sortable?: {
     containerId: string;

@@ -1,9 +1,18 @@
 // src/data/useCanvasDnd.ts
 import { useSetAtom, useAtomValue } from 'jotai';
-import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over } from '@dnd-kit/core';
-import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom } from './atoms';
+import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect } from '@dnd-kit/core';
+import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom, dropIndicatorAtom } from './atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
-import { DndData, FormComponent, LayoutComponent } from '../types';
+import { DndData, FormComponent, LayoutComponent, CanvasComponent } from '../types';
+
+// Helper to determine which container is being hovered over
+const findHoveredContainer = (overId: string, allComponents: Record<string, CanvasComponent>): string | null => {
+  const overComponent = allComponents[overId];
+  if (!overComponent) return null;
+  if (overComponent.componentType === 'layout') return overId;
+  if (overComponent.parentId) return overComponent.parentId;
+  return null;
+};
 
 export const useCanvasDnd = () => {
   const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
@@ -11,6 +20,7 @@ export const useCanvasDnd = () => {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const setActiveId = useSetAtom(activeDndIdAtom);
   const setOverId = useSetAtom(overDndIdAtom);
+  const setDropIndicator = useSetAtom(dropIndicatorAtom);
   
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
@@ -18,8 +28,26 @@ export const useCanvasDnd = () => {
   };
   
   const handleDragOver = (event: DragOverEvent) => {
-    const { over } = event;
-    setOverId(over ? over.id : null);
+    // FIX: Destructure 'active' from the event and use 'active.rect' instead of 'draggingRect'
+    const { active, over } = event;
+    const draggingRect = active.rect.current.translated;
+
+    if (!over || !draggingRect) {
+      setOverId(null);
+      setDropIndicator(null);
+      return;
+    }
+
+    const overId = over.id as string;
+    const hoveredContainerId = findHoveredContainer(overId, allComponents);
+    setOverId(hoveredContainerId);
+
+    const dropTarget = getDropTarget(over, draggingRect, allComponents);
+    if (dropTarget) {
+      setDropIndicator(dropTarget);
+    } else {
+      setDropIndicator(null);
+    }
   };
   
   const handleDragEnd = (event: DragEndEvent) => {
@@ -30,31 +58,33 @@ export const useCanvasDnd = () => {
       return;
     }
     
-    if (active.id === over.id) {
+    const draggingRect = active.rect.current.translated;
+    if (!draggingRect) {
+        resetState();
+        return;
+    }
+
+    const finalDropTarget = getDropTarget(over, draggingRect, allComponents);
+    
+    if (!finalDropTarget) {
       resetState();
       return;
     }
-    
+
     const activeData = active.data.current as DndData;
     
     if (activeData?.isNew) {
-      handleAddNewComponent(activeData, over);
+      handleAddNewComponent(activeData, finalDropTarget);
     } else {
-      handleMoveComponent(active, over);
+      handleMoveComponent(active, finalDropTarget);
     }
     
     resetState();
   };
   
-  const handleAddNewComponent = (activeData: DndData, over: Over) => {
+  const handleAddNewComponent = (activeData: DndData, dropTarget: { parentId: string, index: number }) => {
     const { name, type } = activeData;
-    
-    const { parentId, index } = getDropTarget(over);
-
-    if (!parentId) {
-      console.error('Could not determine a valid parent ID for the drop operation.');
-      return;
-    }
+    const { parentId, index } = dropTarget;
     
     if (type === 'layout') {
       const newComponent: Omit<LayoutComponent, 'id' | 'parentId'> = {
@@ -82,11 +112,10 @@ export const useCanvasDnd = () => {
     }
   };
   
-  const handleMoveComponent = (active: Active, over: Over) => {
+  const handleMoveComponent = (active: Active, dropTarget: { parentId: string, index: number }) => {
     const activeId = active.id as string;
-    const { parentId: newParentId, index: newIndex } = getDropTarget(over);
+    const { parentId: newParentId, index: newIndex } = dropTarget;
     
-    // For moves, the active item is one of our components, so its parent is known
     const oldParentId = allComponents[activeId]?.parentId;
     if (!oldParentId) return;
 
@@ -96,13 +125,14 @@ export const useCanvasDnd = () => {
     const oldIndex = oldParent.children.indexOf(activeId);
 
     if (oldParentId === newParentId) {
-      if (typeof oldIndex === 'number' && oldIndex !== newIndex) {
+      const adjustedNewIndex = oldIndex < newIndex ? newIndex -1 : newIndex;
+      if (oldIndex !== adjustedNewIndex) {
         commitAction({
-          action: { type: 'COMPONENT_REORDER', payload: { componentId: activeId, parentId: oldParentId, oldIndex, newIndex } },
+          action: { type: 'COMPONENT_REORDER', payload: { componentId: activeId, parentId: oldParentId, oldIndex, newIndex: adjustedNewIndex } },
           message: `Reorder '${(active.data.current as DndData)?.name}'`
         });
       }
-    } else if (oldParentId && newParentId) {
+    } else {
       commitAction({
         action: { type: 'COMPONENT_MOVE', payload: { componentId: activeId, oldParentId, newParentId, newIndex } },
         message: `Move '${(active.data.current as DndData)?.name}'`
@@ -110,38 +140,39 @@ export const useCanvasDnd = () => {
     }
   };
 
-  const getDropTarget = (over: Over): { parentId: string; index: number } => {
+  const getDropTarget = (over: Over, draggingRect: ClientRect, allComponents: Record<string, CanvasComponent>): { parentId: string; index: number } | null => {
     const overId = over.id as string;
     const overComponent = allComponents[overId];
-
-    if (!overComponent) {
-      console.warn(`Could not find component for overId: ${overId}. Defaulting to root.`);
-      return { parentId: 'root', index: 0 };
-    }
-
-    // Case 1: Dropping on a layout container.
-    // The new item should be added to the end of this container.
+  
+    if (!overComponent) return null;
+  
     if (overComponent.componentType === 'layout') {
       return { parentId: overId, index: overComponent.children.length };
     }
-    
-    // Case 2: Dropping on a regular component (widget/field).
-    // The new item should be placed in the *same container* as the item being
-    // dropped on, right at its index.
+  
     const parent = allComponents[overComponent.parentId];
     if (parent && parent.componentType === 'layout') {
+      const overNodeRect = over.rect;
+      const overNodeMiddleY = overNodeRect.top + overNodeRect.height / 2;
       const indexInParent = parent.children.indexOf(overId);
-      return { parentId: overComponent.parentId, index: indexInParent };
-    }
+  
+      let finalIndex;
+      if (draggingRect.top + draggingRect.height / 2 < overNodeMiddleY) {
+        finalIndex = indexInParent;
+      } else {
+        finalIndex = indexInParent + 1;
+      }
 
-    // Fallback: This should rarely happen but provides a safe default.
-    console.warn('Could not determine drop target parent. Defaulting to root.');
-    return { parentId: 'root', index: 0 };
+      return { parentId: overComponent.parentId, index: finalIndex };
+    }
+  
+    return null;
   };
   
   const resetState = () => {
     setActiveId(null);
     setOverId(null);
+    setDropIndicator(null);
   };
   
   return {

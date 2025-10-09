@@ -1,10 +1,10 @@
 // src/views/EditorCanvas.tsx
-import React from 'react';
+import React, { useRef, useLayoutEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useDroppable, DraggableSyntheticListeners } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom } from '../data/atoms';
+import { selectedCanvasComponentIdsAtom, overDndIdAtom, dropIndicatorAtom } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
@@ -39,9 +39,6 @@ const CanvasNode = ({ componentId }: { componentId: string }) => {
 
 // --- Sortable Item Wrapper ---
 const SortableItem = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
-  const activeId = useAtomValue(activeDndIdAtom);
-  const overId = useAtomValue(overDndIdAtom);
-
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
     data: { 
@@ -57,29 +54,29 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
     transition,
   };
 
-  const isOver = overId === component.id;
-  const isDraggingItem = !!activeId && !String(activeId).startsWith('draggable-');
-
-  // Show drop indicator if we are dragging over this item,
-  // but it's not the active item itself.
-  const showDropIndicator = isOver && activeId !== component.id;
-
-  // When moving an existing item, prevent it from showing an indicator over itself.
-  const finalClassName = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''} ${showDropIndicator && !(isDraggingItem && isOver) ? styles.showDropIndicator : ''}`;
-
+  const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
-    <div ref={setNodeRef} style={style} className={finalClassName} {...attributes}>
+    <div ref={setNodeRef} style={style} className={className} {...attributes}>
       {React.cloneElement(children as React.ReactElement<ComponentProps>, { dndListeners: listeners })}
     </div>
   );
+};
+
+// --- New Drop Indicator Line ---
+const DropIndicator = ({ top }: { top: number }) => {
+  return <div className={styles.dropIndicator} style={{ top: `${top}px` }} />;
 };
 
 // --- Layout Container Component ---
 const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
+  const overId = useAtomValue(overDndIdAtom);
+  const dropIndicator = useAtomValue(dropIndicatorAtom);
   const isSelected = selectedIds.includes(component.id);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [indicatorTop, setIndicatorTop] = useState<number | null>(null);
 
   const { setNodeRef } = useDroppable({
     id: component.id,
@@ -90,6 +87,29 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       childrenCount: component.children.length 
     } satisfies DndData
   });
+
+  // Calculate the vertical position for the drop indicator line
+  useLayoutEffect(() => {
+    if (dropIndicator?.parentId === component.id && contentRef.current) {
+      const children = Array.from(contentRef.current.children).filter(
+        (el) => el.classList.contains(styles.sortableItem)
+      ) as HTMLElement[];
+      
+      if (dropIndicator.index === 0) {
+        setIndicatorTop(-2); // Position at the very top
+      } else if (dropIndicator.index > 0 && children[dropIndicator.index - 1]) {
+        const prevChild = children[dropIndicator.index - 1];
+        setIndicatorTop(prevChild.offsetTop + prevChild.offsetHeight - 2);
+      } else {
+        // Default to the bottom if index is out of bounds or list is empty
+        const lastChild = children[children.length - 1];
+        setIndicatorTop(lastChild ? lastChild.offsetTop + lastChild.offsetHeight + 4 : -2);
+      }
+    } else {
+      setIndicatorTop(null);
+    }
+  }, [dropIndicator, component.id]);
+
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -108,21 +128,22 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     setSelectedIds([]);
   };
   
-  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${component.children.length === 0 ? styles.layoutContainerEmpty : ''}`;
+  const isOverContainer = overId === component.id;
+  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${component.children.length === 0 ? styles.layoutContainerEmpty : ''} ${isOverContainer ? styles['is-over-container'] : ''}`;
 
   return (
     <div className={containerClasses} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
       <div ref={setNodeRef} className={styles.layoutContainerContent}>
-        <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
-          {component.children.length > 0 ? (
-            component.children.map(childId => (
+        <div ref={contentRef}>
+          <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
+            {component.children.map(childId => (
               <CanvasNode key={childId} componentId={childId} />
-            ))
-          ) : (
-            <span>Drag components here</span>
-          )}
-        </SortableContext>
+            ))}
+          </SortableContext>
+        </div>
+        {indicatorTop !== null && <DropIndicator top={indicatorTop} />}
+        {component.children.length === 0 && !dropIndicator && <span>Drag components here</span>}
       </div>
     </div>
   );
