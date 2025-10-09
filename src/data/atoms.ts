@@ -1,6 +1,6 @@
 // src/data/atoms.ts
 import { atom } from 'jotai';
-import { UniqueIdentifier } from '@dnd-kit/core';
+import { UniqueIdentifier, ClientRect } from '@dnd-kit/core';
 import { componentListData } from './componentBrowserMock';
 import { BoundData, ComponentGroup, DraggableComponent } from '../types';
 
@@ -46,7 +46,7 @@ export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
 export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
 
 // FIX: Add a dedicated atom to store the calculated position of the drop indicator line.
-export const dropIndicatorAtom = atom<{ parentId: string; index: number } | null>(null);
+export const dropPlaceholderAtom = atom<{ parentId: string; index: number; rect: ClientRect | null; isGrid: boolean; } | null>(null);
 
 
 // =================================================================

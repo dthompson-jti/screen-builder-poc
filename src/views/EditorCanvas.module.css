@@ -99,18 +99,25 @@
   display: flex; /* Always flex for centering the placeholder text */
 }
 
+/* NEW: Style for empty container when a drag is active anywhere */
+.layoutContainerEmpty.drag-active:not(.is-over-container) {
+  background-color: var(--surface-bg-secondary_subtle);
+  border-style: solid;
+}
+.layoutContainerEmpty.drag-active .emptyText {
+  display: none;
+}
+
+
 .layoutContainerContent {
   width: 100%;
   height: 100%;
   position: relative; /* Positioning context for the drop indicator */
 }
 
-/* FIX: Add styles for the new, unified drop indicator line */
-.dropIndicator {
+/* FIX: Add styles for the new, unified drop placeholder */
+.dropPlaceholder {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 4px;
   background-color: var(--control-border-primary);
   border-radius: 2px;
   z-index: 1;

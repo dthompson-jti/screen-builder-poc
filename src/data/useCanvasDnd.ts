@@ -1,9 +1,8 @@
 // src/data/useCanvasDnd.ts
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect } from '@dnd-kit/core';
-import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom, dropIndicatorAtom } from './atoms';
+import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom } from './atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
-// FIX: Remove unused type imports to resolve linting errors.
 import { DndData, CanvasComponent } from '../types';
 
 const findHoveredContainer = (overId: string, allComponents: Record<string, CanvasComponent>): string | null => {
@@ -20,7 +19,7 @@ export const useCanvasDnd = () => {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const setActiveId = useSetAtom(activeDndIdAtom);
   const setOverId = useSetAtom(overDndIdAtom);
-  const setDropIndicator = useSetAtom(dropIndicatorAtom);
+  const setDropPlaceholder = useSetAtom(dropPlaceholderAtom);
   
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
@@ -32,7 +31,7 @@ export const useCanvasDnd = () => {
     const draggingRect = active.rect.current.translated;
     if (!over || !draggingRect) {
       setOverId(null);
-      setDropIndicator(null);
+      setDropPlaceholder(null);
       return;
     }
     const overId = over.id as string;
@@ -40,9 +39,9 @@ export const useCanvasDnd = () => {
     setOverId(hoveredContainerId);
     const dropTarget = getDropTarget(over, draggingRect, allComponents);
     if (dropTarget) {
-      setDropIndicator(dropTarget);
+      setDropPlaceholder(dropTarget);
     } else {
-      setDropIndicator(null);
+      setDropPlaceholder(null);
     }
   };
   
@@ -114,33 +113,67 @@ export const useCanvasDnd = () => {
     }
   };
 
-  const getDropTarget = (over: Over, draggingRect: ClientRect, allComponents: Record<string, CanvasComponent>): { parentId: string; index: number } | null => {
+  const getDropTarget = (
+    over: Over, 
+    draggingRect: ClientRect, 
+    allComponents: Record<string, CanvasComponent>
+  ): { parentId: string; index: number; rect: ClientRect | null; isGrid: boolean } | null => {
     const overId = over.id as string;
     const overComponent = allComponents[overId];
     if (!overComponent) return null;
-    if (overComponent.componentType === 'layout') {
-      return { parentId: overId, index: overComponent.children.length };
+
+    // Case 1: Dropping directly on an empty layout container
+    if (overComponent.componentType === 'layout' && overComponent.children.length === 0) {
+      // For an empty container, the placeholder rect is calculated in the component itself
+      return { parentId: overId, index: 0, rect: null, isGrid: overComponent.properties.arrangement === 'grid' };
     }
-    const parent = allComponents[overComponent.parentId];
-    if (parent && parent.componentType === 'layout') {
-      const overNodeRect = over.rect;
-      const overNodeMiddleY = overNodeRect.top + overNodeRect.height / 2;
-      const indexInParent = parent.children.indexOf(overId);
-      let finalIndex;
-      if (draggingRect.top + draggingRect.height / 2 < overNodeMiddleY) {
-        finalIndex = indexInParent;
-      } else {
-        finalIndex = indexInParent + 1;
-      }
-      return { parentId: overComponent.parentId, index: finalIndex };
+
+    // Case 2: Dropping on a component or a populated container
+    const parentId = overComponent.componentType === 'layout' ? overId : overComponent.parentId;
+    const parent = allComponents[parentId];
+    if (!parent || parent.componentType !== 'layout') return null;
+
+    const isGrid = parent.properties.arrangement === 'grid';
+    const children = parent.children;
+    const overRect = over.rect;
+    
+    // If dropping on the container itself (not a child), append to the end
+    if (overId === parentId) {
+        const lastChildId = children[children.length - 1];
+        const lastChildNode = lastChildId ? document.querySelector(`[data-id="${lastChildId}"]`) : null;
+        const lastChildRect = lastChildNode?.getBoundingClientRect();
+
+        const rect = lastChildRect ? {
+            ...lastChildRect,
+            top: lastChildRect.bottom,
+            height: 4,
+        } : null;
+
+        return { parentId, index: children.length, rect, isGrid };
     }
-    return null;
+
+    const indexInParent = children.indexOf(overId);
+    
+    // STABILIZATION FIX: Use consistent top/bottom logic for all container types for now.
+    // This provides a stable horizontal line indicator and fixes the buggy grid indicator.
+    const isAfter = draggingRect.top > overRect.top + overRect.height / 2;
+    const finalIndex = isAfter ? indexInParent + 1 : indexInParent;
+    const placeholderRect: ClientRect = {
+        top: isAfter ? overRect.bottom : overRect.top,
+        left: overRect.left,
+        width: overRect.width,
+        height: 4, // A consistent 4px line
+        right: overRect.right,
+        bottom: isAfter ? overRect.bottom + 4 : overRect.top + 4,
+    };
+
+    return { parentId, index: finalIndex, rect: placeholderRect, isGrid };
   };
   
   const resetState = () => {
     setActiveId(null);
     setOverId(null);
-    setDropIndicator(null);
+    setDropPlaceholder(null);
   };
   
   return {

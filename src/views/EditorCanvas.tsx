@@ -1,10 +1,10 @@
 // src/views/EditorCanvas.tsx
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useDroppable, DraggableSyntheticListeners } from '@dnd-kit/core';
+import { useDroppable, DraggableSyntheticListeners, ClientRect } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { selectedCanvasComponentIdsAtom, overDndIdAtom, dropIndicatorAtom } from '../data/atoms';
+import { selectedCanvasComponentIdsAtom, overDndIdAtom, dropPlaceholderAtom, activeDndIdAtom } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
@@ -79,6 +79,12 @@ const CanvasNode = ({ componentId }: { componentId: string }) => {
 
 // --- Sortable Item Wrapper ---
 const SortableItem = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
+  const rootId = useAtomValue(rootComponentIdAtom);
+  const isRoot = component.id === rootId;
+  const isEmptyContainer = component.componentType === 'layout' && component.children.length === 0;
+  
+  const isDisabled = isEmptyContainer || isRoot;
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
     data: { 
@@ -86,13 +92,18 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
       name: component.name,
       type: component.componentType,
       childrenCount: component.componentType === 'layout' ? component.children.length : undefined,
-    } satisfies DndData
+    } satisfies DndData,
+    disabled: isDisabled,
   });
   
   const sortableStyle: React.CSSProperties = { 
     transform: CSS.Transform.toString(transform), 
     transition,
   };
+
+  if (isDisabled) {
+    sortableStyle.transform = 'none';
+  }
 
   // Add grid span style if applicable
   if (component.contextualLayout?.columnSpan) {
@@ -102,26 +113,36 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
   const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
-    <div ref={setNodeRef} style={sortableStyle} className={className} {...attributes}>
+    <div ref={setNodeRef} style={sortableStyle} className={className} {...attributes} data-id={component.id}>
       {React.cloneElement(children as React.ReactElement<ComponentProps>, { dndListeners: listeners })}
     </div>
   );
 };
 
-// --- New Drop Indicator Line ---
-const DropIndicator = ({ top }: { top: number }) => {
-  return <div className={styles.dropIndicator} style={{ top: `${top}px` }} />;
+// --- New Drop Placeholder (Line or Block) ---
+const DropPlaceholder = ({ rect, parentRect }: { rect: ClientRect, parentRect: DOMRect }) => {
+  const placeholderStyle: React.CSSProperties = {
+    top: `${rect.top - parentRect.top - 2}px`,
+    left: `${rect.left - parentRect.left}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+  };
+  return <div className={styles.dropPlaceholder} style={placeholderStyle} />;
 };
+
 
 // --- Layout Container Component ---
 const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const overId = useAtomValue(overDndIdAtom);
-  const dropIndicator = useAtomValue(dropIndicatorAtom);
+  const dropPlaceholder = useAtomValue(dropPlaceholderAtom);
+  const activeDndId = useAtomValue(activeDndIdAtom);
+  const rootId = useAtomValue(rootComponentIdAtom);
+
+  const isRoot = component.id === rootId;
   const isSelected = selectedIds.includes(component.id);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [indicatorTop, setIndicatorTop] = useState<number | null>(null);
 
   const { setNodeRef } = useDroppable({
     id: component.id,
@@ -132,28 +153,6 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       childrenCount: component.children.length 
     } satisfies DndData
   });
-
-  // Calculate the vertical position for the drop indicator line
-  useLayoutEffect(() => {
-    if (dropIndicator?.parentId === component.id && contentRef.current) {
-      const children = Array.from(contentRef.current.children).filter(
-        (el) => el.classList.contains(styles.sortableItem)
-      ) as HTMLElement[];
-      
-      if (dropIndicator.index === 0) {
-        setIndicatorTop(-2); // Position at the very top
-      } else if (dropIndicator.index > 0 && children[dropIndicator.index - 1]) {
-        const prevChild = children[dropIndicator.index - 1];
-        setIndicatorTop(prevChild.offsetTop + prevChild.offsetHeight - 2);
-      } else {
-        // Default to the bottom if index is out of bounds or list is empty
-        const lastChild = children[children.length - 1];
-        setIndicatorTop(lastChild ? lastChild.offsetTop + lastChild.offsetHeight + 4 : -2);
-      }
-    } else {
-      setIndicatorTop(null);
-    }
-  }, [dropIndicator, component.id]);
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -174,7 +173,16 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   
   const isOverContainer = overId === component.id;
   const isEmpty = component.children.length === 0;
-  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${isEmpty ? styles.layoutContainerEmpty : ''} ${isOverContainer ? styles['is-over-container'] : ''}`;
+  const isDragActive = !!activeDndId;
+  
+  const containerClasses = [
+    styles.formComponentWrapper,
+    styles.layoutContainer,
+    isSelected ? styles.selected : '',
+    isEmpty ? styles.layoutContainerEmpty : '',
+    isOverContainer ? styles['is-over-container'] : '',
+    isDragActive ? styles['drag-active'] : '',
+  ].filter(Boolean).join(' ');
 
   // --- NEW: Dynamic Style Calculation ---
   const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
@@ -201,9 +209,13 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     contentStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
   }
 
+  const parentRect = contentRef.current?.getBoundingClientRect();
+  const showPlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.rect && parentRect;
+
   return (
     <div className={containerClasses} onClick={handleSelect}>
-      {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
+      {/* FIX: Do not render the toolbar for the root component */}
+      {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
       <div ref={setNodeRef} className={styles.layoutContainerContent}>
         {!isEmpty && (
           <div ref={contentRef} style={contentStyle}>
@@ -214,8 +226,8 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
             </SortableContext>
           </div>
         )}
-        {indicatorTop !== null && <DropIndicator top={indicatorTop} />}
-        {isEmpty && !dropIndicator && <span>Drag components here</span>}
+        {showPlaceholder && <DropPlaceholder rect={dropPlaceholder.rect!} parentRect={parentRect} />}
+        {isEmpty && !isDragActive && <span className={styles.emptyText}>Drag components here</span>}
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import { TextInputPreview } from './components/TextInputPreview';
 import { PropertiesPanel } from './views/PropertiesPanel';
 import { MainToolbar } from './views/MainToolbar';
 import { BrowserItemPreview } from './components/BrowserItemPreview';
+import { ContainerPreview } from './components/ContainerPreview';
 import { PlaceholderPanel } from './components/PlaceholderPanel';
 import { FullScreenPlaceholder } from './components/FullScreenPlaceholder';
 import { DataBindingModal } from './components/DataBindingModal';
@@ -57,7 +58,6 @@ function App() {
   const activeDndId = useAtomValue(activeDndIdAtom);
   const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
 
-  // FIX: Restore the useCanvasDnd hook call to App.tsx, where the DndContext lives.
   const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
   const { undo, redo } = useUndoRedo();
 
@@ -112,6 +112,11 @@ function App() {
     } else {
       const activeComponent = allComponents[activeDndItem.id as string];
       if (!activeComponent) return null;
+      
+      if (activeComponent.componentType === 'layout') {
+        return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
+      }
+      
       return <div style={{ pointerEvents: 'none' }}><TextInputPreview label={activeComponent.name} /></div>;
     }
   };
@@ -180,7 +185,7 @@ function App() {
           handleDragEnd(e);
           setActiveDndItem(null);
         }} 
-        autoScroll={false}
+        autoScroll={true}
         collisionDetection={rectIntersection}
       >
         <AppHeader />

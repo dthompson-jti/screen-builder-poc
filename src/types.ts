@@ -33,6 +33,10 @@ export interface FormComponent extends BaseComponent {
 
 export type CanvasComponent = LayoutComponent | FormComponent;
 
+export type NormalizedCanvasComponents = {
+  [id: string]: CanvasComponent;
+};
+
 export interface BoundData {
   nodeId: string;
   nodeName: string;
