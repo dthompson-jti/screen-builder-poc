@@ -8,6 +8,7 @@ export interface BaseComponent {
   componentType: 'layout' | 'field' | 'widget';
   contextualLayout?: {
     columnSpan?: number;
+    preventShrinking?: boolean;
   }
 }
 
@@ -24,12 +25,11 @@ export interface LayoutComponent extends BaseComponent {
   componentType: 'layout';
   children: string[];
   properties: {
-    arrangement: 'stack' | 'row' | 'grid';
+    arrangement: 'stack' | 'row' | 'wrap' | 'grid';
     gap: 'none' | 'sm' | 'md' | 'lg';
     distribution: 'start' | 'center' | 'end' | 'space-between';
     verticalAlign: 'start' | 'center' | 'end' | 'stretch';
-    allowWrapping: boolean;
-    columnLayout: 'auto' | '2-col-50-50' | '3-col-33' | '2-col-split-left';
+    columnLayout: 'auto' | '2-col-50-50' | '3-col-33' | '2-col-split-left' | number;
     appearance?: AppearanceProperties;
   };
 }

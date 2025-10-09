@@ -1,21 +1,23 @@
 /* src/components/panel.module.css */
-/* FIX: Renamed componentBrowserContainer to navigatorQueryContainer for clarity
-   and added the necessary CSS properties to establish a size-based container query. */
-.navigatorQueryContainer {
+.componentBrowserContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background-color: var(--surface-bg-primary);
+  background-color: var(--surface-bg-secondary); /* Container has subtle gray bg */
   font-family: var(--font-family-sans);
   border-right: 1px solid var(--surface-border-secondary);
-  /* These two properties establish the container for the query in navigator.css */
-  container-type: inline-size;
-  container-name: navigator-panel;
 }
 
-.navigatorQueryContainer.insideModal {
+.componentBrowserContainer.insideModal {
   border-right: none;
+}
+
+/* Header container for Nav, Breadcrumbs, Search */
+.panelHeaderSection {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--surface-border-secondary);
+  background-color: var(--surface-bg-primary); /* Header elements on white bg */
 }
 
 .componentBrowserHeader {
@@ -47,7 +49,6 @@
     padding: var(--spacing-2) var(--spacing-4);
     border-bottom: 1px solid var(--surface-border-secondary);
     flex-shrink: 0;
-    background-color: var(--surface-bg-primary);
 }
 
 .breadcrumb {
@@ -85,7 +86,13 @@
 }
 
 /* --- Component List Styles --- */
-.componentListContainer { flex: 1; min-height: 0; overflow-y: auto; }
+/* This is now the flexible, scrolling content area */
+.componentListContainer { 
+  flex: 1; 
+  min-height: 0; 
+  overflow-y: auto; 
+  background-color: var(--surface-bg-primary); /* Content area has white bg */
+}
 .componentList, .componentList ul { list-style: none; margin: 0; padding: 0; }
 .componentList > li { padding: var(--spacing-2) var(--spacing-4); }
 .listGroupTitle {
@@ -127,6 +134,5 @@
 /* --- Search Container (Layout Only) --- */
 .searchContainer {
   padding: var(--spacing-2) var(--spacing-4);
-  border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
 }

@@ -29,7 +29,7 @@ const swatchOptions: { id: AppearanceType, label: string }[] = [
     { id: 'error', label: 'Error' },
 ];
 
-// --- NEW: Style Swatch Component ---
+// --- Style Swatch Component ---
 const StyleSwatch = ({ type, isSelected, onClick }: { type: AppearanceType, isSelected: boolean, onClick: () => void }) => {
   return (
     <button 
@@ -103,38 +103,60 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
 };
 
 
-// --- Contextual Panel for Children of Grids ---
+// --- Contextual Panel for Children ---
 const ContextualLayoutProperties = ({ component }: { component: FormComponent | LayoutComponent }) => {
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const parent = allComponents[component.parentId];
 
-  if (!parent || parent.componentType !== 'layout' || parent.properties.arrangement !== 'grid') {
+  if (!parent || parent.componentType !== 'layout') {
     return null;
   }
-
+  
+  const isParentGrid = parent.properties.arrangement === 'grid';
+  const isParentWrappingRow = parent.properties.arrangement === 'wrap';
+  
   const handleSpanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSpan = parseInt(e.target.value, 10);
     commitAction({
-      action: {
-        type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT',
-        payload: { componentId: component.id, newLayout: { columnSpan: newSpan } }
-      },
+      action: { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT', payload: { componentId: component.id, newLayout: { columnSpan: newSpan } }},
       message: `Update column span for '${component.name}'`
     });
   };
 
+  const handleShrinkToggle = () => {
+    commitAction({
+      action: { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT', payload: { componentId: component.id, newLayout: { preventShrinking: !component.contextualLayout?.preventShrinking } }},
+      message: `Toggle shrink for '${component.name}'`
+    });
+  };
+
+  if (!isParentGrid && !isParentWrappingRow) return null;
+
   return (
     <div className={styles.propSection}>
-      <h4>Layout (in Grid)</h4>
-      <div className={styles.propItem}>
-        <label>Column Span</label>
-        <select value={component.contextualLayout?.columnSpan || 1} onChange={handleSpanChange}>
-          <option value={1}>1 Column</option>
-          <option value={2}>2 Columns</option>
-          <option value={3}>3 Columns</option>
-        </select>
-      </div>
+      <h4>Layout (in Parent)</h4>
+      {isParentGrid && (
+        <div className={styles.propItem}>
+          <label>Column Span</label>
+          <select value={component.contextualLayout?.columnSpan || 1} onChange={handleSpanChange}>
+            <option value={1}>1 Column</option>
+            <option value={2}>2 Columns</option>
+            <option value={3}>3 Columns</option>
+          </select>
+        </div>
+      )}
+      {isParentWrappingRow && (
+        <div className={styles.propItemToggle}>
+          <label>Prevent Shrinking</label>
+          <button 
+            className={`${styles.toggleSwitch} ${component.contextualLayout?.preventShrinking ? styles.active : ''}`}
+            onClick={handleShrinkToggle}
+          >
+            <div className={styles.toggleKnob} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -144,7 +166,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
 const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
   const commitAction = useSetAtom(commitActionAtom);
 
-  const handlePropertyChange = (newProperties: Partial<LayoutComponent['properties']>) => {
+  const handlePropertyChange = (newProperties: Partial<Omit<LayoutComponent['properties'], 'appearance'>>) => {
     commitAction({
       action: {
         type: 'COMPONENT_UPDATE_PROPERTIES',
@@ -153,11 +175,9 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
       message: `Update layout for '${component.name}'`
     });
   };
-  
-  const handleToggleChange = (propName: keyof LayoutComponent['properties']) => {
-    handlePropertyChange({ [propName]: !component.properties[propName] });
-  };
 
+  const arrangement = component.properties.arrangement;
+  
   return (
     <>
       <div className={styles.propSection}>
@@ -165,15 +185,16 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
         <div className={styles.propItem}>
           <label>Arrangement</label>
           <select 
-            value={component.properties.arrangement} 
+            value={arrangement} 
             onChange={e => handlePropertyChange({ arrangement: e.target.value as LayoutComponent['properties']['arrangement'] })}
           >
             <option value="stack">Vertical Stack</option>
             <option value="row">Horizontal Row</option>
+            <option value="wrap">Wrapping Group</option>
             <option value="grid">Grid</option>
           </select>
         </div>
-        {component.properties.arrangement === 'row' && (
+        {arrangement === 'row' && (
           <>
             <div className={styles.propItem}>
               <label>Distribution</label>
@@ -199,18 +220,9 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
                 <option value="stretch">Stretch</option>
               </select>
             </div>
-            <div className={styles.propItemToggle}>
-              <label>Allow Wrapping</label>
-              <button 
-                className={`${styles.toggleSwitch} ${component.properties.allowWrapping ? styles.active : ''}`}
-                onClick={() => handleToggleChange('allowWrapping')}
-              >
-                <div className={styles.toggleKnob} />
-              </button>
-            </div>
           </>
         )}
-        {component.properties.arrangement === 'grid' && (
+        {arrangement === 'grid' && (
           <div className={styles.propItem}>
             <label>Column Layout</label>
             <select

@@ -30,10 +30,9 @@ import {
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
-  previewModeAtom,
+  isPreviewFluidAtom,
   previewWidthAtom,
   AppViewMode,
-  PreviewMode,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
@@ -61,7 +60,7 @@ function App() {
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
   const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
-  const [pMode, setPMode] = useAtom(previewModeAtom);
+  const [isFluid, setIsFluid] = useAtom(isPreviewFluidAtom);
   const [pWidth, setPWidth] = useAtom(previewWidthAtom);
 
   const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
@@ -93,16 +92,16 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view') as AppViewMode;
-    const mode = params.get('mode') as PreviewMode;
+    const fluid = params.get('fluid');
     const width = params.get('width');
 
     if (view && ['editor', 'preview', 'settings'].includes(view)) {
       setViewMode(view);
     }
-    if (mode && ['desktop', 'web'].includes(mode)) {
-      setPMode(mode);
-    }
-    if (width && !isNaN(parseInt(width, 10))) {
+    if (fluid === 'true') {
+      setIsFluid(true);
+    } else if (width && !isNaN(parseInt(width, 10))) {
+      setIsFluid(false);
       setPWidth(parseInt(width, 10));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,20 +113,21 @@ function App() {
     params.set('view', viewMode);
 
     if (viewMode === 'preview') {
-      params.set('mode', pMode);
-      if (pMode === 'web') {
-        params.set('width', pWidth.toString());
-      } else {
+      if(isFluid) {
+        params.set('fluid', 'true');
         params.delete('width');
+      } else {
+        params.delete('fluid');
+        params.set('width', pWidth.toString());
       }
     } else {
-      params.delete('mode');
+      params.delete('fluid');
       params.delete('width');
     }
     
     // Use replaceState to avoid cluttering browser history
     window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
-  }, [viewMode, pMode, pWidth]);
+  }, [viewMode, isFluid, pWidth]);
 
   useEffect(() => {
     if (!isLeftPanelVisible) {

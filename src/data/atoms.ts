@@ -109,6 +109,5 @@ export const modalComponentSearchQueryAtom = atom('');
 // =================================================================
 //                         Preview Mode State
 // =================================================================
-export type PreviewMode = 'desktop' | 'web';
-export const previewModeAtom = atom<PreviewMode>('desktop');
-export const previewWidthAtom = atom<number>(1280);
+export const isPreviewFluidAtom = atom(false);
+export const previewWidthAtom = atom<number>(1280); // Default to desktop preset width

@@ -4,10 +4,17 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useDroppable, DraggableSyntheticListeners, ClientRect } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { selectedCanvasComponentIdsAtom, overDndIdAtom, dropPlaceholderAtom, activeDndIdAtom } from '../data/atoms';
-import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../data/historyAtoms';
+import { 
+  selectedCanvasComponentIdsAtom, 
+  overDndIdAtom, 
+  dropPlaceholderAtom, 
+  activeDndIdAtom, 
+  isPropertiesPanelVisibleAtom 
+} from '../data/atoms';
+import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom, formNameAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
+import { CanvasEmptyState } from '../components/CanvasEmptyState';
 import { TextInputPreview } from '../components/TextInputPreview';
 import styles from './EditorCanvas.module.css';
 
@@ -79,7 +86,9 @@ const CanvasNode = ({ componentId }: { componentId: string }) => {
 
 // --- Sortable Item Wrapper ---
 const SortableItem = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const rootId = useAtomValue(rootComponentIdAtom);
+  
   const isRoot = component.id === rootId;
   const isEmptyContainer = component.componentType === 'layout' && component.children.length === 0;
   
@@ -101,14 +110,19 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
     transition,
   };
 
-  if (isDisabled) {
-    sortableStyle.transform = 'none';
-  }
-
   if (component.contextualLayout?.columnSpan) {
     sortableStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
   }
 
+  const parent = allComponents[component.parentId];
+  if (parent && parent.componentType === 'layout' && parent.properties.arrangement === 'wrap') {
+    sortableStyle.flexShrink = component.contextualLayout?.preventShrinking ? 0 : 1;
+  }
+  
+  if (isDisabled) {
+    sortableStyle.transform = 'none';
+  }
+  
   const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
@@ -179,7 +193,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     styles.formComponentWrapper,
     styles.layoutContainer,
     isSelected ? styles.selected : '',
-    isEmpty ? styles.layoutContainerEmpty : '',
+    isEmpty && !isRoot ? styles.layoutContainerEmpty : '', // Root doesn't get empty styles
     isOverContainer ? styles['is-over-container'] : '',
     isDragActive ? styles['drag-active'] : '',
   ].filter(Boolean).join(' ');
@@ -199,22 +213,30 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     gap: gapMap[component.properties.gap] || gapMap.md,
   };
 
-  if (component.properties.arrangement === 'stack') {
+  const arrangement = component.properties.arrangement;
+  if (arrangement === 'stack') {
     contentLayoutStyle.flexDirection = 'column';
-  } else if (component.properties.arrangement === 'row') {
+  } else if (arrangement === 'row') {
     contentLayoutStyle.flexDirection = 'row';
-    contentLayoutStyle.flexWrap = component.properties.allowWrapping ? 'wrap' : 'nowrap';
+    contentLayoutStyle.flexWrap = 'nowrap';
     contentLayoutStyle.justifyContent = component.properties.distribution;
     contentLayoutStyle.alignItems = component.properties.verticalAlign;
-  } else if (component.properties.arrangement === 'grid') {
+  } else if (arrangement === 'wrap') {
+    contentLayoutStyle.flexDirection = 'row';
+    contentLayoutStyle.flexWrap = 'wrap';
+    contentLayoutStyle.alignItems = 'start';
+  } else if (arrangement === 'grid') {
     contentLayoutStyle.display = 'grid';
-    const gridTemplateMap = {
+    const gridTemplateMap: {[key: string]: string} = {
       'auto': 'repeat(auto-fill, minmax(150px, 1fr))',
       '2-col-50-50': '1fr 1fr',
       '3-col-33': '1fr 1fr 1fr',
       '2-col-split-left': '2fr 1fr',
     };
-    contentLayoutStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
+    const { columnLayout } = component.properties;
+    contentLayoutStyle.gridTemplateColumns = typeof columnLayout === 'number'
+      ? `repeat(${columnLayout}, 1fr)`
+      : gridTemplateMap[columnLayout] || '1fr';
   }
 
   const parentRect = contentRef.current?.getBoundingClientRect();
@@ -229,9 +251,12 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
         style={contentAppearanceStyle}
         data-appearance-type={appearance?.type || 'transparent'}
         data-bordered={appearance?.bordered || false}
+        data-arrangement={arrangement}
       >
-        <div ref={contentRef} style={contentLayoutStyle}>
-          {!isEmpty && (
+        <div ref={contentRef} style={contentLayoutStyle} className="layout-content-wrapper">
+          {isRoot && isEmpty && !isDragActive ? (
+            <CanvasEmptyState />
+          ) : (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (
                 <CanvasNode key={childId} componentId={childId} />
@@ -240,7 +265,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
           )}
         </div>
         {showPlaceholder && <DropPlaceholder rect={dropPlaceholder.rect!} parentRect={parentRect} />}
-        {isEmpty && !isDragActive && <span className={styles.emptyText}>Drag components here</span>}
+        {isEmpty && !isRoot && !isDragActive && <span className={styles.emptyText}>Drag components here</span>}
       </div>
     </div>
   );
@@ -283,12 +308,21 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
 // --- Main Canvas ---
 export const EditorCanvas = () => {
   const rootId = useAtomValue(rootComponentIdAtom);
+  const screenName = useAtomValue(formNameAtom);
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
+
+  const handleCanvasClick = () => {
+    setSelectedIds([rootId]);
+    setIsPropertiesPanelVisible(true);
+  };
 
   return (
-    <div className={styles.canvasContainer} onClick={() => setSelectedIds([])}>
+    <div className={styles.canvasContainer} onClick={handleCanvasClick}>
       <div className={styles.formCard}>
-        <h2>Form</h2>
+        <div className={styles.formCardHeader}>
+          <h2>{screenName}</h2>
+        </div>
         <div className={styles.canvasDroppableArea}>
           {rootId && <CanvasNode componentId={rootId} />}
         </div>

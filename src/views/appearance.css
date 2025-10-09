@@ -1,5 +1,4 @@
 /* src/views/appearance.css */
-/* NEW FILE */
 /* This file contains the data-attribute-driven styles for component appearance. */
 
 @layer components {
@@ -57,5 +56,18 @@
   }
   [data-appearance-type="error"][data-bordered="true"] {
     border: 1px solid var(--surface-border-alert_subtle);
+  }
+
+  /* --- AUTOMATIC RESPONSIVE BEHAVIORS --- */
+  @media (max-width: var(--breakpoint-mobile)) {
+    /* Rule 4: Automatically stack all grids into a single column */
+    [data-arrangement="grid"] > .layout-content-wrapper {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Rule 5: Ensure all grid items span only one column */
+    [data-arrangement="grid"] > .layout-content-wrapper > * {
+      grid-column: span 1 !important;
+    }
   }
 }

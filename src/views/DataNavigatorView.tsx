@@ -117,57 +117,60 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
     exit: { opacity: 0, x: 10, transition: { type: 'tween', ease: 'easeInOut', duration: 0.3 }},
   };
 
-  const containerClasses = `${panelStyles.navigatorQueryContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
+  const containerClasses = `${panelStyles.componentBrowserContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
 
   return (
     <div className={containerClasses}>
-      {onClosePanel && (
-        <PanelHeader title="Data navigator" onClose={onClosePanel} />
-      )}
+      <div className={panelStyles.panelHeaderSection}>
+        {onClosePanel && (
+          <PanelHeader title="Data navigator" onClose={onClosePanel} />
+        )}
 
-      {showBreadcrumb && (
-        <div className={panelStyles.breadcrumbWrapper}>
-          <div className={panelStyles.breadcrumb}>
-            <AnimatePresence>
-              {breadcrumbPath.map((node, index) => (
-                <motion.div key={node.id} custom={index} variants={breadcrumbVariants} initial="hidden" animate="visible" exit="exit" style={{ display: 'flex', alignItems: 'center' }}>
-                  <button className={index === breadcrumbPath.length - 1 ? panelStyles.active : ''} onClick={() => handleBreadcrumbClick(node.id)} disabled={index === breadcrumbPath.length - 1}>
-                    {node.name}
-                  </button>
-                  {index < breadcrumbPath.length - 1 && <span className="material-symbols-rounded">chevron_right</span>}
-                </motion.div>
-              ))}
-            </AnimatePresence>
+        {showBreadcrumb && (
+          <div className={panelStyles.breadcrumbWrapper}>
+            <div className={panelStyles.breadcrumb}>
+              <AnimatePresence>
+                {breadcrumbPath.map((node, index) => (
+                  <motion.div key={node.id} custom={index} variants={breadcrumbVariants} initial="hidden" animate="visible" exit="exit" style={{ display: 'flex', alignItems: 'center' }}>
+                    <button className={index === breadcrumbPath.length - 1 ? panelStyles.active : ''} onClick={() => handleBreadcrumbClick(node.id)} disabled={index === breadcrumbPath.length - 1}>
+                      {node.name}
+                    </button>
+                    {index < breadcrumbPath.length - 1 && <span className="material-symbols-rounded">chevron_right</span>}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="node-navigator">
-        <div className="navigator-container">
-          <div id="navigator-grid" ref={mountRef}>
-              <div id="nodes-viewport">
-                <div id="nodes-track">
-                  <div className="nav-arrow-gap" id="arrow-gap-1"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
-                  <div className="nav-arrow-gap" id="arrow-gap-2"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+        <div className="node-navigator">
+          <div className="navigator-container">
+            <div id="navigator-grid" ref={mountRef}>
+                <div id="nodes-viewport">
+                  <div id="nodes-track">
+                    <div className="nav-arrow-gap" id="arrow-gap-1"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+                    <div className="nav-arrow-gap" id="arrow-gap-2"><div className="nav-arrow left"></div><div className="nav-arrow right"></div></div>
+                  </div>
+                  {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
                 </div>
-                {isDropdownVisible && renderConnectionsDropdown && renderConnectionsDropdown(instanceRef.current, selectedNodeId, handleCloseDropdown)}
-              </div>
-              {/* FIX: The innerHTML of these divs will now be set by the navigator.js script */}
-              <div className="static-label last-node-label"></div>
-              <div className="static-label selected-node-label"></div>
-              <div className="static-label connected-node-label"></div>
+                <div className="static-label last-node-label">Last node</div>
+                <div className="static-label selected-node-label">Selected node</div>
+                <div className="static-label connected-node-label">
+                  {selectedNode ? `${selectedNode.connections} Related nodes` : 'Related nodes'}
+                </div>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className={panelStyles.searchContainer}>
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder={searchPlaceholder}
-          variant="standalone"
-          autoFocus={autoFocusSearch}
-        />
+        
+        <div className={panelStyles.searchContainer}>
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder={searchPlaceholder}
+            variant="standalone"
+            autoFocus={autoFocusSearch}
+          />
+        </div>
       </div>
 
       <div className={`${panelStyles.componentListContainer} scrollbar-stealth`}>

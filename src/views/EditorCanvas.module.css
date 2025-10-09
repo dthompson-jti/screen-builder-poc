@@ -15,14 +15,25 @@
   max-width: 800px;
   margin: 0 auto;
   box-shadow: var(--surface-shadow-lg);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, outline-color 0.2s;
+  border: 1px solid var(--surface-border-secondary);
+  position: relative;
 }
-.formCard h2 {
+
+.formCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.formCardHeader h2 {
   font-size: 1.5em;
   font-weight: 600;
-  margin: 0 0 var(--spacing-6) 0;
+  margin: 0;
   color: var(--surface-fg-primary);
+  flex-grow: 1;
 }
 
 .canvasContainer.isDragging .formCard {
@@ -36,7 +47,7 @@
 
 .formComponentWrapper {
   border: 2px solid transparent;
-  padding: 0; /* Wrapper no longer controls padding */
+  padding: 0;
   margin: 0;
   border-radius: var(--spacing-2);
   position: relative;
@@ -63,18 +74,15 @@
 
 /* --- Layout Container Styles --- */
 .layoutContainer {
-  /* Default dashed border for discoverability */
   border: 2px dashed var(--surface-border-tertiary);
-  min-height: 40px; /* Reduced min-height */
+  min-height: 40px;
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, border-style 0.2s;
 }
 
-/* If the user has defined their own border, hide the editor's dashed one */
 .layoutContainer[data-has-user-border="true"] {
   border-color: transparent;
 }
 .layoutContainer[data-has-user-border="true"]:hover:not(.selected) {
-  /* Show a subtle hover outline so it's still clear what you're hovering */
   box-shadow: 0 0 0 2px var(--surface-border-primary);
 }
 
@@ -111,12 +119,11 @@
   display: none;
 }
 
-/* The inner div that receives user-defined styles */
 .layoutContainerContent {
   width: 100%;
   height: 100%;
   position: relative;
-  border-radius: 6px; /* Match inner radius to outer */
+  border-radius: 6px;
 }
 
 .dropPlaceholder {

@@ -36,7 +36,7 @@ export type HistoryAction =
   | { type: 'COMPONENT_REORDER'; payload: { componentId: string; parentId: string; oldIndex: number; newIndex: number; } }
   | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
-  | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<LayoutComponent['properties']>; } }
+  | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<Omit<LayoutComponent['properties'], 'appearance'>>; } }
   | { type: 'COMPONENT_UPDATE_APPEARANCE'; payload: { componentId: string; newAppearance: Partial<AppearanceProperties>; } }
   | { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT'; payload: { componentId: string; newLayout: Partial<FormComponent['contextualLayout']> } }
   | { type: 'FORM_RENAME'; payload: { newName: string } };
@@ -65,7 +65,6 @@ const historyAtom = atom<HistoryData>({
           gap: 'md', 
           distribution: 'start', 
           verticalAlign: 'stretch', 
-          allowWrapping: false, 
           columnLayout: 'auto',
           appearance: { ...defaultAppearance }
         },
@@ -121,7 +120,7 @@ export const commitActionAtom = atom(
                 children: [],
                 properties: {
                   arrangement: 'stack', gap: 'md', distribution: 'start',
-                  verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto',
+                  verticalAlign: 'stretch', columnLayout: 'auto',
                   appearance: { ...defaultAppearance }
                 },
               };
@@ -197,7 +196,6 @@ export const commitActionAtom = atom(
                 gap: 'md', 
                 distribution: 'start', 
                 verticalAlign: 'stretch', 
-                allowWrapping: false, 
                 columnLayout: 'auto',
                 appearance: { ...defaultAppearance }
               },
@@ -217,7 +215,9 @@ export const commitActionAtom = atom(
             const { componentId, newProperties } = action.action.payload;
             const component = presentState.components[componentId];
             if (component && component.componentType === 'layout') {
-              component.properties = { ...component.properties, ...newProperties };
+              // This ensures we don't accidentally wipe out the appearance object
+              const { appearance, ...rest } = component.properties;
+              component.properties = { ...rest, ...newProperties, appearance };
             }
             break;
           }
