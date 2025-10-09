@@ -1,9 +1,48 @@
 // src/types.ts
 
+// A generic base for all components on the canvas
+export interface BaseComponent {
+  id: string;
+  parentId: string; // ID of the parent container
+  name: string; // User-defined name/label
+}
+
+// Specific type for form fields/widgets
+export interface FormComponent extends BaseComponent {
+  componentType: 'widget' | 'field';
+  type: 'text-input' | 'dropdown' | 'checkbox'; // The specific kind of widget/field
+  binding?: BoundData | null;
+  origin?: 'data' | 'general';
+}
+
+// New type for our layout container
+export interface LayoutComponent extends BaseComponent {
+  componentType: 'layout';
+  children: string[]; // An ordered list of child component IDs
+  properties: {
+    arrangement: 'stack' | 'row' | 'grid';
+    // Row-specific
+    distribution?: 'start' | 'center' | 'space-between';
+    verticalAlign?: 'start' | 'center' | 'end' | 'stretch';
+    wrapping?: boolean;
+    minItemWidth?: number;
+    // Grid-specific
+    columns?: '1' | '2' | '3' | 'sidebar-left' | 'sidebar-right';
+    // Universal
+    gap: 'none' | 'sm' | 'md' | 'lg';
+  };
+}
+
+// A union type representing any component that can be on the canvas
+export type CanvasComponent = FormComponent | LayoutComponent;
+
+
+// --- UNCHANGED BELOW ---
+
 export interface DraggableComponent {
   id: string;
   name: string;
-  type: 'widget' | 'field';
+  type: 'widget' | 'field' | 'layout'; // Added 'layout'
   icon: string;
   iconColor?: string;
   // Properties for data binding modal
@@ -25,14 +64,6 @@ export interface BoundData {
   path: string;
 }
 
-export interface FormComponent {
-  id: string;
-  name: string;
-  type: 'widget' | 'field';
-  binding?: BoundData | null;
-  origin?: 'data' | 'general';
-}
-
 export interface DropdownItem {
   id: string;
   name: string;
@@ -52,15 +83,11 @@ export interface ComponentNode {
 export interface DndData {
   id: string;
   name: string;
-  type: 'widget' | 'field';
-  icon: string;
-  isNew: boolean;
+  type: 'widget' | 'field' | 'layout' | 'container';
+  icon?: string;
+  isNew?: boolean;
   origin?: 'data' | 'general';
-  // This nested data is specific to items from the 'data' browser
-  data?: {
-    nodeId?: string;
-    nodeName?: string;
-  };
+  childrenCount?: number;
   // This property is added by dnd-kit's sortable context
   sortable?: {
     containerId: string;

@@ -1,97 +1,178 @@
 // src/views/EditorCanvas.tsx
+import React from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { Active, UniqueIdentifier, useDroppable } from '@dnd-kit/core';
-import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable, DraggableSyntheticListeners } from '@dnd-kit/core';
+import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { selectedCanvasComponentIdAtom } from '../data/atoms';
-import { canvasComponentsAtom, commitActionAtom } from '../data/historyAtoms';
-import { FormComponent } from '../types';
+import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom } from '../data/atoms';
+import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../data/historyAtoms';
+import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
-import styles from './EditorCanvas.module.css';
 import { TextInputPreview } from '../components/TextInputPreview';
+import styles from './EditorCanvas.module.css';
 
-const SortableFormComponent = ({ component, overId, active }: { component: FormComponent, overId: UniqueIdentifier | null, active: Active | null }) => {
-  const [selectedId, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
-  const commitAction = useSetAtom(commitActionAtom);
+interface ComponentProps {
+  component: CanvasComponent;
+  dndListeners?: DraggableSyntheticListeners;
+}
+
+// --- Recursive Canvas Node ---
+const CanvasNode = ({ componentId }: { componentId: string }) => {
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const component = allComponents[componentId];
+
+  if (!component) return null;
+
+  const componentToRender = () => {
+    if (component.componentType === 'layout') {
+      return <LayoutContainer component={component} />;
+    }
+    return <FormItem component={component} />;
+  };
   
+  return (
+    <SortableItem component={component}>
+      {componentToRender()}
+    </SortableItem>
+  );
+};
+
+// --- Sortable Item Wrapper ---
+const SortableItem = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
+  const activeId = useAtomValue(activeDndIdAtom);
+  const overId = useAtomValue(overDndIdAtom);
+
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
-    data: { name: component.name }
+    data: { 
+      id: component.id,
+      name: component.name,
+      type: component.componentType,
+      childrenCount: component.componentType === 'layout' ? component.children.length : undefined,
+    } satisfies DndData
   });
   
   const style = { 
     transform: CSS.Transform.toString(transform), 
     transition,
-    opacity: isDragging ? 0 : 1,
   };
-  const isSelected = selectedId === component.id;
-  const showIndicator = overId === component.id && active?.id !== component.id;
+
+  const isOver = overId === component.id;
+  const isDraggingItem = !!activeId && !String(activeId).startsWith('draggable-');
+
+  // Show drop indicator if we are dragging over this item,
+  // but it's not the active item itself.
+  const showDropIndicator = isOver && activeId !== component.id;
+
+  // When moving an existing item, prevent it from showing an indicator over itself.
+  const finalClassName = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''} ${showDropIndicator && !(isDraggingItem && isOver) ? styles.showDropIndicator : ''}`;
+
+
+  return (
+    <div ref={setNodeRef} style={style} className={finalClassName} {...attributes}>
+      {React.cloneElement(children as React.ReactElement<ComponentProps>, { dndListeners: listeners })}
+    </div>
+  );
+};
+
+// --- Layout Container Component ---
+const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
+  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
+  const isSelected = selectedIds.includes(component.id);
+
+  const { setNodeRef } = useDroppable({
+    id: component.id,
+    data: { 
+      id: component.id,
+      name: component.name,
+      type: 'container', 
+      childrenCount: component.children.length 
+    } satisfies DndData
+  });
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (e.shiftKey) {
+      setSelectedIds(prev => prev.includes(component.id) ? prev.filter(id => id !== component.id) : [...prev, component.id]);
+    } else {
+      setSelectedIds([component.id]);
+    }
+  };
 
   const handleDelete = () => {
     commitAction({
       action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
       message: `Delete '${component.name}'`
     });
-    setSelectedId(null);
+    setSelectedIds([]);
   };
   
-  const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''} ${showIndicator ? styles.showDropIndicator : ''}`;
+  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${component.children.length === 0 ? styles.layoutContainerEmpty : ''}`;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      // FIX: The drag attributes are still needed here for dnd-kit to identify the node
-      {...attributes}
-      className={wrapperClassName}
-      onClick={(e) => { e.stopPropagation(); setSelectedId(component.id); }}
-    >
-      {/* 
-        FIX: Pass the 'listeners' down to the toolbar.
-        The toolbar is now responsible for applying them to the correct drag handle,
-        separating the drag interaction from the button click interactions.
-      */}
-      {isSelected && <SelectionToolbar onDelete={handleDelete} listeners={listeners} />}
-      
+    <div className={containerClasses} onClick={handleSelect}>
+      {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
+      <div ref={setNodeRef} className={styles.layoutContainerContent}>
+        <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
+          {component.children.length > 0 ? (
+            component.children.map(childId => (
+              <CanvasNode key={childId} componentId={childId} />
+            ))
+          ) : (
+            <span>Drag components here</span>
+          )}
+        </SortableContext>
+      </div>
+    </div>
+  );
+};
+
+// --- Form Item (e.g., TextInput) ---
+const FormItem = ({ component, dndListeners }: { component: FormComponent, dndListeners?: DraggableSyntheticListeners }) => {
+  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
+  const isSelected = selectedIds.includes(component.id);
+
+  const handleDelete = () => {
+    commitAction({
+      action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
+      message: `Delete '${component.name}'`
+    });
+    setSelectedIds([]);
+  };
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (e.shiftKey) {
+      setSelectedIds(prev => prev.includes(component.id) ? prev.filter(id => id !== component.id) : [...prev, component.id]);
+    } else {
+      setSelectedIds([component.id]);
+    }
+  };
+  
+  const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''}`;
+
+  return (
+    <div className={wrapperClassName} onClick={handleSelect}>
+      {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
       <TextInputPreview label={component.name} />
     </div>
   );
 };
 
-const BottomDropZone = ({ overId }: { overId: UniqueIdentifier | null }) => {
-  const { setNodeRef } = useDroppable({ id: 'bottom-drop-zone' });
-  const showIndicator = overId === 'bottom-drop-zone';
-  const zoneClassName = `${styles.bottomDropZone} ${showIndicator ? styles.showDropIndicator : ''}`;
+
+// --- Main Canvas ---
+export const EditorCanvas = () => {
+  const rootId = useAtomValue(rootComponentIdAtom);
+  const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
 
   return (
-    <div ref={setNodeRef} className={zoneClassName} />
-  );
-};
-
-interface EditorCanvasProps {
-  overId: UniqueIdentifier | null;
-  active: Active | null;
-  isDragging: boolean;
-}
-
-export const EditorCanvas = ({ overId, active, isDragging }: EditorCanvasProps) => {
-  const components = useAtomValue(canvasComponentsAtom);
-  const [, setSelectedId] = useAtom(selectedCanvasComponentIdAtom);
-  const { setNodeRef } = useDroppable({ id: 'canvas-drop-area' });
-
-  const canvasClassName = `${styles.canvasContainer} ${isDragging ? styles.isDragging : ''}`;
-
-  return (
-    <div className={canvasClassName} onClick={() => setSelectedId(null)}>
+    <div className={styles.canvasContainer} onClick={() => setSelectedIds([])}>
       <div className={styles.formCard}>
         <h2>Form</h2>
-        <div ref={setNodeRef} className={styles.canvasDroppableArea}>
-          <SortableContext items={components.map((c: FormComponent) => c.id)} strategy={verticalListSortingStrategy}>
-            {components.map((component: FormComponent) => (
-              <SortableFormComponent key={component.id} component={component} overId={overId} active={active} />
-            ))}
-          </SortableContext>
-          <BottomDropZone overId={overId} />
+        <div className={styles.canvasDroppableArea}>
+          {rootId && <CanvasNode componentId={rootId} />}
         </div>
       </div>
     </div>

@@ -3,9 +3,9 @@
 // NOTE: This file is at the root of /src, so imports from sibling directories
 // like /state or /components will start with './'.
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection, Active } from '@dnd-kit/core';
 import { AppHeader } from './views/AppHeader';
 import { ComponentBrowser } from './views/ComponentBrowser';
 import { GeneralComponentsBrowser } from './views/GeneralComponentsBrowser';
@@ -23,15 +23,15 @@ import { ToastContainer } from './components/ToastContainer';
 import { useCanvasDnd } from './data/useCanvasDnd';
 import { useUndoRedo } from './data/useUndoRedo';
 import {
-  selectedCanvasComponentIdAtom,
+  selectedCanvasComponentIdsAtom,
   isComponentBrowserVisibleAtom,
   activeToolbarTabAtom,
   appViewModeAtom,
-  isPropertiesPanelVisibleAtom
+  isPropertiesPanelVisibleAtom,
+  activeDndIdAtom,
 } from './data/atoms';
-import { canvasComponentsAtom } from './data/historyAtoms';
-// FIX: Import the new DndData type for type safety.
-import { FormComponent, DndData } from './types';
+import { canvasComponentsByIdAtom } from './data/historyAtoms';
+import { DndData } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -44,19 +44,21 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-// FIX: Increase both initial and min width by 32px.
-const INITIAL_PANEL_WIDTH = 488;
-const MIN_PANEL_WIDTH = 501;
+const INITIAL_PANEL_WIDTH = 320;
+const MIN_PANEL_WIDTH = 280;
 
 function App() {
-  const canvasComponents = useAtomValue(canvasComponentsAtom);
-  const setSelectedComponentId = useSetAtom(selectedCanvasComponentIdAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const setSelectedComponentIds = useSetAtom(selectedCanvasComponentIdsAtom);
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
+  const activeDndId = useAtomValue(activeDndIdAtom);
+  const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
 
-  const { activeItem, overId, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
+  // FIX: Restore the useCanvasDnd hook call to App.tsx, where the DndContext lives.
+  const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
   const { undo, redo } = useUndoRedo();
 
   // Global keyboard listener for Undo/Redo
@@ -83,9 +85,9 @@ function App() {
 
   useEffect(() => {
     if (!isLeftPanelVisible) {
-      setSelectedComponentId(null);
+      setSelectedComponentIds([]);
     }
-  }, [isLeftPanelVisible, setSelectedComponentId]);
+  }, [isLeftPanelVisible, setSelectedComponentIds]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -97,21 +99,18 @@ function App() {
   );
 
   const renderDragOverlay = () => {
-    if (!activeItem) return null;
+    if (!activeDndItem) return null;
 
-    // FIX: Use a type assertion to safely access the active item's data.
-    // This resolves all the `no-unsafe-*` errors in this function.
-    const activeData = activeItem.data.current as DndData;
+    const activeData = activeDndItem.data.current as DndData;
 
     const isNew = activeData?.isNew;
     const name = activeData?.name;
     const icon = activeData?.icon;
 
     if (isNew) {
-      // FIX: Ensure name and icon are not undefined before passing them.
       return <BrowserItemPreview name={name ?? ''} icon={icon ?? ''} />;
     } else {
-      const activeComponent = canvasComponents.find((c: FormComponent) => c.id === activeItem.id);
+      const activeComponent = allComponents[activeDndItem.id as string];
       if (!activeComponent) return null;
       return <div style={{ pointerEvents: 'none' }}><TextInputPreview label={activeComponent.name} /></div>;
     }
@@ -123,7 +122,7 @@ function App() {
     if (activeTabId === 'data') {
       return <ComponentBrowser />;
     }
-    if (activeTabId === 'general') {
+    if (activeTabId === 'general' || activeTabId === 'layout') {
       return <GeneralComponentsBrowser />;
     }
 
@@ -150,7 +149,7 @@ function App() {
               {renderLeftPanelContent()}
             </ResizablePanel>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <EditorCanvas active={activeItem} overId={overId} isDragging={!!activeItem} />
+              <EditorCanvas />
             </div>
             <ResizablePanel
                 initialWidth={300}
@@ -161,7 +160,7 @@ function App() {
               <PropertiesPanel />
             </ResizablePanel>
             <DragOverlay dropAnimation={dropAnimation}>
-              {renderDragOverlay()}
+              {activeDndId ? renderDragOverlay() : null}
             </DragOverlay>
           </div>
         );
@@ -170,7 +169,20 @@ function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd} autoScroll={false}>
+      <DndContext 
+        sensors={sensors} 
+        onDragStart={(e) => {
+          setActiveDndItem(e.active);
+          handleDragStart(e);
+        }} 
+        onDragOver={handleDragOver} 
+        onDragEnd={(e) => {
+          handleDragEnd(e);
+          setActiveDndItem(null);
+        }} 
+        autoScroll={false}
+        collisionDetection={rectIntersection}
+      >
         <AppHeader />
         {renderMainContent()}
         <DataBindingModal />

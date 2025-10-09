@@ -1,18 +1,24 @@
 // src/data/historyAtoms.ts
 import { atom } from 'jotai';
-import { arrayMove } from '@dnd-kit/sortable';
-import { FormComponent, BoundData } from '../types';
-import { selectedCanvasComponentIdAtom } from './atoms';
+import { nanoid } from 'nanoid';
+import { produce, Draft } from 'immer';
+import { CanvasComponent, BoundData, LayoutComponent, FormComponent } from '../types';
+import { selectedCanvasComponentIdsAtom } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
+export type NormalizedCanvasComponents = {
+  [id: string]: CanvasComponent;
+};
+
 export interface UndoableState {
   formName: string;
-  canvasComponents: FormComponent[];
+  rootComponentId: string;
+  components: NormalizedCanvasComponents;
 }
 
 interface ActionMeta {
   message: string;
-  selectedId: string | null;
+  selectedIds: string[];
 }
 
 type HistoryData = {
@@ -23,10 +29,13 @@ type HistoryData = {
 
 // 2. DEFINE THE ACTION CONTRACT (REDUCER PATTERN)
 export type HistoryAction =
-  | { type: 'COMPONENT_ADD'; payload: { component: FormComponent; index?: number } }
+  | { type: 'COMPONENT_ADD'; payload: { component: Omit<FormComponent | LayoutComponent, 'id' | 'parentId'>; parentId: string; index: number; } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
-  | { type: 'COMPONENT_REORDER'; payload: { oldIndex: number; newIndex: number } }
+  | { type: 'COMPONENT_MOVE'; payload: { componentId: string; newParentId: string; oldParentId: string; newIndex: number; } }
+  | { type: 'COMPONENT_REORDER'; payload: { componentId: string; parentId: string; oldIndex: number; newIndex: number; } }
+  | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
+  | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<LayoutComponent['properties']>; } }
   | { type: 'FORM_RENAME'; payload: { newName: string } };
 
 // 3. CREATE THE CORE ATOMS
@@ -34,7 +43,17 @@ const historyAtom = atom<HistoryData>({
   past: [],
   present: {
     formName: "Dave's Form",
-    canvasComponents: [],
+    rootComponentId: 'root',
+    components: {
+      'root': {
+        id: 'root',
+        parentId: '',
+        name: 'Root',
+        componentType: 'layout',
+        children: [],
+        properties: { arrangement: 'stack', gap: 'md' },
+      }
+    },
   },
   future: [],
 });
@@ -44,63 +63,137 @@ export const actionMetaHistoryAtom = atom<{ past: ActionMeta[], future: ActionMe
   future: [],
 });
 
+// Helper function to recursively delete a component and its children
+const deleteComponentAndChildren = (
+  components: NormalizedCanvasComponents,
+  componentId: string
+) => {
+  const componentToDelete = components[componentId];
+  if (!componentToDelete) return;
+
+  if (componentToDelete.componentType === 'layout' && componentToDelete.children) {
+    componentToDelete.children.forEach(childId => {
+      deleteComponentAndChildren(components, childId);
+    });
+  }
+  delete components[componentId];
+};
+
+
 // 4. CREATE THE CENTRAL ACTION DISPATCHER (THE REDUCER)
 export const commitActionAtom = atom(
   null,
   (get, set, action: { action: HistoryAction, message: string }) => {
     set(historyAtom, (currentHistory) => {
-      const presentState = currentHistory.present;
-      let newPresent: UndoableState;
+      const nextState = produce(currentHistory, (draft: Draft<HistoryData>) => {
+        const presentState = draft.present;
 
-      // Reducer logic to calculate the next state based on the action
-      switch (action.action.type) {
-        case 'COMPONENT_ADD': {
-          const { component, index } = action.action.payload;
-          const newComponents = [...presentState.canvasComponents];
-          const finalIndex = (index === undefined || index < 0) ? newComponents.length : index;
-          newComponents.splice(finalIndex, 0, component);
-          newPresent = { ...presentState, canvasComponents: newComponents };
-          break;
-        }
-        case 'COMPONENT_DELETE': {
-          const { componentId } = action.action.payload;
-          const newComponents = presentState.canvasComponents.filter(c => c.id !== componentId);
-          newPresent = { ...presentState, canvasComponents: newComponents };
-          break;
-        }
-        case 'COMPONENT_REORDER': {
-          const { oldIndex, newIndex } = action.action.payload;
-          const reordered = arrayMove(presentState.canvasComponents, oldIndex, newIndex);
-          newPresent = { ...presentState, canvasComponents: reordered };
-          break;
-        }
-        case 'COMPONENT_UPDATE_BINDING': {
-          const { componentId, newBinding } = action.action.payload;
-          const newComponents = presentState.canvasComponents.map(c =>
-            c.id === componentId ? { ...c, binding: newBinding } : c
-          );
-          newPresent = { ...presentState, canvasComponents: newComponents };
-          break;
-        }
-        case 'FORM_RENAME': {
-          const { newName } = action.action.payload;
-          newPresent = { ...presentState, formName: newName };
-          break;
-        }
-        default:
-          return currentHistory; // No change
-      }
+        // Reducer logic to calculate the next state based on the action
+        switch (action.action.type) {
+          case 'COMPONENT_ADD': {
+            const { component, parentId, index } = action.action.payload;
+            const newId = nanoid(8);
+            presentState.components[newId] = { ...component, id: newId, parentId } as CanvasComponent;
+            const parent = presentState.components[parentId];
+            if (parent && parent.componentType === 'layout') {
+              parent.children.splice(index, 0, newId);
+            }
+            break;
+          }
+          case 'COMPONENT_DELETE': {
+            const { componentId } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (!component) break;
+            const parent = presentState.components[component.parentId];
+            if (parent && parent.componentType === 'layout') {
+              parent.children = parent.children.filter(id => id !== componentId);
+            }
+            deleteComponentAndChildren(presentState.components, componentId);
+            break;
+          }
+          case 'COMPONENT_REORDER': {
+            const { parentId, oldIndex, newIndex } = action.action.payload;
+            const parent = presentState.components[parentId];
+            if (parent && parent.componentType === 'layout') {
+              const [moved] = parent.children.splice(oldIndex, 1);
+              parent.children.splice(newIndex, 0, moved);
+            }
+            break;
+          }
+          case 'COMPONENT_MOVE': {
+            const { componentId, oldParentId, newParentId, newIndex } = action.action.payload;
+            const oldParent = presentState.components[oldParentId];
+            if (oldParent && oldParent.componentType === 'layout') {
+              oldParent.children = oldParent.children.filter(id => id !== componentId);
+            }
+            const newParent = presentState.components[newParentId];
+            if (newParent && newParent.componentType === 'layout') {
+              newParent.children.splice(newIndex, 0, componentId);
+            }
+            const component = presentState.components[componentId];
+            if (component) {
+              component.parentId = newParentId;
+            }
+            break;
+          }
+          case 'COMPONENTS_WRAP': {
+            const { componentIds, parentId } = action.action.payload;
+            const parent = presentState.components[parentId];
+            if (!parent || parent.componentType !== 'layout') break;
 
-      return {
-        past: [...currentHistory.past, presentState],
-        present: newPresent,
-        future: [],
-      };
+            const newContainerId = nanoid(8);
+            const newContainer: LayoutComponent = {
+              id: newContainerId,
+              parentId: parentId,
+              name: 'Layout Container',
+              componentType: 'layout',
+              children: componentIds,
+              properties: { arrangement: 'stack', gap: 'md' },
+            };
+            presentState.components[newContainerId] = newContainer;
+
+            componentIds.forEach(id => {
+              const child = presentState.components[id];
+              if (child) child.parentId = newContainerId;
+            });
+            
+            const firstChildIndex = parent.children.indexOf(componentIds[0]);
+            const remainingChildren = parent.children.filter(id => !componentIds.includes(id));
+            remainingChildren.splice(firstChildIndex, 0, newContainerId);
+            parent.children = remainingChildren;
+            break;
+          }
+          case 'COMPONENT_UPDATE_PROPERTIES': {
+            const { componentId, newProperties } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (component && component.componentType === 'layout') {
+              component.properties = { ...component.properties, ...newProperties };
+            }
+            break;
+          }
+          case 'COMPONENT_UPDATE_BINDING': {
+            const { componentId, newBinding } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (component && (component.componentType === 'field' || component.componentType === 'widget')) {
+                component.binding = newBinding;
+            }
+            break;
+          }
+          case 'FORM_RENAME': {
+            presentState.formName = action.action.payload.newName;
+            break;
+          }
+        }
+        
+        draft.past.push(currentHistory.present);
+        draft.future = [];
+      });
+      return nextState;
     });
 
     // Metadata update remains separate
-    const currentSelectedId = get(selectedCanvasComponentIdAtom);
-    const newMeta: ActionMeta = { message: action.message, selectedId: currentSelectedId };
+    const currentSelectedIds = get(selectedCanvasComponentIdsAtom);
+    const newMeta: ActionMeta = { message: action.message, selectedIds: currentSelectedIds };
     set(actionMetaHistoryAtom, (currentMetaHistory) => ({
       past: [...currentMetaHistory.past, newMeta],
       future: [],
@@ -125,8 +218,7 @@ export const undoAtom = atom(null, (_get, set) => {
     if (!currentMetaHistory.past.length) return currentMetaHistory;
     const lastMeta = currentMetaHistory.past[currentMetaHistory.past.length - 1];
     const newPastMetas = currentMetaHistory.past.slice(0, -1);
-    const previousSelectedId = newPastMetas.length > 0 ? newPastMetas[newPastMetas.length - 1].selectedId : null;
-    set(selectedCanvasComponentIdAtom, previousSelectedId);
+    set(selectedCanvasComponentIdsAtom, lastMeta.selectedIds);
     return {
       past: newPastMetas,
       future: [lastMeta, ...currentMetaHistory.future],
@@ -150,7 +242,7 @@ export const redoAtom = atom(null, (_get, set) => {
     if (!currentMetaHistory.future.length) return currentMetaHistory;
     const nextMeta = currentMetaHistory.future[0];
     const newFutureMetas = currentMetaHistory.future.slice(1);
-    set(selectedCanvasComponentIdAtom, nextMeta.selectedId);
+    set(selectedCanvasComponentIdsAtom, nextMeta.selectedIds);
     return {
       past: [...currentMetaHistory.past, nextMeta],
       future: newFutureMetas,
@@ -161,7 +253,8 @@ export const redoAtom = atom(null, (_get, set) => {
 // 5. CREATE DERIVED, READ-ONLY ATOMS FOR UI
 export const undoableStateAtom = atom<UndoableState>((get) => get(historyAtom).present);
 export const formNameAtom = atom<string>((get) => get(undoableStateAtom).formName);
-export const canvasComponentsAtom = atom<FormComponent[]>((get) => get(undoableStateAtom).canvasComponents);
+export const canvasComponentsByIdAtom = atom<NormalizedCanvasComponents>((get) => get(undoableStateAtom).components);
+export const rootComponentIdAtom = atom<string>((get) => get(undoableStateAtom).rootComponentId);
 
 export const canUndoAtom = atom<boolean>((get) => get(historyAtom).past.length > 0);
 export const canRedoAtom = atom<boolean>((get) => get(historyAtom).future.length > 0);

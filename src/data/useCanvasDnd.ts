@@ -1,23 +1,20 @@
 // src/data/useCanvasDnd.ts
-import { useState } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, UniqueIdentifier } from '@dnd-kit/core';
-import { selectedCanvasComponentIdAtom } from './atoms';
-import { commitActionAtom, canvasComponentsAtom } from './historyAtoms';
-// FIX: Import the new DndData type to ensure type safety.
-import { FormComponent, DndData } from '../types';
+import { useSetAtom, useAtomValue } from 'jotai';
+import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over } from '@dnd-kit/core';
+import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom } from './atoms';
+import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
+import { DndData, FormComponent, LayoutComponent } from '../types';
 
 export const useCanvasDnd = () => {
-  const canvasComponents = useAtomValue(canvasComponentsAtom);
-  const setSelectedId = useSetAtom(selectedCanvasComponentIdAtom);
+  const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
-  
-  const [activeItem, setActiveItem] = useState<Active | null>(null);
-  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const setActiveId = useSetAtom(activeDndIdAtom);
+  const setOverId = useSetAtom(overDndIdAtom);
   
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveItem(event.active);
-    setSelectedId(null);
+    setActiveId(event.active.id);
+    setSelectedIds([]);
   };
   
   const handleDragOver = (event: DragOverEvent) => {
@@ -28,89 +25,126 @@ export const useCanvasDnd = () => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     
-    if (!over) {
+    if (!active || !over) {
       resetState();
       return;
     }
     
-    // FIX: Use a type assertion to safely access the data.
-    // This resolves all the `no-unsafe-*` errors in this function.
+    if (active.id === over.id) {
+      resetState();
+      return;
+    }
+    
     const activeData = active.data.current as DndData;
-    const overData = over.data.current as DndData; // Also type the 'over' data
-
+    
     if (activeData?.isNew) {
-      handleAddNewComponent(activeData, over, overData);
+      handleAddNewComponent(activeData, over);
     } else {
-      handleReorderComponent(active, over);
+      handleMoveComponent(active, over);
     }
     
     resetState();
   };
   
-  // FIX: Update function signature to accept the typed data
-  const handleAddNewComponent = (activeData: DndData, over: Over, overData: DndData) => {
-    if (!activeData) return;
+  const handleAddNewComponent = (activeData: DndData, over: Over) => {
+    const { name, type } = activeData;
+    
+    const { parentId, index } = getDropTarget(over);
 
-    const newComponent: FormComponent = {
-      id: `comp-${Date.now()}`,
-      name: activeData.name,
-      type: activeData.type,
-      origin: activeData.origin,
-    };
-
-    if (activeData.origin === 'data') {
-        const componentData = activeData.data || {};
-        const nodeName = componentData.nodeName;
-        const nodeId = componentData.nodeId;
-        if (nodeName && nodeId) {
-             newComponent.binding = {
-                nodeId: nodeId,
-                nodeName: nodeName,
-                fieldId: activeData.id,
-                fieldName: activeData.name,
-                path: `${nodeName} > ${activeData.name}`,
-            }
-        }
+    if (!parentId) {
+      console.error('Could not determine a valid parent ID for the drop operation.');
+      return;
     }
     
-    // FIX: Safely access containerId from the typed overData
-    const overIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id || c.id === overData?.sortable?.containerId);
-
-    commitAction({
-      action: { type: 'COMPONENT_ADD', payload: { component: newComponent, index: overIndex } },
-      message: `Add '${newComponent.name}'`
-    });
-
-    setSelectedId(newComponent.id);
+    if (type === 'layout') {
+      const newComponent: Omit<LayoutComponent, 'id' | 'parentId'> = {
+        name: 'Layout Container',
+        componentType: 'layout',
+        children: [],
+        properties: { arrangement: 'stack', gap: 'md' },
+      };
+      commitAction({
+        action: { type: 'COMPONENT_ADD', payload: { component: newComponent, parentId, index } },
+        message: `Add 'Layout Container'`
+      });
+    } else {
+      const newComponent: Omit<FormComponent, 'id' | 'parentId'> = {
+        name,
+        componentType: 'widget',
+        type: 'text-input',
+        origin: activeData.origin,
+        binding: null
+      };
+      commitAction({
+        action: { type: 'COMPONENT_ADD', payload: { component: newComponent, parentId, index } },
+        message: `Add '${name}'`
+      });
+    }
   };
   
-  const handleReorderComponent = (active: Active, over: Over) => {
-    if (active.id !== over.id) {
-      const oldIndex = canvasComponents.findIndex((c: FormComponent) => c.id === active.id);
-      let newIndex = canvasComponents.findIndex((c: FormComponent) => c.id === over.id);
+  const handleMoveComponent = (active: Active, over: Over) => {
+    const activeId = active.id as string;
+    const { parentId: newParentId, index: newIndex } = getDropTarget(over);
+    
+    // For moves, the active item is one of our components, so its parent is known
+    const oldParentId = allComponents[activeId]?.parentId;
+    if (!oldParentId) return;
 
-      if (over.id === 'bottom-drop-zone' && oldIndex !== -1) {
-        // When dropping at the end, the new index should be the last valid index.
-        newIndex = canvasComponents.length -1;
-      }
-      
-      if (oldIndex !== -1 && newIndex !== -1) {
+    const oldParent = allComponents[oldParentId];
+    if (!oldParent || oldParent.componentType !== 'layout') return;
+    
+    const oldIndex = oldParent.children.indexOf(activeId);
+
+    if (oldParentId === newParentId) {
+      if (typeof oldIndex === 'number' && oldIndex !== newIndex) {
         commitAction({
-          action: { type: 'COMPONENT_REORDER', payload: { oldIndex, newIndex } },
-          message: `Reorder '${(active.data.current as DndData)?.name || 'component'}'`
+          action: { type: 'COMPONENT_REORDER', payload: { componentId: activeId, parentId: oldParentId, oldIndex, newIndex } },
+          message: `Reorder '${(active.data.current as DndData)?.name}'`
         });
       }
+    } else if (oldParentId && newParentId) {
+      commitAction({
+        action: { type: 'COMPONENT_MOVE', payload: { componentId: activeId, oldParentId, newParentId, newIndex } },
+        message: `Move '${(active.data.current as DndData)?.name}'`
+      });
     }
+  };
+
+  const getDropTarget = (over: Over): { parentId: string; index: number } => {
+    const overId = over.id as string;
+    const overComponent = allComponents[overId];
+
+    if (!overComponent) {
+      console.warn(`Could not find component for overId: ${overId}. Defaulting to root.`);
+      return { parentId: 'root', index: 0 };
+    }
+
+    // Case 1: Dropping on a layout container.
+    // The new item should be added to the end of this container.
+    if (overComponent.componentType === 'layout') {
+      return { parentId: overId, index: overComponent.children.length };
+    }
+    
+    // Case 2: Dropping on a regular component (widget/field).
+    // The new item should be placed in the *same container* as the item being
+    // dropped on, right at its index.
+    const parent = allComponents[overComponent.parentId];
+    if (parent && parent.componentType === 'layout') {
+      const indexInParent = parent.children.indexOf(overId);
+      return { parentId: overComponent.parentId, index: indexInParent };
+    }
+
+    // Fallback: This should rarely happen but provides a safe default.
+    console.warn('Could not determine drop target parent. Defaulting to root.');
+    return { parentId: 'root', index: 0 };
   };
   
   const resetState = () => {
-    setActiveItem(null);
+    setActiveId(null);
     setOverId(null);
   };
   
   return {
-    activeItem,
-    overId,
     handleDragStart,
     handleDragOver,
     handleDragEnd,

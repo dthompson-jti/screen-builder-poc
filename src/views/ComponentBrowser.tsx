@@ -3,7 +3,7 @@ import { useSetAtom, useAtomValue } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
 import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../data/atoms';
 import { componentListData, componentTreeData } from '../data/componentBrowserMock';
-import { DraggableComponent } from '../types';
+import { DraggableComponent, DndData } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
 import { ConnectionsDropdown } from '../components/ConnectionsDropdown';
 import panelStyles from '../components/panel.module.css';
@@ -12,17 +12,13 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `draggable-${component.id}`,
     data: { 
-      type: component.type, 
-      name: component.name, 
-      icon: component.icon, 
       id: component.id, 
+      name: component.name, 
+      type: component.type, 
+      icon: component.icon, 
       isNew: true,
       origin: 'data',
-      data: {
-        nodeId: component.nodeId,
-        nodeName: component.nodeName
-      }
-    },
+    } satisfies DndData,
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   return (
@@ -49,7 +45,6 @@ export const ComponentBrowser = () => {
         selectedNodeIdAtom: selectedNodeIdAtom,
         searchQueryAtom: componentSearchQueryAtom,
       }}
-      // FIX: Remove unnecessary type assertion. `component` is already the correct type.
       renderComponentItem={(component) => <DraggableListItem component={component} />}
       renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
         <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />

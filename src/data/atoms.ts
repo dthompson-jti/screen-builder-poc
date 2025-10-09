@@ -1,5 +1,6 @@
 // src/data/atoms.ts
 import { atom } from 'jotai';
+import { UniqueIdentifier } from '@dnd-kit/core';
 import { componentListData } from './componentBrowserMock';
 import { BoundData, ComponentGroup, DraggableComponent } from '../types';
 
@@ -35,7 +36,16 @@ export const isScreenTypePopoverOpenAtom = atom(false);
 //                         Canvas State
 // =================================================================
 // NOTE: canvasComponentsAtom is now managed in historyAtoms.ts
-export const selectedCanvasComponentIdAtom = atom<string | null>(null);
+
+// The selected component ID is now an array to support multi-select.
+// The first ID in the array is considered the "primary" selection for the properties panel.
+export const selectedCanvasComponentIdsAtom = atom<string[]>([]);
+
+// FIX: Add atoms to track the global state of a drag-and-drop operation.
+// This allows any component to react to a drag without prop drilling.
+export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
+export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
+
 
 // =================================================================
 //                     Component Browser State
