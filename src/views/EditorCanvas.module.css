@@ -5,6 +5,8 @@
   background-color: var(--surface-bg-tertiary);
   padding: var(--spacing-8);
   overflow-y: auto;
+  /* Add position relative for the floating toolbar */
+  position: relative;
 }
 
 .formCard {
@@ -67,7 +69,7 @@
   border-radius: var(--spacing-2);
   padding: var(--spacing-2);
   min-height: 80px;
-  display: flex;
+  /* The display property is now set dynamically via inline styles */
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
@@ -94,6 +96,7 @@
   justify-content: center;
   color: var(--surface-fg-tertiary);
   font-size: 0.9em;
+  display: flex; /* Always flex for centering the placeholder text */
 }
 
 .layoutContainerContent {
@@ -112,4 +115,35 @@
   border-radius: 2px;
   z-index: 1;
   pointer-events: none; /* Make sure it doesn't interfere with drop events */
+}
+
+/* --- NEW: Floating Selection Toolbar Styles --- */
+.floatingSelectionToolbar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background-color: var(--surface-bg-brand-solid);
+  border-radius: var(--spacing-2);
+  padding: var(--spacing-1p5) var(--spacing-2);
+  color: var(--control-fg-on-solid);
+  z-index: 20;
+  box-shadow: var(--surface-shadow-lg);
+  animation: fadeIn 0.15s ease-out;
+}
+
+.floatingToolbarText {
+  font-size: 0.9em;
+  font-weight: 500;
+  padding: 0 var(--spacing-2);
+  white-space: nowrap;
+}
+
+.floatingToolbarDivider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--primitives-dark-tint-700);
 }

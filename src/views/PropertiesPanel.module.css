@@ -56,6 +56,8 @@
   padding: 2px;
   cursor: pointer;
   transition: background-color 0.2s;
+  display: flex; /* To align the knob */
+  align-items: center;
 }
 .toggleKnob {
   width: 16px;
@@ -63,8 +65,18 @@
   background-color: var(--primitives-base-white);
   border-radius: 50%;
   transition: transform 0.2s;
+  transform: translateX(0);
 }
 .toggleSwitch.disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* NEW: Active state for the toggle switch */
+.toggleSwitch.active {
+  background-color: var(--control-bg-theme);
+}
+.toggleSwitch.active .toggleKnob {
+  transform: translateX(16px);
+}
+
 
 .propertiesPanelPlaceholder {
   display: flex;

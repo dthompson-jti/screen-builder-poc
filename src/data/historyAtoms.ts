@@ -2,7 +2,7 @@
 import { atom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
-import { CanvasComponent, BoundData, LayoutComponent, FormComponent } from '../types';
+import { BoundData, LayoutComponent, FormComponent, CanvasComponent } from '../types';
 import { selectedCanvasComponentIdsAtom } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
@@ -28,14 +28,18 @@ type HistoryData = {
 };
 
 // 2. DEFINE THE ACTION CONTRACT (REDUCER PATTERN)
+// FIX: The payload is now a simple object of primitives, not a complex component type.
+// The reducer is now solely responsible for object construction.
 export type HistoryAction =
-  | { type: 'COMPONENT_ADD'; payload: { component: Omit<FormComponent | LayoutComponent, 'id' | 'parentId'>; parentId: string; index: number; } }
+  | { type: 'COMPONENT_ADD'; payload: { componentType: 'layout' | 'widget' | 'field'; name: string; origin?: 'data' | 'general'; parentId: string; index: number; } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
+  | { type: 'COMPONENTS_DELETE_BULK'; payload: { componentIds: string[] } }
   | { type: 'COMPONENT_MOVE'; payload: { componentId: string; newParentId: string; oldParentId: string; newIndex: number; } }
   | { type: 'COMPONENT_REORDER'; payload: { componentId: string; parentId: string; oldIndex: number; newIndex: number; } }
   | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
   | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<LayoutComponent['properties']>; } }
+  | { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT'; payload: { componentId: string; newLayout: Partial<FormComponent['contextualLayout']> } }
   | { type: 'FORM_RENAME'; payload: { newName: string } };
 
 // 3. CREATE THE CORE ATOMS
@@ -51,7 +55,7 @@ const historyAtom = atom<HistoryData>({
         name: 'Root',
         componentType: 'layout',
         children: [],
-        properties: { arrangement: 'stack', gap: 'md' },
+        properties: { arrangement: 'stack', gap: 'md', distribution: 'start', verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto' },
       }
     },
   },
@@ -63,22 +67,23 @@ export const actionMetaHistoryAtom = atom<{ past: ActionMeta[], future: ActionMe
   future: [],
 });
 
-// Helper function to recursively delete a component and its children
 const deleteComponentAndChildren = (
-  components: NormalizedCanvasComponents,
+  components: Draft<NormalizedCanvasComponents>,
   componentId: string
 ) => {
   const componentToDelete = components[componentId];
   if (!componentToDelete) return;
-
   if (componentToDelete.componentType === 'layout' && componentToDelete.children) {
-    componentToDelete.children.forEach(childId => {
+    [...componentToDelete.children].forEach(childId => {
       deleteComponentAndChildren(components, childId);
     });
   }
+  const parent = components[componentToDelete.parentId];
+  if (parent && parent.componentType === 'layout') {
+    parent.children = parent.children.filter(id => id !== componentId);
+  }
   delete components[componentId];
 };
-
 
 // 4. CREATE THE CENTRAL ACTION DISPATCHER (THE REDUCER)
 export const commitActionAtom = atom(
@@ -88,12 +93,37 @@ export const commitActionAtom = atom(
       const nextState = produce(currentHistory, (draft: Draft<HistoryData>) => {
         const presentState = draft.present;
 
-        // Reducer logic to calculate the next state based on the action
         switch (action.action.type) {
           case 'COMPONENT_ADD': {
-            const { component, parentId, index } = action.action.payload;
+            const { componentType, name, origin, parentId, index } = action.action.payload;
             const newId = nanoid(8);
-            presentState.components[newId] = { ...component, id: newId, parentId } as CanvasComponent;
+            let newComponent: CanvasComponent;
+
+            if (componentType === 'layout') {
+              newComponent = {
+                id: newId,
+                parentId,
+                name,
+                componentType: 'layout',
+                children: [],
+                properties: {
+                  arrangement: 'stack', gap: 'md', distribution: 'start',
+                  verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto',
+                },
+              };
+            } else {
+              newComponent = {
+                id: newId,
+                parentId,
+                name,
+                componentType: 'widget',
+                type: 'text-input', // Assuming a default, can be expanded
+                origin,
+                binding: null,
+              };
+            }
+            
+            presentState.components[newId] = newComponent;
             const parent = presentState.components[parentId];
             if (parent && parent.componentType === 'layout') {
               parent.children.splice(index, 0, newId);
@@ -102,13 +132,14 @@ export const commitActionAtom = atom(
           }
           case 'COMPONENT_DELETE': {
             const { componentId } = action.action.payload;
-            const component = presentState.components[componentId];
-            if (!component) break;
-            const parent = presentState.components[component.parentId];
-            if (parent && parent.componentType === 'layout') {
-              parent.children = parent.children.filter(id => id !== componentId);
-            }
             deleteComponentAndChildren(presentState.components, componentId);
+            break;
+          }
+          case 'COMPONENTS_DELETE_BULK': {
+            const { componentIds } = action.action.payload;
+            componentIds.forEach(id => {
+              deleteComponentAndChildren(presentState.components, id);
+            });
             break;
           }
           case 'COMPONENT_REORDER': {
@@ -140,7 +171,6 @@ export const commitActionAtom = atom(
             const { componentIds, parentId } = action.action.payload;
             const parent = presentState.components[parentId];
             if (!parent || parent.componentType !== 'layout') break;
-
             const newContainerId = nanoid(8);
             const newContainer: LayoutComponent = {
               id: newContainerId,
@@ -148,15 +178,13 @@ export const commitActionAtom = atom(
               name: 'Layout Container',
               componentType: 'layout',
               children: componentIds,
-              properties: { arrangement: 'stack', gap: 'md' },
+              properties: { arrangement: 'stack', gap: 'md', distribution: 'start', verticalAlign: 'stretch', allowWrapping: false, columnLayout: 'auto' },
             };
             presentState.components[newContainerId] = newContainer;
-
             componentIds.forEach(id => {
               const child = presentState.components[id];
               if (child) child.parentId = newContainerId;
             });
-            
             const firstChildIndex = parent.children.indexOf(componentIds[0]);
             const remainingChildren = parent.children.filter(id => !componentIds.includes(id));
             remainingChildren.splice(firstChildIndex, 0, newContainerId);
@@ -168,6 +196,14 @@ export const commitActionAtom = atom(
             const component = presentState.components[componentId];
             if (component && component.componentType === 'layout') {
               component.properties = { ...component.properties, ...newProperties };
+            }
+            break;
+          }
+          case 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT': {
+            const { componentId, newLayout } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (component) {
+              component.contextualLayout = { ...component.contextualLayout, ...newLayout };
             }
             break;
           }
@@ -184,14 +220,11 @@ export const commitActionAtom = atom(
             break;
           }
         }
-        
         draft.past.push(currentHistory.present);
         draft.future = [];
       });
       return nextState;
     });
-
-    // Metadata update remains separate
     const currentSelectedIds = get(selectedCanvasComponentIdsAtom);
     const newMeta: ActionMeta = { message: action.message, selectedIds: currentSelectedIds };
     set(actionMetaHistoryAtom, (currentMetaHistory) => ({
@@ -200,7 +233,6 @@ export const commitActionAtom = atom(
     }));
   }
 );
-
 
 export const undoAtom = atom(null, (_get, set) => {
   set(historyAtom, (currentHistory) => {
@@ -213,7 +245,6 @@ export const undoAtom = atom(null, (_get, set) => {
       future: [currentHistory.present, ...currentHistory.future],
     };
   });
-
   set(actionMetaHistoryAtom, (currentMetaHistory) => {
     if (!currentMetaHistory.past.length) return currentMetaHistory;
     const lastMeta = currentMetaHistory.past[currentMetaHistory.past.length - 1];
@@ -237,7 +268,6 @@ export const redoAtom = atom(null, (_get, set) => {
       future: newFuture,
     };
   });
-  
   set(actionMetaHistoryAtom, (currentMetaHistory) => {
     if (!currentMetaHistory.future.length) return currentMetaHistory;
     const nextMeta = currentMetaHistory.future[0];
@@ -255,6 +285,5 @@ export const undoableStateAtom = atom<UndoableState>((get) => get(historyAtom).p
 export const formNameAtom = atom<string>((get) => get(undoableStateAtom).formName);
 export const canvasComponentsByIdAtom = atom<NormalizedCanvasComponents>((get) => get(undoableStateAtom).components);
 export const rootComponentIdAtom = atom<string>((get) => get(undoableStateAtom).rootComponentId);
-
 export const canUndoAtom = atom<boolean>((get) => get(historyAtom).past.length > 0);
 export const canRedoAtom = atom<boolean>((get) => get(historyAtom).future.length > 0);

@@ -13,6 +13,43 @@ import { PanelHeader } from '../components/PanelHeader';
 import { FormComponent, LayoutComponent } from '../types';
 import styles from './PropertiesPanel.module.css';
 
+// --- NEW: Contextual Panel for Children of Grids ---
+const ContextualLayoutProperties = ({ component }: { component: FormComponent | LayoutComponent }) => {
+  const commitAction = useSetAtom(commitActionAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const parent = allComponents[component.parentId];
+
+  if (!parent || parent.componentType !== 'layout' || parent.properties.arrangement !== 'grid') {
+    return null;
+  }
+
+  const handleSpanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSpan = parseInt(e.target.value, 10);
+    commitAction({
+      action: {
+        type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT',
+        payload: { componentId: component.id, newLayout: { columnSpan: newSpan } }
+      },
+      message: `Update column span for '${component.name}'`
+    });
+  };
+
+  return (
+    <div className={styles.propSection}>
+      <h4>Layout (in Grid)</h4>
+      <div className={styles.propItem}>
+        <label>Column Span</label>
+        <select value={component.contextualLayout?.columnSpan || 1} onChange={handleSpanChange}>
+          <option value={1}>1 Column</option>
+          <option value={2}>2 Columns</option>
+          <option value={3}>3 Columns</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+
 // --- Panel for Layout Component ---
 const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
   const commitAction = useSetAtom(commitActionAtom);
@@ -26,22 +63,92 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
       message: `Update layout for '${component.name}'`
     });
   };
+  
+  const handleToggleChange = (propName: keyof LayoutComponent['properties']) => {
+    handlePropertyChange({ [propName]: !component.properties[propName] });
+  };
 
   return (
-    <div className={styles.propSection}>
-      <h4>Layout</h4>
-      <div className={styles.propItem}>
-        <label>Arrangement</label>
-        <select 
-          value={component.properties.arrangement} 
-          onChange={e => handlePropertyChange({ arrangement: e.target.value as LayoutComponent['properties']['arrangement'] })}
-        >
-          <option value="stack">Vertical Stack</option>
-          <option value="row">Horizontal Row</option>
-          <option value="grid">Grid</option>
-        </select>
+    <>
+      <div className={styles.propSection}>
+        <h4>Layout</h4>
+        <div className={styles.propItem}>
+          <label>Arrangement</label>
+          <select 
+            value={component.properties.arrangement} 
+            onChange={e => handlePropertyChange({ arrangement: e.target.value as LayoutComponent['properties']['arrangement'] })}
+          >
+            <option value="stack">Vertical Stack</option>
+            <option value="row">Horizontal Row</option>
+            <option value="grid">Grid</option>
+          </select>
+        </div>
+        {component.properties.arrangement === 'row' && (
+          <>
+            <div className={styles.propItem}>
+              <label>Distribution</label>
+              <select 
+                value={component.properties.distribution}
+                onChange={e => handlePropertyChange({ distribution: e.target.value as LayoutComponent['properties']['distribution'] })}
+              >
+                <option value="start">Pack to Start</option>
+                <option value="center">Pack to Center</option>
+                <option value="end">Pack to End</option>
+                <option value="space-between">Space Between</option>
+              </select>
+            </div>
+            <div className={styles.propItem}>
+              <label>Vertical Align</label>
+              <select 
+                value={component.properties.verticalAlign}
+                onChange={e => handlePropertyChange({ verticalAlign: e.target.value as LayoutComponent['properties']['verticalAlign'] })}
+              >
+                <option value="start">Start</option>
+                <option value="center">Middle</option>
+                <option value="end">End</option>
+                <option value="stretch">Stretch</option>
+              </select>
+            </div>
+            <div className={styles.propItemToggle}>
+              <label>Allow Wrapping</label>
+              <button 
+                className={`${styles.toggleSwitch} ${component.properties.allowWrapping ? styles.active : ''}`}
+                onClick={() => handleToggleChange('allowWrapping')}
+              >
+                <div className={styles.toggleKnob} />
+              </button>
+            </div>
+          </>
+        )}
+        {component.properties.arrangement === 'grid' && (
+          <div className={styles.propItem}>
+            <label>Column Layout</label>
+            <select
+              value={component.properties.columnLayout}
+              onChange={e => handlePropertyChange({ columnLayout: e.target.value as LayoutComponent['properties']['columnLayout'] })}
+            >
+              <option value="auto">Auto</option>
+              <option value="2-col-50-50">2 Columns (50/50)</option>
+              <option value="3-col-33">3 Columns (33/33/33)</option>
+              <option value="2-col-split-left">2 Columns (66/33)</option>
+            </select>
+          </div>
+        )}
+        <div className={styles.propItem}>
+          <label>Gap</label>
+          <select 
+            value={component.properties.gap}
+            onChange={e => handlePropertyChange({ gap: e.target.value as LayoutComponent['properties']['gap'] })}
+          >
+            <option value="none">None</option>
+            <option value="sm">Small (8px)</option>
+            <option value="md">Medium (16px)</option>
+            <option value="lg">Large (24px)</option>
+          </select>
+        </div>
       </div>
-    </div>
+      <ContextualLayoutProperties component={component} />
+    </>
   );
 };
 
@@ -75,6 +182,7 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
           <input type="text" value={component.name} disabled />
         </div>
       </div>
+      <ContextualLayoutProperties component={component} />
     </>
   );
 };

@@ -16,6 +16,46 @@ interface ComponentProps {
   dndListeners?: DraggableSyntheticListeners;
 }
 
+// --- NEW: Floating Toolbar for Multi-Select ---
+const FloatingSelectionToolbar = () => {
+  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+
+  const handleWrap = () => {
+    if (selectedIds.length === 0) return;
+    const firstSelected = allComponents[selectedIds[0]];
+    if (!firstSelected) return;
+
+    commitAction({
+      action: { type: 'COMPONENTS_WRAP', payload: { componentIds: selectedIds, parentId: firstSelected.parentId } },
+      message: `Wrap ${selectedIds.length} component(s)`
+    });
+  };
+
+  const handleDelete = () => {
+    commitAction({
+      action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: selectedIds } },
+      message: `Delete ${selectedIds.length} components`
+    });
+    setSelectedIds([]);
+  };
+
+  return (
+    <div className={styles.floatingSelectionToolbar}>
+      <span className={styles.floatingToolbarText}>{selectedIds.length} selected</span>
+      <div className={styles.floatingToolbarDivider} />
+      <button className="btn btn-tertiary on-solid" onClick={handleWrap} aria-label="Wrap in container">
+        <span className="material-symbols-rounded">fullscreen_exit</span>
+      </button>
+      <button className="btn btn-tertiary on-solid" onClick={handleDelete} aria-label="Delete selected components">
+        <span className="material-symbols-rounded">delete</span>
+      </button>
+    </div>
+  );
+};
+
+
 // --- Recursive Canvas Node ---
 const CanvasNode = ({ componentId }: { componentId: string }) => {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -49,15 +89,20 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
     } satisfies DndData
   });
   
-  const style = { 
+  const sortableStyle: React.CSSProperties = { 
     transform: CSS.Transform.toString(transform), 
     transition,
   };
 
+  // Add grid span style if applicable
+  if (component.contextualLayout?.columnSpan) {
+    sortableStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
+  }
+
   const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
-    <div ref={setNodeRef} style={style} className={className} {...attributes}>
+    <div ref={setNodeRef} style={sortableStyle} className={className} {...attributes}>
       {React.cloneElement(children as React.ReactElement<ComponentProps>, { dndListeners: listeners })}
     </div>
   );
@@ -110,7 +155,6 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     }
   }, [dropIndicator, component.id]);
 
-
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
@@ -129,21 +173,49 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   };
   
   const isOverContainer = overId === component.id;
-  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${component.children.length === 0 ? styles.layoutContainerEmpty : ''} ${isOverContainer ? styles['is-over-container'] : ''}`;
+  const isEmpty = component.children.length === 0;
+  const containerClasses = `${styles.formComponentWrapper} ${styles.layoutContainer} ${isSelected ? styles.selected : ''} ${isEmpty ? styles.layoutContainerEmpty : ''} ${isOverContainer ? styles['is-over-container'] : ''}`;
+
+  // --- NEW: Dynamic Style Calculation ---
+  const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
+  const contentStyle: React.CSSProperties = {
+    display: 'flex',
+    gap: gapMap[component.properties.gap] || gapMap.md,
+  };
+
+  if (component.properties.arrangement === 'stack') {
+    contentStyle.flexDirection = 'column';
+  } else if (component.properties.arrangement === 'row') {
+    contentStyle.flexDirection = 'row';
+    contentStyle.flexWrap = component.properties.allowWrapping ? 'wrap' : 'nowrap';
+    contentStyle.justifyContent = component.properties.distribution;
+    contentStyle.alignItems = component.properties.verticalAlign;
+  } else if (component.properties.arrangement === 'grid') {
+    contentStyle.display = 'grid';
+    const gridTemplateMap = {
+      'auto': 'repeat(auto-fill, minmax(150px, 1fr))',
+      '2-col-50-50': '1fr 1fr',
+      '3-col-33': '1fr 1fr 1fr',
+      '2-col-split-left': '2fr 1fr',
+    };
+    contentStyle.gridTemplateColumns = gridTemplateMap[component.properties.columnLayout] || '1fr';
+  }
 
   return (
     <div className={containerClasses} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
-      <div ref={setNodeRef} className={styles.layoutContainerContent}>
-        <div ref={contentRef}>
-          <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
-            {component.children.map(childId => (
-              <CanvasNode key={childId} componentId={childId} />
-            ))}
-          </SortableContext>
-        </div>
+      <div ref={setNodeRef} className={styles.layoutContainerContent} style={isEmpty ? {} : contentStyle}>
+        {!isEmpty && (
+          <div ref={contentRef} style={{width: '100%'}}>
+            <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
+              {component.children.map(childId => (
+                <CanvasNode key={childId} componentId={childId} />
+              ))}
+            </SortableContext>
+          </div>
+        )}
         {indicatorTop !== null && <DropIndicator top={indicatorTop} />}
-        {component.children.length === 0 && !dropIndicator && <span>Drag components here</span>}
+        {isEmpty && !dropIndicator && <span>Drag components here</span>}
       </div>
     </div>
   );
@@ -186,7 +258,7 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
 // --- Main Canvas ---
 export const EditorCanvas = () => {
   const rootId = useAtomValue(rootComponentIdAtom);
-  const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
+  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
 
   return (
     <div className={styles.canvasContainer} onClick={() => setSelectedIds([])}>
@@ -196,6 +268,7 @@ export const EditorCanvas = () => {
           {rootId && <CanvasNode componentId={rootId} />}
         </div>
       </div>
+      {selectedIds.length > 1 && <FloatingSelectionToolbar />}
     </div>
   );
 };

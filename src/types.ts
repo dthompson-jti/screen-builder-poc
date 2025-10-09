@@ -1,51 +1,52 @@
 // src/types.ts
+// NEW FILE: Centralizing core application types as a best practice.
 
-// A generic base for all components on the canvas
 export interface BaseComponent {
   id: string;
-  parentId: string; // ID of the parent container
-  name: string; // User-defined name/label
+  parentId: string;
+  name: string;
+  componentType: 'layout' | 'field' | 'widget';
+  contextualLayout?: {
+    columnSpan?: number;
+  }
 }
 
-// Specific type for form fields/widgets
-export interface FormComponent extends BaseComponent {
-  componentType: 'widget' | 'field';
-  type: 'text-input' | 'dropdown' | 'checkbox'; // The specific kind of widget/field
-  binding?: BoundData | null;
-  origin?: 'data' | 'general';
-}
-
-// New type for our layout container
 export interface LayoutComponent extends BaseComponent {
   componentType: 'layout';
-  children: string[]; // An ordered list of child component IDs
+  children: string[];
   properties: {
     arrangement: 'stack' | 'row' | 'grid';
-    // Row-specific
-    distribution?: 'start' | 'center' | 'space-between';
-    verticalAlign?: 'start' | 'center' | 'end' | 'stretch';
-    wrapping?: boolean;
-    minItemWidth?: number;
-    // Grid-specific
-    columns?: '1' | '2' | '3' | 'sidebar-left' | 'sidebar-right';
-    // Universal
     gap: 'none' | 'sm' | 'md' | 'lg';
+    distribution: 'start' | 'center' | 'end' | 'space-between';
+    verticalAlign: 'start' | 'center' | 'end' | 'stretch';
+    allowWrapping: boolean;
+    columnLayout: 'auto' | '2-col-50-50' | '3-col-33' | '2-col-split-left';
   };
 }
 
-// A union type representing any component that can be on the canvas
-export type CanvasComponent = FormComponent | LayoutComponent;
+export interface FormComponent extends BaseComponent {
+  componentType: 'widget' | 'field';
+  type: string; // e.g., 'text-input', 'dropdown'
+  origin?: 'data' | 'general';
+  binding: BoundData | null | undefined;
+}
 
+export type CanvasComponent = LayoutComponent | FormComponent;
 
-// --- UNCHANGED BELOW ---
+export interface BoundData {
+  nodeId: string;
+  nodeName: string;
+  fieldId: string;
+  fieldName: string;
+  path: string;
+}
 
 export interface DraggableComponent {
   id: string;
   name: string;
-  type: 'widget' | 'field' | 'layout'; // Added 'layout'
+  type: 'widget' | 'field' | 'layout';
   icon: string;
   iconColor?: string;
-  // Properties for data binding modal
   nodeId?: string;
   nodeName?: string;
   path?: string;
@@ -56,18 +57,10 @@ export interface ComponentGroup {
   components: DraggableComponent[];
 }
 
-export interface BoundData {
-  nodeId: string;
-  nodeName: string;
-  fieldId: string;
-  fieldName: string;
-  path: string;
-}
-
 export interface DropdownItem {
   id: string;
   name: string;
-  isNavigable?: boolean;
+  isNavigable: boolean;
   icon: string;
   iconColor: string;
 }
@@ -75,26 +68,15 @@ export interface DropdownItem {
 export interface ComponentNode {
   id: string;
   name: string;
-  connections: number;
+  connections?: number;
 }
 
-// Add a new, central interface for all dnd-kit data payloads.
-// This provides type safety when reading data back from drag events.
 export interface DndData {
   id: string;
   name: string;
-  type: 'widget' | 'field' | 'layout' | 'container' | 'container-drop-zone';
+  type: string;
   icon?: string;
   isNew?: boolean;
   origin?: 'data' | 'general';
   childrenCount?: number;
-  // FIX: Add properties specific to the new bottom drop zone
-  parentId?: string;
-  index?: number;
-  // This property is added by dnd-kit's sortable context
-  sortable?: {
-    containerId: string;
-    index: number;
-    items: unknown[];
-  };
 }
