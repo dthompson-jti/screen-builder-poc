@@ -204,9 +204,9 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   return (
     <div className={containerClasses} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
-      <div ref={setNodeRef} className={styles.layoutContainerContent} style={isEmpty ? {} : contentStyle}>
+      <div ref={setNodeRef} className={styles.layoutContainerContent}>
         {!isEmpty && (
-          <div ref={contentRef} style={{width: '100%'}}>
+          <div ref={contentRef} style={contentStyle}>
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (
                 <CanvasNode key={childId} componentId={childId} />
