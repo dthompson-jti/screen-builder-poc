@@ -17,7 +17,8 @@ interface SelectItemProps {
 }
 
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, className, ...props }, forwardedRef) => {
+  // FIX: Remove the unused 'className' prop to resolve the ESLint warning.
+  ({ children, ...props }, forwardedRef) => {
     return (
       <RadixSelect.Item className={styles.selectItem} {...props} ref={forwardedRef}>
         <RadixSelect.ItemText>{children}</RadixSelect.ItemText>

@@ -60,9 +60,12 @@ export const DataBindingModal = () => {
   };
 
   const handleSelect = (component: DraggableComponent) => {
+    // This guard clause ensures the properties are not undefined for the code below.
     if (!component.nodeId || !component.nodeName || !component.path) return;
     
     const newBinding: BoundData = {
+      // FIX: Remove the unnecessary non-null assertions (!). The guard clause
+      // above already performs the type narrowing, making them redundant.
       nodeId: component.nodeId,
       nodeName: component.nodeName,
       fieldId: component.id,
@@ -73,7 +76,6 @@ export const DataBindingModal = () => {
   };
 
   return (
-    /* FIX: Change width to 600px */
     <Modal isOpen={isOpen} onClose={handleClose} width="600px" height="90vh">
       <div className={styles.dataBindingModalContainer}>
         <div className={styles.modalHeader}>
@@ -94,7 +96,6 @@ export const DataBindingModal = () => {
               }}
               renderComponentItem={(component) => (
                 <SelectableListItem
-                  // FIX: Remove unnecessary type assertion. `component` is already the correct type.
                   component={component}
                   isSelected={pendingSelection?.fieldId === component.id}
                   onSelect={handleSelect}
@@ -109,7 +110,6 @@ export const DataBindingModal = () => {
               )}
               showBreadcrumb={true}
               isInsideModal={true}
-              /* FIX: Add prop to autofocus the search input on modal open */
               autoFocusSearch={true}
             />
         </div>

@@ -9,6 +9,7 @@ import {
 } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
 import { DataBindingPicker } from '../components/DataBindingPicker';
+import { StaticBindingDisplay } from '../components/StaticBindingDisplay';
 import { PanelHeader } from '../components/PanelHeader';
 import { Select, SelectItem } from '../components/Select';
 import { Tooltip } from '../components/Tooltip';
@@ -274,10 +275,10 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
     });
   };
 
-  return (
-    <>
-      <div className={styles.propSection}>
-        <h4>Data</h4>
+  // FIX: Re-introduce the conditional rendering logic for the data binding control.
+  const renderBindingControl = () => {
+    if (component.origin === 'general') {
+      return (
         <div className={styles.propItem}>
           <label>Data binding</label>
           <DataBindingPicker 
@@ -285,6 +286,24 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
             onOpen={handleOpenBindingModal}
           />
         </div>
+      );
+    }
+    if (component.origin === 'data') {
+      return (
+        <div className={styles.propItem}>
+          <label>Data binding</label>
+          <StaticBindingDisplay binding={component.binding} />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      <div className={styles.propSection}>
+        <h4>Data</h4>
+        {renderBindingControl()}
       </div>
       <div className={styles.propSection}>
         <h4>Display</h4>

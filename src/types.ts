@@ -1,24 +1,32 @@
 // src/types.ts
-// Centralizing core application types as a best practice.
+// NEW FILE: Centralized type definitions for the application.
 
-export interface BaseComponent {
-  id: string;
-  parentId: string;
-  name: string;
-  componentType: 'layout' | 'field' | 'widget';
-  contextualLayout?: {
-    columnSpan?: number;
-    preventShrinking?: boolean;
-  }
+// --- Base & Data Binding ---
+export interface BoundData {
+  nodeId: string;
+  nodeName: string;
+  fieldId: string;
+  fieldName: string;
+  path: string;
 }
 
+// --- Canvas Components ---
 export type AppearanceType = 'transparent' | 'primary' | 'secondary' | 'tertiary' | 'info' | 'warning' | 'error';
-export type AppearancePadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
 
 export interface AppearanceProperties {
   type: AppearanceType;
   bordered: boolean;
-  padding: AppearancePadding;
+  padding: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+interface BaseComponent {
+  id: string;
+  parentId: string;
+  name: string;
+  contextualLayout?: {
+    columnSpan?: number;
+    preventShrinking?: boolean;
+  };
 }
 
 export interface LayoutComponent extends BaseComponent {
@@ -30,15 +38,15 @@ export interface LayoutComponent extends BaseComponent {
     distribution: 'start' | 'center' | 'end' | 'space-between';
     verticalAlign: 'start' | 'center' | 'end' | 'stretch';
     columnLayout: 'auto' | '2-col-50-50' | '3-col-33' | '2-col-split-left' | number;
-    appearance?: AppearanceProperties;
+    appearance: AppearanceProperties;
   };
 }
 
 export interface FormComponent extends BaseComponent {
   componentType: 'widget' | 'field';
-  type: string; // e.g., 'text-input', 'dropdown'
+  type: string; // e.g., 'text-input'
   origin?: 'data' | 'general';
-  binding: BoundData | null | undefined;
+  binding: BoundData | null;
 }
 
 export type CanvasComponent = LayoutComponent | FormComponent;
@@ -47,14 +55,7 @@ export type NormalizedCanvasComponents = {
   [id: string]: CanvasComponent;
 };
 
-export interface BoundData {
-  nodeId: string;
-  nodeName: string;
-  fieldId: string;
-  fieldName: string;
-  path: string;
-}
-
+// --- Component Browser & Navigator ---
 export interface DraggableComponent {
   id: string;
   name: string;
@@ -82,15 +83,23 @@ export interface DropdownItem {
 export interface ComponentNode {
   id: string;
   name: string;
-  connections?: number;
+  connections: number;
 }
 
+// --- Drag and Drop ---
 export interface DndData {
   id: string;
   name: string;
-  type: string;
+  type: 'layout' | 'widget' | 'field';
   icon?: string;
   isNew?: boolean;
   origin?: 'data' | 'general';
   childrenCount?: number;
+  // FIX: Add the optional 'data' property to carry binding info.
+  // This resolves the TypeScript errors.
+  data?: {
+    nodeId: string;
+    nodeName: string;
+    path: string;
+  };
 }

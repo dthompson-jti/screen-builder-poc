@@ -29,7 +29,15 @@ type HistoryData = {
 
 // 2. DEFINE THE ACTION CONTRACT (REDUCER PATTERN)
 export type HistoryAction =
-  | { type: 'COMPONENT_ADD'; payload: { componentType: 'layout' | 'widget' | 'field'; name: string; origin?: 'data' | 'general'; parentId: string; index: number; } }
+  | { type: 'COMPONENT_ADD'; payload: { 
+      componentType: 'layout' | 'widget' | 'field'; 
+      name: string; 
+      origin?: 'data' | 'general'; 
+      parentId: string; 
+      index: number; 
+      // FIX: Add optional bindingData to the action payload.
+      bindingData?: { nodeId: string, nodeName: string, fieldId: string, path: string };
+    } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
   | { type: 'COMPONENTS_DELETE_BULK'; payload: { componentIds: string[] } }
   | { type: 'COMPONENT_MOVE'; payload: { componentId: string; newParentId: string; oldParentId: string; newIndex: number; } }
@@ -107,7 +115,7 @@ export const commitActionAtom = atom(
 
         switch (action.action.type) {
           case 'COMPONENT_ADD': {
-            const { componentType, name, origin, parentId, index } = action.action.payload;
+            const { componentType, name, origin, parentId, index, bindingData } = action.action.payload;
             const newId = nanoid(8);
             let newComponent: CanvasComponent;
 
@@ -125,14 +133,26 @@ export const commitActionAtom = atom(
                 },
               };
             } else {
+              // FIX: Conditionally create the binding object based on the
+              // component's origin and the presence of binding data in the payload.
+              const newBinding: BoundData | null = (origin === 'data' && bindingData)
+                ? {
+                    nodeId: bindingData.nodeId,
+                    nodeName: bindingData.nodeName,
+                    fieldId: bindingData.fieldId,
+                    fieldName: name, // The name of the component is the field name
+                    path: bindingData.path,
+                  }
+                : null;
+
               newComponent = {
                 id: newId,
                 parentId,
                 name,
                 componentType: 'widget',
-                type: 'text-input', // Assuming a default, can be expanded
+                type: 'text-input',
                 origin,
-                binding: null,
+                binding: newBinding,
               };
             }
             

@@ -87,6 +87,13 @@ export const useCanvasDnd = () => {
           origin,
           parentId,
           index,
+          // FIX: Pass the nested binding data from the drag operation
+          // into the action payload. This allows the reducer to create
+          // the pre-bound component.
+          bindingData: activeData.data ? {
+            fieldId: activeData.id,
+            ...activeData.data
+          } : undefined,
         }
       },
       message: `Add '${name}'`

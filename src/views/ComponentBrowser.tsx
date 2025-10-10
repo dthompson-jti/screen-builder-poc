@@ -18,6 +18,13 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
       icon: component.icon, 
       isNew: true,
       origin: 'data',
+      data: {
+        // FIX: Add non-null assertions (!) because components from this browser
+        // are guaranteed to have these properties, satisfying the strict type check.
+        nodeId: component.nodeId!,
+        nodeName: component.nodeName!,
+        path: component.path!,
+      }
     } satisfies DndData,
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};

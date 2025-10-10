@@ -172,7 +172,8 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     data: { 
       id: component.id,
       name: component.name,
-      type: 'container', 
+      // FIX: Change 'container' to 'layout' to match the DndData type.
+      type: 'layout', 
       childrenCount: component.children.length 
     } satisfies DndData
   });
