@@ -17,9 +17,6 @@ The most critical principle of the canvas is that the "empty" placeholder is a *
 
 This architecture guarantees a "rock solid" canvas that is predictable and eliminates all "double border" bugs.
 
-
-*(Image placeholder for a diagram showing the root container with and without the empty state content)*
-
 ## Intrinsic Growth
 
 The canvas form area is designed to grow naturally with its content.
