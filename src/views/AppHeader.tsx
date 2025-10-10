@@ -15,6 +15,7 @@ import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
 import { NameEditorPopover } from '../components/NameEditorPopover';
 import { ScreenTypeBadge } from '../components/ScreenTypeBadge';
 import { ScreenTypePopover } from '../components/ScreenTypePopover';
+import { Tooltip } from '../components/Tooltip';
 import styles from './AppHeader.module.css';
 
 export const AppHeader = () => {
@@ -51,14 +52,15 @@ export const AppHeader = () => {
   return (
     <header className={styles.appHeader}>
       <div className={styles.headerLeft}>
-        <button
-          className="btn btn-tertiary icon-only"
-          title="Toggle Menu"
-          aria-label="Toggle Menu"
-          onClick={handleToggleMenu}
-        >
-          <span className="material-symbols-rounded">menu</span>
-        </button>
+        <Tooltip content="Toggle Menu">
+          <button
+            className="btn btn-tertiary icon-only"
+            aria-label="Toggle Menu"
+            onClick={handleToggleMenu}
+          >
+            <span className="material-symbols-rounded">menu</span>
+          </button>
+        </Tooltip>
         {isMenuOpen && <HeaderMenu />}
         <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
         <div className={styles.verticalDivider} />
@@ -68,13 +70,15 @@ export const AppHeader = () => {
         </div>
         <div className={styles.formNameEditor}>
           <span className={styles.formNameDisplay}>{formName}</span>
-          <button
-            className="btn btn-quaternary icon-only"
-            onClick={() => setIsNameEditorOpen(p => !p)}
-            aria-label="Edit form name"
-          >
-            <span className="material-symbols-rounded">edit</span>
-          </button>
+          <Tooltip content="Edit form name">
+            <button
+              className="btn btn-quaternary icon-only"
+              onClick={() => setIsNameEditorOpen(p => !p)}
+              aria-label="Edit form name"
+            >
+              <span className="material-symbols-rounded">edit</span>
+            </button>
+          </Tooltip>
           {isNameEditorOpen && <NameEditorPopover />}
         </div>
       </div>
@@ -90,9 +94,11 @@ export const AppHeader = () => {
 
       <div className={styles.headerRight}>
         <button className="btn btn-primary">Save</button>
-        <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
-          <span className="material-symbols-rounded">more_horiz</span>
-        </button>
+        <Tooltip content="More options">
+          <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
+            <span className="material-symbols-rounded">more_horiz</span>
+          </button>
+        </Tooltip>
         {isSettingsMenuOpen && <HeaderActionsMenu />}
         <button className="btn btn-secondary">Close</button>
       </div>

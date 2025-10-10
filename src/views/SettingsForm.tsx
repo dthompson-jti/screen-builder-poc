@@ -40,10 +40,12 @@ const renderGenericField = (field: SettingsField) => {
       return (
         <div key={field.id} className={styles.formField}>
           {label}
-          <select id={field.id}>
-            {field.placeholder && <option value="">{field.placeholder}</option>}
-            {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-          </select>
+          <div className="select-wrapper">
+            <select id={field.id}>
+              {field.placeholder && <option value="">{field.placeholder}</option>}
+              {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+            </select>
+          </div>
         </div>
       );
     default:

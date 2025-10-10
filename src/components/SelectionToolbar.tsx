@@ -4,6 +4,7 @@ import { HTMLAttributes } from 'react';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { isPropertiesPanelVisibleAtom, selectedCanvasComponentIdsAtom } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
+import { Tooltip } from './Tooltip';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {
@@ -41,26 +42,33 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
 
   return (
     <div className={styles.selectionToolbar}>
-      <div className={styles.toolbarDragHandle} {...listeners} aria-label="Drag to reorder">
-        <span className="material-symbols-rounded">drag_indicator</span>
-      </div>
+      <Tooltip content="Drag to reorder">
+        <div className={styles.toolbarDragHandle} {...listeners} aria-label="Drag to reorder">
+          <span className="material-symbols-rounded">drag_indicator</span>
+        </div>
+      </Tooltip>
       <div className={styles.toolbarDivider} />
 
       <div className={styles.toolbarActions} onMouseDown={(e) => e.stopPropagation()}>
-        <button className="btn btn-tertiary on-solid" title="Settings" aria-label="Component settings" onClick={handleSettingsClick}>
-          <span className="material-symbols-rounded">settings</span>
-        </button>
-        <button className="btn btn-tertiary on-solid" title="Wrap in container" onClick={handleWrapClick} aria-label="Wrap in container">
-          <span className="material-symbols-rounded">fullscreen_exit</span>
-        </button>
-        <button 
-          className="btn btn-tertiary on-solid"
-          title="Delete"
-          onClick={handleDeleteClick} 
-          aria-label="Delete component"
-        >
-          <span className="material-symbols-rounded">delete</span>
-        </button>
+        <Tooltip content="Settings">
+          <button className="btn btn-tertiary on-solid" aria-label="Component settings" onClick={handleSettingsClick}>
+            <span className="material-symbols-rounded">settings</span>
+          </button>
+        </Tooltip>
+        <Tooltip content="Wrap in container">
+          <button className="btn btn-tertiary on-solid" onClick={handleWrapClick} aria-label="Wrap in container">
+            <span className="material-symbols-rounded">fullscreen_exit</span>
+          </button>
+        </Tooltip>
+        <Tooltip content="Delete">
+          <button 
+            className="btn btn-tertiary on-solid"
+            onClick={handleDeleteClick} 
+            aria-label="Delete component"
+          >
+            <span className="material-symbols-rounded">delete</span>
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

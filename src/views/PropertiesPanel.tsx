@@ -85,16 +85,18 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
       </div>
       <div className={styles.propItem}>
         <label>Padding</label>
-        <select
-          value={appearance.padding}
-          onChange={e => handleAppearanceChange({ padding: e.target.value as AppearanceProperties['padding'] })}
-        >
-          <option value="none">None</option>
-          <option value="sm">Small (8px)</option>
-          <option value="md">Medium (16px)</option>
-          <option value="lg">Large (24px)</option>
-          <option value="xl">Extra Large (32px)</option>
-        </select>
+        <div className="select-wrapper">
+          <select
+            value={appearance.padding}
+            onChange={e => handleAppearanceChange({ padding: e.target.value as AppearanceProperties['padding'] })}
+          >
+            <option value="none">None</option>
+            <option value="sm">Small (8px)</option>
+            <option value="md">Medium (16px)</option>
+            <option value="lg">Large (24px)</option>
+            <option value="xl">Extra Large (32px)</option>
+          </select>
+        </div>
       </div>
     </div>
   );
@@ -137,22 +139,25 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
       {isParentGrid && (
         <div className={styles.propItem}>
           <label>Column Span</label>
-          <select value={component.contextualLayout?.columnSpan || 1} onChange={handleSpanChange}>
-            <option value={1}>1 Column</option>
-            <option value={2}>2 Columns</option>
-            <option value={3}>3 Columns</option>
-          </select>
+          <div className="select-wrapper">
+            <select value={component.contextualLayout?.columnSpan || 1} onChange={handleSpanChange}>
+              <option value={1}>1 Column</option>
+              <option value={2}>2 Columns</option>
+              <option value={3}>3 Columns</option>
+            </select>
+          </div>
         </div>
       )}
       {isParentWrappingRow && (
         <div className={styles.propItemToggle}>
-          <label>Prevent Shrinking</label>
-          <button 
-            className={`${styles.toggleSwitch} ${component.contextualLayout?.preventShrinking ? styles.active : ''}`}
-            onClick={handleShrinkToggle}
-          >
-            <div className={styles.toggleKnob} />
-          </button>
+          <label htmlFor={`prevent-shrinking-${component.id}`}>Prevent Shrinking</label>
+          <input
+            type="checkbox"
+            id={`prevent-shrinking-${component.id}`}
+            className="form-switch"
+            checked={!!component.contextualLayout?.preventShrinking}
+            onChange={handleShrinkToggle}
+          />
         </div>
       )}
     </div>
@@ -182,69 +187,79 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
         <h4>Layout</h4>
         <div className={styles.propItem}>
           <label>Arrangement</label>
-          <select 
-            value={arrangement} 
-            onChange={e => handlePropertyChange({ arrangement: e.target.value as LayoutComponent['properties']['arrangement'] })}
-          >
-            <option value="stack">Vertical Stack</option>
-            <option value="row">Horizontal Row</option>
-            <option value="wrap">Wrapping Group</option>
-            <option value="grid">Grid</option>
-          </select>
+          <div className="select-wrapper">
+            <select 
+              value={arrangement} 
+              onChange={e => handlePropertyChange({ arrangement: e.target.value as LayoutComponent['properties']['arrangement'] })}
+            >
+              <option value="stack">Vertical Stack</option>
+              <option value="row">Horizontal Row</option>
+              <option value="wrap">Wrapping Group</option>
+              <option value="grid">Grid</option>
+            </select>
+          </div>
         </div>
         {arrangement === 'row' && (
           <>
             <div className={styles.propItem}>
               <label>Distribution</label>
-              <select 
-                value={component.properties.distribution}
-                onChange={e => handlePropertyChange({ distribution: e.target.value as LayoutComponent['properties']['distribution'] })}
-              >
-                <option value="start">Pack to Start</option>
-                <option value="center">Pack to Center</option>
-                <option value="end">Pack to End</option>
-                <option value="space-between">Space Between</option>
-              </select>
+              <div className="select-wrapper">
+                <select 
+                  value={component.properties.distribution}
+                  onChange={e => handlePropertyChange({ distribution: e.target.value as LayoutComponent['properties']['distribution'] })}
+                >
+                  <option value="start">Pack to Start</option>
+                  <option value="center">Pack to Center</option>
+                  <option value="end">Pack to End</option>
+                  <option value="space-between">Space Between</option>
+                </select>
+              </div>
             </div>
             <div className={styles.propItem}>
               <label>Vertical Align</label>
-              <select 
-                value={component.properties.verticalAlign}
-                onChange={e => handlePropertyChange({ verticalAlign: e.target.value as LayoutComponent['properties']['verticalAlign'] })}
-              >
-                <option value="start">Start</option>
-                <option value="center">Middle</option>
-                <option value="end">End</option>
-                <option value="stretch">Stretch</option>
-              </select>
+              <div className="select-wrapper">
+                <select 
+                  value={component.properties.verticalAlign}
+                  onChange={e => handlePropertyChange({ verticalAlign: e.target.value as LayoutComponent['properties']['verticalAlign'] })}
+                >
+                  <option value="start">Start</option>
+                  <option value="center">Middle</option>
+                  <option value="end">End</option>
+                  <option value="stretch">Stretch</option>
+                </select>
+              </div>
             </div>
           </>
         )}
         {arrangement === 'grid' && (
           <div className={styles.propItem}>
             <label>Column Layout</label>
-            <select
-              value={component.properties.columnLayout}
-              onChange={e => handlePropertyChange({ columnLayout: e.target.value as LayoutComponent['properties']['columnLayout'] })}
-            >
-              <option value="auto">Auto</option>
-              <option value="2-col-50-50">2 Columns (50/50)</option>
-              <option value="3-col-33">3 Columns (33/33/33)</option>
-              <option value="2-col-split-left">2 Columns (66/33)</option>
-            </select>
+            <div className="select-wrapper">
+              <select
+                value={component.properties.columnLayout}
+                onChange={e => handlePropertyChange({ columnLayout: e.target.value as LayoutComponent['properties']['columnLayout'] })}
+              >
+                <option value="auto">Auto</option>
+                <option value="2-col-50-50">2 Columns (50/50)</option>
+                <option value="3-col-33">3 Columns (33/33/33)</option>
+                <option value="2-col-split-left">2 Columns (66/33)</option>
+              </select>
+            </div>
           </div>
         )}
         <div className={styles.propItem}>
           <label>Gap</label>
-          <select 
-            value={component.properties.gap}
-            onChange={e => handlePropertyChange({ gap: e.target.value as LayoutComponent['properties']['gap'] })}
-          >
-            <option value="none">None</option>
-            <option value="sm">Small (8px)</option>
-            <option value="md">Medium (16px)</option>
-            <option value="lg">Large (24px)</option>
-          </select>
+          <div className="select-wrapper">
+            <select 
+              value={component.properties.gap}
+              onChange={e => handlePropertyChange({ gap: e.target.value as LayoutComponent['properties']['gap'] })}
+            >
+              <option value="none">None</option>
+              <option value="sm">Small (8px)</option>
+              <option value="md">Medium (16px)</option>
+              <option value="lg">Large (24px)</option>
+            </select>
+          </div>
         </div>
       </div>
       <AppearancePropertiesEditor component={component} />

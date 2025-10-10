@@ -43,33 +43,7 @@
 }
 
 .propItemToggle { flex-direction: row; justify-content: space-between; align-items: center; }
-.toggleSwitch {
-  width: 36px;
-  height: 20px;
-  background-color: var(--control-border-disabled);
-  border-radius: 10px;
-  padding: 2px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-}
-.toggleKnob {
-  width: 16px;
-  height: 16px;
-  background-color: var(--primitives-base-white);
-  border-radius: 50%;
-  transition: transform 0.2s;
-  transform: translateX(0);
-}
-.toggleSwitch.disabled { opacity: 0.5; cursor: not-allowed; }
-
-.toggleSwitch.active {
-  background-color: var(--control-bg-theme);
-}
-.toggleSwitch.active .toggleKnob {
-  transform: translateX(16px);
-}
+/* The old toggle styles are now fully removed */
 
 
 .propertiesPanelPlaceholder {

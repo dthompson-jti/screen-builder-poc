@@ -2,6 +2,7 @@
 import { useAtom } from 'jotai';
 import { screenTypeAtom, isScreenTypePopoverOpenAtom } from '../data/atoms';
 import { screenTypeConfig } from '../data/screenTypeConfig';
+import { Tooltip } from './Tooltip';
 import styles from './ScreenTypeBadge.module.css';
 
 export const ScreenTypeBadge = () => {
@@ -15,14 +16,15 @@ export const ScreenTypeBadge = () => {
   };
 
   return (
-    <button
-      className={styles.badge}
-      title={tooltip}
-      onClick={handleToggle}
-      aria-haspopup="true"
-      aria-expanded={isOpen}
-    >
-      {label}
-    </button>
+    <Tooltip content={tooltip} side="bottom">
+      <button
+        className={styles.badge}
+        onClick={handleToggle}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+      >
+        {label}
+      </button>
+    </Tooltip>
   );
 };

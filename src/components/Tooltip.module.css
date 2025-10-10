@@ -1,0 +1,40 @@
+/* src/components/Tooltip.module.css */
+/* NEW FILE */
+
+.tooltipContent {
+  background-color: var(--primitives-grey-900);
+  color: var(--surface-fg-white);
+  border-radius: var(--spacing-1);
+  padding: var(--spacing-1p5) var(--spacing-3);
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: var(--surface-shadow-md);
+  border: 1px solid var(--primitives-grey-800);
+  user-select: none;
+  z-index: 2100; /* Ensure it's above other UI */
+}
+
+/* Animate using Radix's data states for robustness */
+.tooltipContent[data-state='delayed-open'] {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.tooltipContent[data-state='closed'] {
+  animation: fadeOut 0.15s ease-in;
+}
+
+.tooltipArrow {
+  fill: var(--primitives-grey-800);
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-2px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-2px) scale(0.98); }
+}

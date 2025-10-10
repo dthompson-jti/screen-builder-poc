@@ -1,6 +1,7 @@
 // src/views/MainToolbar.tsx
 import { useAtom, useAtomValue } from 'jotai';
 import { isToolbarCompactAtom, activeToolbarTabAtom, isComponentBrowserVisibleAtom, ToolbarTabId } from '../data/atoms';
+import { Tooltip } from '../components/Tooltip';
 import styles from './MainToolbar.module.css';
 
 const toolbarGroups: { id: ToolbarTabId; label: string; icon: string }[][] = [
@@ -40,18 +41,18 @@ export const MainToolbar = () => {
     const isCurrentlyActiveAndOpen = isActive && isPanelVisible;
     const buttonClasses = `${styles.toolbarButton} ${isCurrentlyActiveAndOpen ? styles.active : ''}`;
     return (
-      <button 
-        key={item.id}
-        className={buttonClasses} 
-        title={item.label} 
-        aria-label={item.label}
-        onClick={() => handleTabClick(item.id)}
-      >
-        <span className="material-symbols-rounded">{item.icon}</span>
-        {!isCompact && (
-          <span className={styles.toolbarLabel}>{item.label}</span>
-        )}
-      </button>
+      <Tooltip content={item.label} side="right" key={item.id}>
+        <button 
+          className={buttonClasses} 
+          aria-label={item.label}
+          onClick={() => handleTabClick(item.id)}
+        >
+          <span className="material-symbols-rounded">{item.icon}</span>
+          {!isCompact && (
+            <span className={styles.toolbarLabel}>{item.label}</span>
+          )}
+        </button>
+      </Tooltip>
     );
   };
 
