@@ -121,13 +121,13 @@ export const useCanvasDnd = () => {
     over: Over, 
     draggingRect: ClientRect, 
     allComponents: Record<string, CanvasComponent>
-  ): { parentId: string; index: number; rect: ClientRect | null; isGrid: boolean } | null => {
+  ): { parentId: string; index: number; viewportRect: ClientRect | null; isGrid: boolean } | null => {
     const overId = over.id as string;
     const overComponent = allComponents[overId];
     if (!overComponent) return null;
 
     if (overComponent.componentType === 'layout' && overComponent.children.length === 0) {
-      return { parentId: overId, index: 0, rect: null, isGrid: overComponent.properties.arrangement === 'grid' };
+      return { parentId: overId, index: 0, viewportRect: null, isGrid: overComponent.properties.arrangement === 'grid' };
     }
 
     const parentId = overComponent.componentType === 'layout' ? overId : overComponent.parentId;
@@ -143,29 +143,29 @@ export const useCanvasDnd = () => {
         const lastChildNode = lastChildId ? document.querySelector(`[data-id="${lastChildId}"]`) : null;
         const lastChildRect = lastChildNode?.getBoundingClientRect();
 
-        const rect = lastChildRect ? {
+        const viewportRect = lastChildRect ? {
             ...lastChildRect,
             top: lastChildRect.bottom,
             height: 4,
         } : null;
 
-        return { parentId, index: children.length, rect, isGrid };
+        return { parentId, index: children.length, viewportRect, isGrid };
     }
 
     const indexInParent = children.indexOf(overId);
     
     const isAfter = draggingRect.top > overRect.top + overRect.height / 2;
     const finalIndex = isAfter ? indexInParent + 1 : indexInParent;
-    const placeholderRect: ClientRect = {
+    const placeholderViewportRect: ClientRect = {
         top: isAfter ? overRect.bottom : overRect.top,
         left: overRect.left,
         width: overRect.width,
-        height: 4,
+        height: 4, // Default height for line indicator
         right: overRect.right,
         bottom: isAfter ? overRect.bottom + 4 : overRect.top + 4,
     };
 
-    return { parentId, index: finalIndex, rect: placeholderRect, isGrid };
+    return { parentId, index: finalIndex, viewportRect: placeholderViewportRect, isGrid };
   };
   
   const resetState = () => {

@@ -17,6 +17,7 @@ import {
   componentTreeData,
 } from '../data/componentBrowserMock';
 import { ConnectionsDropdown } from './ConnectionsDropdown';
+import { Tooltip } from './Tooltip';
 import { BoundData, DraggableComponent } from '../types';
 import styles from './DataBindingModal.module.css';
 
@@ -77,10 +78,11 @@ export const DataBindingModal = () => {
       <div className={styles.dataBindingModalContainer}>
         <div className={styles.modalHeader}>
           <h3>Select Data Binding</h3>
-          {/* FIX: Change close button to quaternary style */}
-          <button className="btn btn-quaternary icon-only" onClick={handleClose} aria-label="Close">
-            <span className="material-symbols-rounded">close</span>
-          </button>
+          <Tooltip content="Close">
+            <button className="btn btn-quaternary icon-only" onClick={handleClose} aria-label="Close">
+              <span className="material-symbols-rounded">close</span>
+            </button>
+          </Tooltip>
         </div>
         <div className={styles.modalContent}>
             <DataNavigatorView

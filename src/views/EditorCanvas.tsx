@@ -133,14 +133,23 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
 };
 
 // --- Drop Placeholder (Line or Block) ---
-const DropPlaceholder = ({ rect, parentRect }: { rect: ClientRect, parentRect: DOMRect }) => {
+const DropPlaceholder = ({ placeholderProps }: { placeholderProps: { viewportRect: ClientRect; isGrid: boolean; parentRect: DOMRect | undefined; } }) => {
+  const { viewportRect, isGrid, parentRect } = placeholderProps;
+  if (!parentRect) return null;
+
   const placeholderStyle: React.CSSProperties = {
-    top: `${rect.top - parentRect.top - 2}px`,
-    left: `${rect.left - parentRect.left}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
+    top: `${viewportRect.top - parentRect.top}px`,
+    left: `${viewportRect.left - parentRect.left}px`,
+    width: `${viewportRect.width}px`,
   };
-  return <div className={styles.dropPlaceholder} style={placeholderStyle} />;
+  
+  if (isGrid) {
+    placeholderStyle.height = `${viewportRect.height}px`;
+  }
+  
+  const className = `${styles.dropPlaceholder} ${isGrid ? styles.isGrid : ''}`;
+
+  return <div className={className} style={placeholderStyle} />;
 };
 
 
@@ -155,9 +164,9 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 
   const isRoot = component.id === rootId;
   const isSelected = selectedIds.includes(component.id);
-  const contentRef = useRef<HTMLDivElement>(null);
   const appearance = component.properties.appearance;
 
+  const containerContentRef = useRef<HTMLDivElement>(null);
   const { setNodeRef } = useDroppable({
     id: component.id,
     data: { 
@@ -167,6 +176,10 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       childrenCount: component.children.length 
     } satisfies DndData
   });
+  const setMergedRefs = (node: HTMLDivElement | null) => {
+    containerContentRef.current = node;
+    setNodeRef(node);
+  };
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -239,23 +252,30 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       : gridTemplateMap[columnLayout] || '1fr';
   }
 
-  const parentRect = contentRef.current?.getBoundingClientRect();
-  const showPlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.rect && parentRect;
+  const parentRect = containerContentRef.current?.getBoundingClientRect();
+  const showLinePlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.viewportRect && parentRect;
+  
+  const renderEmptyState = () => {
+    if (isRoot) {
+      return <CanvasEmptyState />;
+    }
+    return <span className={styles.emptyText}>Drag components here</span>;
+  };
 
   return (
     <div className={containerClasses} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
       <div 
-        ref={setNodeRef} 
+        ref={setMergedRefs} 
         className={styles.layoutContainerContent} 
         style={contentAppearanceStyle}
         data-appearance-type={appearance?.type || 'transparent'}
         data-bordered={appearance?.bordered || false}
         data-arrangement={arrangement}
       >
-        <div ref={contentRef} style={contentLayoutStyle} className="layout-content-wrapper">
+        <div style={contentLayoutStyle} className="layout-content-wrapper">
           {isEmpty ? (
-              isRoot ? <CanvasEmptyState /> : <span className={styles.emptyText}>Drag components here</span>
+              renderEmptyState()
           ) : (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (
@@ -264,7 +284,16 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
             </SortableContext>
           )}
         </div>
-        {showPlaceholder && <DropPlaceholder rect={dropPlaceholder.rect!} parentRect={parentRect} />}
+        {/* FIX: Explicitly pass props instead of spreading to fix type error */}
+        {showLinePlaceholder && (
+          <DropPlaceholder
+            placeholderProps={{
+              viewportRect: dropPlaceholder.viewportRect!,
+              isGrid: dropPlaceholder.isGrid,
+              parentRect: parentRect,
+            }}
+          />
+        )}
       </div>
     </div>
   );

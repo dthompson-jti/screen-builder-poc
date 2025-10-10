@@ -2,6 +2,7 @@
 import React from 'react';
 import { useAtom } from 'jotai';
 import { isPreviewFluidAtom, previewWidthAtom } from '../data/atoms';
+import { Tooltip } from './Tooltip';
 import styles from './PreviewToolbar.module.css';
 
 const PRESETS = [
@@ -35,23 +36,26 @@ export const PreviewToolbar = () => {
   return (
     <div className={styles.previewToolbar}>
         <div className={styles.toolbarGroup}>
-            <button
-                className={`btn btn-secondary icon-only ${isFluid ? 'active' : ''}`}
-                title="Fit to Window"
-                onClick={handleFitClick}
-            >
-                <span className="material-symbols-rounded">open_in_full</span>
-            </button>
+            <Tooltip content="Fit to Window">
+              <button
+                  className={`btn btn-secondary icon-only ${isFluid ? 'active' : ''}`}
+                  onClick={handleFitClick}
+                  aria-label="Fit to Window"
+              >
+                  <span className="material-symbols-rounded">open_in_full</span>
+              </button>
+            </Tooltip>
             <div className={styles.verticalDivider} />
             {PRESETS.map(p => (
-              <button
-                key={p.id}
-                className={`btn btn-secondary icon-only ${!isFluid && width === p.width ? 'active' : ''}`}
-                title={p.label}
-                onClick={() => handlePresetClick(p.width)}
-              >
-                <span className="material-symbols-rounded">{p.icon}</span>
-              </button>
+              <Tooltip content={p.label} key={p.id}>
+                <button
+                  className={`btn btn-secondary icon-only ${!isFluid && width === p.width ? 'active' : ''}`}
+                  onClick={() => handlePresetClick(p.width)}
+                  aria-label={p.label}
+                >
+                  <span className="material-symbols-rounded">{p.icon}</span>
+                </button>
+              </Tooltip>
             ))}
         </div>
         <div className={styles.verticalDivider} />

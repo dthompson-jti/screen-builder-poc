@@ -45,8 +45,8 @@ export const selectedCanvasComponentIdsAtom = atom<string[]>([]);
 export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
 export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
 
-// FIX: Add a dedicated atom to store the calculated position of the drop indicator line.
-export const dropPlaceholderAtom = atom<{ parentId: string; index: number; rect: ClientRect | null; isGrid: boolean; } | null>(null);
+// FIX: The rect is now explicitly a viewport-relative rect. The component will translate it.
+export const dropPlaceholderAtom = atom<{ parentId: string; index: number; viewportRect: ClientRect | null; isGrid: boolean; } | null>(null);
 
 
 // =================================================================

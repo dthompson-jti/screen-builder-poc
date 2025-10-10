@@ -1,5 +1,5 @@
 // src/views/PropertiesPanel.tsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
   selectedCanvasComponentIdsAtom,

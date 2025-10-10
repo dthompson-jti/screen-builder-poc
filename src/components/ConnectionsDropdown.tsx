@@ -5,6 +5,7 @@ import { DropdownItem } from '../types';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import { NodeNavigator } from '../data/navigator.js';
 import { SearchInput } from './SearchInput'; // Import the unified component
+import { Tooltip } from './Tooltip';
 import styles from './ConnectionsDropdown.module.css';
 
 interface ConnectionsDropdownProps {
@@ -55,13 +56,15 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
     <div className={`${styles.connectionsDropdownContainer} anim-fadeIn`} ref={dropdownRef}>
       <div className={styles.dropdownHeaderRow}>
         <h5>Navigate to...</h5>
-        <button 
-          className="btn btn-quaternary icon-only" 
-          onClick={onClose}
-          aria-label="Close connections dropdown"
-        >
-          <span className="material-symbols-rounded">close</span>
-        </button>
+        <Tooltip content="Close">
+          <button 
+            className="btn btn-quaternary icon-only" 
+            onClick={onClose}
+            aria-label="Close connections dropdown"
+          >
+            <span className="material-symbols-rounded">close</span>
+          </button>
+        </Tooltip>
       </div>
       
       {/* Replace the ad-hoc search with the unified SearchInput component */}
