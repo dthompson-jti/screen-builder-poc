@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { focusIntentAtom } from '../data/atoms';
 import { formNameAtom } from '../data/historyAtoms';
 import { settingsData, SettingsSection, SettingsField } from '../data/settingsMock';
+import { Select, SelectItem } from '../components/Select';
 import styles from './SettingsPage.module.css';
 
 const renderGenericField = (field: SettingsField) => {
@@ -40,12 +41,9 @@ const renderGenericField = (field: SettingsField) => {
       return (
         <div key={field.id} className={styles.formField}>
           {label}
-          <div className="select-wrapper">
-            <select id={field.id}>
-              {field.placeholder && <option value="">{field.placeholder}</option>}
-              {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-            </select>
-          </div>
+          <Select value="" onValueChange={() => {}} placeholder={field.placeholder}>
+            {field.options?.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+          </Select>
         </div>
       );
     default:

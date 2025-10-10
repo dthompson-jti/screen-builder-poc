@@ -7,10 +7,8 @@
   which is a cleaner, more maintainable approach.
 */
 
-/* --- Base Text Inputs, Selects, Textareas --- */
-/* (Styles moved from PropertiesPanel.css and SettingsPage.css) */
+/* --- Base Text Inputs, Textareas --- */
 input[type="text"],
-.select-wrapper select,
 textarea {
   font-family: var(--font-family-sans);
   width: 100%;
@@ -26,35 +24,20 @@ textarea {
 
 /* FIX: Add a hover state to make fields more responsive */
 input[type="text"]:not(:disabled):hover,
-.select-wrapper:hover select,
 textarea:not(:disabled):hover {
     border-color: var(--surface-border-theme-hover);
 }
 
 input[type="text"]:focus,
-.select-wrapper select:focus,
 textarea:focus {
     border-color: var(--surface-border-theme);
     box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
 
-/* NEW: Apply focus styles to the wrapper for a cohesive look */
-.select-wrapper:focus-within {
-    border-color: var(--surface-border-theme);
-    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
-}
-
 input[type="text"]:disabled,
-.select-wrapper select:disabled,
 textarea:disabled {
   background-color: var(--control-bg-disabled_subtle);
   color: var(--control-fg-disabled);
-  border-color: var(--control-border-disabled);
-  cursor: not-allowed;
-}
-
-.select-wrapper:has(select:disabled) {
-  background-color: var(--control-bg-disabled_subtle);
   border-color: var(--control-border-disabled);
   cursor: not-allowed;
 }
@@ -64,51 +47,8 @@ textarea {
   resize: vertical;
 }
 
-/* --- Custom Select Wrapper --- */
-.select-wrapper {
-  position: relative;
-  width: 100%;
-  display: block; /* Ensures it behaves like other form elements */
-  border: 1px solid var(--surface-border-primary);
-  border-radius: 6px;
-  background-color: var(--surface-bg-primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.select-wrapper:hover {
-  border-color: var(--surface-border-theme-hover);
-}
-
-.select-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: var(--spacing-3);
-  transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  pointer-events: none; /* Let clicks pass through to the select */
-  background-color: var(--surface-fg-tertiary); /* Use a color that can be masked */
-  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M5 7.5L10 12.5L15 7.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M5 7.5L10 12.5L15 7.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-}
-
-.select-wrapper select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: var(--spacing-10); /* 40px */
-  /* Make the select itself transparent so wrapper styles show through */
-  border: none;
-  background-color: transparent;
-  box-shadow: none;
-}
 
 /* --- Custom Checkbox Component --- */
-/* (Styles adapted from the example project and aligned to this project's tokens) */
 input[type="checkbox"] {
     /* Reset and Sizing */
     appearance: none;
@@ -135,7 +75,6 @@ input[type="checkbox"]::before {
     height: 9px;
     transform: scale(0);
     transition: 120ms transform ease-in-out;
-    /* The SVG checkmark from the example, with stroke color set to our on-solid token (#FFFFFF) */
     background-image: url("data:image/svg+xml,%3csvg width='12' height='9' viewBox='0 0 12 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10.6666 1.5L4.24992 7.91667L1.33325 5' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: center;
