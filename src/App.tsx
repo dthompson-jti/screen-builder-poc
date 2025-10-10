@@ -3,7 +3,7 @@
 // NOTE: This file is at the root of /src, so imports from sibling directories
 // like /state or /components will start with './'.
 
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'; // <-- REMOVED useEffect if no longer needed
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection, Active } from '@dnd-kit/core';
 import { AppHeader } from './views/AppHeader';
@@ -23,6 +23,7 @@ import { SettingsPage } from './views/SettingsPage';
 import { ToastContainer } from './components/ToastContainer';
 import { useCanvasDnd } from './data/useCanvasDnd';
 import { useUndoRedo } from './data/useUndoRedo';
+import { useUrlSync } from './data/useUrlSync'; // <-- IMPORT THE NEW HOOK
 import {
   selectedCanvasComponentIdsAtom,
   isComponentBrowserVisibleAtom,
@@ -30,9 +31,6 @@ import {
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
-  isPreviewFluidAtom,
-  previewWidthAtom,
-  AppViewMode,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
@@ -57,14 +55,15 @@ function App() {
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
-  const [viewMode, setViewMode] = useAtom(appViewModeAtom);
+  const viewMode = useAtomValue(appViewModeAtom); // Use useAtomValue since setters are in the hook
   const activeDndId = useAtomValue(activeDndIdAtom);
   const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
-  const [isFluid, setIsFluid] = useAtom(isPreviewFluidAtom);
-  const [pWidth, setPWidth] = useAtom(previewWidthAtom);
 
   const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
   const { undo, redo } = useUndoRedo();
+  
+  // --- This single line replaces ~30 lines of logic ---
+  useUrlSync();
 
   // Global keyboard listener for Undo/Redo
   useEffect(() => {
@@ -88,46 +87,9 @@ function App() {
     };
   }, [undo, redo]);
 
-  // Read state from URL on initial load
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const view = params.get('view') as AppViewMode;
-    const fluid = params.get('fluid');
-    const width = params.get('width');
-
-    if (view && ['editor', 'preview', 'settings'].includes(view)) {
-      setViewMode(view);
-    }
-    if (fluid === 'true') {
-      setIsFluid(true);
-    } else if (width && !isNaN(parseInt(width, 10))) {
-      setIsFluid(false);
-      setPWidth(parseInt(width, 10));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
-
-  // Write state to URL on change
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('view', viewMode);
-
-    if (viewMode === 'preview') {
-      if(isFluid) {
-        params.set('fluid', 'true');
-        params.delete('width');
-      } else {
-        params.delete('fluid');
-        params.set('width', pWidth.toString());
-      }
-    } else {
-      params.delete('fluid');
-      params.delete('width');
-    }
-    
-    // Use replaceState to avoid cluttering browser history
-    window.history.replaceState({}, '', `${window.location.pathname}?${params}`);
-  }, [viewMode, isFluid, pWidth]);
+  // --- THE FOLLOWING TWO useEffect BLOCKS ARE NOW REMOVED ---
+  // useEffect(() => { ... read from URL logic ... }, []); 
+  // useEffect(() => { ... write to URL logic ... }, [viewMode, isFluid, pWidth]);
 
   useEffect(() => {
     if (!isLeftPanelVisible) {
