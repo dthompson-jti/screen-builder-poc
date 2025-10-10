@@ -1,8 +1,8 @@
 // src/data/useUrlSync.ts
-// NEW FILE
 
 import { useEffect } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
+// 1. REMOVED useSetAtom from this line, as it wasn't being used.
+import { useAtom } from 'jotai'; 
 import { 
   appViewModeAtom, 
   isPreviewFluidAtom, 
@@ -37,7 +37,6 @@ export const useUrlSync = () => {
       setIsFluid(false);
       setPWidth(parseInt(width, 10));
     }
-    // We intentionally run this only once on mount to initialize state
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
@@ -46,7 +45,6 @@ export const useUrlSync = () => {
     const params = new URLSearchParams(window.location.search);
     params.set('view', viewMode);
 
-    // Only add preview-specific params when in preview mode
     if (viewMode === 'preview') {
       if(isFluid) {
         params.set('fluid', 'true');
@@ -56,12 +54,10 @@ export const useUrlSync = () => {
         params.set('width', pWidth.toString());
       }
     } else {
-      // Clean up preview params when not in preview mode
       params.delete('fluid');
       params.delete('width');
     }
     
-    // Use replaceState to update the URL without adding to browser history
     const newUrl = `${window.location.pathname}?${params}`;
     window.history.replaceState({}, '', newUrl);
   }, [viewMode, isFluid, pWidth]);

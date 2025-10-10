@@ -1,4 +1,6 @@
 // src/data/useCanvasDnd.ts
+
+import { useState } from 'react'; // 1. Import useState
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect } from '@dnd-kit/core';
 import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom } from './atoms';
@@ -20,9 +22,11 @@ export const useCanvasDnd = () => {
   const setActiveId = useSetAtom(activeDndIdAtom);
   const setOverId = useSetAtom(overDndIdAtom);
   const setDropPlaceholder = useSetAtom(dropPlaceholderAtom);
-  
+  const [activeDndItem, setActiveDndItem] = useState<Active | null>(null); // 2. Manage the state here
+
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
+    setActiveDndItem(event.active); // 3. Set the active item when a drag starts
     setSelectedIds([]);
   };
   
@@ -122,13 +126,10 @@ export const useCanvasDnd = () => {
     const overComponent = allComponents[overId];
     if (!overComponent) return null;
 
-    // Case 1: Dropping directly on an empty layout container
     if (overComponent.componentType === 'layout' && overComponent.children.length === 0) {
-      // For an empty container, the placeholder rect is calculated in the component itself
       return { parentId: overId, index: 0, rect: null, isGrid: overComponent.properties.arrangement === 'grid' };
     }
 
-    // Case 2: Dropping on a component or a populated container
     const parentId = overComponent.componentType === 'layout' ? overId : overComponent.parentId;
     const parent = allComponents[parentId];
     if (!parent || parent.componentType !== 'layout') return null;
@@ -137,7 +138,6 @@ export const useCanvasDnd = () => {
     const children = parent.children;
     const overRect = over.rect;
     
-    // If dropping on the container itself (not a child), append to the end
     if (overId === parentId) {
         const lastChildId = children[children.length - 1];
         const lastChildNode = lastChildId ? document.querySelector(`[data-id="${lastChildId}"]`) : null;
@@ -154,15 +154,13 @@ export const useCanvasDnd = () => {
 
     const indexInParent = children.indexOf(overId);
     
-    // STABILIZATION FIX: Use consistent top/bottom logic for all container types for now.
-    // This provides a stable horizontal line indicator and fixes the buggy grid indicator.
     const isAfter = draggingRect.top > overRect.top + overRect.height / 2;
     const finalIndex = isAfter ? indexInParent + 1 : indexInParent;
     const placeholderRect: ClientRect = {
         top: isAfter ? overRect.bottom : overRect.top,
         left: overRect.left,
         width: overRect.width,
-        height: 4, // A consistent 4px line
+        height: 4,
         right: overRect.right,
         bottom: isAfter ? overRect.bottom + 4 : overRect.top + 4,
     };
@@ -174,9 +172,11 @@ export const useCanvasDnd = () => {
     setActiveId(null);
     setOverId(null);
     setDropPlaceholder(null);
+    setActiveDndItem(null); // 4. Clear the active item when a drag ends
   };
   
   return {
+    activeDndItem, // 5. Return the state from the hook
     handleDragStart,
     handleDragOver,
     handleDragEnd,

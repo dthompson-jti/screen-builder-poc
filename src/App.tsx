@@ -1,11 +1,8 @@
 // src/App.tsx
-// This is the main application component.
-// NOTE: This file is at the root of /src, so imports from sibling directories
-// like /state or /components will start with './'.
 
-import React, { useEffect } from 'react'; // <-- REMOVED useEffect if no longer needed
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection, Active } from '@dnd-kit/core';
+import { useEffect } from 'react'; 
+import { useAtomValue, useSetAtom } from 'jotai'; 
+import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
 import { AppHeader } from './views/AppHeader';
 import { ComponentBrowser } from './views/ComponentBrowser';
 import { GeneralComponentsBrowser } from './views/GeneralComponentsBrowser';
@@ -23,7 +20,7 @@ import { SettingsPage } from './views/SettingsPage';
 import { ToastContainer } from './components/ToastContainer';
 import { useCanvasDnd } from './data/useCanvasDnd';
 import { useUndoRedo } from './data/useUndoRedo';
-import { useUrlSync } from './data/useUrlSync'; // <-- IMPORT THE NEW HOOK
+import { useUrlSync } from './data/useUrlSync';
 import {
   selectedCanvasComponentIdsAtom,
   isComponentBrowserVisibleAtom,
@@ -55,15 +52,16 @@ function App() {
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
-  const viewMode = useAtomValue(appViewModeAtom); // Use useAtomValue since setters are in the hook
+  const viewMode = useAtomValue(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
-  const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
-
-  const { handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
-  const { undo, redo } = useUndoRedo();
   
-  // --- This single line replaces ~30 lines of logic ---
+  // 1. Get `activeDndItem` directly from the hook
+  const { activeDndItem, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
+  const { undo, redo } = useUndoRedo();
   useUrlSync();
+
+  // --- THIS useState IS NOW REMOVED ---
+  // const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
 
   // Global keyboard listener for Undo/Redo
   useEffect(() => {
@@ -87,10 +85,6 @@ function App() {
     };
   }, [undo, redo]);
 
-  // --- THE FOLLOWING TWO useEffect BLOCKS ARE NOW REMOVED ---
-  // useEffect(() => { ... read from URL logic ... }, []); 
-  // useEffect(() => { ... write to URL logic ... }, [viewMode, isFluid, pWidth]);
-
   useEffect(() => {
     if (!isLeftPanelVisible) {
       setSelectedComponentIds([]);
@@ -107,6 +101,7 @@ function App() {
   );
 
   const renderDragOverlay = () => {
+    // This function remains unchanged as it now reads `activeDndItem` from the hook
     if (!activeDndItem) return null;
 
     const activeData = activeDndItem.data.current as DndData;
@@ -184,15 +179,10 @@ function App() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <DndContext 
         sensors={sensors} 
-        onDragStart={(e) => {
-          setActiveDndItem(e.active);
-          handleDragStart(e);
-        }} 
+        // 2. Simplify the event handlers. The hook now manages the active item internally.
+        onDragStart={handleDragStart} 
         onDragOver={handleDragOver} 
-        onDragEnd={(e) => {
-          handleDragEnd(e);
-          setActiveDndItem(null);
-        }} 
+        onDragEnd={handleDragEnd} 
         autoScroll={true}
         collisionDetection={rectIntersection}
       >
