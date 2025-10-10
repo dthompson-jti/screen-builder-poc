@@ -19,25 +19,27 @@ const appearanceDefaults: AppearanceProperties = {
   padding: 'md',
 };
 
-const swatchOptions: { id: AppearanceType, label: string }[] = [
-    { id: 'transparent', label: 'Transparent' },
-    { id: 'primary', label: 'Primary' },
-    { id: 'secondary', label: 'Secondary' },
-    { id: 'tertiary', label: 'Tertiary' },
-    { id: 'info', label: 'Info' },
-    { id: 'warning', label: 'Warning' },
-    { id: 'error', label: 'Error' },
+// --- NEW: Style Preset Definitions ---
+const presetOptions: { id: string; label: string; type: AppearanceType; bordered: boolean }[] = [
+    { id: 'transparent-noborder', label: 'Transparent', type: 'transparent', bordered: false },
+    { id: 'primary-noborder', label: 'Primary', type: 'primary', bordered: false },
+    { id: 'primary-bordered', label: 'Primary (Bordered)', type: 'primary', bordered: true },
+    { id: 'secondary-bordered', label: 'Secondary (Bordered)', type: 'secondary', bordered: true },
+    { id: 'tertiary-bordered', label: 'Tertiary (Bordered)', type: 'tertiary', bordered: true },
+    { id: 'info-bordered', label: 'Info', type: 'info', bordered: true },
+    { id: 'warning-bordered', label: 'Warning', type: 'warning', bordered: true },
+    { id: 'error-bordered', label: 'Error', type: 'error', bordered: true },
 ];
 
 // --- Style Swatch Component ---
-const StyleSwatch = ({ type, isSelected, onClick }: { type: AppearanceType, isSelected: boolean, onClick: () => void }) => {
+const StyleSwatch = ({ type, bordered, isSelected, onClick, title }: { type: AppearanceType, bordered: boolean, isSelected: boolean, onClick: () => void, title: string }) => {
   return (
     <button 
       className={`${styles.styleSwatch} ${isSelected ? styles.selected : ''}`}
       onClick={onClick}
       data-appearance-type={type}
-      data-bordered={true}
-      title={swatchOptions.find(s => s.id === type)?.label}
+      data-bordered={bordered}
+      title={title}
     >
       {isSelected && <span className={`material-symbols-rounded ${styles.checkmark}`}>check</span>}
     </button>
@@ -64,26 +66,22 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
     <div className={styles.propSection}>
       <h4>Appearance</h4>
       <div className={styles.propItem}>
-        <label>Type</label>
+        <label>Style</label>
         <div className={styles.styleSwatchGrid}>
-            {swatchOptions.map(swatch => (
-                <StyleSwatch 
-                    key={swatch.id}
-                    type={swatch.id}
-                    isSelected={appearance.type === swatch.id}
-                    onClick={() => handleAppearanceChange({ type: swatch.id })}
-                />
-            ))}
+            {presetOptions.map(preset => {
+                const isSelected = appearance.type === preset.type && appearance.bordered === preset.bordered;
+                return (
+                    <StyleSwatch 
+                        key={preset.id}
+                        type={preset.type}
+                        bordered={preset.bordered}
+                        isSelected={isSelected}
+                        onClick={() => handleAppearanceChange({ type: preset.type, bordered: preset.bordered })}
+                        title={preset.label}
+                    />
+                );
+            })}
         </div>
-      </div>
-      <div className={styles.propItemToggle}>
-        <label>Bordered</label>
-        <button 
-          className={`${styles.toggleSwitch} ${appearance.bordered ? styles.active : ''}`}
-          onClick={() => handleAppearanceChange({ bordered: !appearance.bordered })}
-        >
-          <div className={styles.toggleKnob} />
-        </button>
       </div>
       <div className={styles.propItem}>
         <label>Padding</label>

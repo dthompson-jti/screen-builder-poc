@@ -4,6 +4,7 @@ import { isComponentBrowserVisibleAtom, activeToolbarTabAtom, selectedCanvasComp
 import { rootComponentIdAtom } from '../data/historyAtoms';
 import styles from './CanvasEmptyState.module.css';
 
+// FIX: This component is now purely presentational and does not need to know about drag state.
 export const CanvasEmptyState = () => {
   const [isLeftPanelOpen, setIsPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
   const setActiveTab = useSetAtom(activeToolbarTabAtom);

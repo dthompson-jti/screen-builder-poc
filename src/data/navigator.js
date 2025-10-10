@@ -35,19 +35,22 @@ export class NodeNavigator {
   }
 
   _setupStaticLabels() {
+      // FIX: Simplify the HTML structure to a single source of truth.
+      // The static text part of the label is now handled purely in CSS.
       const labels = [
-          { selector: '.last-node-label', full: 'Last node', compact: 'Last' },
-          { selector: '.selected-node-label', full: 'Selected node', compact: 'Selected' },
-          // Connections label is dynamic, so we set up its structure here.
-          { selector: '.connected-node-label', full: 'Related nodes', compact: 'Related' }
+          { selector: '.last-node-label' },
+          { selector: '.selected-node-label' },
+          { selector: '.connected-node-label' }
       ];
-      labels.forEach(({ selector, full, compact }) => {
+      labels.forEach(({ selector }) => {
           const el = this.container.querySelector(selector);
           if (el) {
               if (selector === '.connected-node-label') {
-                  el.innerHTML = `<span class="label-full"><span class="connection-count">0</span> ${full}</span><span class="label-compact"><span class="connection-count">0</span> ${compact}</span>`;
+                  // Only the dynamic count is in the HTML.
+                  el.innerHTML = `<span class="connection-count">0</span>`;
               } else {
-                  el.innerHTML = `<span class="label-full">${full}</span><span class="label-compact">${compact}</span>`;
+                  // The other labels are now completely empty, controlled by CSS.
+                  el.innerHTML = '';
               }
           }
       });
@@ -84,7 +87,6 @@ export class NodeNavigator {
     this.layout.slideDistance = this.layout.slotWidth + gap;
     this.layout.gap = gap;
 
-    // FIX: Only update the text content of the count, not the whole innerHTML.
     const selectedNodeData = this.nodeData[this.selectedIndex];
     if (selectedNodeData) {
         const countSpans = this.container.querySelectorAll('.connection-count');
@@ -168,16 +170,7 @@ export class NodeNavigator {
 
     this.container.dispatchEvent(new CustomEvent('navigate', { bubbles: true, detail: { id: targetId } }));
     
-    const connectionsNode = this.container.querySelector('.connections-node');
-    if (connectionsNode) {
-      connectionsNode.querySelector('span').innerHTML = '';
-    }
-    if (!isBackward) {
-      const incomingNode = this.elementPool[Math.floor(this.poolSize / 2) + 2];
-      if (incomingNode) {
-        incomingNode.querySelector('span').innerHTML = '';
-      }
-    }
+    const allTextSpans = this.track.querySelectorAll('.node-button span');
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -198,10 +191,14 @@ export class NodeNavigator {
             }
         }
 
+        const newTextSpans = this.track.querySelectorAll('.node-button span');
+        gsap.to(newTextSpans, { opacity: 1, duration: 0.2, ease: 'power1.out' });
+
         this.isAnimating = false;
       }
     });
 
+    tl.to(allTextSpans, { opacity: 0, duration: 0.2, ease: 'power1.in' }, 0);
     tl.to(this.track, { x: `+=${animationDistance}`, duration: this.duration, ease: this.ease }, 0);
   }
 

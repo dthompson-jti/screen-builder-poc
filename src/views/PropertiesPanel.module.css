@@ -90,13 +90,17 @@
 /* --- NEW: Style Swatch Styles --- */
 .styleSwatchGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  /* FIX: Use auto-fit with a fixed size to prevent jitter on resize. */
+  grid-template-columns: repeat(auto-fit, 38px);
   gap: var(--spacing-2);
+  /* FIX: Align items to the start to prevent stretching when the row isn't full. */
+  justify-content: start;
 }
 
 .styleSwatch {
   position: relative;
-  width: 100%;
+  /* FIX: Set a fixed width to match the grid column size. */
+  width: 38px;
   aspect-ratio: 1;
   border-radius: 6px;
   cursor: pointer;

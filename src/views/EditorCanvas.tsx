@@ -193,7 +193,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     styles.formComponentWrapper,
     styles.layoutContainer,
     isSelected ? styles.selected : '',
-    isEmpty && !isRoot ? styles.layoutContainerEmpty : '', // Root doesn't get empty styles
+    isEmpty ? styles.layoutContainerEmpty : '',
     isOverContainer ? styles['is-over-container'] : '',
     isDragActive ? styles['drag-active'] : '',
   ].filter(Boolean).join(' ');
@@ -254,8 +254,8 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
         data-arrangement={arrangement}
       >
         <div ref={contentRef} style={contentLayoutStyle} className="layout-content-wrapper">
-          {isRoot && isEmpty && !isDragActive ? (
-            <CanvasEmptyState />
+          {isEmpty ? (
+              isRoot ? <CanvasEmptyState /> : <span className={styles.emptyText}>Drag components here</span>
           ) : (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
               {component.children.map(childId => (
@@ -265,7 +265,6 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
           )}
         </div>
         {showPlaceholder && <DropPlaceholder rect={dropPlaceholder.rect!} parentRect={parentRect} />}
-        {isEmpty && !isRoot && !isDragActive && <span className={styles.emptyText}>Drag components here</span>}
       </div>
     </div>
   );
