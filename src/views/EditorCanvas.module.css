@@ -41,10 +41,7 @@
   flex-grow: 1;
 }
 
-.canvasContainer.isDragging .formCard {
-  background-color: var(--primitives-theme-50);
-  border-color: var(--primitives-theme-300);
-}
+/* FIX: This rule, which caused the entire form card to light up, has been removed. */
 
 
 .formComponentWrapper {
@@ -64,6 +61,12 @@
 .sortableItem.isDragging {
   opacity: 0;
 }
+
+/*
+  NOTE: The CSS rule for disabling transition during drag has been removed.
+  This is now handled programmatically in EditorCanvas.tsx for greater reliability.
+*/
+
 
 .formComponentWrapper:not(.layoutContainer):hover:not(.selected) {
   background-color: var(--surface-bg-primary_hover);
@@ -138,13 +141,14 @@
   height: 4px; 
 }
 
-/* Style for the grid block indicator */
+/* Style for the grid block indicator is now a more subtle inset ring effect. */
 .dropPlaceholder.is-grid {
-  background-color: var(--control-bg-selected);
-  opacity: 0.4;
+  background-color: var(--primitives-theme-25);
   height: auto;
-  border-radius: 6px;
-  border: 1px solid var(--control-border-selected);
+  border-radius: var(--spacing-2);
+  border: 1px solid var(--primitives-theme-300);
+  box-shadow: inset 0 0 0 2px var(--primitives-theme-200);
+  opacity: 1;
 }
 
 
