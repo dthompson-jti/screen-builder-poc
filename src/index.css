@@ -67,3 +67,8 @@ body {
   width: 4px;
   right: -2px;
 }
+
+/* NEW: Global toggle for faint button borders, controlled by a data-attribute on the body */
+body[data-quaternary-borders="true"] {
+  --quaternary-border-color-on-hover: var(--surface-border-tertiary);
+}

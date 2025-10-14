@@ -53,7 +53,7 @@ const FloatingSelectionToolbar = () => {
       <span className={styles.floatingToolbarText}>{selectedIds.length} selected</span>
       <div className={styles.floatingToolbarDivider} />
       <button className="btn btn-tertiary on-solid" onClick={handleWrap} aria-label="Wrap in container">
-        <span className="material-symbols-rounded">fullscreen_exit</span>
+        <span className="material-symbols-rounded">pageless</span>
       </button>
       <button className="btn btn-tertiary on-solid" onClick={handleDelete} aria-label="Delete selected components">
         <span className="material-symbols-rounded">delete</span>
@@ -341,14 +341,22 @@ export const EditorCanvas = () => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
-  const handleCanvasClick = () => {
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    // This handler on the form card itself selects the root.
+    // It stops propagation to prevent the container's deselect handler.
+    e.stopPropagation();
     setSelectedIds([rootId]);
     setIsPropertiesPanelVisible(true);
   };
 
+  const handleContainerClick = () => {
+    // This handler on the gray background deselects everything.
+    setSelectedIds([]);
+  }
+
   return (
-    <div className={styles.canvasContainer} onClick={handleCanvasClick}>
-      <div className={styles.formCard}>
+    <div className={styles.canvasContainer} onClick={handleContainerClick}>
+      <div className={styles.formCard} onClick={handleCanvasClick}>
         <div className={styles.formCardHeader}>
           <h2>{screenName}</h2>
         </div>

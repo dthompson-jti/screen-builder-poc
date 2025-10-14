@@ -57,7 +57,8 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
         </Tooltip>
         <Tooltip content="Wrap in container">
           <button className="btn btn-tertiary on-solid" onClick={handleWrapClick} aria-label="Wrap in container">
-            <span className="material-symbols-rounded">fullscreen_exit</span>
+            {/* Change wrap in container icon to 'pageless' icon */}
+            <span className="material-symbols-rounded">pageless</span>
           </button>
         </Tooltip>
         <Tooltip content="Delete">

@@ -92,11 +92,13 @@
   border-radius: var(--spacing-2);
   cursor: pointer;
   /* FIX: Remove transform from transition as it is no longer used. */
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 .clearButton:hover:not(:disabled) {
   background-color: var(--control-bg-tertiary-hover); 
   color: var(--control-fg-tertiary-hover);
+  /* The 'x' button inside searches should also take on this style. */
+  border-color: var(--quaternary-border-color-on-hover, transparent);
 }
 .clearButton:active:not(:disabled) {
   /* FIX: Remove transform. */

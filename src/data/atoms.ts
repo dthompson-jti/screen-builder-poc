@@ -15,11 +15,17 @@ export type ScreenType = 'case-init' | 'insert' | 'update' | 'search' | 'folder-
 export const appViewModeAtom = atom<AppViewMode>('editor');
 export const isMenuOpenAtom = atom(false);
 export const isSettingsMenuOpenAtom = atom(false);
-export const isToolbarCompactAtom = atom(false);
-export const isShowBreadcrumbAtom = atom(false);
+// Change so breadcrumb is always shown.
+export const isShowBreadcrumbAtom = atom(true);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
 export const isComponentBrowserVisibleAtom = atom(false);
 export const isPropertiesPanelVisibleAtom = atom(true);
+
+// =================================================================
+//                         View Preferences
+// =================================================================
+export const isToolbarCompactAtom = atom(false);
+export const isQuaternaryBorderVisibleAtom = atom(false);
 
 // =================================================================
 //                         Settings State
@@ -30,6 +36,8 @@ export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
 export const focusIntentAtom = atom<string | null>(null);
 export const screenTypeAtom = atom<ScreenType>('case-init');
 export const isScreenTypePopoverOpenAtom = atom(false);
+export const isApiEnabledAtom = atom(true);
+export const isReadOnlyAtom = atom(true);
 
 
 // =================================================================

@@ -1,6 +1,6 @@
 // src/App.tsx
 
-import { useEffect } from 'react'; 
+import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai'; 
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
 import { AppHeader } from './views/AppHeader';
@@ -28,6 +28,7 @@ import {
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
+  isQuaternaryBorderVisibleAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
@@ -54,6 +55,7 @@ function App() {
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
+  const isQuaternaryBorderVisible = useAtomValue(isQuaternaryBorderVisibleAtom);
   
   // 1. Get `activeDndItem` directly from the hook
   const { activeDndItem, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
@@ -84,6 +86,10 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [undo, redo]);
+
+  useEffect(() => {
+    document.body.dataset.quaternaryBorders = String(isQuaternaryBorderVisible);
+  }, [isQuaternaryBorderVisible]);
 
   useEffect(() => {
     if (!isLeftPanelVisible) {

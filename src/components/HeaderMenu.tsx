@@ -1,7 +1,7 @@
-// src/components/HeaderMenu.tsx
+// src/views/HeaderMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
+import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom, isQuaternaryBorderVisibleAtom } from '../data/atoms';
 import { useUndoRedo } from '../data/useUndoRedo';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import styles from './HeaderMenu.module.css';
@@ -21,6 +21,7 @@ export const HeaderMenu = () => {
     const [isCompact, setIsCompact] = useAtom(isToolbarCompactAtom);
     const [isShowBreadcrumb, setIsShowBreadcrumb] = useAtom(isShowBreadcrumbAtom);
     const [layoutMode, setLayoutMode] = useAtom(settingsLayoutModeAtom);
+    const [isQuaternaryBorderVisible, setIsQuaternaryBorderVisible] = useAtom(isQuaternaryBorderVisibleAtom);
     const menuRef = useRef<HTMLDivElement>(null);
 
     const { undo, redo, canUndo, canRedo } = useUndoRedo();
@@ -52,6 +53,11 @@ export const HeaderMenu = () => {
         setIsMenuOpen(false);
     }
 
+    const handleToggleQuaternaryBorders = () => {
+        setIsQuaternaryBorderVisible(p => !p);
+        // Keep menu open for this one as it's a visual preference
+    }
+
     return (
         <div className={styles.headerMenuPopover} ref={menuRef}>
             <MenuOption label="Undo" onClick={handleUndo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
@@ -72,6 +78,11 @@ export const HeaderMenu = () => {
                 isChecked={layoutMode === 'two-column'}
                 onClick={handleToggleLayoutMode}
             />
+            <MenuOption 
+                label="Show faint button borders"
+                isChecked={isQuaternaryBorderVisible}
+                onClick={handleToggleQuaternaryBorders}
+            />
             <div className={styles.menuDivider}></div>
             <MenuOption 
                 label="Show version history"
@@ -81,6 +92,8 @@ export const HeaderMenu = () => {
             />
             <MenuOption label="Export" onClick={() => {}} disabled />
             <MenuOption label="Import" onClick={() => {}} disabled />
+            <div className={styles.menuDivider}></div>
+            <MenuOption label="Switch to classic editor" onClick={() => {}} disabled />
         </div>
     );
 };

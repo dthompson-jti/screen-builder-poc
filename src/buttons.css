@@ -126,6 +126,8 @@
 .btn-quaternary:hover:not(:disabled) {
   background-color: var(--control-bg-quaternary-hover);
   color: var(--control-fg-quaternary-hover);
+  /* For quaternary button borders, the border should only be on hover state. */
+  border-color: var(--quaternary-border-color-on-hover, transparent);
 }
 .btn-quaternary:active:not(:disabled) {
   /* FIX: Remove transform. The background change is the only feedback. */

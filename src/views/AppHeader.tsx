@@ -1,5 +1,5 @@
 // src/views/AppHeader.tsx
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useLayoutEffect, useRef, useState } from 'react';
 import {
   isMenuOpenAtom,
@@ -9,12 +9,14 @@ import {
   isNameEditorPopoverOpenAtom,
   isScreenTypePopoverOpenAtom,
 } from '../data/atoms';
+import { isApiEnabledAtom, isReadOnlyAtom } from '../data/atoms';
 import { formNameAtom } from '../data/historyAtoms';
 import { HeaderMenu } from '../components/HeaderMenu';
 import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
 import { NameEditorPopover } from '../components/NameEditorPopover';
 import { ScreenTypeBadge } from '../components/ScreenTypeBadge';
 import { ScreenTypePopover } from '../components/ScreenTypePopover';
+import { StatusBadge } from '../components/StatusBadge';
 import { Tooltip } from '../components/Tooltip';
 import styles from './AppHeader.module.css';
 
@@ -25,6 +27,8 @@ export const AppHeader = () => {
   const [formName] = useAtom(formNameAtom);
   const [isNameEditorOpen, setIsNameEditorOpen] = useAtom(isNameEditorPopoverOpenAtom);
   const [isScreenTypePopoverOpen] = useAtom(isScreenTypePopoverOpenAtom);
+  const isApiEnabled = useAtomValue(isApiEnabledAtom);
+  const isReadOnly = useAtomValue(isReadOnlyAtom);
 
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
@@ -64,22 +68,39 @@ export const AppHeader = () => {
         {isMenuOpen && <HeaderMenu />}
         <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
         <div className={styles.verticalDivider} />
-        <div className={styles.screenIdentifier}>
-          <ScreenTypeBadge />
-          {isScreenTypePopoverOpen && <ScreenTypePopover />}
-        </div>
-        <div className={styles.formNameEditor}>
-          <span className={styles.formNameDisplay}>{formName}</span>
-          <Tooltip content="Edit form name">
-            <button
-              className="btn btn-quaternary icon-only"
-              onClick={() => setIsNameEditorOpen(p => !p)}
-              aria-label="Edit form name"
-            >
-              <span className="material-symbols-rounded">edit</span>
-            </button>
-          </Tooltip>
-          {isNameEditorOpen && <NameEditorPopover />}
+        <div className={styles.formIdentifier}>
+          <div className={styles.screenIdentifier}>
+            <ScreenTypeBadge />
+            {isScreenTypePopoverOpen && <ScreenTypePopover />}
+            <div className={styles.verticalDivider} />
+          </div>
+          <div className={styles.formNameEditor}>
+            <span className={styles.formNameDisplay}>{formName}</span>
+            <Tooltip content="Edit form name">
+              <button
+                className="btn btn-quaternary icon-only"
+                onClick={() => setIsNameEditorOpen(p => !p)}
+                aria-label="Edit form name"
+              >
+                <span className="material-symbols-rounded">edit</span>
+              </button>
+            </Tooltip>
+            {isNameEditorOpen && <NameEditorPopover />}
+          </div>
+          {isReadOnly && (
+            <StatusBadge 
+              icon="edit_off" 
+              tooltip="This screen is read-only" 
+              variant="info" 
+            />
+          )}
+          {isApiEnabled && (
+            <StatusBadge 
+              icon="api" 
+              tooltip="This screen is API enabled" 
+              variant="info" 
+            />
+          )}
         </div>
       </div>
 

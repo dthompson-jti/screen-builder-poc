@@ -59,7 +59,8 @@ const defaultAppearance: AppearanceProperties = {
 const historyAtom = atom<HistoryData>({
   past: [],
   present: {
-    formName: "Dave's Form",
+    // Change the default screen name to 'My Screen'
+    formName: "My Screen",
     rootComponentId: 'root',
     components: {
       'root': {

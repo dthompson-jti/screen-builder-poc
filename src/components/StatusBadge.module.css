@@ -1,0 +1,31 @@
+/* src/components/StatusBadge.module.css */
+/* NEW FILE */
+
+.badge {
+  display: inline-flex;
+  padding: 2px 6px 2px 6px;
+  align-items: center;
+  gap: 2px;
+  border-radius: 6px;
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+}
+
+.badge .material-symbols-rounded {
+  font-size: 16px;
+  /* Adjust optical size and other font settings for the smaller icon */
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 16;
+}
+
+.info {
+  background: var(--primitives-blue-50);
+  border: 1px solid var(--primitives-blue-200);
+  color: var(--primitives-blue-600);
+}

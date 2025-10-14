@@ -1,6 +1,6 @@
 // src/views/DataNavigatorView.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
 import { NodeNavigator } from '../data/navigator.js';
@@ -8,6 +8,7 @@ import { PanelHeader } from '../components/PanelHeader';
 import { SearchInput } from '../components/SearchInput';
 import { EmptyStateMessage } from '../components/EmptyStateMessage';
 import panelStyles from '../components/panel.module.css';
+import { isShowBreadcrumbAtom } from '../data/atoms';
 import { ComponentNode } from '../types';
 
 // --- TYPES ---
@@ -27,7 +28,6 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   renderComponentItem: (component: TGroup['components'][0]) => React.ReactNode;
   renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string, onClose: () => void) => React.ReactNode;
   onClosePanel?: () => void;
-  showBreadcrumb?: boolean;
   isInsideModal?: boolean;
   autoFocusSearch?: boolean;
 }
@@ -46,12 +46,12 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   renderComponentItem,
   renderConnectionsDropdown,
   onClosePanel,
-  showBreadcrumb = true,
   isInsideModal = false,
   autoFocusSearch = false,
 }: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
+  const isShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const componentGroups = componentData[selectedNodeId] || [];
@@ -83,7 +83,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         mountRef.current.addEventListener('navigate', handleNavigate as EventListener);
         mountRef.current.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks-exhaustive-deps
   }, [treeData, renderConnectionsDropdown]);
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
           <PanelHeader title="Data navigator" onClose={onClosePanel} />
         )}
 
-        {showBreadcrumb && (
+        {isShowBreadcrumb && (
           <div className={panelStyles.breadcrumbWrapper}>
             <div className={panelStyles.breadcrumb}>
               <AnimatePresence>

@@ -1,7 +1,7 @@
 // src/views/ComponentBrowser.tsx
-import { useSetAtom, useAtomValue } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
-import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom, isShowBreadcrumbAtom } from '../data/atoms';
+import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom } from '../data/atoms';
 import { componentListData, componentTreeData } from '../data/componentBrowserMock';
 import { DraggableComponent, DndData } from '../types';
 import { DataNavigatorView } from './DataNavigatorView';
@@ -38,7 +38,6 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
 
 export const ComponentBrowser = () => {
   const setIsPanelVisible = useSetAtom(isComponentBrowserVisibleAtom);
-  const isShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
 
   const handleClosePanel = () => {
     setIsPanelVisible(false);
@@ -57,7 +56,6 @@ export const ComponentBrowser = () => {
         <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />
       )}
       onClosePanel={handleClosePanel}
-      showBreadcrumb={isShowBreadcrumb}
     />
   );
 };
