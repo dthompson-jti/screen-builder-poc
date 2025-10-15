@@ -31,7 +31,8 @@ export const isQuaternaryBorderVisibleAtom = atom(false);
 //                         Settings State
 // =================================================================
 // NOTE: formNameAtom is now managed in historyAtoms.ts
-export const isNameEditorPopoverOpenAtom = atom(false);
+export const isFormNameEditingAtom = atom(false);
+export const isFormNameMenuOpenAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
 export const focusIntentAtom = atom<string | null>(null);
 export const screenTypeAtom = atom<ScreenType>('case-init');

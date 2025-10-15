@@ -1,0 +1,144 @@
+/* src/components/FormNameEditor.module.css */
+
+.editorWrapper {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  border-radius: 6px;
+  position: relative;
+  min-width: 0;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.editorWrapper:hover {
+  box-shadow: inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
+}
+
+.editorWrapper:hover .formNameDisplay,
+.editorWrapper:hover .menuButton {
+  background-color: var(--control-bg-tertiary-hover);
+}
+
+.formNameDisplay:hover::after,
+.menuButton:hover::after {
+  opacity: 1;
+}
+
+.formNameDisplay,
+.menuButton {
+  position: relative;
+}
+
+.formNameDisplay::after,
+.menuButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.formNameDisplay {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--spacing-2);
+  background-color: transparent;
+  transition: background-color 0.2s;
+  cursor: text;
+  color: var(--surface-fg-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.formNameInput {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.21px;
+  color: var(--surface-fg-primary);
+  background-color: var(--surface-bg-secondary);
+  border: 1px solid var(--control-border-theme-primary);
+  border-radius: 4px;
+  padding: 3px 7px;
+  margin: 0;
+  width: auto;
+  min-width: 50px;
+  max-width: 250px;
+  box-shadow: 0 0 0 2px var(--control-border-theme-focus);
+  outline: none;
+  transition: width 0.15s ease-in-out;
+}
+
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 34px;
+  color: var(--control-fg-secondary);
+  background-color: transparent;
+  border: none;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+  padding: 0;
+}
+.menuButton:hover {
+  color: var(--control-fg-primary);
+}
+
+.menuButton::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+  background-color: transparent;
+  transition: background-color 0.2s;
+  pointer-events: none;
+}
+
+.editorWrapper:hover .menuButton::before {
+  background-color: var(--control-border-tertiary-faint-hover);
+}
+
+.menuButton.active::after {
+  opacity: 1;
+}
+
+.menuPopover {
+  position: absolute;
+  top: calc(100% + var(--spacing-1));
+  left: 0;
+  z-index: 100;
+  width: 220px;
+  background-color: var(--surface-bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--surface-border-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: var(--spacing-1);
+  animation: fadeIn 0.1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menuDivider {
+  height: 1px;
+  background-color: var(--surface-border-secondary);
+  margin: var(--spacing-1);
+}

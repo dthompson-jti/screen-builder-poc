@@ -55,25 +55,3 @@
   align-items: center;
   gap: var(--spacing-4);
 }
-
-.formNameEditor {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  height: 34px;
-  padding: 0 var(--spacing-1);
-  position: relative;
-  min-width: 0;
-}
-
-.formNameDisplay {
-  color: var(--surface-fg-primary);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.21px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}

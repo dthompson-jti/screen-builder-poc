@@ -6,14 +6,12 @@ import {
   appViewModeAtom,
   AppViewMode,
   isSettingsMenuOpenAtom,
-  isNameEditorPopoverOpenAtom,
   isScreenTypePopoverOpenAtom,
 } from '../data/atoms';
 import { isApiEnabledAtom, isReadOnlyAtom } from '../data/atoms';
-import { formNameAtom } from '../data/historyAtoms';
 import { HeaderMenu } from '../components/HeaderMenu';
 import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
-import { NameEditorPopover } from '../components/NameEditorPopover';
+import { FormNameEditor } from '../components/FormNameEditor';
 import { ScreenTypeBadge } from '../components/ScreenTypeBadge';
 import { ScreenTypePopover } from '../components/ScreenTypePopover';
 import { StatusBadge } from '../components/StatusBadge';
@@ -24,8 +22,6 @@ export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useAtom(isSettingsMenuOpenAtom);
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
-  const [formName] = useAtom(formNameAtom);
-  const [isNameEditorOpen, setIsNameEditorOpen] = useAtom(isNameEditorPopoverOpenAtom);
   const [isScreenTypePopoverOpen] = useAtom(isScreenTypePopoverOpenAtom);
   const isApiEnabled = useAtomValue(isApiEnabledAtom);
   const isReadOnly = useAtomValue(isReadOnlyAtom);
@@ -74,19 +70,7 @@ export const AppHeader = () => {
             {isScreenTypePopoverOpen && <ScreenTypePopover />}
             <div className={styles.verticalDivider} />
           </div>
-          <div className={styles.formNameEditor}>
-            <span className={styles.formNameDisplay}>{formName}</span>
-            <Tooltip content="Edit form name">
-              <button
-                className="btn btn-quaternary icon-only"
-                onClick={() => setIsNameEditorOpen(p => !p)}
-                aria-label="Edit form name"
-              >
-                <span className="material-symbols-rounded">edit</span>
-              </button>
-            </Tooltip>
-            {isNameEditorOpen && <NameEditorPopover />}
-          </div>
+          <FormNameEditor />
           {isReadOnly && (
             <StatusBadge 
               icon="edit_off" 

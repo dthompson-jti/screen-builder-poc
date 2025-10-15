@@ -64,8 +64,9 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   const instanceRef = useRef<NodeNavigator | null>(null);
 
   useEffect(() => {
-    if (mountRef.current && !instanceRef.current) {
-        const navigator = new NodeNavigator(mountRef.current);
+    const currentMountRef = mountRef.current;
+    if (currentMountRef && !instanceRef.current) {
+        const navigator = new NodeNavigator(currentMountRef);
         instanceRef.current = navigator;
         navigator.init(selectedNodeId, treeData);
         
@@ -80,11 +81,19 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
           }
         };
         
-        mountRef.current.addEventListener('navigate', handleNavigate as EventListener);
-        mountRef.current.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
+        currentMountRef.addEventListener('navigate', handleNavigate as EventListener);
+        currentMountRef.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
+        
+        // FIX: Add a cleanup function to remove event listeners.
+        // This prevents memory leaks and unintended behavior if the component re-renders.
+        return () => {
+          currentMountRef.removeEventListener('navigate', handleNavigate as EventListener);
+          currentMountRef.removeEventListener('toggleConnectionsDropdown', handleToggleDropdown);
+        }
     }
-  // eslint-disable-next-line react-hooks-exhaustive-deps
-  }, [treeData, renderConnectionsDropdown]);
+  // FIX: Satisfy the exhaustive-deps rule by including all dependencies.
+  // The cleanup function ensures this effect is safe to re-run.
+  }, [treeData, renderConnectionsDropdown, selectedNodeId, setSelectedNodeId]);
 
   useEffect(() => {
     if (instanceRef.current) {
