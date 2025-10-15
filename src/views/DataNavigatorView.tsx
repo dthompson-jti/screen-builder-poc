@@ -1,5 +1,5 @@
 // src/views/DataNavigatorView.tsx
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react'; // FIX: Removed unused 'useCallback'
 import { useAtom, useAtomValue } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
@@ -62,8 +62,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   
   const mountRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<NodeNavigator | null>(null);
-
-  // FIX: Split the useEffect into two separate, focused hooks.
 
   // Effect 1: Handles the one-time initialization of the NodeNavigator instance.
   useEffect(() => {

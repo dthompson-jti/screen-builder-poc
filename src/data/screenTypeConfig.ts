@@ -2,7 +2,8 @@
 import { ScreenType } from './atoms';
 
 export const screenTypeConfig: Record<ScreenType, { label: string; tooltip: string }> = {
-  'case-init': { label: 'Case Init', tooltip: 'Screen Type: Case Init Screen' },
+  // FIX: Update the label text.
+  'case-init': { label: 'Case Initiation', tooltip: 'Screen Type: Case Initiation Screen' },
   'insert':    { label: 'Insert', tooltip: 'Screen Type: Insert Screen' },
   'update':    { label: 'Update', tooltip: 'Screen Type: Update Screen' },
   'search':    { label: 'Search', tooltip: 'Screen Type: Search Screen' },

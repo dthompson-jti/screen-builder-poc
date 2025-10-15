@@ -1,30 +1,28 @@
 // src/views/AppHeader.tsx
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useLayoutEffect, useRef, useState } from 'react';
 import {
   isMenuOpenAtom,
   appViewModeAtom,
   AppViewMode,
-  isSettingsMenuOpenAtom,
   isScreenTypePopoverOpenAtom,
 } from '../data/atoms';
-import { isApiEnabledAtom, isReadOnlyAtom } from '../data/atoms';
+// FIX: Removed unused atom imports
 import { HeaderMenu } from '../components/HeaderMenu';
-import { HeaderActionsMenu } from '../components/HeaderActionsMenu';
+// FIX: Removed unused component import for HeaderActionsMenu
 import { FormNameEditor } from '../components/FormNameEditor';
 import { ScreenTypeBadge } from '../components/ScreenTypeBadge';
 import { ScreenTypePopover } from '../components/ScreenTypePopover';
-import { StatusBadge } from '../components/StatusBadge';
+// FIX: Removed unused component import for StatusBadge
 import { Tooltip } from '../components/Tooltip';
 import styles from './AppHeader.module.css';
 
 export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useAtom(isSettingsMenuOpenAtom);
+  // FIX: Removed unused state variables for settings menu
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
   const [isScreenTypePopoverOpen] = useAtom(isScreenTypePopoverOpenAtom);
-  const isApiEnabled = useAtomValue(isApiEnabledAtom);
-  const isReadOnly = useAtomValue(isReadOnlyAtom);
+  // FIX: Removed unused state variables for badges
 
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [underlineStyle, setUnderlineStyle] = useState({});
@@ -68,23 +66,8 @@ export const AppHeader = () => {
           <div className={styles.screenIdentifier}>
             <ScreenTypeBadge />
             {isScreenTypePopoverOpen && <ScreenTypePopover />}
-            <div className={styles.verticalDivider} />
           </div>
           <FormNameEditor />
-          {isReadOnly && (
-            <StatusBadge 
-              icon="edit_off" 
-              tooltip="This screen is read-only" 
-              variant="info" 
-            />
-          )}
-          {isApiEnabled && (
-            <StatusBadge 
-              icon="api" 
-              tooltip="This screen is API enabled" 
-              variant="info" 
-            />
-          )}
         </div>
       </div>
 
@@ -99,12 +82,6 @@ export const AppHeader = () => {
 
       <div className={styles.headerRight}>
         <button className="btn btn-primary">Save</button>
-        <Tooltip content="More options">
-          <button className="btn btn-secondary icon-only" aria-label="More options" onClick={() => setIsSettingsMenuOpen(p => !p)}>
-            <span className="material-symbols-rounded">more_horiz</span>
-          </button>
-        </Tooltip>
-        {isSettingsMenuOpen && <HeaderActionsMenu />}
         <button className="btn btn-secondary">Close</button>
       </div>
     </header>
