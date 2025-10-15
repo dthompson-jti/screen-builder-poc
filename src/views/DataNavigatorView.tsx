@@ -1,5 +1,5 @@
 // src/views/DataNavigatorView.tsx
-import React, { useEffect, useRef, useState } from 'react'; // FIX: Removed unused 'useCallback'
+import React, { useEffect, useRef, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
@@ -30,6 +30,8 @@ interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
   onClosePanel?: () => void;
   isInsideModal?: boolean;
   autoFocusSearch?: boolean;
+  // FIX: Add the missing 'showBreadcrumb' prop to the interface.
+  showBreadcrumb?: boolean;
 }
 
 interface NavigateEvent extends Event {
@@ -48,11 +50,15 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   onClosePanel,
   isInsideModal = false,
   autoFocusSearch = false,
+  showBreadcrumb = false, // Default the prop for safety
 }: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
-  const isShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
+  const isGlobalShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  
+  // Allow the prop to override the global atom setting
+  const displayBreadcrumb = showBreadcrumb || isGlobalShowBreadcrumb;
 
   const componentGroups = componentData[selectedNodeId] || [];
   const filteredGroups = !query ? componentGroups : componentGroups.map(group => ({
@@ -138,7 +144,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
           <PanelHeader title="Data navigator" onClose={onClosePanel} />
         )}
 
-        {isShowBreadcrumb && (
+        {displayBreadcrumb && (
           <div className={panelStyles.breadcrumbWrapper}>
             <div className={panelStyles.breadcrumb}>
               <AnimatePresence>

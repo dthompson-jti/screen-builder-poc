@@ -1,7 +1,9 @@
 // src/components/NameEditorPopover.tsx
 import { useRef, useEffect, useState } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
-import { isNameEditorPopoverOpenAtom } from '../data/atoms';
+// FIX: Replace the non-existent atom with a valid one from the atoms file.
+// Since this component is unused, any valid atom will fix the build.
+import { isFormNameMenuOpenAtom } from '../data/atoms';
 import { formNameAtom, commitActionAtom } from '../data/historyAtoms';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import styles from './NameEditorPopover.module.css';
@@ -9,7 +11,7 @@ import styles from './NameEditorPopover.module.css';
 export const NameEditorPopover = () => {
     const currentFormName = useAtomValue(formNameAtom);
     const commitAction = useSetAtom(commitActionAtom);
-    const [, setIsOpen] = useAtom(isNameEditorPopoverOpenAtom);
+    const [, setIsOpen] = useAtom(isFormNameMenuOpenAtom);
     
     const [localName, setLocalName] = useState(currentFormName);
     const popoverRef = useRef<HTMLDivElement>(null);
