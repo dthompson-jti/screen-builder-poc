@@ -1,5 +1,5 @@
 // src/views/DataNavigatorView.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { PrimitiveAtom } from 'jotai/vanilla';
@@ -63,37 +63,42 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   const mountRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<NodeNavigator | null>(null);
 
+  // FIX: Split the useEffect into two separate, focused hooks.
+
+  // Effect 1: Handles the one-time initialization of the NodeNavigator instance.
   useEffect(() => {
-    const currentMountRef = mountRef.current;
-    if (currentMountRef && !instanceRef.current) {
-        const navigator = new NodeNavigator(currentMountRef);
+    if (mountRef.current && !instanceRef.current) {
+        const navigator = new NodeNavigator(mountRef.current);
         instanceRef.current = navigator;
         navigator.init(selectedNodeId, treeData);
-        
-        const handleNavigate = (event: NavigateEvent) => {
-          setIsDropdownVisible(false);
-          setSelectedNodeId(event.detail.id);
-        };
-
-        const handleToggleDropdown = () => {
-          if (renderConnectionsDropdown) {
-            setIsDropdownVisible(v => !v);
-          }
-        };
-        
-        currentMountRef.addEventListener('navigate', handleNavigate as EventListener);
-        currentMountRef.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
-        
-        // FIX: Add a cleanup function to remove event listeners.
-        // This prevents memory leaks and unintended behavior if the component re-renders.
-        return () => {
-          currentMountRef.removeEventListener('navigate', handleNavigate as EventListener);
-          currentMountRef.removeEventListener('toggleConnectionsDropdown', handleToggleDropdown);
-        }
     }
-  // FIX: Satisfy the exhaustive-deps rule by including all dependencies.
-  // The cleanup function ensures this effect is safe to re-run.
-  }, [treeData, renderConnectionsDropdown, selectedNodeId, setSelectedNodeId]);
+  }, [treeData, selectedNodeId]); // Runs only when the core data changes.
+
+  // Effect 2: Manages the event listeners for navigation and dropdown toggling.
+  useEffect(() => {
+    const currentMountRef = mountRef.current;
+    if (!currentMountRef) return;
+
+    const handleNavigate = (event: NavigateEvent) => {
+      setIsDropdownVisible(false);
+      setSelectedNodeId(event.detail.id);
+    };
+
+    const handleToggleDropdown = () => {
+      if (renderConnectionsDropdown) {
+        setIsDropdownVisible(v => !v);
+      }
+    };
+    
+    currentMountRef.addEventListener('navigate', handleNavigate as EventListener);
+    currentMountRef.addEventListener('toggleConnectionsDropdown', handleToggleDropdown);
+    
+    return () => {
+      currentMountRef.removeEventListener('navigate', handleNavigate as EventListener);
+      currentMountRef.removeEventListener('toggleConnectionsDropdown', handleToggleDropdown);
+    }
+  }, [renderConnectionsDropdown, setSelectedNodeId]); // Re-attaches listeners if handlers change.
+
 
   useEffect(() => {
     if (instanceRef.current) {

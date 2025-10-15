@@ -131,8 +131,9 @@
 }
 
 /* FIX: Use CSS content to inject the correct label text, preventing duplication. */
-.node-navigator .last-node-label::after { content: 'Last node'; }
-.node-navigator .selected-node-label::after { content: 'Selected node'; }
+/* Text update for labels */
+.node-navigator .last-node-label::after { content: 'Last Entity'; }
+.node-navigator .selected-node-label::after { content: 'Selected Entity'; }
 .node-navigator .connected-node-label::after { content: ' Related nodes'; }
 
 
