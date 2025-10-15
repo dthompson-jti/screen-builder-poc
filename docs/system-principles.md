@@ -21,12 +21,12 @@ Components and layouts should be intrinsically sized by default. They should nat
 
 The UI should reflect the application's state by changing the appearance of existing elements, not by swapping out chunks of the DOM.
 
--   **Modifier Classes:** Use clear, state-based modifier classes (e.g., `.is-active`, `.is-empty`, `.drag-active`) to apply styles.
+-   **Modifier Classes:** Use clear, state-based modifier classes (e.g., `.is-active`, `.is-empty`, `.drag-active`) or data attributes (`data-state="active"`) to apply styles.
 -   **Stability:** An element's presence in the DOM should be stable. A component should not be unmounted and remounted just to change its appearance, as this is visually jarring and inefficient. The "rock solid" placeholder is a key example: it is always present when the canvas is empty, and only its parent's *appearance* changes during a drag.
 
 ## 4. High-Craft Transitions
 
 All state changes should be communicated to the user through smooth, purposeful transitions. Abrupt jumps in the UI are unacceptable.
 
--   **Animatable Properties:** Transitions must only be applied to performant, animatable CSS properties (`transform`, `opacity`, `height`, `color`, etc.). Non-animatable properties (`display`, `grid-template-rows`) must not be used for state transitions.
+-   **Animatable Properties:** Transitions must only be applied to performant, animatable CSS properties (`transform`, `opacity`, `height`, `color`, etc.). Non-animatable properties (`display`) must not be used for state transitions.
 -   **Purposeful Animation:** Animations should have a clear purpose. The Node Navigator's text cross-fade, for instance, smoothly handles the change of context without distracting the user. The animation should feel like a natural consequence of the user's action.

@@ -49,59 +49,25 @@ To import from another top-level directory like `/data` or `/components`, you mu
 // Example from src/views/PropertiesPanel.tsx
 
 // Correct:
-import { canvasComponentsAtom } from '../data/atoms';
+import { selectedCanvasComponentIdsAtom } from '../data/atoms';
 import { DataBindingPicker } from '../components/DataBindingPicker';
 import { FormComponent } from '../types'; // Goes up to /src to find types.ts
 ```
 
 ## 4. Styling Conventions
 
-This project employs a **hybrid CSS architecture** that combines the strengths of global utility stylesheets with the safety of locally-scoped component styles via **CSS Modules**.
+This project employs a **hybrid CSS architecture** that combines the strengths of global utility stylesheets with the safety of locally-scoped component styles via **CSS Modules**. See the full **[Styling Architecture Guide](./STYLING_ARCHITECTURE.md)** for details.
 
 ### 4.1. File Naming and Location
 
 -   **Component-Specific Styles:** Must be co-located with their corresponding `.tsx` component file and named with the `*.module.css` extension (e.g., `Button.tsx` and `Button.module.css`).
 -   **Global Utility Styles:** A small, curated set of stylesheets that apply globally. These are located in the `/src` directory and use the standard `*.css` extension.
 
-### 4.2. Global Stylesheets
-
-The following files are intentionally global and are imported **only once** in `src/index.css`. **Do not import these anywhere else.**
-
--   `src/buttons.css`: Global styles for `.btn`, `.btn-primary`, etc.
--   `src/forms.css`: Base styles for `input`, `select`, `textarea`, `checkbox`.
--   `src/menu.css`: Global styles for popover menu items (`.menu-item`).
--   `src/tabs.css`: Styles for tab components (`.tab-group`, `.tab-button`).
--   `src/design-tokens.css`: The foundational design token library.
--   `src/navigator.css`: A special case for the non-React `navigator.js` component, manually scoped with the `.node-navigator` class.
-
-### 4.3. Using CSS Modules
-
--   **Importing:** Import the module into your component file: `import styles from './MyComponent.module.css';`
--   **Applying Classes:** Use the imported `styles` object to apply class names. This guarantees that styles are scoped and will not conflict with other components.
-
-    ```typescript
-    // Correct usage within a component
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>Welcome</h1>
-      </div>
-    );
-    ```
-
--   **Combining Classes:** To combine a module class with a global class or a conditional class, use template literals.
-
-    ```typescript
-    const isActive = true;
-    const buttonClasses = `btn btn-primary ${isActive ? styles.active : ''}`;
-
-    return <button className={buttonClasses}>Click Me</button>;
-    ```
-
-### 4.4. TypeScript Integration
+### 4.2. TypeScript Integration
 
 To provide TypeScript with type information for `.module.css` files, a declaration file is required.
 
--   **File:** `src/vite-env.d.ts`
+-   **File:** `vite-env.d.ts`
 -   **Content:** This file must contain the following module declaration:
     ```typescript
     declare module '*.module.css' {
@@ -112,7 +78,8 @@ To provide TypeScript with type information for `.module.css` files, a declarati
 
 ## 5. TypeScript Configuration
 
-The project uses a solution-style `tsconfig.json` at the root.
+The project uses a solution-style `tsconfig.json` setup.
 
 -   The primary configuration for the application source code is `tsconfig.app.json`.
--   Crucially, `tsconfig.app.json` must **NOT** extend the root `tsconfig.json`, as this creates a circular dependency that can break the VS Code language server's module resolution.
+-   The configuration for build-time files is `tsconfig.node.json`.
+-   This setup ensures correct module resolution for both the application and development tooling like Vite.

@@ -1,4 +1,5 @@
-# Layout and Canvas Architecture
+
+# Canvas and Layout Architecture
 
 This document specifies the architecture and principles for the editor canvas, ensuring a stable, predictable, and intuitive user experience.
 
@@ -29,4 +30,4 @@ The canvas form area is designed to grow naturally with its content.
 To improve legibility and provide a clear visual separation between a component and its selection/hover state, all components on the canvas have a small, consistent padding applied via the `.formComponentWrapper`.
 
 -   **Contract:** This padding is an **editor-only artifact**.
--   **Implementation:** It is applied by `EditorCanvas.module.css` and is therefore not present in the `FormRenderer` used for Preview Mode, ensuring a pixel-perfect final output.
+-   **Implementation:** It is applied by `EditorCanvas.module.css` and is therefore not present in the `FormRenderer` component used for Preview Mode, ensuring a pixel-perfect final output.
