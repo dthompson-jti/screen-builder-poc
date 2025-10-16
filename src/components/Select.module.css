@@ -1,14 +1,13 @@
 /* src/components/Select.module.css */
 
 .selectTrigger {
-  /* FIX: Change to flex to ensure it properly fills block-level containers */
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-1);
   font-family: var(--font-family-sans);
   width: 100%;
-  height: 38px; /* Standardize height with other controls */
+  height: 38px;
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid var(--surface-border-primary);
   border-radius: 6px;
@@ -40,15 +39,14 @@
 
 
 .selectContent {
-  /* FIX: Use Radix-provided CSS variable to match the trigger's width */
   width: var(--radix-select-trigger-width);
-  min-width: 180px; /* Prevent it from being too narrow on small triggers */
+  min-width: 180px;
   background-color: var(--surface-bg-primary);
   border-radius: var(--spacing-2);
   padding: var(--spacing-1);
   box-shadow: var(--surface-shadow-lg);
   border: 1px solid var(--surface-border-primary);
-  z-index: 1100; /* Above modals but below toasts */
+  z-index: 1100;
   overflow: hidden;
 }
 
@@ -56,9 +54,8 @@
   animation: fadeIn 0.15s ease-out;
 }
 
-/* NEW: Style for the scrollable viewport inside the popover */
 .selectViewport {
-  max-height: 256px; /* Prevent long lists from overflowing the screen */
+  max-height: 256px;
 }
 
 .selectScrollButton {
@@ -79,16 +76,30 @@
   display: flex;
   align-items: center;
   height: 32px;
-  padding: 0 var(--spacing-3) 0 34px; /* Make space for the checkmark */
+  /* FIX: Restore original padding, as border is gone. */
+  padding: 0 var(--spacing-3) 0 34px;
   position: relative;
   user-select: none;
   outline: none;
   cursor: pointer;
+  /* FIX: Remove the transparent border entirely. */
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
+/* Default highlighted state uses a single inset shadow for the faint border. */
 .selectItem[data-highlighted] {
-  background-color: var(--control-bg-secondary-hover);
+  background-color: var(--control-bg-quaternary-hover);
+  box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
 }
+
+/* FIX: The opt-in accented style now uses a layered box-shadow. */
+body[data-thick-left-borders="true"] .selectItem[data-highlighted] {
+  background-color: var(--control-bg-tertiary-hover);
+  box-shadow: 
+    inset 3px 0 0 0 var(--control-border-tertiary-hover), 
+    inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
+}
+
 
 .selectItemIndicator {
   position: absolute;

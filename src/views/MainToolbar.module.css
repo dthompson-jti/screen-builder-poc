@@ -28,47 +28,50 @@
 }
 
 .toolbarButton {
-  border: none;
   background-color: transparent;
   border-radius: var(--spacing-2);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s, opacity 0.2s, color 0.2s, width 0.3s ease, height 0.3s ease, padding 0.3s ease, border 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, outline-color 0.2s;
   box-sizing: border-box;
-  /* FIX: Set the base color context on the button itself */
   color: var(--surface-fg-quaternary);
+  /* Base state reserves 2px for the active border to prevent layout shift. */
+  border: 2px solid transparent;
+  /* Base state has a transparent outline that will be colored on hover. */
+  outline: 1px solid transparent;
+  /* Pull the outline inside the border box to prevent increasing the element size. */
+  outline-offset: -1px;
 }
 
 .toolbarButton .material-symbols-rounded {
   font-size: 24px;
-  /* FIX: Icon color will now inherit from the button's color property */
   color: inherit; 
   transition: color 0.2s;
 }
 
+/* FIX: On hover, we now color the outline. This creates a crisp 1px border inside the reserved space without layout shift. */
 .toolbarButton:hover:not(.active):not(:disabled) {
-  background-color: var(--control-bg-secondary-hover);
-  /* FIX: Set the hover color on the button */
+  background-color: var(--control-bg-quaternary-hover);
   color: var(--surface-fg-secondary);
+  outline-color: var(--quaternary-border-color-on-hover, transparent);
 }
 
 .toolbarButton.active {
-  /* FIX: Set the active color on the button */
   color: var(--control-fg-selected);
+  /* Ensure the hover outline is turned off when the button is active. */
+  outline-color: transparent;
 }
 
 .mainToolbar.compact .toolbarButton {
   width: 44px;
   height: 44px;
-  border: 1px solid transparent;
 }
 
 .mainToolbar.compact .toolbarButton.active {
   background-color: var(--control-bg-selected);
-  border: 2px solid var(--control-border-selected);
-  padding: 0; 
+  border-color: var(--control-border-selected);
 }
 .mainToolbar.compact .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);
@@ -80,14 +83,11 @@
   flex-direction: column;
   justify-content: center;
   gap: var(--spacing-1);
-  padding: 1px 0;
-  border: 1px solid transparent; 
 }
 
 .toolbarLabel {
   font-size: 14px; 
   font-weight: 500;
-  /* FIX: Label color also inherits from the button's color property */
   color: inherit;
   line-height: 1;
   transition: color 0.2s;
@@ -95,8 +95,7 @@
 
 .mainToolbar.normal .toolbarButton.active {
   background-color: var(--control-bg-selected);
-  border: 2px solid var(--control-border-selected);
-  padding: 0; 
+  border-color: var(--control-border-selected);
 }
 .mainToolbar.normal .toolbarButton.active:hover {
   background-color: var(--control-bg-selected-hover);

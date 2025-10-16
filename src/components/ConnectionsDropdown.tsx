@@ -38,12 +38,12 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const filteredCollections = data.collections.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   const filteredTransientEntities = data.transientEntityFields.filter(item => item.name.toLowerCase().includes(lowerCaseQuery));
   
-  // FIX: Determine if there are any results to display after filtering.
   const hasResults = filteredEntities.length > 0 || filteredCollections.length > 0 || filteredTransientEntities.length > 0;
 
   const renderListItems = (items: DropdownItem[]) => {
     return items.map((item: DropdownItem) => (
-      <li key={item.id} className={`${styles.dropdownItem} ${item.isNavigable ? styles.navigable : ''}`} onClick={() => handleItemClick(item)}>
+      // FIX: Use the global .menu-item class for styling and a local module class to modify state.
+      <li key={item.id} className={`menu-item ${!item.isNavigable ? styles.nonNavigable : ''}`} onClick={() => handleItemClick(item)}>
         <span className={`material-symbols-rounded ${styles.itemIcon}`} style={{ color: item.iconColor }}>
           {item.icon}
         </span>
@@ -67,7 +67,6 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
         </Tooltip>
       </div>
       
-      {/* Replace the ad-hoc search with the unified SearchInput component */}
       <div className={styles.dropdownSearchWrapper}>
         <SearchInput
           value={query}
@@ -78,7 +77,6 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
         />
       </div>
 
-      {/* FIX: Conditionally render "no results" message or the list of items. */}
       {!hasResults && query ? (
         <div className={styles.placeholderContent}>
           <p>No matches found for this search</p>

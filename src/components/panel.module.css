@@ -86,12 +86,11 @@
 }
 
 /* --- Component List Styles --- */
-/* This is now the flexible, scrolling content area */
 .componentListContainer { 
   flex: 1; 
   min-height: 0; 
   overflow-y: auto; 
-  background-color: var(--surface-bg-primary); /* Content area has white bg */
+  background-color: var(--surface-bg-primary);
 }
 .componentList, .componentList ul { list-style: none; margin: 0; padding: 0; }
 .componentList > li { padding: var(--spacing-2) var(--spacing-4); }
@@ -110,9 +109,24 @@
   border-radius: 6px;
   margin-bottom: var(--spacing-1);
   cursor: grab;
-  transition: background-color 0.2s;
+  /* FIX: Remove the transparent border entirely. */
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
-.componentListItem:hover { background-color: var(--surface-bg-primary_hover); }
+
+/* Default hover state uses a single inset shadow for the faint border. */
+.componentListItem:hover { 
+  background-color: var(--control-bg-quaternary-hover);
+  box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
+}
+
+/* FIX: The opt-in accented style now uses a layered box-shadow. */
+body[data-thick-left-borders="true"] .componentListItem:hover {
+  background-color: var(--control-bg-tertiary-hover);
+  box-shadow: 
+    inset 3px 0 0 0 var(--control-border-tertiary-hover), 
+    inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
+}
+
 .componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
 
@@ -122,6 +136,9 @@
 .componentListItem.selected {
   background-color: var(--control-bg-selected);
   font-weight: 500;
+}
+.componentListItem.selected:hover {
+  background-color: var(--control-bg-selected-hover);
 }
 .componentListItem.selected .componentName {
   color: var(--control-fg-selected);

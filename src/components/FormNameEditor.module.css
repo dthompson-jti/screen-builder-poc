@@ -98,21 +98,7 @@
   color: var(--control-fg-primary);
 }
 
-.menuButton::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 20%;
-  bottom: 20%;
-  width: 1px;
-  background-color: transparent;
-  transition: background-color 0.2s;
-  pointer-events: none;
-}
-
-.editorWrapper:hover .menuButton::before {
-  background-color: var(--control-border-tertiary-faint-hover);
-}
+/* FIX: The entire ::before pseudo-element and its related styles have been removed to eliminate the line. */
 
 .menuButton.active::after {
   opacity: 1;

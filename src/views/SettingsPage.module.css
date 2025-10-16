@@ -39,31 +39,46 @@
 }
 
 .settingsNavigatorList a {
+  /* Base Layout & Typography */
   display: flex;
   align-items: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+  cursor: pointer;
+
+  /* Sizing & Spacing */
   height: 44px;
   padding: 0 var(--spacing-3) 0 12px;
   border-radius: 6px;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--surface-fg-tertiary);
-  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s;
-  cursor: pointer;
   border-left: 6px solid transparent;
+  
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+
+  /* FIX: Remove font-weight from the transition as it no longer changes. */
+  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s, outline-color 0.2s;
 }
 
-.settingsNavigatorList a:hover {
-  background-color: var(--surface-bg-secondary_hover);
-  color: var(--surface-fg-primary);
+/* On hover, apply background and color the outline for the faint border effect. */
+.settingsNavigatorList a:hover:not(.active) {
+  background-color: var(--control-bg-quaternary-hover);
+  outline-color: var(--quaternary-border-color-on-hover, transparent);
 }
 
+/* The active state changes the border color and text styles. */
 .settingsNavigatorList a.active {
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
-  font-weight: 600;
+  /* FIX: The font-weight is no longer changed, ensuring text stability. */
   border-left-color: var(--control-border-selected);
+  outline-color: transparent; 
 }
+.settingsNavigatorList a.active:hover {
+  background-color: var(--control-bg-selected-hover);
+}
+
 
 .settingsContentContainer {
   flex-grow: 1;
