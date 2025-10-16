@@ -28,8 +28,6 @@ import {
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
-  isQuaternaryBorderVisibleAtom,
-  isThickLeftBorderVisibleAtom, // Import new atom
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
@@ -56,8 +54,6 @@ function App() {
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
-  const isQuaternaryBorderVisible = useAtomValue(isQuaternaryBorderVisibleAtom);
-  const isThickLeftBorderVisible = useAtomValue(isThickLeftBorderVisibleAtom); // Get new atom value
   
   // 1. Get `activeDndItem` directly from the hook
   const { activeDndItem, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
@@ -88,15 +84,6 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [undo, redo]);
-
-  useEffect(() => {
-    document.body.dataset.quaternaryBorders = String(isQuaternaryBorderVisible);
-  }, [isQuaternaryBorderVisible]);
-
-  // NEW: Effect to toggle global data attribute for thick borders
-  useEffect(() => {
-    document.body.dataset.thickLeftBorders = String(isThickLeftBorderVisible);
-  }, [isThickLeftBorderVisible]);
 
   useEffect(() => {
     if (!isLeftPanelVisible) {

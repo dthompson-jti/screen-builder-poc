@@ -1,7 +1,7 @@
 // src/views/HeaderMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom, isQuaternaryBorderVisibleAtom, isThickLeftBorderVisibleAtom } from '../data/atoms';
+import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
 import { useUndoRedo } from '../data/useUndoRedo';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import styles from './HeaderMenu.module.css';
@@ -21,8 +21,6 @@ export const HeaderMenu = () => {
     const [isCompact, setIsCompact] = useAtom(isToolbarCompactAtom);
     const [isShowBreadcrumb, setIsShowBreadcrumb] = useAtom(isShowBreadcrumbAtom);
     const [layoutMode, setLayoutMode] = useAtom(settingsLayoutModeAtom);
-    const [isQuaternaryBorderVisible, setIsQuaternaryBorderVisible] = useAtom(isQuaternaryBorderVisibleAtom);
-    const [isThickLeftBorderVisible, setIsThickLeftBorderVisible] = useAtom(isThickLeftBorderVisibleAtom); // Get new atom
     const menuRef = useRef<HTMLDivElement>(null);
 
     const { undo, redo, canUndo, canRedo } = useUndoRedo();
@@ -54,17 +52,6 @@ export const HeaderMenu = () => {
         setIsMenuOpen(false);
     }
 
-    const handleToggleQuaternaryBorders = () => {
-        setIsQuaternaryBorderVisible(p => !p);
-        // Keep menu open for this one as it's a visual preference
-    }
-
-    // NEW: Handler for the thick border toggle
-    const handleToggleThickBorders = () => {
-        setIsThickLeftBorderVisible(p => !p);
-        // Keep menu open
-    }
-
     return (
         <div className={styles.headerMenuPopover} ref={menuRef}>
             <MenuOption label="Undo" onClick={handleUndo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
@@ -84,17 +71,6 @@ export const HeaderMenu = () => {
                 label="Show settings in two columns"
                 isChecked={layoutMode === 'two-column'}
                 onClick={handleToggleLayoutMode}
-            />
-            <MenuOption 
-                label="Show faint button borders"
-                isChecked={isQuaternaryBorderVisible}
-                onClick={handleToggleQuaternaryBorders}
-            />
-            {/* NEW: Menu option for the thick border preference */}
-            <MenuOption 
-                label="Show accented menu borders"
-                isChecked={isThickLeftBorderVisible}
-                onClick={handleToggleThickBorders}
             />
             <div className={styles.menuDivider}></div>
             <MenuOption 

@@ -25,8 +25,6 @@ export const isPropertiesPanelVisibleAtom = atom(true);
 //                         View Preferences
 // =================================================================
 export const isToolbarCompactAtom = atom(false);
-export const isQuaternaryBorderVisibleAtom = atom(false);
-export const isThickLeftBorderVisibleAtom = atom(false); // NEW ATOM
 
 // =================================================================
 //                         Settings State

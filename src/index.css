@@ -32,6 +32,8 @@ body {
   color: var(--surface-fg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* NEW: Permanently enable the faint border style on hover for quaternary-like controls. */
+  --quaternary-border-color-on-hover: var(--surface-border-tertiary);
 }
 
 .material-symbols-outlined, .material-symbols-rounded {
@@ -66,9 +68,4 @@ body {
   background-color: var(--control-border-primary);
   width: 4px;
   right: -2px;
-}
-
-/* NEW: Global toggle for faint button borders, controlled by a data-attribute on the body */
-body[data-quaternary-borders="true"] {
-  --quaternary-border-color-on-hover: var(--surface-border-tertiary);
 }

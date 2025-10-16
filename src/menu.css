@@ -39,15 +39,6 @@
     box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
 }
 
-/* FIX: The opt-in accented style now uses a layered box-shadow. */
-/* The first shadow creates the thick left "border", the second creates the faint outline. */
-body[data-thick-left-borders="true"] .menu-item:hover:not(:disabled) {
-    background-color: var(--control-bg-tertiary-hover);
-    box-shadow: 
-      inset 3px 0 0 0 var(--control-border-tertiary-hover), 
-      inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
-}
-
 /* Specific styling for checkmark alignment if present */
 .menu-item .checkmark-container {
     width: 20px;
