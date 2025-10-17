@@ -79,7 +79,7 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
         {canUnwrap && (
           <Tooltip content="Unwrap container">
             <button className="btn btn-tertiary on-solid" onClick={handleUnwrapClick} aria-label="Unwrap container">
-              <span className="material-symbols-rounded">layers_clear</span>
+              <span className="material-symbols-rounded">remove_selection</span>
             </button>
           </Tooltip>
         )}
