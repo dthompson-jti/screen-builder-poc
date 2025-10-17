@@ -1,0 +1,71 @@
+/* src/components/Switch.module.css */
+
+.switchRoot {
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.2s, border-color 0.2s;
+  cursor: pointer;
+  flex-shrink: 0;
+  
+  /* CRITICAL FIX: Ensures the 1px border is included inside the 36px width, not added to it. */
+  box-sizing: border-box;
+  
+  /* Off, Rest state for the container */
+  border: 1px solid var(--control-border-tertiary);
+  background: var(--control-bg-secondary);
+}
+
+.switchRoot:hover:not([data-state='checked']) {
+  /* Off, Hover state for the container */
+  border-color: var(--control-border-tertiary-hover);
+}
+
+.switchRoot[data-state='checked'] {
+  background-color: var(--control-bg-theme);
+  border-color: transparent; /* Remove border in 'on' state */
+}
+.switchRoot[data-state='checked']:hover {
+  background-color: var(--control-bg-theme-hover);
+}
+
+.switchThumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: transform 0.2s ease-in-out;
+  will-change: transform;
+  
+  /* Implement exact color spec for 'off' state thumb */
+  background-color: var(--surface-bg-secondary-solid);
+
+  /* Add requested shadow */
+  box-shadow: var(--surface-shadow-sm);
+
+  /* DEFINITIVE FIX: Off position, 2px to create an even internal gutter on both sides. */
+  transform: translateX(-4px);
+}
+
+.switchThumb[data-state='checked'] {
+  /* DEFINITIVE FIX: On position: (36px width - 16px thumb - 2px gutter) = 18px */
+  transform: translateX(12px);
+  
+  /* Thumb must be white in 'on' state for contrast */
+  background-color: var(--primitives-base-white);
+}
+
+.switchRoot:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--surface-bg-tertiary);
+  border-color: var(--control-border-tertiary);
+}
+.switchRoot:disabled:hover {
+  border-color: var(--control-border-tertiary);
+}
+.switchRoot:disabled .switchThumb {
+  background-color: var(--surface-bg-secondary-solid);
+}

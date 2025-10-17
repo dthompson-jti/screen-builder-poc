@@ -31,11 +31,10 @@ type HistoryData = {
 export type HistoryAction =
   | { type: 'COMPONENT_ADD'; payload: { 
       componentType: 'layout' | 'widget' | 'field'; 
-      name: string; 
+      name: string; // For layouts, this is the name. For form components, it's the initial label.
       origin?: 'data' | 'general'; 
       parentId: string; 
       index: number; 
-      // FIX: Add optional bindingData to the action payload.
       bindingData?: { nodeId: string, nodeName: string, fieldId: string, path: string };
     } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
@@ -43,10 +42,12 @@ export type HistoryAction =
   | { type: 'COMPONENT_MOVE'; payload: { componentId: string; newParentId: string; oldParentId: string; newIndex: number; } }
   | { type: 'COMPONENT_REORDER'; payload: { componentId: string; parentId: string; oldIndex: number; newIndex: number; } }
   | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
+  | { type: 'COMPONENT_UNWRAP'; payload: { componentId: string; } } // NEW
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
   | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<Omit<LayoutComponent['properties'], 'appearance'>>; } }
   | { type: 'COMPONENT_UPDATE_APPEARANCE'; payload: { componentId: string; newAppearance: Partial<AppearanceProperties>; } }
   | { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT'; payload: { componentId: string; newLayout: Partial<FormComponent['contextualLayout']> } }
+  | { type: 'COMPONENT_UPDATE_FORM_PROPERTIES'; payload: { componentId: string; newProperties: Partial<FormComponent['properties']> } } // NEW
   | { type: 'FORM_RENAME'; payload: { newName: string } };
 
 const defaultAppearance: AppearanceProperties = {
@@ -134,26 +135,33 @@ export const commitActionAtom = atom(
                 },
               };
             } else {
-              // FIX: Conditionally create the binding object based on the
-              // component's origin and the presence of binding data in the payload.
               const newBinding: BoundData | null = (origin === 'data' && bindingData)
                 ? {
                     nodeId: bindingData.nodeId,
                     nodeName: bindingData.nodeName,
                     fieldId: bindingData.fieldId,
-                    fieldName: name, // The name of the component is the field name
+                    fieldName: name,
                     path: bindingData.path,
                   }
                 : null;
 
+              // Auto-generate a camelCase fieldName from the initial label
+              const fieldName = name.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => 
+                index === 0 ? word.toLowerCase() : word.toUpperCase()
+              ).replace(/\s+/g, '');
+
               newComponent = {
                 id: newId,
                 parentId,
-                name,
                 componentType: 'widget',
-                type: 'text-input',
                 origin,
                 binding: newBinding,
+                properties: {
+                  label: name,
+                  fieldName: fieldName,
+                  required: false,
+                  controlType: 'text-input',
+                },
               };
             }
             
@@ -232,6 +240,32 @@ export const commitActionAtom = atom(
             parent.children = remainingChildren;
             break;
           }
+          case 'COMPONENT_UNWRAP': { // NEW
+            const { componentId } = action.action.payload;
+            const container = presentState.components[componentId];
+            if (!container || container.componentType !== 'layout') break;
+            
+            const parent = presentState.components[container.parentId];
+            if (!parent || parent.componentType !== 'layout') break;
+
+            const containerIndex = parent.children.indexOf(componentId);
+            if (containerIndex === -1) break;
+
+            // Re-parent children
+            container.children.forEach(childId => {
+              const child = presentState.components[childId];
+              if (child) {
+                child.parentId = parent.id;
+              }
+            });
+
+            // Splice children into parent's children array
+            parent.children.splice(containerIndex, 1, ...container.children);
+
+            // Delete the container
+            delete presentState.components[componentId];
+            break;
+          }
           case 'COMPONENT_UPDATE_PROPERTIES': {
             const { componentId, newProperties } = action.action.payload;
             const component = presentState.components[componentId];
@@ -266,6 +300,14 @@ export const commitActionAtom = atom(
             const component = presentState.components[componentId];
             if (component && (component.componentType === 'field' || component.componentType === 'widget')) {
                 component.binding = newBinding;
+            }
+            break;
+          }
+          case 'COMPONENT_UPDATE_FORM_PROPERTIES': { // NEW
+            const { componentId, newProperties } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (component && (component.componentType === 'field' || component.componentType === 'widget')) {
+              component.properties = { ...component.properties, ...newProperties };
             }
             break;
           }

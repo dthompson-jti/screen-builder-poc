@@ -30,7 +30,7 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData } from './types';
+import { DndData, CanvasComponent } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -45,6 +45,11 @@ const dropAnimation: DropAnimation = {
 
 const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
+
+// Helper to get the display name/label
+const getComponentName = (component: CanvasComponent): string => {
+    return component.componentType === 'layout' ? component.name : component.properties.label;
+}
 
 function App() {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -120,7 +125,8 @@ function App() {
         return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
       }
       
-      return <div style={{ pointerEvents: 'none' }}><TextInputPreview label={activeComponent.name} /></div>;
+      // UPDATED: Use the helper to get the correct label for the preview
+      return <div style={{ pointerEvents: 'none' }}><TextInputPreview label={getComponentName(activeComponent)} /></div>;
     }
   };
 

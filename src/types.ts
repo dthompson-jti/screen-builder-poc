@@ -22,7 +22,6 @@ export interface AppearanceProperties {
 interface BaseComponent {
   id: string;
   parentId: string;
-  name: string;
   contextualLayout?: {
     columnSpan?: number;
     preventShrinking?: boolean;
@@ -31,6 +30,7 @@ interface BaseComponent {
 
 export interface LayoutComponent extends BaseComponent {
   componentType: 'layout';
+  name: string; // Name/Label for layouts remains at the top level
   children: string[];
   properties: {
     arrangement: 'stack' | 'row' | 'wrap' | 'grid';
@@ -44,9 +44,15 @@ export interface LayoutComponent extends BaseComponent {
 
 export interface FormComponent extends BaseComponent {
   componentType: 'widget' | 'field';
-  type: string; // e.g., 'text-input'
   origin?: 'data' | 'general';
   binding: BoundData | null;
+  // NEW: Nested properties object for form-specific attributes
+  properties: {
+    label: string;
+    fieldName: string;
+    required: boolean;
+    controlType: 'text-input' | 'dropdown' | 'radio-buttons';
+  };
 }
 
 export type CanvasComponent = LayoutComponent | FormComponent;

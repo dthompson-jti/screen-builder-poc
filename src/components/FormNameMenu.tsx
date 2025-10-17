@@ -23,6 +23,11 @@ export const FormNameMenu = ({ onRename, onClose }: FormNameMenuProps) => {
       </button>
       <div className={styles.menuDivider} />
       <button className="menu-item" disabled>
+        <span className="material-symbols-rounded">link</span>
+        Change parent entity
+      </button>
+      <div className={styles.menuDivider} />
+      <button className="menu-item" disabled>
         <span className="material-symbols-rounded">history</span>
         Version history
       </button>

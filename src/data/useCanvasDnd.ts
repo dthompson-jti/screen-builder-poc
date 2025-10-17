@@ -15,6 +15,11 @@ const findHoveredContainer = (overId: string, allComponents: Record<string, Canv
   return null;
 };
 
+// Helper to get the display name/label
+const getComponentName = (component: CanvasComponent): string => {
+    return component.componentType === 'layout' ? component.name : component.properties.label;
+}
+
 export const useCanvasDnd = () => {
   const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -83,7 +88,7 @@ export const useCanvasDnd = () => {
         type: 'COMPONENT_ADD',
         payload: {
           componentType: type as 'layout' | 'widget',
-          name,
+          name, // This 'name' becomes the initial label for FormComponents
           origin,
           parentId,
           index,
@@ -113,13 +118,13 @@ export const useCanvasDnd = () => {
       if (oldIndex !== adjustedNewIndex) {
         commitAction({
           action: { type: 'COMPONENT_REORDER', payload: { componentId: activeId, parentId: oldParentId, oldIndex, newIndex: adjustedNewIndex } },
-          message: `Reorder '${(active.data.current as DndData)?.name}'`
+          message: `Reorder '${getComponentName(allComponents[activeId])}'`
         });
       }
     } else {
       commitAction({
         action: { type: 'COMPONENT_MOVE', payload: { componentId: activeId, oldParentId, newParentId, newIndex } },
-        message: `Move '${(active.data.current as DndData)?.name}'`
+        message: `Move '${getComponentName(allComponents[activeId])}'`
       });
     }
   };

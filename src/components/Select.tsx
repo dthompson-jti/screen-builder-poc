@@ -14,13 +14,15 @@ interface SelectItemProps {
   children: React.ReactNode;
   value: string;
   className?: string;
+  icon?: string; // NEW: Optional icon prop
 }
 
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  // FIX: Remove the unused 'className' prop to resolve the ESLint warning.
-  ({ children, ...props }, forwardedRef) => {
+  ({ children, icon, ...props }, forwardedRef) => { // Destructure icon
     return (
       <RadixSelect.Item className={styles.selectItem} {...props} ref={forwardedRef}>
+        {/* NEW: Conditionally render icon */}
+        {icon && <span className={`material-symbols-rounded ${styles.selectItemIcon}`}>{icon}</span>}
         <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
         <RadixSelect.ItemIndicator className={styles.selectItemIndicator}>
           <span className="material-symbols-rounded" style={{ fontSize: '18px' }}>check</span>

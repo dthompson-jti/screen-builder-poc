@@ -104,7 +104,7 @@ const FormComponentPreview = ({ component }: { component: FormComponent }) => {
   
   return (
     <div style={wrapperStyle}>
-      <TextInputPreview label={component.name} />
+      <TextInputPreview label={component.properties.label} />
     </div>
   );
 };

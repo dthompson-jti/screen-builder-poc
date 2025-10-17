@@ -13,7 +13,8 @@ import { StaticBindingDisplay } from '../components/StaticBindingDisplay';
 import { PanelHeader } from '../components/PanelHeader';
 import { Select, SelectItem } from '../components/Select';
 import { Tooltip } from '../components/Tooltip';
-import { FormComponent, LayoutComponent, AppearanceProperties, AppearanceType } from '../types';
+import { Switch } from '../components/Switch';
+import { FormComponent, LayoutComponent, AppearanceProperties, AppearanceType, CanvasComponent } from '../types';
 import styles from './PropertiesPanel.module.css';
 
 const appearanceDefaults: AppearanceProperties = {
@@ -111,6 +112,8 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const parent = allComponents[component.parentId];
+  
+  const componentName = component.componentType === 'layout' ? component.name : component.properties.label;
 
   if (!parent || parent.componentType !== 'layout') {
     return null;
@@ -123,14 +126,14 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
     const newSpan = parseInt(value, 10);
     commitAction({
       action: { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT', payload: { componentId: component.id, newLayout: { columnSpan: newSpan } }},
-      message: `Update column span for '${component.name}'`
+      message: `Update column span for '${componentName}'`
     });
   };
 
   const handleShrinkToggle = () => {
     commitAction({
       action: { type: 'COMPONENT_UPDATE_CONTEXTUAL_LAYOUT', payload: { componentId: component.id, newLayout: { preventShrinking: !component.contextualLayout?.preventShrinking } }},
-      message: `Toggle shrink for '${component.name}'`
+      message: `Toggle shrink for '${componentName}'`
     });
   };
 
@@ -157,12 +160,10 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
           <Tooltip content="When enabled, this item will maintain its width and not shrink when the container wraps." side="left">
             <label htmlFor={`prevent-shrinking-${component.id}`}>Prevent Shrinking</label>
           </Tooltip>
-          <input
-            type="checkbox"
+          <Switch
             id={`prevent-shrinking-${component.id}`}
-            className="form-switch"
             checked={!!component.contextualLayout?.preventShrinking}
-            onChange={handleShrinkToggle}
+            onCheckedChange={handleShrinkToggle}
           />
         </div>
       )}
@@ -264,9 +265,21 @@ const LayoutProperties = ({ component }: { component: LayoutComponent }) => {
   );
 };
 
+// NEW: Helper to sanitize a label into a camelCase field name
+const sanitizeLabelToFieldName = (label: string): string => {
+  if (!label) return '';
+  return label
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => 
+      index === 0 ? word.toLowerCase() : word.toUpperCase()
+    )
+    .replace(/\s+/g, '')
+    .replace(/[^a-zA-Z0-9]/g, '');
+};
+
 // --- Panel for Form Component ---
 const FormItemProperties = ({ component }: { component: FormComponent }) => {
   const setBindingRequest = useSetAtom(dataBindingRequestAtom);
+  const commitAction = useSetAtom(commitActionAtom);
 
   const handleOpenBindingModal = () => {
     setBindingRequest({
@@ -275,7 +288,23 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
     });
   };
 
-  // FIX: Re-introduce the conditional rendering logic for the data binding control.
+  const handlePropertyChange = (newProperties: Partial<FormComponent['properties']>) => {
+    commitAction({
+      action: {
+        type: 'COMPONENT_UPDATE_FORM_PROPERTIES',
+        payload: { componentId: component.id, newProperties }
+      },
+      message: `Update properties for '${component.properties.label}'`
+    });
+  };
+  
+  // Handler that updates both label and field name
+  const handleLabelChange = (newLabel: string) => {
+    const newFieldName = sanitizeLabelToFieldName(newLabel);
+    // Commit both changes atomically
+    handlePropertyChange({ label: newLabel, fieldName: newFieldName });
+  };
+
   const renderBindingControl = () => {
     if (component.origin === 'general') {
       return (
@@ -306,10 +335,40 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
         {renderBindingControl()}
       </div>
       <div className={styles.propSection}>
+        <h4>Field Settings</h4>
+        <div className={styles.propItem}>
+          <label htmlFor={`label-${component.id}`}>Label</label>
+          <input
+            id={`label-${component.id}`}
+            type="text"
+            value={component.properties.label}
+            onChange={(e) => handleLabelChange(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className={styles.propSection}>
         <h4>Display</h4>
         <div className={styles.propItem}>
-          <label>Label</label>
-          <input type="text" value={component.name} disabled />
+          <label>Display as</label>
+          <Select
+            value={component.properties.controlType}
+            onValueChange={value => handlePropertyChange({ controlType: value as FormComponent['properties']['controlType'] })}
+          >
+            <SelectItem value="text-input" icon="text_fields">Text Input</SelectItem>
+            <SelectItem value="dropdown" icon="arrow_drop_down_circle">Dropdown</SelectItem>
+            <SelectItem value="radio-buttons" icon="radio_button_checked">Radio Buttons</SelectItem>
+          </Select>
+        </div>
+      </div>
+      <div className={styles.propSection}>
+        <h4>Validation</h4>
+        <div className={styles.propItemToggle}>
+          <label htmlFor={`required-${component.id}`}>Required</label>
+          <Switch
+            id={`required-${component.id}`}
+            checked={component.properties.required}
+            onCheckedChange={(checked) => handlePropertyChange({ required: checked })}
+          />
         </div>
       </div>
       <ContextualLayoutProperties component={component} />
@@ -317,6 +376,10 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
   );
 };
 
+// Helper to get the display name/label
+const getComponentName = (component: CanvasComponent): string => {
+    return component.componentType === 'layout' ? component.name : component.properties.label;
+}
 
 export const PropertiesPanel = () => {
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
@@ -330,7 +393,9 @@ export const PropertiesPanel = () => {
 
   useEffect(() => {
     if (bindingResult) {
-      const componentName = allComponents[bindingResult.componentId]?.name || 'component';
+      const componentToBind = allComponents[bindingResult.componentId];
+      if (!componentToBind) return;
+      const componentName = getComponentName(componentToBind);
       
       commitAction({
         action: { type: 'COMPONENT_UPDATE_BINDING', payload: bindingResult },
@@ -368,7 +433,7 @@ export const PropertiesPanel = () => {
     return null;
   };
 
-  const panelTitle = selectedComponent && selectedIds.length === 1 ? selectedComponent.name : `${selectedIds.length} items selected`;
+  const panelTitle = selectedComponent && selectedIds.length === 1 ? getComponentName(selectedComponent) : `${selectedIds.length} items selected`;
 
   return (
     <div className={styles.propertiesPanelContainer}>

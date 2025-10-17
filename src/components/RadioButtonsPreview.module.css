@@ -1,0 +1,22 @@
+/* src/components/RadioButtonsPreview.module.css */
+/* NEW FILE */
+.radioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) 0;
+}
+.radioOption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    font-size: 0.9em;
+    color: var(--surface-fg-secondary);
+}
+.radioCircle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--surface-border-primary);
+    background-color: var(--surface-bg-primary);
+}

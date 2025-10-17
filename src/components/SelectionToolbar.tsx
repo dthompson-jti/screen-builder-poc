@@ -6,6 +6,7 @@ import { isPropertiesPanelVisibleAtom, selectedCanvasComponentIdsAtom } from '..
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
 import { Tooltip } from './Tooltip';
 import styles from './SelectionToolbar.module.css';
+import { CanvasComponent } from '../types';
 
 interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {
   onDelete: () => void;
@@ -17,6 +18,10 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
+
+  // NEW: Determine if the selected component can be unwrapped
+  const selectedComponent: CanvasComponent | null = selectedIds.length === 1 ? allComponents[selectedIds[0]] : null;
+  const canUnwrap = selectedComponent?.componentType === 'layout' && selectedComponent.children.length > 0;
 
   const handleSettingsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -40,6 +45,16 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
     });
   };
 
+  // NEW: Handler for unwrap
+  const handleUnwrapClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!canUnwrap || !selectedComponent) return;
+    commitAction({
+      action: { type: 'COMPONENT_UNWRAP', payload: { componentId: selectedComponent.id } },
+      message: `Unwrap container`
+    });
+  };
+
   return (
     <div className={styles.selectionToolbar}>
       <Tooltip content="Drag to reorder">
@@ -57,10 +72,17 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
         </Tooltip>
         <Tooltip content="Wrap in container">
           <button className="btn btn-tertiary on-solid" onClick={handleWrapClick} aria-label="Wrap in container">
-            {/* Change wrap in container icon to 'pageless' icon */}
             <span className="material-symbols-rounded">pageless</span>
           </button>
         </Tooltip>
+        {/* NEW: Unwrap button */}
+        {canUnwrap && (
+          <Tooltip content="Unwrap container">
+            <button className="btn btn-tertiary on-solid" onClick={handleUnwrapClick} aria-label="Unwrap container">
+              <span className="material-symbols-rounded">layers_clear</span>
+            </button>
+          </Tooltip>
+        )}
         <Tooltip content="Delete">
           <button 
             className="btn btn-tertiary on-solid"

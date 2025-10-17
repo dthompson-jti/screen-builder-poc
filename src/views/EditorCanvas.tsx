@@ -16,11 +16,19 @@ import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../typ
 import { SelectionToolbar } from '../components/SelectionToolbar';
 import { CanvasEmptyState } from '../components/CanvasEmptyState';
 import { TextInputPreview } from '../components/TextInputPreview';
+// FIX: Change to default imports to resolve module resolution errors.
+import DropdownPreview from '../components/DropdownPreview.tsx';
+import RadioButtonsPreview from '../components/RadioButtonsPreview.tsx';
 import styles from './EditorCanvas.module.css';
 
 interface ComponentProps {
   component: CanvasComponent;
   dndListeners?: DraggableSyntheticListeners;
+}
+
+// Helper to get the display name/label
+const getComponentName = (component: CanvasComponent): string => {
+    return component.componentType === 'layout' ? component.name : component.properties.label;
 }
 
 // --- Floating Toolbar for Multi-Select ---
@@ -98,7 +106,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
     id: component.id,
     data: { 
       id: component.id,
-      name: component.name,
+      name: getComponentName(component),
       type: component.componentType,
       childrenCount: component.componentType === 'layout' ? component.children.length : undefined,
     } satisfies DndData,
@@ -172,7 +180,6 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
     data: { 
       id: component.id,
       name: component.name,
-      // FIX: Change 'container' to 'layout' to match the DndData type.
       type: 'layout', 
       childrenCount: component.children.length 
     } satisfies DndData
@@ -309,7 +316,7 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
   const handleDelete = () => {
     commitAction({
       action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
-      message: `Delete '${component.name}'`
+      message: `Delete '${component.properties.label}'`
     });
     setSelectedIds([]);
   };
@@ -325,10 +332,24 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
   
   const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''}`;
 
+  // NEW: Render different previews based on controlType
+  const renderPreview = () => {
+    const { label, controlType } = component.properties;
+    switch (controlType) {
+      case 'dropdown':
+        return <DropdownPreview label={label} />;
+      case 'radio-buttons':
+        return <RadioButtonsPreview label={label} />;
+      case 'text-input':
+      default:
+        return <TextInputPreview label={label} />;
+    }
+  };
+
   return (
     <div className={wrapperClassName} onClick={handleSelect}>
       {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
-      <TextInputPreview label={component.name} />
+      {renderPreview()}
     </div>
   );
 };
