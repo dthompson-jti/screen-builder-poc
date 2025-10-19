@@ -15,9 +15,8 @@ import { Select, SelectItem } from '../../../components/Select';
 import { Tooltip } from '../../../components/Tooltip';
 import { Switch } from '../../../components/Switch';
 import { FormComponent, LayoutComponent, AppearanceProperties, AppearanceType, CanvasComponent } from '../../../types';
-import styles from './PropertiesPanel.module.css'; // FIXED PATH
+import styles from './PropertiesPanel.module.css';
 
-// ... (The rest of this file's code is correct, this just fixes the CSS import path)
 const appearanceDefaults: AppearanceProperties = {
   type: 'transparent',
   bordered: false,

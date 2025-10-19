@@ -4,9 +4,8 @@ import { DraggableSyntheticListeners } from '@dnd-kit/core';
 import { SelectionToolbarMenu } from './SelectionToolbarMenu';
 import { Tooltip } from '../../../components/Tooltip';
 import { useIsMac } from '../../../data/useIsMac';
-import styles from './SelectionToolbar.module.css'; // FIXED PATH
+import styles from './SelectionToolbar.module.css';
 
-// ... rest of file is unchanged
 interface SelectionToolbarProps {
   onDelete: () => void;
   onRename: () => void;

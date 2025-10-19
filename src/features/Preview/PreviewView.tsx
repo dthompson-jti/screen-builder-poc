@@ -2,9 +2,9 @@
 import React from 'react';
 import { useAtomValue } from 'jotai';
 import { isPreviewFluidAtom, previewWidthAtom } from '../../data/atoms';
-import { PreviewToolbar } from './PreviewToolbar'; // FIXED PATH
+import { PreviewToolbar } from './PreviewToolbar';
 import { FormRenderer } from '../../components/FormRenderer';
-import styles from './PreviewView.module.css'; // FIXED PATH
+import styles from './PreviewView.module.css';
 
 export const PreviewView = () => {
   const isFluid = useAtomValue(isPreviewFluidAtom);

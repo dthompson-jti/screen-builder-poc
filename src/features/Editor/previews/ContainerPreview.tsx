@@ -1,8 +1,7 @@
 // src/features/Editor/previews/ContainerPreview.tsx
 import { LayoutComponent, NormalizedCanvasComponents, CanvasComponent } from '../../../types';
-import styles from './ContainerPreview.module.css'; // CORRECTED PATH
+import styles from './ContainerPreview.module.css';
 
-// ... (rest of file is unchanged but included for completeness)
 const getComponentName = (component: CanvasComponent): string => {
     if (component.componentType === 'layout') {
         return component.name;

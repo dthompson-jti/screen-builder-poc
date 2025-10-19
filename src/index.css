@@ -15,7 +15,8 @@
 @import './menu.css' layer(base);
 @import './tabs.css' layer(base);
 @import './components/navigator.css' layer(base);
-@import './views/appearance.css' layer(components); /* NEW: Import appearance styles */
+/* CORRECTED: Import from its new, correct location at the root of /src */
+@import './appearance.css' layer(components);
 
 :root {
   --font-family-sans: 'Inter', sans-serif;

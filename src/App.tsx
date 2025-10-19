@@ -14,7 +14,7 @@ import { MainToolbar } from './features/Editor/MainToolbar';
 import { PropertiesPanel } from './features/Editor/PropertiesPanel/PropertiesPanel';
 import { BrowserItemPreview } from './features/Editor/previews/BrowserItemPreview';
 import { ContainerPreview } from './features/Editor/previews/ContainerPreview';
-import PlainTextPreview from './features/Editor/previews/PlainTextPreview'; // FIXED: Default import
+import PlainTextPreview from './features/Editor/previews/PlainTextPreview';
 import { TextInputPreview } from './features/Editor/previews/TextInputPreview';
 import DropdownPreview from './features/Editor/previews/DropdownPreview';
 import RadioButtonsPreview from './features/Editor/previews/RadioButtonsPreview';
@@ -39,7 +39,7 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData, FormComponent } from './types';
+import { DndData } from './types';
 
 
 const dropAnimation: DropAnimation = {
@@ -120,7 +120,6 @@ function App() {
     }
     
     const componentId = activeDndItem.id;
-    // ESLINT FIX: The type guard makes the 'as string' assertion unnecessary.
     if (typeof componentId !== 'string') return null;
 
     const activeComponent = allComponents[componentId];

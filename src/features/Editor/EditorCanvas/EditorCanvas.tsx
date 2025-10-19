@@ -21,11 +21,7 @@ import { TextInputPreview } from '../previews/TextInputPreview';
 import DropdownPreview from '../previews/DropdownPreview';
 import RadioButtonsPreview from '../previews/RadioButtonsPreview';
 import PlainTextPreview from '../previews/PlainTextPreview';
-import styles from './EditorCanvas.module.css'; // CORRECTED
-
-// (The rest of the file content from the previous turn was correct, only the import was wrong)
-// ... [Full component code as provided in last response] ...
-// The following is the full, correct code for the entire file.
+import styles from './EditorCanvas.module.css';
 
 interface CanvasComponentProps {
   dndListeners?: DraggableSyntheticListeners;

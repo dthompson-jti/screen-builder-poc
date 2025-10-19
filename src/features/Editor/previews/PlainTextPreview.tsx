@@ -1,8 +1,7 @@
 // src/features/Editor/previews/PlainTextPreview.tsx
 import React from 'react';
-import styles from './PlainTextPreview.module.css'; // FIXED PATH
+import styles from './PlainTextPreview.module.css';
 
-// ... rest of file is unchanged
 interface EditableProps {
   ref: React.RefObject<HTMLTextAreaElement | null>;
   value: string;

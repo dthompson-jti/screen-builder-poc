@@ -2,9 +2,8 @@
 import { useRef } from 'react';
 import { useOnClickOutside } from '../../../data/useOnClickOutside';
 import { useIsMac } from '../../../data/useIsMac';
-import styles from './SelectionToolbar.module.css'; // FIXED PATH
+import styles from './SelectionToolbar.module.css';
 
-// ... rest of file is unchanged
 interface SelectionToolbarMenuProps {
   onDelete: () => void;
   onRename: () => void;
