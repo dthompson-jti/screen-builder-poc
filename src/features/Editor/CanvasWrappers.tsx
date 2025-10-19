@@ -6,11 +6,13 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
   canvasInteractionAtom,
+  isPropertiesPanelVisibleAtom, 
+  CanvasInteractionState, // IMPORTED TYPE
 } from '../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../../data/historyAtoms';
 import { CanvasComponent, DndData } from '../../types';
 import { SelectionToolbar } from './SelectionToolbar';
-import { getComponentName } from './canvasUtils'; // Imported utility
+import { getComponentName } from './canvasUtils';
 
 import styles from './EditorCanvas.module.css';
 
@@ -27,22 +29,29 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const rootId = useAtomValue(rootComponentIdAtom);
+  const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom); 
   
   const isRoot = component.id === rootId;
   const isSelected = (interactionState.mode === 'selecting' && interactionState.ids.includes(component.id));
   const isEditing = interactionState.mode === 'editing' && interactionState.id === component.id;
   const showToolbar = isSelected && !isEditing && interactionState.mode === 'selecting' && interactionState.ids.length === 1 && !isRoot;
 
-  // Determine if component is a layout, or a field/widget.
   const isLayout = component.componentType === 'layout';
   const isPlainText = !isLayout && component.properties.controlType === 'plain-text';
+
+  // --- Capability Flags ---
+  const parent = allComponents[component.parentId];
+  const canRename = !isRoot;
+  const canWrap = !isRoot;
+  const canUnwrap = isLayout && !isRoot && component.children.length > 0 && !!parent;
 
   // --- Handlers ---
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isRoot) return;
 
-    // Check for Alt+Click on any form component, or Double-Click on Plain Text component
+    setIsPropertiesPanelVisible(true);
+
     if ((e.altKey && !isLayout) || (e.detail === 2 && isPlainText)) {
       setInteractionState({ mode: 'editing', id: component.id });
       return;
@@ -53,7 +62,11 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
       const newIds = currentIds.includes(component.id)
         ? currentIds.filter(id => id !== component.id)
         : [...currentIds, component.id];
-      setInteractionState(newIds.length > 0 ? { mode: 'selecting', ids: newIds } : { mode: 'idle' });
+      
+      // FIXED: Explicitly type the new state object to resolve TypeScript error
+      const newInteractionState: CanvasInteractionState = newIds.length > 0 ? { mode: 'selecting', ids: newIds } : { mode: 'idle' };
+      if (newIds.length === 0) setIsPropertiesPanelVisible(false);
+      setInteractionState(newInteractionState);
     } else {
       setInteractionState({ mode: 'selecting', ids: [component.id] });
     }
@@ -68,13 +81,12 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   };
   
   const handleRename = () => {
-    if (component.componentType !== 'layout') {
+    if (canRename) {
       setInteractionState({ mode: 'editing', id: component.id });
     }
   };
 
   const handleNudge = (direction: 'up' | 'down') => {
-      const parent = allComponents[component.parentId];
       if (!parent || parent.componentType !== 'layout') return;
       const oldIndex = parent.children.indexOf(component.id);
       const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1;
@@ -86,13 +98,20 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
       }
   };
 
-  // NOTE: onUnwrap logic disabled
-  const canWrap = true; 
-
   const handleWrap = () => {
+    if (!canWrap) return;
     commitAction({
       action: { type: 'COMPONENTS_WRAP', payload: { componentIds: [component.id], parentId: component.parentId } },
       message: `Wrap '${getComponentName(component)}'`
+    });
+  };
+
+  const handleUnwrap = () => {
+    if (!canUnwrap) return;
+    commitAction({
+        // FIXED: Corrected action type from 'COMPONENTS_UNWRAP' to 'COMPONENT_UNWRAP'
+        action: { type: 'COMPONENT_UNWRAP', payload: { componentId: component.id } },
+        message: `Unwrap '${getComponentName(component)}'`
     });
   };
 
@@ -107,7 +126,10 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
           onNudge={handleNudge} 
           listeners={dndListeners} 
           onWrap={handleWrap}
+          onUnwrap={handleUnwrap}
           canWrap={canWrap}
+          canUnwrap={canUnwrap}
+          canRename={canRename}
         />
       )}
       {children}
@@ -151,12 +173,10 @@ export const SortableWrapper = ({ component, children }: { component: CanvasComp
     sortableStyle.transform = 'none';
   }
   
-  // FIX: Declared className variable
   const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
     <div ref={setNodeRef} style={sortableStyle} className={className} data-id={component.id}>
-      {/* Pass listeners to the nested SelectionWrapper */}
       {React.cloneElement(children as React.ReactElement<Partial<SelectionWrapperProps>>, { dndListeners: listeners })}
     </div>
   );

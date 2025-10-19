@@ -23,13 +23,14 @@ export const CanvasEmptyState = () => {
     // CORRECTED: Use the correct setter to update the interaction state
     setInteractionState({ mode: 'selecting', ids: [rootId] });
     
-    // Open the appropriate panel
+    // NEW: Always open the properties panel when the root/empty state is selected
+    setIsPropertiesPanelVisible(true);
+    
+    // Open the appropriate panel for adding content
     if (!isLeftPanelOpen) {
       setActiveTab('data');
       setIsPanelVisible(true);
-    } else {
-      setIsPropertiesPanelVisible(true);
-    }
+    } 
   };
 
   return (

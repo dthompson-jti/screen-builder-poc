@@ -12,10 +12,11 @@ interface SelectionToolbarProps {
   onNudge: (direction: 'up' | 'down') => void;
   listeners?: DraggableSyntheticListeners;
   onDuplicate?: () => void;
-  onWrap?: () => void;
-  // onUnwrap?: () => void; // REMOVED
-  canWrap?: boolean;
-  // canUnwrap?: boolean; // REMOVED
+  onWrap: () => void;
+  onUnwrap: () => void;
+  canWrap: boolean;
+  canUnwrap: boolean;
+  canRename: boolean;
 }
 
 export const SelectionToolbar = ({
@@ -24,10 +25,11 @@ export const SelectionToolbar = ({
   onNudge,
   listeners,
   onDuplicate = () => {},
-  onWrap = () => {},
-  // onUnwrap = () => {}, // REMOVED
-  canWrap = false,
-  // canUnwrap = false, // REMOVED
+  onWrap,
+  onUnwrap,
+  canWrap,
+  canUnwrap,
+  canRename,
 }: SelectionToolbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMac = useIsMac();
@@ -62,10 +64,36 @@ export const SelectionToolbar = ({
             className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
             onClick={onRename}
             aria-label="Rename component"
+            disabled={!canRename}
           >
             <span className="material-symbols-rounded">edit</span>
           </button>
         </Tooltip>
+
+        {/* --- SMART CONTEXTUAL BUTTON --- */}
+        {canUnwrap && (
+          <Tooltip content="Unwrap Container" side="top">
+            <button
+              className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+              onClick={onUnwrap}
+              aria-label="Unwrap container"
+            >
+              <span className="material-symbols-rounded">disabled_by_default</span>
+            </button>
+          </Tooltip>
+        )}
+        {canWrap && !canUnwrap && (
+           <Tooltip content="Wrap in Container" side="top">
+            <button
+              className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+              onClick={onWrap}
+              aria-label="Wrap in container"
+            >
+              <span className="material-symbols-rounded">add_box</span>
+            </button>
+          </Tooltip>
+        )}
+
         <button 
           className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
           onClick={handleMenuToggle}
@@ -82,9 +110,10 @@ export const SelectionToolbar = ({
           onClose={() => setIsMenuOpen(false)}
           onDuplicate={onDuplicate}
           onWrap={onWrap}
-          // onUnwrap={onUnwrap} // REMOVED
+          onUnwrap={onUnwrap}
           canWrap={canWrap}
-          // canUnwrap={canUnwrap} // REMOVED
+          canUnwrap={canUnwrap}
+          canRename={canRename}
         />
       )}
     </div>

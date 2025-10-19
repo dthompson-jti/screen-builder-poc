@@ -17,6 +17,7 @@
   color: var(--surface-fg-primary);
   white-space: pre-wrap; /* Respects newlines and whitespace */
   word-break: break-word;
+  user-select: none; /* ADDED: Prevents text selection */
 }
 
 .placeholder {

@@ -17,6 +17,7 @@
   margin-bottom: var(--spacing-2);
   /* Hide the label when editing to avoid overlap */
   visibility: visible;
+  user-select: none; /* ADDED: Prevents text selection */
 }
 
 .previewLabel.isEditing {
@@ -51,6 +52,7 @@
   background-color: var(--surface-bg-secondary_subtle);
   border: 1px solid var(--surface-border-secondary);
   border-radius: 6px;
+  user-select: none; /* ADDED: Prevents text selection */
 }
 
 .previewDropdown {
@@ -60,12 +62,14 @@
   justify-content: flex-end;
   padding: 0 var(--spacing-2);
   color: var(--surface-fg-tertiary);
+  user-select: none; /* ADDED: Prevents text selection */
 }
 
 .previewRadioGroup {
   display: flex;
   gap: var(--spacing-4);
   align-items: center;
+  user-select: none; /* ADDED: Prevents text selection */
 }
 
 .previewRadioButton {

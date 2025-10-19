@@ -7,7 +7,7 @@
   overflow-y: auto;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start; 
   justify-content: center;
 }
 
@@ -17,7 +17,7 @@
   padding: var(--spacing-6);
   max-width: 800px;
   width: 100%;
-  margin: 0 auto;
+  margin: var(--spacing-8) auto; 
   box-shadow: var(--surface-shadow-lg);
   transition: background-color 0.2s ease, border-color 0.2s ease, outline-color 0.2s;
   border: 1px solid var(--surface-border-secondary);
@@ -39,6 +39,7 @@
   margin: 0;
   color: var(--surface-fg-primary);
   flex-grow: 1;
+  user-select: none; 
 }
 
 .formComponentWrapper {
@@ -59,18 +60,15 @@
   opacity: 0;
 }
 
-/* CORRECTED: Apply hover styles when the PARENT div is NOT selected */
 :not(.selected) > .formComponentWrapper:not(.layoutContainer):hover {
   background-color: var(--surface-bg-primary_hover);
 }
 
-/* CORRECTED: Selector now targets the inner wrapper from the outer selected div */
 .selected > .formComponentWrapper {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
 
-/* --- Layout Container Styles --- */
 .layoutContainer {
   border: 2px dashed var(--surface-border-tertiary);
   min-height: 40px;
@@ -80,18 +78,16 @@
 .layoutContainer[data-has-user-border="true"] {
   border-color: transparent;
 }
-/* CORRECTED: Selector now targets the inner layout from a non-selected parent on hover */
+
 :not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
   box-shadow: 0 0 0 2px var(--surface-border-primary);
 }
 
-/* CORRECTED: Selector now targets the inner layout from the outer selected div */
 .selected > .layoutContainer {
   border-style: solid;
   border-width: 2px;
 }
 
-/* CORRECTED: Selector now targets the inner layout from a non-selected parent on hover */
 :not(.selected) > .layoutContainer:hover {
   background-color: var(--surface-bg-secondary_subtle);
   border-color: var(--surface-border-primary);
@@ -109,6 +105,7 @@
   justify-content: center;
   color: var(--surface-fg-tertiary);
   font-size: 0.9em;
+  user-select: none; 
 }
 
 .layoutContainerEmpty.drag-active:not(.is-over-container) {
@@ -146,7 +143,8 @@
 
 /* --- Floating Selection Toolbar Styles --- */
 .floatingSelectionToolbar {
-  position: absolute;
+  /* MODIFIED: Changed from 'absolute' to 'fixed' to pin to the viewport */
+  position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
@@ -167,6 +165,8 @@
   font-weight: 500;
   padding: 0 var(--spacing-2);
   white-space: nowrap;
+  /* ADDED: Prevents accidental text selection */
+  user-select: none;
 }
 
 .floatingToolbarDivider {

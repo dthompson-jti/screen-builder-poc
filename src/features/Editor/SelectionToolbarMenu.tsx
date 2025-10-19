@@ -11,7 +11,10 @@ interface SelectionToolbarMenuProps {
   onClose: () => void;
   onDuplicate: () => void;
   onWrap: () => void;
+  onUnwrap: () => void;
   canWrap: boolean;
+  canUnwrap: boolean;
+  canRename: boolean;
 }
 
 export const SelectionToolbarMenu = ({
@@ -21,7 +24,10 @@ export const SelectionToolbarMenu = ({
   onClose,
   onDuplicate,
   onWrap,
+  onUnwrap,
   canWrap,
+  canUnwrap,
+  canRename,
 }: SelectionToolbarMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, onClose);
@@ -39,7 +45,7 @@ export const SelectionToolbarMenu = ({
 
   return (
     <div className={styles.menuPopover} ref={menuRef}>
-      <button className="menu-item" onClick={createHandler(onRename)}>
+      <button className="menu-item" onClick={createHandler(onRename)} disabled={!canRename}>
         <span className="material-symbols-rounded">edit</span>
         <span>Rename</span>
         <span className="hotkey">Enter</span>
@@ -62,7 +68,12 @@ export const SelectionToolbarMenu = ({
         <span>Wrap in Container</span>
         <span className="hotkey">{modKey}{isMac ? '' : '+'}{altKey}G</span>
       </button>
-      {/* Unwrap functionality is currently disabled */}
+      <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
+        <span className="material-symbols-rounded">disabled_by_default</span>
+        <span>Unwrap Container</span>
+        {/* FIXED: Added hotkey for Unwrap action */}
+        <span className="hotkey">{modKey}{isMac ? '' : '+'}⇧G</span>
+      </button>
 
       <div className={styles.menuDivider} />
 
