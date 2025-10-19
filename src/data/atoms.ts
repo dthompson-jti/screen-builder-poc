@@ -42,8 +42,6 @@ export const isReadOnlyAtom = atom(true);
 //                         Canvas State
 // =================================================================
 
-// NEW: A unified, discriminated union to represent the canvas interaction state.
-// This makes invalid states (e.g., editing and multi-select) impossible.
 export type CanvasInteractionState =
   | { mode: 'idle' }
   | { mode: 'selecting'; ids: string[] }
@@ -51,9 +49,9 @@ export type CanvasInteractionState =
 
 export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle' });
 
-// Derived, read-only atoms for convenience and backward compatibility.
-// Components that only need to read selection/editing state can use these
-// without needing to handle the full discriminated union.
+// NEW: An atom to store the starting point for a shift-click range selection.
+export const selectionAnchorIdAtom = atom<string | null>(null);
+
 export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
   const state = get(canvasInteractionAtom);
   if (state.mode === 'selecting') return state.ids;

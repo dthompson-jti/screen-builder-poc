@@ -71,8 +71,8 @@ export const SelectionToolbarMenu = ({
       <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
         <span className="material-symbols-rounded">disabled_by_default</span>
         <span>Unwrap Container</span>
-        {/* FIXED: Added hotkey for Unwrap action */}
-        <span className="hotkey">{modKey}{isMac ? '' : '+'}⇧G</span>
+        {/* FIXED: Replaced shift symbol with text "Shift" for clarity */}
+        <span className="hotkey">{modKey}{isMac ? ' Shift ' : '+Shift+'}G</span>
       </button>
 
       <div className={styles.menuDivider} />

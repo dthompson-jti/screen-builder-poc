@@ -53,6 +53,11 @@
   z-index: 1001; /* Ensure menu is on top */
 }
 
+/* ADDED: Ensures menu items do not wrap their content */
+.menuPopover > .menu-item {
+  white-space: nowrap;
+}
+
 .menuDivider {
   height: 1px;
   background-color: var(--surface-border-secondary);

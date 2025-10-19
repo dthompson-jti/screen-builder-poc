@@ -7,10 +7,11 @@ import { CSS } from '@dnd-kit/utilities';
 import { 
   canvasInteractionAtom,
   isPropertiesPanelVisibleAtom, 
-  CanvasInteractionState, // IMPORTED TYPE
+  CanvasInteractionState,
+  selectionAnchorIdAtom,
 } from '../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../../data/historyAtoms';
-import { CanvasComponent, DndData } from '../../types';
+import { CanvasComponent, DndData, LayoutComponent } from '../../types';
 import { SelectionToolbar } from './SelectionToolbar';
 import { getComponentName } from './canvasUtils';
 
@@ -26,6 +27,7 @@ export interface SelectionWrapperProps {
 // --- INTERACTION WRAPPERS ---
 export const SelectionWrapper = ({ component, dndListeners, children }: SelectionWrapperProps) => {
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
+  const [anchorId, setAnchorId] = useAtom(selectionAnchorIdAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const rootId = useAtomValue(rootComponentIdAtom);
@@ -39,13 +41,11 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const isLayout = component.componentType === 'layout';
   const isPlainText = !isLayout && component.properties.controlType === 'plain-text';
 
-  // --- Capability Flags ---
-  const parent = allComponents[component.parentId];
+  const parent = allComponents[component.parentId] as LayoutComponent | undefined;
   const canRename = !isRoot;
   const canWrap = !isRoot;
   const canUnwrap = isLayout && !isRoot && component.children.length > 0 && !!parent;
 
-  // --- Handlers ---
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isRoot) return;
@@ -57,18 +57,43 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
       return;
     }
     
-    if (e.shiftKey) {
+    const isCtrlClick = e.ctrlKey || e.metaKey;
+
+    if (isCtrlClick) {
       const currentIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
       const newIds = currentIds.includes(component.id)
         ? currentIds.filter(id => id !== component.id)
         : [...currentIds, component.id];
       
-      // FIXED: Explicitly type the new state object to resolve TypeScript error
       const newInteractionState: CanvasInteractionState = newIds.length > 0 ? { mode: 'selecting', ids: newIds } : { mode: 'idle' };
-      if (newIds.length === 0) setIsPropertiesPanelVisible(false);
+      if (newIds.length === 0) {
+        setIsPropertiesPanelVisible(false);
+        setAnchorId(null);
+      } else {
+        setAnchorId(component.id);
+      }
       setInteractionState(newInteractionState);
+
+    } else if (e.shiftKey && anchorId && parent) {
+      const anchorComponent = allComponents[anchorId];
+      if (anchorComponent && anchorComponent.parentId === component.parentId) {
+        const children = parent.children;
+        const anchorIndex = children.indexOf(anchorId);
+        const targetIndex = children.indexOf(component.id);
+
+        const start = Math.min(anchorIndex, targetIndex);
+        const end = Math.max(anchorIndex, targetIndex);
+        
+        const rangeIds = children.slice(start, end + 1);
+        setInteractionState({ mode: 'selecting', ids: rangeIds });
+      } else {
+        setInteractionState({ mode: 'selecting', ids: [component.id] });
+        setAnchorId(component.id);
+      }
+    
     } else {
       setInteractionState({ mode: 'selecting', ids: [component.id] });
+      setAnchorId(component.id);
     }
   };
 
@@ -78,6 +103,7 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
       message: `Delete '${getComponentName(component)}'`
     });
     setInteractionState({ mode: 'idle' });
+    setAnchorId(null);
   };
   
   const handleRename = () => {
@@ -109,7 +135,6 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const handleUnwrap = () => {
     if (!canUnwrap) return;
     commitAction({
-        // FIXED: Corrected action type from 'COMPONENTS_UNWRAP' to 'COMPONENT_UNWRAP'
         action: { type: 'COMPONENT_UNWRAP', payload: { componentId: component.id } },
         message: `Unwrap '${getComponentName(component)}'`
     });
@@ -140,8 +165,9 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
 export const SortableWrapper = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
   const rootId = useAtomValue(rootComponentIdAtom);
   const isRoot = component.id === rootId;
-  const isEmptyContainer = component.componentType === 'layout' && component.children.length === 0;
-  const isDisabled = isEmptyContainer || isRoot;
+  // FIXED: Removed the check for an empty container from the disabled logic.
+  // An empty container is a valid draggable item. Only the root is not.
+  const isDisabled = isRoot;
 
   const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
