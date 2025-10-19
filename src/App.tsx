@@ -30,7 +30,7 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData, CanvasComponent } from './types';
+import { DndData } from './types';
 import DropdownPreview from './components/DropdownPreview';
 import RadioButtonsPreview from './components/RadioButtonsPreview';
 import PlainTextPreview from './components/PlainTextPreview';
