@@ -1,32 +1,96 @@
 // src/components/SelectionToolbarMenu.tsx
 import { useRef } from 'react';
 import { useOnClickOutside } from '../data/useOnClickOutside';
+import { useIsMac } from '../data/useIsMac';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarMenuProps {
   onDelete: () => void;
+  onRename: () => void; // Add rename prop
   onNudge: (direction: 'up' | 'down') => void;
   onClose: () => void;
+  onDuplicate: () => void;
+  onWrap: () => void;
+  onUnwrap: () => void;
+  canWrap: boolean;
+  canUnwrap: boolean;
 }
 
-export const SelectionToolbarMenu = ({ onDelete, onNudge, onClose }: SelectionToolbarMenuProps) => {
+export const SelectionToolbarMenu = ({
+  onDelete,
+  onRename, // Add rename prop
+  onNudge,
+  onClose,
+  onDuplicate,
+  onWrap,
+  onUnwrap,
+  canWrap,
+  canUnwrap,
+}: SelectionToolbarMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, onClose);
+  const isMac = useIsMac();
+
+  const modKey = isMac ? '⌘' : 'Ctrl';
+  const shiftKey = isMac ? '⇧' : 'Shift+';
+  const altKey = isMac ? '⌥' : 'Alt+';
+
+  const createHandler = (action: () => void) => () => {
+    action();
+    if (action !== onDelete) {
+      onClose();
+    }
+  };
 
   return (
     <div className={styles.menuPopover} ref={menuRef}>
-      <button className="menu-item" onClick={() => onNudge('up')}>
-        <span className="material-symbols-rounded">arrow_upward</span>
-        <span>Nudge Up</span>
+      {/* --- Main Actions --- */}
+      <button className="menu-item" onClick={createHandler(onRename)}>
+        <span className="material-symbols-rounded">edit</span>
+        <span>Rename</span>
+        <span className="hotkey">Enter</span>
       </button>
-      <button className="menu-item" onClick={() => onNudge('down')}>
-        <span className="material-symbols-rounded">arrow_downward</span>
-        <span>Nudge Down</span>
-      </button>
+
       <div className="menuDivider" />
-      <button className="menu-item" onClick={onDelete}>
+      
+      {/* --- Movement Group --- */}
+      <button className="menu-item" onClick={createHandler(() => onNudge('up'))}>
+        <span className="material-symbols-rounded">arrow_upward</span>
+        <span>Move Up</span>
+        <span className="hotkey">↑</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(() => onNudge('down'))}>
+        <span className="material-symbols-rounded">arrow_downward</span>
+        <span>Move Down</span>
+        <span className="hotkey">↓</span>
+      </button>
+
+      <div className="menuDivider" />
+
+      {/* --- Structure Group --- */}
+      <button className="menu-item" onClick={createHandler(onWrap)} disabled={!canWrap}>
+        <span className="material-symbols-rounded">add_box</span>
+        <span>Wrap in Container</span>
+        <span className="hotkey">{modKey}{isMac ? '' : '+'}{altKey}G</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
+        <span className="material-symbols-rounded">disabled_by_default</span>
+        <span>Unwrap</span>
+        <span className="hotkey">{shiftKey}{modKey}{isMac ? '' : '+'}G</span>
+      </button>
+
+      <div className="menuDivider" />
+
+      {/* --- Lifecycle Group --- */}
+      <button className="menu-item" onClick={createHandler(onDuplicate)} disabled>
+        <span className="material-symbols-rounded">content_copy</span>
+        <span>Duplicate</span>
+        <span className="hotkey">{modKey}{isMac ? '' : '+'}D</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(onDelete)}>
         <span className="material-symbols-rounded">delete</span>
         <span>Delete</span>
+        <span className="hotkey">{isMac ? '⌫' : 'Del'}</span>
       </button>
     </div>
   );

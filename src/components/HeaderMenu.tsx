@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../data/atoms';
 import { useUndoRedo } from '../data/useUndoRedo';
 import { useOnClickOutside } from '../data/useOnClickOutside';
+import { useIsMac } from '../data/useIsMac';
 import styles from './HeaderMenu.module.css';
 
 const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
@@ -24,7 +25,7 @@ export const HeaderMenu = () => {
     const menuRef = useRef<HTMLDivElement>(null);
 
     const { undo, redo, canUndo, canRedo } = useUndoRedo();
-    const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const isMac = useIsMac();
 
     useOnClickOutside(menuRef, () => setIsMenuOpen(false));
 

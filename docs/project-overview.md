@@ -1,3 +1,7 @@
+Of course. Here is the fully updated `project-overview.md` file, reflecting the recent architectural changes.
+
+### `/src/docs/project-overview.md`
+```markdown
 # Project Overview & File Manifest
 
 This document provides a high-level overview of the `form-editor-poc` codebase, explaining the purpose and responsibility of key files and directories. For a new developer, this is the best place to start to understand the project's architecture.
@@ -75,13 +79,13 @@ This directory contains all the application's logic, state, and data definitions
     *   **Purpose:** A simple custom hook that provides a clean API for performing undo/redo actions, including showing toast notifications.
 *   **`useUrlSync.ts`**
     *   **Purpose:** A custom hook to synchronize application state (like the current view or preview width) with the browser's URL query parameters. This enables shareable links.
+*   **`useEditable.ts`**
+    *   **Purpose:** A custom hook that manages the internal state for an in-place editable text input, handling value changes, commit, and cancel logic.
 *   **`useIsMac.ts`**: A simple utility hook to determine if the user is on a Mac, used for displaying OS-aware keyboard shortcuts (⌘ vs. Ctrl).
 *   **`toastAtoms.ts`**
     *   **Purpose:** Defines the state and logic for the application's toast notification system.
 *   **`*Mock.ts` files**
     *   **Purpose:** Provide static data for the proof of concept (e.g., `componentBrowserMock.ts`, `settingsMock.ts`).
-*   **`navigator.js` & `navigator.d.ts`**
-    *   **Purpose:** A vanilla JavaScript class that handles the complex, high-fidelity animation of the Node Navigator widget. `navigator.d.ts` provides TypeScript types for this plain JS file, allowing it to be safely used in the TSX codebase.
 
 ### **React Views (`src/views/`)**
 
@@ -116,6 +120,6 @@ These are smaller, often presentational components used across multiple views.
 *   **`ResizablePanel.tsx`**
     *   **Purpose:** Implements the draggable vertical panels used for the component browser and properties panel.
 *   **`SelectionToolbar.tsx`**
-    *   **Purpose:** The floating toolbar that appears when a component is selected on the canvas, providing actions like delete, settings, and wrap.
+    *   **Purpose:** The floating toolbar that appears when a single component is selected on the canvas, providing actions like rename and delete via a "more options" menu.
 *   **`InlineTextInput.tsx`**: A specialized input component that appears in place of a label during an edit. It uses the `useEditable` hook to manage its state.
 *   **`SelectionToolbarMenu.tsx`**: The popover menu that appears from the `SelectionToolbar`, displaying a full list of actions and their keyboard shortcuts.

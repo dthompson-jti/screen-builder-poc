@@ -1,12 +1,13 @@
 /* src/components/SelectionToolbar.module.css */
 .toolbarWrapper {
   position: absolute;
-  top: -40px;
+  top: -44px; /* Adjusted to give more breathing room above selection */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 1000;
 }
 
+/* --- REVERTED STYLES: Restored the original solid blue toolbar --- */
 .selectionToolbar {
   display: flex;
   align-items: center;
@@ -37,16 +38,28 @@
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
 }
+/* --- END OF REVERTED STYLES --- */
 
+
+/* --- Context Menu Styles (Kept Improvements) --- */
 .menuPopover {
   position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  width: 200px;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max-content; /* Allow it to grow to fit content */
+  min-width: 240px;   /* Ensure a healthy minimum width */
   background-color: var(--surface-bg-secondary);
   border-radius: 12px;
   border: 1px solid var(--surface-border-secondary);
   box-shadow: var(--surface-shadow-xl);
   padding: var(--spacing-1);
   animation: fadeIn 0.1s ease-out;
+  z-index: 1001; /* Ensure menu is on top */
+}
+
+/* FIX: Use menuDivider from the shared CSS file for consistency */
+.menuPopover .menuDivider {
+  height: 1px;
+  background-color: var(--surface-border-secondary);
+  margin: var(--spacing-1) 0;
 }

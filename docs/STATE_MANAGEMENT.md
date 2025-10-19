@@ -1,7 +1,3 @@
-Of course. Here is the complete, updated `STATE_MANAGEMENT.md` document.
-
-### `/src/docs/STATE_MANAGEMENT.md`
-```markdown
 # State Management Guide
 
 This document explains the state management architecture of Screen Studio. Understanding this architecture is crucial for adding new features or modifying existing behavior safely and efficiently.
@@ -31,17 +27,19 @@ This file is the "control panel" for the application's UI. It contains atoms tha
 *   Which view is currently active (`appViewModeAtom`: 'editor', 'preview', or 'settings').
 *   The visibility of panels (`isComponentBrowserVisibleAtom`, `isPropertiesPanelVisibleAtom`).
 *   The state of UI controls (`activeToolbarTabAtom`, `componentSearchQueryAtom`).
-*   The interactive state of the canvas, including which components are selected (`selectedCanvasComponentIdsAtom`) and which, if any, is currently being edited in-place (`activelyEditingComponentIdAtom`). These atoms work together to control the UI's response to user input.
+*   The interactive state of the canvas. This is managed by a single source-of-truth atom, `canvasInteractionAtom`, which uses a discriminated union to prevent invalid states (e.g., selecting and editing at the same time).
+*   Derived, read-only atoms like `selectedCanvasComponentIdsAtom` and `activelyEditingComponentIdAtom` provide convenient access for components that only need to read the interaction state.
 *   The state of modals (`isDataBindingModalOpenAtom`).
 
 These atoms are typically simple and are read from and written to directly by UI components.
 
 ```typescript
-// Example: A simple atom for UI state
-export const isComponentBrowserVisibleAtom = atom(false);
+// Example: The single source of truth for canvas interaction state
+export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle' });
 
-// Usage in a component:
-const [isVisible, setIsVisible] = useAtom(isComponentBrowserVisibleAtom);
+// Usage in a component to change the state:
+const setInteractionState = useSetAtom(canvasInteractionAtom);
+setInteractionState({ mode: 'selecting', ids: ['component-123'] });
 ```
 
 ### 2.2. Core Application State & Undo/Redo (`historyAtoms.ts`)
@@ -100,5 +98,3 @@ By centralizing all mutations through this single atom, we ensure that:
 *   Every change is a predictable, testable transformation.
 *   Every change is automatically recorded in the undo/redo history.
 *   The core application logic is decoupled from the UI components that trigger it.
-```
-END:

@@ -5,7 +5,7 @@
     align-items: center;
     width: 100%;
     text-align: left;
-    gap: var(--spacing-2);
+    gap: var(--spacing-3); /* Increased gap for better readability */
     font-size: 0.9em;
     font-weight: 500;
     font-family: var(--font-family-sans);
@@ -16,14 +16,17 @@
     cursor: pointer;
     
     /* Spacing & Sizing */
-    padding: var(--spacing-2);
-    margin: var(--spacing-0p5) 0;
-    border-radius: 8px;
+    padding: var(--spacing-1p5) var(--spacing-2);
+    margin: 1px 0; /* Tiny vertical gaps between items */
+    border-radius: 6px; /* Slightly tighter radius */
 
-    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 
     /* Base Colors */
     color: var(--surface-fg-primary);
+    
+    /* Prevent menu item text from wrapping */
+    white-space: nowrap;
 }
 
 .menu-item:disabled {
@@ -34,7 +37,12 @@
 
 .menu-item:hover:not(:disabled) {
     background-color: var(--control-bg-quaternary-hover);
-    box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
+    /* Removed the inset shadow border for a cleaner, more standard menu look */
+}
+
+.menu-item .material-symbols-rounded {
+    font-size: 18px;
+    color: var(--surface-fg-secondary); /* Icons slightly softer than text */
 }
 
 .menu-item .checkmark-container {
@@ -42,14 +50,16 @@
     height: 20px;
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--surface-fg-theme-primary);
 }
 
-/* UPDATED: Styles for hotkey text to match Figma screenshot */
 .menu-item .hotkey {
     margin-left: auto; /* Pushes the hotkey to the far right */
     color: var(--surface-fg-tertiary); /* Use tertiary color for subtlety */
-    font-size: 0.9em;
-    padding-left: var(--spacing-4); /* Ensure space between label and hotkey */
+    font-size: 12px; /* Slightly smaller font for hotkeys */
+    font-weight: 500;
+    padding-left: var(--spacing-6); /* Generous space between label and hotkey */
     white-space: nowrap; /* Prevent wrapping */
+    letter-spacing: 0.02em;
 }
