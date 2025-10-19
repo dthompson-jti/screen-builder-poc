@@ -1,5 +1,5 @@
 // src/views/EditorCanvas.tsx
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useDroppable, DraggableSyntheticListeners, ClientRect } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -103,7 +103,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
   
   const isDisabled = isEmptyContainer || isRoot;
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
     id: component.id,
     data: { 
       id: component.id,
@@ -135,7 +135,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
   const className = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
 
   return (
-    <div ref={setNodeRef} style={sortableStyle} className={className} {...attributes} data-id={component.id}>
+    <div ref={setNodeRef} style={sortableStyle} className={className} data-id={component.id}>
       {React.cloneElement(children as React.ReactElement, { dndListeners: listeners })}
     </div>
   );
@@ -313,20 +313,36 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
   const isSelected = (interactionState.mode === 'selecting' && interactionState.ids.includes(component.id));
   const isEditing = interactionState.mode === 'editing' && interactionState.id === component.id;
 
-  // Hooks must be called at the top level of the component.
+  const handleLabelCommit = useCallback((newLabel: string) => {
+    commitAction({
+      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newLabel } } },
+      message: `Rename to '${newLabel}'`
+    });
+    setInteractionState({ mode: 'selecting', ids: [component.id] });
+  }, [commitAction, setInteractionState, component.id]);
+
+  const handleCancelEdit = useCallback(() => {
+    setInteractionState({ mode: 'selecting', ids: [component.id] });
+  }, [setInteractionState, component.id]);
+
   const editable = useEditable(
     component.properties.label,
-    (newLabel) => { // onCommit
-      commitAction({
-        action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newLabel } } },
-        message: `Rename to '${newLabel}'`
-      });
-      setInteractionState({ mode: 'selecting', ids: [component.id] });
-    },
-    () => { // onCancel
-      setInteractionState({ mode: 'selecting', ids: [component.id] });
-    }
+    handleLabelCommit,
+    handleCancelEdit
   );
+
+  // NEW EFFECT FOR FOCUS MANAGEMENT
+  useEffect(() => {
+    if (isEditing) {
+      // Use a timeout to ensure the input is in the DOM and ready for focus.
+      // This is a common pattern to handle focus after a conditional render.
+      const timer = setTimeout(() => {
+        editable.ref.current?.focus();
+        editable.ref.current?.select();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isEditing, editable.ref]);
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -377,7 +393,6 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
     const commonProps = {
       label,
       isEditing,
-      // Conditionally pass the editableProps object.
       editableProps: isEditing ? {
         ref: editable.ref,
         value: editable.value,

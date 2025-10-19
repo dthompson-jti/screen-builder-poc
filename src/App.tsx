@@ -30,7 +30,9 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData, CanvasComponent } from './types';
+import { DndData, CanvasComponent, FormComponent } from './types';
+import DropdownPreview from './components/DropdownPreview';
+import RadioButtonsPreview from './components/RadioButtonsPreview';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -120,13 +122,31 @@ function App() {
         return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
       }
       
-      // FIX: Pass the correct props to TextInputPreview. The drag overlay is never
-      // in an editing state, so isEditing is always false.
-      return (
-        <div style={{ pointerEvents: 'none' }}>
-          <TextInputPreview label={getComponentName(activeComponent)} isEditing={false} />
-        </div>
-      );
+      if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
+        const formComponent = activeComponent as FormComponent;
+        const commonProps = {
+            label: getComponentName(formComponent),
+            isEditing: false,
+        };
+        
+        let previewElement;
+        switch (formComponent.properties.controlType) {
+            case 'dropdown':
+                previewElement = <DropdownPreview {...commonProps} />;
+                break;
+            case 'radio-buttons':
+                previewElement = <RadioButtonsPreview {...commonProps} />;
+                break;
+            case 'text-input':
+            default:
+                previewElement = <TextInputPreview {...commonProps} />;
+                break;
+        }
+
+        return <div style={{ pointerEvents: 'none' }}>{previewElement}</div>;
+      }
+      
+      return null;
     }
   };
 

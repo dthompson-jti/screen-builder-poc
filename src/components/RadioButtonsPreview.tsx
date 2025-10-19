@@ -31,6 +31,7 @@ const RadioButtonsPreview = ({ label, isEditing, editableProps }: RadioButtonsPr
           onKeyDown={editableProps.onKeyDown}
           onBlur={editableProps.onBlur}
           className={styles.editingInput}
+          onClick={(e) => e.stopPropagation()}
         />
       )}
 

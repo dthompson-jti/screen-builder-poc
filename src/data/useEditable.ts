@@ -25,13 +25,8 @@ export const useEditable = <T extends EditableElement = HTMLInputElement>(
     setCurrentValue(initialValue);
   }, [initialValue]);
 
-  // Focus and select text when the component mounts (i.e., when editing begins)
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.focus();
-      ref.current.select();
-    }
-  }, []);
+  // REMOVED: The focus logic is now handled by the component that controls the editing state (FormItem).
+  // This is more reliable as the hook itself doesn't know when an "edit session" begins.
 
   const handleCommit = () => {
     const trimmedValue = currentValue.trim();

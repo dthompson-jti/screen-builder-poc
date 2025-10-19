@@ -101,8 +101,6 @@ export interface DndData {
   isNew?: boolean;
   origin?: 'data' | 'general';
   childrenCount?: number;
-  // FIX: Add the optional 'data' property to carry binding info.
-  // This resolves the TypeScript errors.
   data?: {
     nodeId: string;
     nodeName: string;

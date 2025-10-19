@@ -31,6 +31,7 @@ export const TextInputPreview = ({ label, isEditing, editableProps }: TextInputP
           onKeyDown={editableProps.onKeyDown}
           onBlur={editableProps.onBlur}
           className={styles.editingInput}
+          onClick={(e) => e.stopPropagation()}
         />
       )}
       

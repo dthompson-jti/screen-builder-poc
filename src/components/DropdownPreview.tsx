@@ -31,6 +31,7 @@ const DropdownPreview = ({ label, isEditing, editableProps }: DropdownPreviewPro
           onKeyDown={editableProps.onKeyDown}
           onBlur={editableProps.onBlur}
           className={styles.editingInput}
+          onClick={(e) => e.stopPropagation()}
         />
       )}
 
