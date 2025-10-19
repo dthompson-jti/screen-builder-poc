@@ -36,6 +36,7 @@ export type HistoryAction =
       origin?: 'data' | 'general'; 
       parentId: string; 
       index: number; 
+      controlType?: FormComponent['properties']['controlType']; // NEW: Allow specifying control type
       bindingData?: { nodeId: string, nodeName: string, fieldId: string, path: string };
     } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
@@ -118,7 +119,7 @@ export const commitActionAtom = atom(
 
         switch (action.action.type) {
           case 'COMPONENT_ADD': {
-            const { componentType, name, origin, parentId, index, bindingData } = action.action.payload;
+            const { componentType, name, origin, parentId, index, controlType, bindingData } = action.action.payload;
             const newId = nanoid(8);
             let newComponent: CanvasComponent;
 
@@ -158,10 +159,11 @@ export const commitActionAtom = atom(
                 origin,
                 binding: newBinding,
                 properties: {
-                  label: name,
-                  fieldName: fieldName,
+                  label: controlType === 'plain-text' ? '' : name,
+                  content: controlType === 'plain-text' ? 'Plain Text' : undefined,
+                  fieldName: controlType === 'plain-text' ? '' : fieldName,
                   required: false,
-                  controlType: 'text-input',
+                  controlType: controlType || 'text-input',
                 },
               };
             }

@@ -17,8 +17,15 @@ const findHoveredContainer = (overId: string, allComponents: Record<string, Canv
 
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
-    return component.componentType === 'layout' ? component.name : component.properties.label;
-}
+    if (component.componentType === 'layout') {
+        return component.name;
+    }
+    // Handle form components
+    if (component.properties.controlType === 'plain-text') {
+        return component.properties.content?.substring(0, 30) || 'Plain Text';
+    }
+    return component.properties.label;
+};
 
 export const useCanvasDnd = () => {
   const setInteractionState = useSetAtom(canvasInteractionAtom);
@@ -82,7 +89,7 @@ export const useCanvasDnd = () => {
   };
   
   const handleAddNewComponent = (activeData: DndData, dropTarget: { parentId: string, index: number }) => {
-    const { name, type, origin } = activeData;
+    const { name, type, origin, controlType } = activeData;
     const { parentId, index } = dropTarget;
     
     commitAction({
@@ -94,6 +101,7 @@ export const useCanvasDnd = () => {
           origin,
           parentId,
           index,
+          controlType,
           bindingData: activeData.data ? {
             fieldId: activeData.id,
             ...activeData.data

@@ -49,16 +49,17 @@ export interface FormComponent extends BaseComponent {
   // NEW: Nested properties object for form-specific attributes
   properties: {
     label: string;
+    content?: string; // NEW: Used for Plain Text component
     fieldName: string;
     required: boolean;
-    controlType: 'text-input' | 'dropdown' | 'radio-buttons';
+    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text'; // NEW: Add 'plain-text'
   };
 }
 
 export type CanvasComponent = LayoutComponent | FormComponent;
 
 export type NormalizedCanvasComponents = {
-  [id: string]: CanvasComponent;
+  [id:string]: CanvasComponent;
 };
 
 // --- Component Browser & Navigator ---
@@ -71,6 +72,7 @@ export interface DraggableComponent {
   nodeId?: string;
   nodeName?: string;
   path?: string;
+  controlType?: FormComponent['properties']['controlType']; // NEW: For creating specific widgets
 }
 
 export interface ComponentGroup {
@@ -101,6 +103,7 @@ export interface DndData {
   isNew?: boolean;
   origin?: 'data' | 'general';
   childrenCount?: number;
+  controlType?: FormComponent['properties']['controlType']; // NEW: Pass controlType in DND data
   data?: {
     nodeId: string;
     nodeName: string;

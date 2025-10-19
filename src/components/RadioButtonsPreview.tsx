@@ -1,20 +1,11 @@
 // src/components/RadioButtonsPreview.tsx
-import React from 'react';
+import { EditableProps } from '../data/useEditable'; // Import shared type
 import styles from './FormFieldPreview.module.css';
-
-// A type for the props passed down from the useEditable hook
-interface EditableProps {
-  ref: React.RefObject<HTMLInputElement | null>;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onBlur: () => void;
-}
 
 interface RadioButtonsPreviewProps {
   label: string;
   isEditing: boolean;
-  editableProps?: EditableProps;
+  editableProps?: EditableProps<HTMLInputElement>; // Use shared, typed props
 }
 
 const RadioButtonsPreview = ({ label, isEditing, editableProps }: RadioButtonsPreviewProps) => {
@@ -24,7 +15,7 @@ const RadioButtonsPreview = ({ label, isEditing, editableProps }: RadioButtonsPr
       
       {isEditing && editableProps && (
         <input
-          ref={editableProps.ref as React.RefObject<HTMLInputElement>}
+          ref={editableProps.ref}
           type="text"
           value={editableProps.value}
           onChange={editableProps.onChange}

@@ -9,9 +9,10 @@ import panelStyles from '../components/panel.module.css';
 // Combined list for POC
 const components: DraggableComponent[] = [
   { id: 'layout-container', name: 'Layout Container', type: 'layout', icon: 'view_quilt' },
-  { id: 'text-input', name: 'Text Input', type: 'widget', icon: 'text_fields' },
-  { id: 'dropdown', name: 'Dropdown', type: 'widget', icon: 'arrow_drop_down_circle' },
-  { id: 'checkbox', name: 'Checkbox', type: 'widget', icon: 'check_box' },
+  { id: 'plain-text', name: 'Plain Text', type: 'widget', icon: 'notes', controlType: 'plain-text' },
+  { id: 'text-input', name: 'Text Input', type: 'widget', icon: 'text_fields', controlType: 'text-input' },
+  { id: 'dropdown', name: 'Dropdown', type: 'widget', icon: 'arrow_drop_down_circle', controlType: 'dropdown' },
+  { id: 'radio-buttons', name: 'Radio Buttons', type: 'widget', icon: 'radio_button_checked', controlType: 'radio-buttons' },
 ];
 
 const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
@@ -24,6 +25,7 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
       icon: component.icon,
       isNew: true,
       origin: 'general',
+      controlType: component.controlType, // Pass controlType in DND data
     } satisfies DndData,
   });
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};

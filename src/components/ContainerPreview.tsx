@@ -1,11 +1,17 @@
 // src/components/ContainerPreview.tsx
-// NEW FILE
 import { LayoutComponent, NormalizedCanvasComponents, CanvasComponent } from '../types';
 import styles from './ContainerPreview.module.css';
 
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
-    return component.componentType === 'layout' ? component.name : component.properties.label;
+    if (component.componentType === 'layout') {
+        return component.name;
+    }
+    // Handle form components
+    if (component.properties.controlType === 'plain-text') {
+        return component.properties.content?.substring(0, 30) || 'Plain Text';
+    }
+    return component.properties.label;
 }
 
 interface ContainerPreviewProps {
@@ -17,7 +23,7 @@ const ChildPreview = ({ componentId, allComponents }: { componentId: string, all
   const component = allComponents[componentId];
   if (!component) return null;
   
-  const name = getComponentName(component); // UPDATED
+  const name = getComponentName(component);
 
   if (component.componentType === 'layout') {
     // Render a simplified placeholder for nested containers to avoid excessive recursion

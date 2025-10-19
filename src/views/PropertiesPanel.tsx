@@ -113,7 +113,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const parent = allComponents[component.parentId];
   
-  const componentName = component.componentType === 'layout' ? component.name : component.properties.label;
+  const componentName = getComponentName(component);
 
   if (!parent || parent.componentType !== 'layout') {
     return null;
@@ -294,7 +294,7 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
         type: 'COMPONENT_UPDATE_FORM_PROPERTIES',
         payload: { componentId: component.id, newProperties }
       },
-      message: `Update properties for '${component.properties.label}'`
+      message: `Update properties for '${getComponentName(component)}'`
     });
   };
   
@@ -327,6 +327,28 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
     }
     return null;
   };
+
+  // NEW: Conditionally render sections based on controlType
+  if (component.properties.controlType === 'plain-text') {
+    return (
+      <>
+        <div className={styles.propSection}>
+          <h4>Content</h4>
+          <div className={styles.propItem}>
+            <label htmlFor={`content-${component.id}`}>Text</label>
+            <textarea
+              id={`content-${component.id}`}
+              className={styles.propTextarea}
+              value={component.properties.content || ''}
+              onChange={(e) => handlePropertyChange({ content: e.target.value })}
+              rows={6}
+            />
+          </div>
+        </div>
+        <ContextualLayoutProperties component={component} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -378,7 +400,15 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
 
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
-    return component.componentType === 'layout' ? component.name : component.properties.label;
+    if (component.componentType === 'layout') {
+        return component.name;
+    }
+    // Handle form components
+    const formComponent = component;
+    if (formComponent.properties.controlType === 'plain-text') {
+        return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
+    }
+    return formComponent.properties.label;
 }
 
 export const PropertiesPanel = () => {

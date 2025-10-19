@@ -14,12 +14,13 @@ import {
 } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom, formNameAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
-import { useEditable } from '../data/useEditable';
+import { useEditable, EditableProps } from '../data/useEditable';
 import { SelectionToolbar } from '../components/SelectionToolbar';
 import { CanvasEmptyState } from '../components/CanvasEmptyState';
 import { TextInputPreview } from '../components/TextInputPreview';
 import DropdownPreview from '../components/DropdownPreview';
 import RadioButtonsPreview from '../components/RadioButtonsPreview';
+import PlainTextPreview from '../components/PlainTextPreview';
 import styles from './EditorCanvas.module.css';
 
 // NEW: Shared props interface to solve TypeScript error with cloneElement
@@ -29,8 +30,16 @@ interface CanvasComponentProps {
 
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
-    return component.componentType === 'layout' ? component.name : component.properties.label;
-}
+  if (component.componentType === 'layout') {
+    return component.name;
+  }
+  // Handle form components
+  const formComponent = component; // No assertion needed due to type guard in caller
+  if (formComponent.properties.controlType === 'plain-text') {
+    return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
+  }
+  return formComponent.properties.label;
+};
 
 // --- Floating Toolbar for Multi-Select ---
 const FloatingSelectionToolbar = () => {
@@ -318,29 +327,32 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent } & Ca
   const isSelected = (interactionState.mode === 'selecting' && interactionState.ids.includes(component.id));
   const isEditing = interactionState.mode === 'editing' && interactionState.id === component.id;
 
-  const handleLabelCommit = useCallback((newLabel: string) => {
+  const isPlainText = component.properties.controlType === 'plain-text';
+
+  const handleValueCommit = useCallback((newValue: string) => {
+    const propertiesToUpdate = isPlainText ? { content: newValue } : { label: newValue };
+    const message = isPlainText ? `Update text content` : `Rename to '${newValue}'`;
+    
     commitAction({
-      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newLabel } } },
-      message: `Rename to '${newLabel}'`
+      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: propertiesToUpdate } },
+      message
     });
     setInteractionState({ mode: 'selecting', ids: [component.id] });
-  }, [commitAction, setInteractionState, component.id]);
+  }, [commitAction, setInteractionState, component.id, isPlainText]);
 
   const handleCancelEdit = useCallback(() => {
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   }, [setInteractionState, component.id]);
 
-  const editable = useEditable(
-    component.properties.label,
-    handleLabelCommit,
-    handleCancelEdit
+  const editable = useEditable<HTMLInputElement | HTMLTextAreaElement>(
+    isPlainText ? component.properties.content || '' : component.properties.label,
+    handleValueCommit,
+    handleCancelEdit,
+    { multiline: isPlainText }
   );
 
-  // NEW EFFECT FOR FOCUS MANAGEMENT
   useEffect(() => {
     if (isEditing) {
-      // Use a timeout to ensure the input is in the DOM and ready for focus.
-      // This is a common pattern to handle focus after a conditional render.
       const timer = setTimeout(() => {
         editable.ref.current?.focus();
         editable.ref.current?.select();
@@ -352,7 +364,7 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent } & Ca
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (e.altKey) {
+    if (e.altKey || (e.detail === 2 && isPlainText)) { // Alt+Click or Double Click for plain text
       setInteractionState({ mode: 'editing', id: component.id });
       return;
     }
@@ -371,7 +383,7 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent } & Ca
   const handleDelete = () => {
     commitAction({
       action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
-      message: `Delete '${component.properties.label}'`
+      message: `Delete '${getComponentName(component)}'`
     });
     setInteractionState({ mode: 'idle' });
   };
@@ -393,25 +405,22 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent } & Ca
 
   const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''}`;
   
-  const renderPreview = () => {
-    const { label, controlType } = component.properties;
-    const commonProps = {
-      label,
-      isEditing,
-      editableProps: isEditing ? {
-        ref: editable.ref,
-        value: editable.value,
-        onChange: editable.onChange,
-        onKeyDown: editable.onKeyDown,
-        onBlur: editable.onBlur
-      } : undefined
-    };
+  // FIX: This function provides a type-safe way to pass editableProps
+  const renderTypedPreview = () => {
+    const { label, controlType, content } = component.properties;
+    const commonProps = { label, content, isEditing };
 
-    switch (controlType) {
-      case 'dropdown': return <DropdownPreview {...commonProps} />;
-      case 'radio-buttons': return <RadioButtonsPreview {...commonProps} />;
-      default: return <TextInputPreview {...commonProps} />;
+    if (controlType === 'plain-text') {
+        return <PlainTextPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLTextAreaElement> : undefined} />;
     }
+    if (controlType === 'dropdown') {
+        return <DropdownPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
+    }
+    if (controlType === 'radio-buttons') {
+        return <RadioButtonsPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
+    }
+    // Default to text-input
+    return <TextInputPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
   };
 
   const showToolbar = isSelected && !isEditing && interactionState.mode === 'selecting' && interactionState.ids.length === 1;
@@ -419,7 +428,7 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent } & Ca
   return (
     <div className={wrapperClassName} onClick={handleSelect}>
       {showToolbar && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
-      {renderPreview()}
+      {renderTypedPreview()}
     </div>
   );
 };
@@ -437,8 +446,18 @@ export const EditorCanvas = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTyping = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
-      if (isTyping || interactionState.mode === 'editing') return;
+      const activeElement = document.activeElement;
+      const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
+      
+      // Allow default behavior for text areas, except for our special commit shortcut
+      if (isTyping && activeElement?.tagName === 'TEXTAREA') {
+        const isCommitShortcut = (event.metaKey || event.ctrlKey) && event.key === 'Enter';
+        if (!isCommitShortcut) return;
+      } else if (isTyping) {
+        return;
+      }
+      
+      if (interactionState.mode === 'editing') return;
 
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
@@ -453,7 +472,7 @@ export const EditorCanvas = () => {
       if (event.key === 'Enter' && selectedIds.length === 1) {
         event.preventDefault();
         const component = allComponents[selectedIds[0]];
-        if (component && component.componentType !== 'layout') {
+        if (component && (component.componentType === 'widget' || component.componentType === 'field')) {
           setInteractionState({ mode: 'editing', id: selectedIds[0] });
         }
         return;

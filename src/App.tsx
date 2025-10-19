@@ -33,6 +33,7 @@ import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData, CanvasComponent } from './types';
 import DropdownPreview from './components/DropdownPreview';
 import RadioButtonsPreview from './components/RadioButtonsPreview';
+import PlainTextPreview from './components/PlainTextPreview';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -47,11 +48,6 @@ const dropAnimation: DropAnimation = {
 
 const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
-
-// Helper to get the display name/label
-const getComponentName = (component: CanvasComponent): string => {
-    return component.componentType === 'layout' ? component.name : component.properties.label;
-}
 
 function App() {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -126,14 +122,18 @@ function App() {
       }
       
       if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
-        const formComponent = activeComponent; // No cast needed here due to type guard
+        const formComponent = activeComponent;
         const commonProps = {
-            label: getComponentName(formComponent),
+            label: formComponent.properties.label,
+            content: formComponent.properties.content,
             isEditing: false,
         };
         
         let previewElement;
         switch (formComponent.properties.controlType) {
+            case 'plain-text':
+                previewElement = <PlainTextPreview {...commonProps} />;
+                break;
             case 'dropdown':
                 previewElement = <DropdownPreview {...commonProps} />;
                 break;
