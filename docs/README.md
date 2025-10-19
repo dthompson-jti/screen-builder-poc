@@ -1,26 +1,4 @@
-Of course. After reviewing all the documentation files (`.md`) in the context of the completed refactoring, I've consolidated and updated them to reflect the new architecture.
-
-The core idea is to reduce the number of documentation files, give them clearer names, and ensure their content is accurate and aligned with the project's new feature-based structure and the principles we've established.
-
----
-
-### Proposed Documentation Refactoring
-
-I will merge the five separate markdown files into two more comprehensive and logically grouped documents:
-
-1.  **`README.md`**: This will be the new primary entry point for any developer. It will merge `project-overview.md` and `project-conventions.md` to provide a single, cohesive guide to understanding the project's structure, conventions, and key files.
-2.  **`ARCHITECTURE_GUIDE.md`**: This will be the deep-dive document for understanding *how* the system works. It will merge `system-principles.md`, `STATE_MANAGEMENT.md`, `STYLING_ARCHITECTURE.md`, `dnd-architecture.md`, `canvas-and-layout.md`, and `navigator-and-breadcrumb.md`. This creates a single source of truth for all architectural decisions and contracts.
-
-This consolidation makes the documentation easier to navigate and maintain.
-
----
-
-### Updated Documentation Content
-
-Here are the full contents for the two new documentation files.
-
-### 1. `README.md` (New and Consolidated)
-
+### README.md
 ```markdown
 # Screen Studio: Project Overview & Conventions
 
@@ -74,14 +52,20 @@ import { FormComponent } from '../../../types';
 
 ### Data & State Management (`src/data/`)
 *   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms (panel visibility, active tabs, modal states, etc.).
-*   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core state of the form itself. **Exports `commitActionAtom`, the only safe way to modify the canvas state.**
+*   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core state of the form being built and implements the entire undo/redo system using a **reducer pattern**.
 *   **`useCanvasDnd.ts`**: A custom hook encapsulating all drag-and-drop logic for the canvas.
+*   **`useEditorHotkeys.ts`**: A custom hook that centralizes all global keyboard shortcut logic for the editor canvas (e.g., delete, wrap, reorder).
 *   **`useUndoRedo.ts`**: A custom hook providing a clean API for undo/redo actions with toast notifications.
 *   **`*Mock.ts` files**: Provide static data for the proof of concept.
 
 ### Features (`src/features/`)
 *   **`Editor/`**: The main form-building feature.
-    *   **`EditorCanvas/`**: Renders the interactive canvas, components, selection outlines, and drop indicators.
+    *   **Architecture (Flattened Canvas):** This directory now contains the canvas engine, wrappers, renderers, and supporting UI artifacts, following the Interactive Layer Pattern:
+        *   **`EditorCanvas.tsx`**: The main container component.
+        *   **`CanvasNode.tsx`**: The recursive engine for rendering the component tree.
+        *   **`CanvasRenderers.tsx`**: Pure presentation logic (The View).
+        *   **`CanvasWrappers.tsx`**: Interaction logic (Selection, DnD, Sortable context).
+        *   **`canvasUtils.ts`**: Pure utility functions (e.g., `getComponentName`).
     *   **`PropertiesPanel/`**: The right-hand panel for editing the properties of the selected component.
     *   **`previews/`**: Contains all the visual previews of components used for the drag overlay.
     *   **`MainToolbar.tsx`**: The primary vertical toolbar on the left of the editor.

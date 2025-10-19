@@ -1,7 +1,7 @@
-// src/features/Editor/EditorCanvas/SelectionToolbarMenu.tsx
+// src/features/Editor/SelectionToolbarMenu.tsx
 import { useRef } from 'react';
-import { useOnClickOutside } from '../../../data/useOnClickOutside';
-import { useIsMac } from '../../../data/useIsMac';
+import { useOnClickOutside } from '../../data/useOnClickOutside';
+import { useIsMac } from '../../data/useIsMac';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarMenuProps {
@@ -11,9 +11,7 @@ interface SelectionToolbarMenuProps {
   onClose: () => void;
   onDuplicate: () => void;
   onWrap: () => void;
-  onUnwrap: () => void;
   canWrap: boolean;
-  canUnwrap: boolean;
 }
 
 export const SelectionToolbarMenu = ({
@@ -23,16 +21,13 @@ export const SelectionToolbarMenu = ({
   onClose,
   onDuplicate,
   onWrap,
-  onUnwrap,
   canWrap,
-  canUnwrap,
 }: SelectionToolbarMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, onClose);
   const isMac = useIsMac();
 
   const modKey = isMac ? '⌘' : 'Ctrl';
-  const shiftKey = isMac ? '⇧' : 'Shift+';
   const altKey = isMac ? '⌥' : 'Alt+';
 
   const createHandler = (action: () => void) => () => {
@@ -67,11 +62,7 @@ export const SelectionToolbarMenu = ({
         <span>Wrap in Container</span>
         <span className="hotkey">{modKey}{isMac ? '' : '+'}{altKey}G</span>
       </button>
-      <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
-        <span className="material-symbols-rounded">disabled_by_default</span>
-        <span>Unwrap</span>
-        <span className="hotkey">{shiftKey}{modKey}{isMac ? '' : '+'}G</span>
-      </button>
+      {/* Unwrap functionality is currently disabled */}
 
       <div className={styles.menuDivider} />
 

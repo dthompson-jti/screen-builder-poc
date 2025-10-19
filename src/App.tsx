@@ -9,7 +9,7 @@ import { AppHeader } from './features/AppHeader/AppHeader';
 import { ComponentBrowser } from './features/ComponentBrowser/ComponentBrowser';
 import { GeneralComponentsBrowser } from './features/ComponentBrowser/GeneralComponentsBrowser';
 import { PlaceholderPanel } from './features/ComponentBrowser/PlaceholderPanel';
-import { EditorCanvas } from './features/Editor/EditorCanvas/EditorCanvas';
+import { EditorCanvas } from './features/Editor/EditorCanvas';
 import { MainToolbar } from './features/Editor/MainToolbar';
 import { PropertiesPanel } from './features/Editor/PropertiesPanel/PropertiesPanel';
 import { BrowserItemPreview } from './features/Editor/previews/BrowserItemPreview';

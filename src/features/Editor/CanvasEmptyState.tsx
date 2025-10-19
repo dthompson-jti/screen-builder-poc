@@ -1,12 +1,12 @@
-// src/features/Editor/EditorCanvas/CanvasEmptyState.tsx
+// src/features/Editor/CanvasEmptyState.tsx
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { 
   isComponentBrowserVisibleAtom, 
   activeToolbarTabAtom, 
   isPropertiesPanelVisibleAtom,
   canvasInteractionAtom // CORRECTED: Import the base writable atom
-} from '../../../data/atoms';
-import { rootComponentIdAtom } from '../../../data/historyAtoms';
+} from '../../data/atoms';
+import { rootComponentIdAtom } from '../../data/historyAtoms';
 import styles from './CanvasEmptyState.module.css';
 
 export const CanvasEmptyState = () => {

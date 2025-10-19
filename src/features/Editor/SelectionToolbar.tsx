@@ -1,9 +1,9 @@
-// src/features/Editor/EditorCanvas/SelectionToolbar.tsx
+// src/features/Editor/SelectionToolbar.tsx
 import { useState } from 'react';
 import { DraggableSyntheticListeners } from '@dnd-kit/core';
 import { SelectionToolbarMenu } from './SelectionToolbarMenu';
-import { Tooltip } from '../../../components/Tooltip';
-import { useIsMac } from '../../../data/useIsMac';
+import { Tooltip } from '../../components/Tooltip';
+import { useIsMac } from '../../data/useIsMac';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarProps {
@@ -13,9 +13,9 @@ interface SelectionToolbarProps {
   listeners?: DraggableSyntheticListeners;
   onDuplicate?: () => void;
   onWrap?: () => void;
-  onUnwrap?: () => void;
+  // onUnwrap?: () => void; // REMOVED
   canWrap?: boolean;
-  canUnwrap?: boolean;
+  // canUnwrap?: boolean; // REMOVED
 }
 
 export const SelectionToolbar = ({
@@ -25,9 +25,9 @@ export const SelectionToolbar = ({
   listeners,
   onDuplicate = () => {},
   onWrap = () => {},
-  onUnwrap = () => {},
+  // onUnwrap = () => {}, // REMOVED
   canWrap = false,
-  canUnwrap = false,
+  // canUnwrap = false, // REMOVED
 }: SelectionToolbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMac = useIsMac();
@@ -82,9 +82,9 @@ export const SelectionToolbar = ({
           onClose={() => setIsMenuOpen(false)}
           onDuplicate={onDuplicate}
           onWrap={onWrap}
-          onUnwrap={onUnwrap}
+          // onUnwrap={onUnwrap} // REMOVED
           canWrap={canWrap}
-          canUnwrap={canUnwrap}
+          // canUnwrap={canUnwrap} // REMOVED
         />
       )}
     </div>

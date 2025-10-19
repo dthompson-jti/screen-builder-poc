@@ -1,5 +1,6 @@
-### 2. `ARCHITECTURE_GUIDE.md` (New and Consolidated)
+Of course. Here is the fully updated `ARCHITECTURE_GUIDE.md` content, including the recommended changes to document the "Interactive Layer Pattern".
 
+### ARCHITECTURE_GUIDE.md
 ```markdown
 # Screen Studio: Architecture Guide
 
@@ -62,6 +63,10 @@ The canvas and DnD systems are built on a contract of **stability and clarity**.
 -   **The Placeholder is a State:** The "empty canvas" placeholder is simply content rendered inside the root `LayoutContainer` when it has no children. The container itself is always present and is the single source of truth for its border and background. This architecture definitively eliminates all "double border" bugs.
 -   **Intrinsic Growth:** The form card has a `min-height` when empty but grows naturally to fit its content.
 -   **Editor-Only Artifacts:** UI related to selection, editing, and drag-and-drop (e.g., selection toolbars, outlines) exists **only** within the `Editor` feature and is absent from the `FormRenderer` used in Preview Mode.
+-   **The Interactive Layer Pattern:** To ensure separation of concerns, the canvas renders components through a stack of wrappers. Logic is strictly isolated:
+    -   **`ComponentRenderer`**: A pure, memoizable component responsible only for visual presentation. It contains no interaction logic and is reusable in read-only contexts (like Preview Mode).
+    -   **`SelectionWrapper`**: A higher-order component that adds selection behavior, manages selection state, and displays the `SelectionToolbar`.
+    -   **`SortableWrapper`**: The outermost layer that integrates with `dnd-kit` to provide drag-and-drop capabilities.
 
 ### Drag-and-Drop (DnD) Contracts
 -   **Stability Above All:** All "make space" animations from `dnd-kit` are programmatically disabled during a drag operation. This keeps the layout "rock solid" and prevents drop targets from shifting.
@@ -75,3 +80,4 @@ The Data Navigator provides a high-craft experience for navigating hierarchical 
 -   **Separation of Concerns:** The complex, multi-phase animation logic is encapsulated within a vanilla JavaScript class (`src/data/navigator.js`). The React component (`DataNavigatorView.tsx`) acts as an orchestrator, managing state (via Jotai) and listening for DOM events dispatched by the navigator instance.
 -   **Authoritative Animation Timeline:** GSAP is used for its robust timeline features to explicitly sequence the slide and cross-fade animations, preventing race conditions and visual glitches.
 -   **Unidirectional Data Flow:** User clicks call methods on the `navigator.js` instance. The instance runs its animation timeline and dispatches a `navigate` event. The React component listens for this event and updates the central `selectedNodeId` atom, which triggers a re-render of the UI to reflect the new state. This creates a clean, predictable flow.
+```
