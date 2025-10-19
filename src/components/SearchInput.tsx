@@ -30,8 +30,6 @@ export const SearchInput = ({
   const wrapperClasses = `${styles.wrapper} ${isFocused ? styles.focused : ''}`;
 
   return (
-    // This is now the single, clean container. It receives all borders,
-    // backgrounds, and focus states. The child input is always transparent.
     <div className={wrapperClasses} data-variant={variant}>
       <label htmlFor={inputId} className={styles.visuallyHidden}>
         {placeholder}
@@ -47,7 +45,6 @@ export const SearchInput = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
-      {/* FIX: Only render the clear button for the 'standalone' variant. */}
       {variant === 'standalone' && value && (
         <button
           className={styles.clearButton}

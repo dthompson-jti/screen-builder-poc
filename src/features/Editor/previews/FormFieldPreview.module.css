@@ -1,0 +1,84 @@
+/* src/features/Editor/previews/FormFieldPreview.module.css */
+/* A shared style module for all form field previews */
+
+.previewWrapper {
+  padding: var(--spacing-3);
+  border-radius: 6px;
+  background-color: var(--surface-bg-primary);
+  pointer-events: none; /* Previews should not be interactive */
+  position: relative; /* For positioning the editing input */
+}
+
+.previewLabel {
+  display: block;
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--surface-fg-secondary);
+  margin-bottom: var(--spacing-2);
+  /* Hide the label when editing to avoid overlap */
+  visibility: visible;
+}
+
+.previewLabel.isEditing {
+  visibility: hidden;
+}
+
+.editingInput {
+  font-family: var(--font-family-sans);
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+  background-color: var(--surface-bg-primary);
+  border: 1px solid var(--surface-border-theme);
+  border-radius: 4px; /* Smaller radius for inline look */
+  outline: none;
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+  pointer-events: all; /* The input itself must be interactive */
+  
+  position: absolute;
+  top: var(--spacing-3);
+  left: var(--spacing-3);
+  width: calc(100% - var(--spacing-3) * 2);
+  height: 20px; /* Match label line-height */
+  padding: 2px 4px;
+  margin: 0;
+}
+
+/* --- Static Preview Placeholders --- */
+.previewInput {
+  width: 100%;
+  height: 38px;
+  background-color: var(--surface-bg-secondary_subtle);
+  border: 1px solid var(--surface-border-secondary);
+  border-radius: 6px;
+}
+
+.previewDropdown {
+  /* Apply both classes in JSX */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--spacing-2);
+  color: var(--surface-fg-tertiary);
+}
+
+.previewRadioGroup {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+}
+
+.previewRadioButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--surface-fg-primary);
+  font-size: 0.9em;
+}
+
+.previewRadioCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-border-primary);
+}

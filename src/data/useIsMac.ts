@@ -1,5 +1,4 @@
 // src/data/useIsMac.ts
-// NEW FILE
 import { useMemo } from 'react';
 
 /**

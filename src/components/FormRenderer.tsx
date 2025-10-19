@@ -3,7 +3,7 @@ import React from 'react';
 import { useAtomValue } from 'jotai';
 import { canvasComponentsByIdAtom, rootComponentIdAtom } from '../data/historyAtoms';
 import { FormComponent, LayoutComponent } from '../types';
-import { TextInputPreview } from './TextInputPreview';
+import { TextInputPreview } from '../features/Editor/previews/TextInputPreview';
 
 // --- Recursive Render Node ---
 const RenderNode = ({ componentId }: { componentId: string }) => {
@@ -104,7 +104,7 @@ const FormComponentPreview = ({ component }: { component: FormComponent }) => {
   
   return (
     <div style={wrapperStyle}>
-      <TextInputPreview label={component.properties.label} />
+      <TextInputPreview label={component.properties.label} isEditing={false} />
     </div>
   );
 };

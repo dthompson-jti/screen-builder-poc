@@ -1,0 +1,48 @@
+/* src/features/Editor/previews/PlainTextPreview.module.css */
+
+.previewWrapper {
+  padding: var(--spacing-2);
+  background-color: var(--surface-bg-primary);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  pointer-events: none;
+  position: relative;
+  min-height: 40px;
+}
+
+.textContent {
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: var(--surface-fg-primary);
+  white-space: pre-wrap; /* Respects newlines and whitespace */
+  word-break: break-word;
+}
+
+.placeholder {
+  color: var(--surface-fg-tertiary);
+  font-style: italic;
+}
+
+.editingTextarea {
+  all: unset;
+  font-family: var(--font-family-sans);
+  font-size: 0.9em;
+  line-height: 1.5;
+  color: var(--surface-fg-primary);
+  background-color: var(--surface-bg-secondary);
+  border: 1px solid var(--control-border-theme-primary);
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px var(--control-border-theme-focus);
+  pointer-events: all;
+  
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  width: calc(100% - var(--spacing-2) * 2);
+  height: auto; /* Allow it to grow */
+  min-height: 80px;
+  padding: var(--spacing-2);
+  resize: vertical;
+  box-sizing: border-box;
+}

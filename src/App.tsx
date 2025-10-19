@@ -3,21 +3,30 @@
 import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai'; 
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
-import { AppHeader } from './views/AppHeader';
-import { ComponentBrowser } from './views/ComponentBrowser';
-import { GeneralComponentsBrowser } from './views/GeneralComponentsBrowser';
+
+// Features (new import paths)
+import { AppHeader } from './features/AppHeader/AppHeader';
+import { ComponentBrowser } from './features/ComponentBrowser/ComponentBrowser';
+import { GeneralComponentsBrowser } from './features/ComponentBrowser/GeneralComponentsBrowser';
+import { PlaceholderPanel } from './features/ComponentBrowser/PlaceholderPanel';
+import { EditorCanvas } from './features/Editor/EditorCanvas/EditorCanvas';
+import { MainToolbar } from './features/Editor/MainToolbar';
+import { PropertiesPanel } from './features/Editor/PropertiesPanel/PropertiesPanel';
+import { BrowserItemPreview } from './features/Editor/previews/BrowserItemPreview';
+import { ContainerPreview } from './features/Editor/previews/ContainerPreview';
+import PlainTextPreview from './features/Editor/previews/PlainTextPreview'; // FIXED: Default import
+import { TextInputPreview } from './features/Editor/previews/TextInputPreview';
+import DropdownPreview from './features/Editor/previews/DropdownPreview';
+import RadioButtonsPreview from './features/Editor/previews/RadioButtonsPreview';
+import { PreviewView } from './features/Preview/PreviewView';
+import { SettingsPage } from './features/Settings/SettingsPage';
+
+// Generic Components
 import { ResizablePanel } from './components/ResizablePanel';
-import { EditorCanvas } from './views/EditorCanvas';
-import { TextInputPreview } from './components/TextInputPreview';
-import { PropertiesPanel } from './views/PropertiesPanel';
-import { MainToolbar } from './views/MainToolbar';
-import { BrowserItemPreview } from './components/BrowserItemPreview';
-import { ContainerPreview } from './components/ContainerPreview';
-import { PlaceholderPanel } from './components/PlaceholderPanel';
-import { PreviewView } from './views/PreviewView';
 import { DataBindingModal } from './components/DataBindingModal';
-import { SettingsPage } from './views/SettingsPage';
 import { ToastContainer } from './components/ToastContainer';
+
+// Data and Hooks
 import { useCanvasDnd } from './data/useCanvasDnd';
 import { useUndoRedo } from './data/useUndoRedo';
 import { useUrlSync } from './data/useUrlSync';
@@ -30,10 +39,8 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData } from './types';
-import DropdownPreview from './components/DropdownPreview';
-import RadioButtonsPreview from './components/RadioButtonsPreview';
-import PlainTextPreview from './components/PlainTextPreview';
+import { DndData, FormComponent } from './types';
+
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -62,9 +69,12 @@ function App() {
   const { undo, redo } = useUndoRedo();
   useUrlSync();
 
-  // Global keyboard listener for Undo/Redo
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
+      if (isTyping) return;
+
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isUndo = (isMac ? event.metaKey : event.ctrlKey) && event.key === 'z' && !event.shiftKey;
       const isRedo = (isMac ? event.metaKey && event.shiftKey : event.ctrlKey) && (event.key === 'y' || (isMac && event.key === 'z'));
@@ -103,54 +113,51 @@ function App() {
     if (!activeDndItem) return null;
 
     const activeData = activeDndItem.data.current as DndData;
-
-    const isNew = activeData?.isNew;
-    const name = activeData?.name;
-    const icon = activeData?.icon;
+    const { isNew, name, icon } = activeData || {};
 
     if (isNew) {
       return <BrowserItemPreview name={name ?? ''} icon={icon ?? ''} />;
-    } else {
-      const componentId = activeDndItem.id;
-      if (typeof componentId !== 'string') return null; // Type guard
-
-      const activeComponent = allComponents[componentId];
-      if (!activeComponent) return null;
-      
-      if (activeComponent.componentType === 'layout') {
-        return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
-      }
-      
-      if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
-        const formComponent = activeComponent;
-        const commonProps = {
-            label: formComponent.properties.label,
-            content: formComponent.properties.content,
-            isEditing: false,
-        };
-        
-        let previewElement;
-        switch (formComponent.properties.controlType) {
-            case 'plain-text':
-                previewElement = <PlainTextPreview {...commonProps} />;
-                break;
-            case 'dropdown':
-                previewElement = <DropdownPreview {...commonProps} />;
-                break;
-            case 'radio-buttons':
-                previewElement = <RadioButtonsPreview {...commonProps} />;
-                break;
-            case 'text-input':
-            default:
-                previewElement = <TextInputPreview {...commonProps} />;
-                break;
-        }
-
-        return <div style={{ pointerEvents: 'none' }}>{previewElement}</div>;
-      }
-      
-      return null;
     }
+    
+    const componentId = activeDndItem.id;
+    // ESLINT FIX: The type guard makes the 'as string' assertion unnecessary.
+    if (typeof componentId !== 'string') return null;
+
+    const activeComponent = allComponents[componentId];
+    if (!activeComponent) return null;
+    
+    if (activeComponent.componentType === 'layout') {
+      return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
+    }
+    
+    if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
+      const formComponent = activeComponent;
+      const commonProps = {
+          label: formComponent.properties.label,
+          content: formComponent.properties.content,
+          isEditing: false,
+      };
+      
+      let previewElement;
+      switch (formComponent.properties.controlType) {
+          case 'plain-text':
+              previewElement = <PlainTextPreview {...commonProps} />;
+              break;
+          case 'dropdown':
+              previewElement = <DropdownPreview {...commonProps} />;
+              break;
+          case 'radio-buttons':
+              previewElement = <RadioButtonsPreview {...commonProps} />;
+              break;
+          case 'text-input':
+          default:
+              previewElement = <TextInputPreview {...commonProps} />;
+              break;
+      }
+      return <div style={{ pointerEvents: 'none', opacity: 0.85 }}>{previewElement}</div>;
+    }
+    
+    return null;
   };
 
   const renderLeftPanelContent = () => {
@@ -175,7 +182,7 @@ function App() {
       case 'editor':
       default:
         return (
-          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+          <div className="app-main-content">
             <MainToolbar />
             <ResizablePanel
               initialWidth={INITIAL_PANEL_WIDTH}
@@ -185,7 +192,7 @@ function App() {
             >
               {renderLeftPanelContent()}
             </ResizablePanel>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="canvas-wrapper">
               <EditorCanvas />
             </div>
             <ResizablePanel
@@ -196,30 +203,30 @@ function App() {
             >
               <PropertiesPanel />
             </ResizablePanel>
-            <DragOverlay dropAnimation={dropAnimation}>
-              {activeDndId ? renderDragOverlay() : null}
-            </DragOverlay>
           </div>
         );
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
-      <DndContext 
-        sensors={sensors} 
-        onDragStart={handleDragStart} 
-        onDragOver={handleDragOver} 
-        onDragEnd={handleDragEnd} 
-        autoScroll={true}
-        collisionDetection={rectIntersection}
-      >
+    <DndContext 
+      sensors={sensors} 
+      onDragStart={handleDragStart} 
+      onDragOver={handleDragOver} 
+      onDragEnd={handleDragEnd} 
+      autoScroll={true}
+      collisionDetection={rectIntersection}
+    >
+      <div className="app-container">
         <AppHeader />
         {renderMainContent()}
         <DataBindingModal />
         <ToastContainer />
-      </DndContext>
-    </div>
+      </div>
+       <DragOverlay dropAnimation={dropAnimation}>
+        {activeDndId ? renderDragOverlay() : null}
+      </DragOverlay>
+    </DndContext>
   )
 }
 

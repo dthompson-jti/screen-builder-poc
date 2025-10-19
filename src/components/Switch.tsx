@@ -1,5 +1,4 @@
 // src/components/Switch.tsx
-// NEW FILE
 import * as RadixSwitch from '@radix-ui/react-switch';
 import styles from './Switch.module.css';
 

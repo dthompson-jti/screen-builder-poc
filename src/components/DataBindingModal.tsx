@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Modal } from './Modal';
-import { DataNavigatorView } from '../views/DataNavigatorView';
+import { DataNavigatorView } from '../features/DataNavigator/DataNavigatorView';
 import { SelectableListItem } from './SelectableListItem';
 import {
   dataBindingRequestAtom,
@@ -16,7 +16,7 @@ import {
   componentListData,
   componentTreeData,
 } from '../data/componentBrowserMock';
-import { ConnectionsDropdown } from './ConnectionsDropdown';
+import { ConnectionsDropdown } from '../features/DataNavigator/ConnectionsDropdown';
 import { Tooltip } from './Tooltip';
 import { BoundData, DraggableComponent } from '../types';
 import styles from './DataBindingModal.module.css';
@@ -60,12 +60,9 @@ export const DataBindingModal = () => {
   };
 
   const handleSelect = (component: DraggableComponent) => {
-    // This guard clause ensures the properties are not undefined for the code below.
     if (!component.nodeId || !component.nodeName || !component.path) return;
     
     const newBinding: BoundData = {
-      // FIX: Remove the unnecessary non-null assertions (!). The guard clause
-      // above already performs the type narrowing, making them redundant.
       nodeId: component.nodeId,
       nodeName: component.nodeName,
       fieldId: component.id,

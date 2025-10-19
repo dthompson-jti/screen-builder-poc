@@ -1,5 +1,4 @@
 // src/components/Tooltip.tsx
-// NEW FILE
 import React from 'react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
 import styles from './Tooltip.module.css';
@@ -16,7 +15,6 @@ interface TooltipProps {
  * built on top of Radix UI.
  */
 export const Tooltip = ({ children, content, delay = 300, side = 'top' }: TooltipProps) => {
-  // Don't render the tooltip provider if there's no content to show.
   if (!content) {
     return children;
   }

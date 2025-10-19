@@ -80,7 +80,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
           width: `${width}px`, 
           minWidth: 0, 
           height: '100%',
-          // FIX: Correctly transform right panel content for exit animation
           transform: isPanelHidden ? `translateX(${position === 'left' ? '-' : ''}${width}px)` : 'translateX(0)',
           transition: 'transform 0.3s ease-out',
         }}
@@ -89,7 +88,6 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       </div>
       {!isPanelHidden && (
         <div
-          // FIX: Correctly assign positioning class. The left panel needs a right-side resizer, and vice-versa.
           className={`${styles.resizerWrapper} ${position === 'left' ? styles.resizerRight : styles.resizerLeft}`}
           onMouseDown={handleMouseDown}
         >

@@ -1,0 +1,26 @@
+/* src/features/AppHeader/ScreenTypeBadge.module.css */
+.badge {
+  display: inline-flex;
+  padding: 2px 8px 2px 6px;
+  align-items: center;
+  gap: 2px;
+
+  border-radius: 6px;
+  border: 1px solid var(--primitives-grey-200);
+  background: var(--primitives-grey-50);
+
+  color: var(--surface-fg-tertiary);
+  text-align: center;
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+  
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.badge:hover {
+  background-color: var(--primitives-grey-100);
+}

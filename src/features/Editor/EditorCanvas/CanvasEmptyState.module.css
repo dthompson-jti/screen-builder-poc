@@ -1,0 +1,28 @@
+/* src/features/Editor/EditorCanvas/CanvasEmptyState.module.css */
+
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  color: var(--surface-fg-secondary);
+}
+
+
+.title {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--surface-fg-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.subtitle {
+  font-size: 0.9em;
+  color: var(--surface-fg-secondary);
+  margin: 0;
+  line-height: 1.5;
+}

@@ -1,0 +1,75 @@
+// src/features/Preview/PreviewToolbar.tsx
+import React from 'react';
+import { useAtom } from 'jotai';
+import { isPreviewFluidAtom, previewWidthAtom } from '../../data/atoms';
+import { Tooltip } from '../../components/Tooltip';
+import styles from './PreviewToolbar.module.css';
+
+const PRESETS = [
+  { id: 'mobile', icon: 'smartphone', width: 390, label: 'Mobile' },
+  { id: 'tablet', icon: 'tablet_mac', width: 768, label: 'Tablet' },
+  { id: 'desktop', icon: 'desktop_mac', width: 1280, label: 'Desktop' },
+];
+
+export const PreviewToolbar = () => {
+  const [isFluid, setIsFluid] = useAtom(isPreviewFluidAtom);
+  const [width, setWidth] = useAtom(previewWidthAtom);
+
+  const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFluid(false); 
+    const newWidth = parseInt(e.target.value, 10);
+    if (!isNaN(newWidth)) {
+      setWidth(newWidth);
+    }
+  };
+
+  const handlePresetClick = (presetWidth: number) => {
+    setIsFluid(false);
+    setWidth(presetWidth);
+  };
+  
+  const handleFitClick = () => {
+    setIsFluid(true);
+  };
+
+  return (
+    <div className={styles.previewToolbar}>
+        <div className={styles.toolbarGroup}>
+            <Tooltip content="Fit to Window">
+              <button
+                  className={`btn btn-secondary icon-only ${isFluid ? 'active' : ''}`}
+                  onClick={handleFitClick}
+                  aria-label="Fit to Window"
+              >
+                  <span className="material-symbols-rounded">open_in_full</span>
+              </button>
+            </Tooltip>
+            <div className={styles.verticalDivider} />
+            {PRESETS.map(p => (
+              <Tooltip content={p.label} key={p.id}>
+                <button
+                  className={`btn btn-secondary icon-only ${!isFluid && width === p.width ? 'active' : ''}`}
+                  onClick={() => handlePresetClick(p.width)}
+                  aria-label={p.label}
+                >
+                  <span className="material-symbols-rounded">{p.icon}</span>
+                </button>
+              </Tooltip>
+            ))}
+        </div>
+        <div className={styles.verticalDivider} />
+        <div className={styles.widthInputWrapper}>
+        <input
+            type="number"
+            className={styles.widthInput}
+            value={isFluid ? '' : width}
+            placeholder={isFluid ? 'Auto' : ''}
+            onChange={handleWidthChange}
+            disabled={isFluid}
+            aria-label="Preview width"
+        />
+        <span className={styles.widthInputUnit}>px</span>
+        </div>
+    </div>
+  );
+};
