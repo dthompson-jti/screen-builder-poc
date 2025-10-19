@@ -1,7 +1,3 @@
-Of course. Here is the fully updated `ARCHITECTURE_GUIDE.md` content, including the recommended changes to document the "Interactive Layer Pattern".
-
-### ARCHITECTURE_GUIDE.md
-```markdown
 # Screen Studio: Architecture Guide
 
 This document outlines the core architectural principles, patterns, and contracts that guide the design and development of the Screen Studio application.
@@ -80,4 +76,3 @@ The Data Navigator provides a high-craft experience for navigating hierarchical 
 -   **Separation of Concerns:** The complex, multi-phase animation logic is encapsulated within a vanilla JavaScript class (`src/data/navigator.js`). The React component (`DataNavigatorView.tsx`) acts as an orchestrator, managing state (via Jotai) and listening for DOM events dispatched by the navigator instance.
 -   **Authoritative Animation Timeline:** GSAP is used for its robust timeline features to explicitly sequence the slide and cross-fade animations, preventing race conditions and visual glitches.
 -   **Unidirectional Data Flow:** User clicks call methods on the `navigator.js` instance. The instance runs its animation timeline and dispatches a `navigate` event. The React component listens for this event and updates the central `selectedNodeId` atom, which triggers a re-render of the UI to reflect the new state. This creates a clean, predictable flow.
-```
