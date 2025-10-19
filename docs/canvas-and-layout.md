@@ -1,4 +1,3 @@
-
 # Canvas and Layout Architecture
 
 This document specifies the architecture and principles for the editor canvas, ensuring a stable, predictable, and intuitive user experience.
@@ -25,9 +24,11 @@ The canvas form area is designed to grow naturally with its content.
 -   **Initial State:** The form card has a `min-height` to provide an ample, comfortable drop target when empty. It is vertically centered within the canvas view.
 -   **Growth:** As components are added, the form card's height expands intrinsically to wrap the content. It does not have a fixed or max height.
 
-## Editor-Only Padding
+## Editor-Only Artifacts
 
-To improve legibility and provide a clear visual separation between a component and its selection/hover state, all components on the canvas have a small, consistent padding applied via the `.formComponentWrapper`.
+To improve usability, the editor displays UI elements that are not part of the final, rendered form. These "artifacts" must be strictly separated from the core form rendering logic.
 
--   **Contract:** This padding is an **editor-only artifact**.
--   **Implementation:** It is applied by `EditorCanvas.module.css` and is therefore not present in the `FormRenderer` component used for Preview Mode, ensuring a pixel-perfect final output.
+-   **Contract:** Any UI related to selection, editing, or drag-and-drop is an **editor-only artifact**.
+-   **Implementation Examples:**
+    -   **Component Padding:** The small, consistent padding applied via `.formComponentWrapper` exists only in `EditorCanvas.module.css` to provide visual separation. It is not present in the `FormRenderer`.
+    -   **UI Overlays:** The **Selection Toolbar**, selection outlines, and drop indicators are rendered exclusively by the `EditorCanvas` and are absent in Preview Mode, ensuring a pixel-perfect final output.

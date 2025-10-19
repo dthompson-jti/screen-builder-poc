@@ -2,11 +2,11 @@
 import { useRef } from 'react';
 import { useOnClickOutside } from '../data/useOnClickOutside';
 import { useIsMac } from '../data/useIsMac';
-import styles from './SelectionToolbar.module.css';
+import styles from './SelectionToolbar.module.css'; // This import is crucial
 
 interface SelectionToolbarMenuProps {
   onDelete: () => void;
-  onRename: () => void; // Add rename prop
+  onRename: () => void;
   onNudge: (direction: 'up' | 'down') => void;
   onClose: () => void;
   onDuplicate: () => void;
@@ -18,7 +18,7 @@ interface SelectionToolbarMenuProps {
 
 export const SelectionToolbarMenu = ({
   onDelete,
-  onRename, // Add rename prop
+  onRename,
   onNudge,
   onClose,
   onDuplicate,
@@ -44,16 +44,17 @@ export const SelectionToolbarMenu = ({
 
   return (
     <div className={styles.menuPopover} ref={menuRef}>
-      {/* --- Main Actions --- */}
+      {/* --- Group 1: Modification --- */}
       <button className="menu-item" onClick={createHandler(onRename)}>
         <span className="material-symbols-rounded">edit</span>
         <span>Rename</span>
         <span className="hotkey">Enter</span>
       </button>
 
-      <div className="menuDivider" />
+      {/* FIX: Use the class from the imported CSS module */}
+      <div className={styles.menuDivider} />
       
-      {/* --- Movement Group --- */}
+      {/* --- Group 2: Arrangement (Position & Hierarchy) --- */}
       <button className="menu-item" onClick={createHandler(() => onNudge('up'))}>
         <span className="material-symbols-rounded">arrow_upward</span>
         <span>Move Up</span>
@@ -64,10 +65,6 @@ export const SelectionToolbarMenu = ({
         <span>Move Down</span>
         <span className="hotkey">↓</span>
       </button>
-
-      <div className="menuDivider" />
-
-      {/* --- Structure Group --- */}
       <button className="menu-item" onClick={createHandler(onWrap)} disabled={!canWrap}>
         <span className="material-symbols-rounded">add_box</span>
         <span>Wrap in Container</span>
@@ -79,9 +76,10 @@ export const SelectionToolbarMenu = ({
         <span className="hotkey">{shiftKey}{modKey}{isMac ? '' : '+'}G</span>
       </button>
 
-      <div className="menuDivider" />
+      {/* FIX: Use the class from the imported CSS module */}
+      <div className={styles.menuDivider} />
 
-      {/* --- Lifecycle Group --- */}
+      {/* --- Group 3: Lifecycle --- */}
       <button className="menu-item" onClick={createHandler(onDuplicate)} disabled>
         <span className="material-symbols-rounded">content_copy</span>
         <span>Duplicate</span>

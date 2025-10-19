@@ -1,7 +1,3 @@
-Of course. Here is the fully updated `project-overview.md` file, reflecting the recent architectural changes.
-
-### `/src/docs/project-overview.md`
-```markdown
 # Project Overview & File Manifest
 
 This document provides a high-level overview of the `form-editor-poc` codebase, explaining the purpose and responsibility of key files and directories. For a new developer, this is the best place to start to understand the project's architecture.
@@ -120,6 +116,6 @@ These are smaller, often presentational components used across multiple views.
 *   **`ResizablePanel.tsx`**
     *   **Purpose:** Implements the draggable vertical panels used for the component browser and properties panel.
 *   **`SelectionToolbar.tsx`**
-    *   **Purpose:** The floating toolbar that appears when a single component is selected on the canvas, providing actions like rename and delete via a "more options" menu.
+    *   **Purpose:** The floating toolbar that appears when a component is selected, providing quick access to common actions like rename and a "more options" menu.
 *   **`InlineTextInput.tsx`**: A specialized input component that appears in place of a label during an edit. It uses the `useEditable` hook to manage its state.
-*   **`SelectionToolbarMenu.tsx`**: The popover menu that appears from the `SelectionToolbar`, displaying a full list of actions and their keyboard shortcuts.
+*   **`SelectionToolbarMenu.tsx`**: The popover menu that appears from the `SelectionToolbar`. It provides a comprehensive, logically-grouped list of all available actions and their corresponding keyboard shortcuts to improve discoverability.

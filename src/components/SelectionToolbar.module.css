@@ -7,7 +7,6 @@
   z-index: 1000;
 }
 
-/* --- REVERTED STYLES: Restored the original solid blue toolbar --- */
 .selectionToolbar {
   display: flex;
   align-items: center;
@@ -38,10 +37,7 @@
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
 }
-/* --- END OF REVERTED STYLES --- */
 
-
-/* --- Context Menu Styles (Kept Improvements) --- */
 .menuPopover {
   position: absolute;
   top: calc(100% + 8px);
@@ -57,8 +53,8 @@
   z-index: 1001; /* Ensure menu is on top */
 }
 
-/* FIX: Use menuDivider from the shared CSS file for consistency */
-.menuPopover .menuDivider {
+/* FIX: This class is now correctly referenced via the styles object in the component */
+.menuDivider {
   height: 1px;
   background-color: var(--surface-border-secondary);
   margin: var(--spacing-1) 0;
