@@ -34,6 +34,17 @@ const presetOptions: { id: string; label: string; type: AppearanceType; bordered
     { id: 'error-bordered', label: 'Error', type: 'error', bordered: true },
 ];
 
+const getComponentName = (component: CanvasComponent): string => {
+    if (component.componentType === 'layout') {
+        return component.name;
+    }
+    const formComponent = component;
+    if (formComponent.properties.controlType === 'plain-text') {
+        return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
+    }
+    return formComponent.properties.label;
+}
+
 const StyleSwatch = ({ type, bordered, isSelected, onClick, title }: { type: AppearanceType, bordered: boolean, isSelected: boolean, onClick: () => void, title: string }) => {
   return (
     <Tooltip content={title}>
@@ -385,17 +396,6 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
   );
 };
 
-const getComponentName = (component: CanvasComponent): string => {
-    if (component.componentType === 'layout') {
-        return component.name;
-    }
-    const formComponent = component;
-    if (formComponent.properties.controlType === 'plain-text') {
-        return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
-    }
-    return formComponent.properties.label;
-}
-
 export const PropertiesPanel = () => {
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -430,6 +430,7 @@ export const PropertiesPanel = () => {
         </div>
       );
     }
+    // FIX: Add null check for selectedComponent
     if (!selectedComponent) {
       return (
         <div className={styles.propertiesPanelPlaceholder}>
@@ -439,6 +440,7 @@ export const PropertiesPanel = () => {
       );
     }
 
+    // FIX: Use type guards to narrow the component type for TypeScript
     if (selectedComponent.componentType === 'layout') {
       return <LayoutProperties component={selectedComponent} />;
     }

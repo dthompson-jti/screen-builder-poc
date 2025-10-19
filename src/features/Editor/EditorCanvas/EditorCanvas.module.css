@@ -59,11 +59,13 @@
   opacity: 0;
 }
 
-.formComponentWrapper:not(.layoutContainer):hover:not(.selected) {
+/* CORRECTED: Apply hover styles when the PARENT div is NOT selected */
+:not(.selected) > .formComponentWrapper:not(.layoutContainer):hover {
   background-color: var(--surface-bg-primary_hover);
 }
 
-.formComponentWrapper.selected {
+/* CORRECTED: Selector now targets the inner wrapper from the outer selected div */
+.selected > .formComponentWrapper {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
@@ -78,16 +80,19 @@
 .layoutContainer[data-has-user-border="true"] {
   border-color: transparent;
 }
-.layoutContainer[data-has-user-border="true"]:hover:not(.selected) {
+/* CORRECTED: Selector now targets the inner layout from a non-selected parent on hover */
+:not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
   box-shadow: 0 0 0 2px var(--surface-border-primary);
 }
 
-.layoutContainer.selected {
+/* CORRECTED: Selector now targets the inner layout from the outer selected div */
+.selected > .layoutContainer {
   border-style: solid;
   border-width: 2px;
 }
 
-.layoutContainer:hover:not(.selected) {
+/* CORRECTED: Selector now targets the inner layout from a non-selected parent on hover */
+:not(.selected) > .layoutContainer:hover {
   background-color: var(--surface-bg-secondary_subtle);
   border-color: var(--surface-border-primary);
 }

@@ -11,7 +11,12 @@ const findHoveredContainer = (overId: string, allComponents: Record<string, Canv
   const overComponent = allComponents[overId];
   if (!overComponent) return null;
   if (overComponent.componentType === 'layout') return overId;
-  if (overComponent.parentId) return overComponent.parentId;
+  if (overComponent.parentId) {
+      const parent = allComponents[overComponent.parentId];
+      if (parent && parent.componentType === 'layout') {
+          return parent.id;
+      }
+  }
   return null;
 };
 
@@ -39,8 +44,6 @@ export const useCanvasDnd = () => {
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
     setActiveDndItem(event.active);
-    // ATOMIC STATE TRANSITION: When a drag starts, immediately clear any
-    // selections or editing states to prevent conflicts and visual bugs.
     setInteractionState({ mode: 'idle' });
   };
   
@@ -97,13 +100,14 @@ export const useCanvasDnd = () => {
         type: 'COMPONENT_ADD',
         payload: {
           componentType: type as 'layout' | 'widget',
-          name, // This 'name' becomes the initial label for FormComponents
+          name, 
           origin,
           parentId,
           index,
           controlType,
           bindingData: activeData.data ? {
-            fieldId: activeData.id,
+            // FIX: Use a safe string conversion to satisfy both TypeScript and ESLint.
+            fieldId: String(activeData.id),
             ...activeData.data
           } : undefined,
         }
@@ -115,23 +119,27 @@ export const useCanvasDnd = () => {
   const handleMoveComponent = (active: Active, dropTarget: { parentId: string, index: number }) => {
     const activeId = active.id as string;
     const { parentId: newParentId, index: newIndex } = dropTarget;
-    const oldParentId = allComponents[activeId]?.parentId;
+    const oldComponent = allComponents[activeId];
+    if (!oldComponent) return;
+
+    const oldParentId = oldComponent.parentId;
     if (!oldParentId) return;
     const oldParent = allComponents[oldParentId];
     if (!oldParent || oldParent.componentType !== 'layout') return;
+
     const oldIndex = oldParent.children.indexOf(activeId);
     if (oldParentId === newParentId) {
       const adjustedNewIndex = oldIndex < newIndex ? newIndex -1 : newIndex;
       if (oldIndex !== adjustedNewIndex) {
         commitAction({
           action: { type: 'COMPONENT_REORDER', payload: { componentId: activeId, parentId: oldParentId, oldIndex, newIndex: adjustedNewIndex } },
-          message: `Reorder '${getComponentName(allComponents[activeId])}'`
+          message: `Reorder '${getComponentName(oldComponent)}'`
         });
       }
     } else {
       commitAction({
         action: { type: 'COMPONENT_MOVE', payload: { componentId: activeId, oldParentId, newParentId, newIndex } },
-        message: `Move '${getComponentName(allComponents[activeId])}'`
+        message: `Move '${getComponentName(oldComponent)}'`
       });
     }
   };
@@ -150,6 +158,7 @@ export const useCanvasDnd = () => {
     }
 
     const parentId = overComponent.componentType === 'layout' ? overId : overComponent.parentId;
+    if (!parentId) return null;
     const parent = allComponents[parentId];
     if (!parent || parent.componentType !== 'layout') return null;
 
@@ -172,6 +181,7 @@ export const useCanvasDnd = () => {
     }
 
     const indexInParent = children.indexOf(overId);
+    if (indexInParent === -1) return null;
     
     const isAfter = draggingRect.top > overRect.top + overRect.height / 2;
     const finalIndex = isAfter ? indexInParent + 1 : indexInParent;
@@ -179,7 +189,7 @@ export const useCanvasDnd = () => {
         top: isAfter ? overRect.bottom : overRect.top,
         left: overRect.left,
         width: overRect.width,
-        height: 4, // Default height for line indicator
+        height: 4, 
         right: overRect.right,
         bottom: isAfter ? overRect.bottom + 4 : overRect.top + 4,
     };
