@@ -72,6 +72,7 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const activeElement = document.activeElement;
+      // KEPT IMPROVEMENT: Prevents undo/redo while typing in inputs.
       const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
       if (isTyping) return;
 
@@ -109,6 +110,7 @@ function App() {
     })
   );
 
+  // KEPT IMPROVEMENT: This version is cleaner and more robust.
   const renderDragOverlay = () => {
     if (!activeDndItem) return null;
 
@@ -181,7 +183,8 @@ function App() {
       case 'editor':
       default:
         return (
-          <div className="app-main-content">
+          // LAYOUT FIX: Reverted to using inline styles to match the original, working layout.
+          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
             <MainToolbar />
             <ResizablePanel
               initialWidth={INITIAL_PANEL_WIDTH}
@@ -191,7 +194,7 @@ function App() {
             >
               {renderLeftPanelContent()}
             </ResizablePanel>
-            <div className="canvas-wrapper">
+            <div style={{ flex: 1, minWidth: 0 }}>
               <EditorCanvas />
             </div>
             <ResizablePanel
@@ -216,12 +219,14 @@ function App() {
       autoScroll={true}
       collisionDetection={rectIntersection}
     >
-      <div className="app-container">
+      {/* LAYOUT FIX: Reverted to using inline styles for the main container. */}
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
         <AppHeader />
         {renderMainContent()}
         <DataBindingModal />
         <ToastContainer />
       </div>
+       {/* LAYOUT FIX: Moved DragOverlay back inside the DndContext provider. */}
        <DragOverlay dropAnimation={dropAnimation}>
         {activeDndId ? renderDragOverlay() : null}
       </DragOverlay>
