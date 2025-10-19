@@ -49,6 +49,9 @@ export const isReadOnlyAtom = atom(true);
 // The first ID in the array is considered the "primary" selection for the properties panel.
 export const selectedCanvasComponentIdsAtom = atom<string[]>([]);
 
+// NEW: The ID of the component being edited in-place on the canvas.
+export const activelyEditingComponentIdAtom = atom<string | null>(null);
+
 // Atoms to track the global state of a drag-and-drop operation.
 export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
 export const overDndIdAtom = atom<UniqueIdentifier | null>(null);

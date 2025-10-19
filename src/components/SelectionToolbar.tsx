@@ -1,40 +1,38 @@
 // src/components/SelectionToolbar.tsx
 import { DraggableSyntheticListeners } from '@dnd-kit/core';
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, useState } from 'react';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { isPropertiesPanelVisibleAtom, selectedCanvasComponentIdsAtom } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from '../data/historyAtoms';
 import { Tooltip } from './Tooltip';
+import { SelectionToolbarMenu } from './SelectionToolbarMenu';
 import styles from './SelectionToolbar.module.css';
 import { CanvasComponent } from '../types';
 
 interface SelectionToolbarProps extends HTMLAttributes<HTMLDivElement> {
   onDelete: () => void;
+  onRename: () => void;
+  onNudge: (direction: 'up' | 'down') => void;
   listeners?: DraggableSyntheticListeners;
 }
 
-export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps) => {
+export const SelectionToolbar = ({ onDelete, onRename, onNudge, listeners }: SelectionToolbarProps) => {
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // NEW: Determine if the selected component can be unwrapped
   const selectedComponent: CanvasComponent | null = selectedIds.length === 1 ? allComponents[selectedIds[0]] : null;
   const canUnwrap = selectedComponent?.componentType === 'layout' && selectedComponent.children.length > 0;
+  const canRename = selectedComponent?.componentType === 'widget' || selectedComponent?.componentType === 'field';
 
   const handleSettingsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsPropertiesPanelVisible(true);
   };
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete();
-  };
-  
-  const handleWrapClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleWrapClick = () => {
     if (selectedIds.length === 0) return;
     const firstSelected = allComponents[selectedIds[0]];
     if (!firstSelected) return;
@@ -43,16 +41,21 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
       action: { type: 'COMPONENTS_WRAP', payload: { componentIds: selectedIds, parentId: firstSelected.parentId } },
       message: `Wrap ${selectedIds.length} component(s)`
     });
+    setIsMenuOpen(false);
   };
 
-  // NEW: Handler for unwrap
-  const handleUnwrapClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleUnwrapClick = () => {
     if (!canUnwrap || !selectedComponent) return;
     commitAction({
       action: { type: 'COMPONENT_UNWRAP', payload: { componentId: selectedComponent.id } },
       message: `Unwrap container`
     });
+    setIsMenuOpen(false);
+  };
+
+  const handleRenameClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRename();
   };
 
   return (
@@ -62,37 +65,37 @@ export const SelectionToolbar = ({ onDelete, listeners }: SelectionToolbarProps)
           <span className="material-symbols-rounded">drag_indicator</span>
         </div>
       </Tooltip>
-      <div className={styles.toolbarDivider} />
 
       <div className={styles.toolbarActions} onMouseDown={(e) => e.stopPropagation()}>
+        {canRename && (
+          <Tooltip content="Rename (Enter)">
+            <button className="btn btn-tertiary on-solid" aria-label="Rename component" onClick={handleRenameClick}>
+              <span className="material-symbols-rounded">drive_file_rename_outline</span>
+            </button>
+          </Tooltip>
+        )}
         <Tooltip content="Settings">
           <button className="btn btn-tertiary on-solid" aria-label="Component settings" onClick={handleSettingsClick}>
             <span className="material-symbols-rounded">settings</span>
           </button>
         </Tooltip>
-        <Tooltip content="Wrap in container">
-          <button className="btn btn-tertiary on-solid" onClick={handleWrapClick} aria-label="Wrap in container">
-            <span className="material-symbols-rounded">fullscreen</span>
-          </button>
-        </Tooltip>
-             {canUnwrap && (
-          <Tooltip content="Unwrap container">
-            <button className="btn btn-tertiary on-solid" onClick={handleUnwrapClick} aria-label="Unwrap container">
-              <span className="material-symbols-rounded">fullscreen_exit</span>
-            </button>
-          </Tooltip>
-        )}
-         <div className={styles.toolbarDivider} />
-        <Tooltip content="Delete">
-          <button 
-            className="btn btn-tertiary on-solid"
-            onClick={handleDeleteClick} 
-            aria-label="Delete component"
-          >
-            <span className="material-symbols-rounded">delete</span>
+        <div className={styles.toolbarDivider} />
+        <Tooltip content="More actions">
+          <button className="btn btn-tertiary on-solid" onClick={() => setIsMenuOpen(p => !p)} aria-label="More actions">
+            <span className="material-symbols-rounded">more_horiz</span>
           </button>
         </Tooltip>
       </div>
+      {isMenuOpen && (
+        <SelectionToolbarMenu 
+          onClose={() => setIsMenuOpen(false)}
+          onWrap={handleWrapClick}
+          onUnwrap={handleUnwrapClick}
+          onDelete={onDelete}
+          onNudge={onNudge}
+          canUnwrap={canUnwrap}
+        />
+      )}
     </div>
   );
 };

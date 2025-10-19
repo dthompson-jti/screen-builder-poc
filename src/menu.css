@@ -20,7 +20,6 @@
     margin: var(--spacing-0p5) 0;
     border-radius: 8px;
 
-    /* FIX: Remove the transparent border entirely to prevent visual glitches. */
     transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 
     /* Base Colors */
@@ -33,13 +32,11 @@
     color: var(--control-fg-disabled);
 }
 
-/* Default hover state uses a single inset shadow for the faint border. */
 .menu-item:hover:not(:disabled) {
     background-color: var(--control-bg-quaternary-hover);
     box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
 }
 
-/* Specific styling for checkmark alignment if present */
 .menu-item .checkmark-container {
     width: 20px;
     height: 20px;
@@ -48,10 +45,11 @@
     color: var(--surface-fg-theme-primary);
 }
 
-/* Specific styling for hotkey text if present */
+/* UPDATED: Styles for hotkey text to match Figma screenshot */
 .menu-item .hotkey {
-    margin-left: auto;
-    color: var(--surface-fg-secondary);
+    margin-left: auto; /* Pushes the hotkey to the far right */
+    color: var(--surface-fg-tertiary); /* Use tertiary color for subtlety */
     font-size: 0.9em;
-    padding-left: var(--spacing-4);
+    padding-left: var(--spacing-4); /* Ensure space between label and hotkey */
+    white-space: nowrap; /* Prevent wrapping */
 }

@@ -41,9 +41,6 @@
   flex-grow: 1;
 }
 
-/* FIX: This rule, which caused the entire form card to light up, has been removed. */
-
-
 .formComponentWrapper {
   border: 2px solid transparent;
   padding: var(--spacing-1);
@@ -54,6 +51,12 @@
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
+/* NEW: When a component is being edited, force its wrapper to be visually neutral */
+.formComponentWrapper.isEditing {
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
 .sortableItem {
   position: relative;
 }
@@ -61,12 +64,6 @@
 .sortableItem.isDragging {
   opacity: 0;
 }
-
-/*
-  NOTE: The CSS rule for disabling transition during drag has been removed.
-  This is now handled programmatically in EditorCanvas.tsx for greater reliability.
-*/
-
 
 .formComponentWrapper:not(.layoutContainer):hover:not(.selected) {
   background-color: var(--surface-bg-primary_hover);
@@ -121,7 +118,6 @@
   border-style: solid;
 }
 .layoutContainerEmpty.drag-active .emptyText {
-  /* REVERT: Text should remain visible during drag-over */
   display: block;
 }
 
@@ -141,7 +137,6 @@
   height: 4px; 
 }
 
-/* Style for the grid block indicator is now a more subtle inset ring effect. */
 .dropPlaceholder.is-grid {
   background-color: var(--primitives-theme-25);
   height: auto;

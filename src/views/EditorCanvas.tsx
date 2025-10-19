@@ -1,5 +1,5 @@
 // src/views/EditorCanvas.tsx
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useDroppable, DraggableSyntheticListeners, ClientRect } from '@dnd-kit/core';
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -9,16 +9,16 @@ import {
   overDndIdAtom, 
   dropPlaceholderAtom, 
   activeDndIdAtom, 
-  isPropertiesPanelVisibleAtom 
+  isPropertiesPanelVisibleAtom,
+  activelyEditingComponentIdAtom,
 } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom, formNameAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
 import { SelectionToolbar } from '../components/SelectionToolbar';
 import { CanvasEmptyState } from '../components/CanvasEmptyState';
 import { TextInputPreview } from '../components/TextInputPreview';
-// FIX: Change to default imports to resolve module resolution errors.
-import DropdownPreview from '../components/DropdownPreview.tsx';
-import RadioButtonsPreview from '../components/RadioButtonsPreview.tsx';
+import DropdownPreview from '../components/DropdownPreview';
+import RadioButtonsPreview from '../components/RadioButtonsPreview';
 import styles from './EditorCanvas.module.css';
 
 interface ComponentProps {
@@ -165,6 +165,7 @@ const DropPlaceholder = ({ placeholderProps }: { placeholderProps: { viewportRec
 const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
   const commitAction = useSetAtom(commitActionAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const overId = useAtomValue(overDndIdAtom);
   const dropPlaceholder = useAtomValue(dropPlaceholderAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
@@ -204,6 +205,23 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       message: `Delete '${component.name}'`
     });
     setSelectedIds([]);
+  };
+  
+  const handleRename = () => {
+    // Layout containers can't be renamed inline
+  };
+
+  const handleNudge = (direction: 'up' | 'down') => {
+      const parent = allComponents[component.parentId];
+      if (!parent || parent.componentType !== 'layout') return;
+      const oldIndex = parent.children.indexOf(component.id);
+      const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1;
+      if (newIndex >= 0 && newIndex < parent.children.length) {
+          commitAction({
+              action: { type: 'COMPONENT_REORDER', payload: { componentId: component.id, parentId: parent.id, oldIndex, newIndex } },
+              message: `Reorder component`
+          });
+      }
   };
   
   const isOverContainer = overId === component.id;
@@ -272,7 +290,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 
   return (
     <div className={containerClasses} onClick={handleSelect}>
-      {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
+      {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
       <div 
         ref={setMergedRefs} 
         className={styles.layoutContainerContent} 
@@ -292,7 +310,6 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
             </SortableContext>
           )}
         </div>
-        {/* FIX: Explicitly pass props instead of spreading to fix type error */}
         {showLinePlaceholder && (
           <DropPlaceholder
             placeholderProps={{
@@ -310,8 +327,12 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 // --- Form Item (e.g., TextInput) ---
 const FormItem = ({ component, dndListeners }: { component: FormComponent, dndListeners?: DraggableSyntheticListeners }) => {
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const [activelyEditingId, setActivelyEditingId] = useAtom(activelyEditingComponentIdAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
+
   const isSelected = selectedIds.includes(component.id);
+  const isEditing = activelyEditingId === component.id;
 
   const handleDelete = () => {
     commitAction({
@@ -323,32 +344,70 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
+    // ALT+CLICK is a discrete action: it deselects others and immediately enters edit mode.
+    if (e.altKey) {
+      setSelectedIds([component.id]); // Set selection to only this component
+      setActivelyEditingId(component.id);
+      return;
+    }
+    // Standard SHIFT+CLICK for multi-select
     if (e.shiftKey) {
       setSelectedIds(prev => prev.includes(component.id) ? prev.filter(id => id !== component.id) : [...prev, component.id]);
     } else {
+      // Standard single click
       setSelectedIds([component.id]);
     }
   };
   
-  const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''}`;
+  const handleRename = () => {
+      setActivelyEditingId(component.id);
+  };
 
-  // NEW: Render different previews based on controlType
+  const handleNudge = (direction: 'up' | 'down') => {
+      const parent = allComponents[component.parentId];
+      if (!parent || parent.componentType !== 'layout') return;
+      const oldIndex = parent.children.indexOf(component.id);
+      const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1;
+      if (newIndex >= 0 && newIndex < parent.children.length) {
+          commitAction({
+              action: { type: 'COMPONENT_REORDER', payload: { componentId: component.id, parentId: parent.id, oldIndex, newIndex } },
+              message: `Reorder component`
+          });
+      }
+  };
+  
+  // FIX: isEditing takes precedence over isSelected to prevent the flicker/shift.
+  const wrapperClassName = `${styles.formComponentWrapper} ${isEditing ? styles.isEditing : (isSelected ? styles.selected : '')}`;
+
   const renderPreview = () => {
     const { label, controlType } = component.properties;
+    
     switch (controlType) {
       case 'dropdown':
-        return <DropdownPreview label={label} />;
+        return <DropdownPreview 
+          label={label}
+          isEditing={isEditing}
+          componentId={component.id}
+        />;
       case 'radio-buttons':
-        return <RadioButtonsPreview label={label} />;
+        return <RadioButtonsPreview 
+          label={label}
+          isEditing={isEditing}
+          componentId={component.id}
+        />;
       case 'text-input':
       default:
-        return <TextInputPreview label={label} />;
+        return <TextInputPreview 
+          label={label}
+          isEditing={isEditing}
+          componentId={component.id}
+        />;
     }
   };
 
   return (
     <div className={wrapperClassName} onClick={handleSelect}>
-      {isSelected && selectedIds.length === 1 && <SelectionToolbar onDelete={handleDelete} listeners={dndListeners} />}
+      {isSelected && selectedIds.length === 1 && !isEditing && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
       {renderPreview()}
     </div>
   );
@@ -360,18 +419,114 @@ export const EditorCanvas = () => {
   const rootId = useAtomValue(rootComponentIdAtom);
   const screenName = useAtomValue(formNameAtom);
   const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const commitAction = useSetAtom(commitActionAtom);
+  const [activelyEditingId, setActivelyEditingId] = useAtom(activelyEditingComponentIdAtom);
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
+  // Comprehensive keyboard shortcut listener
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isTypingInInput = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
+      if (isTypingInInput || activelyEditingId) return;
+
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+      // --- Deleting ---
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedIds.length > 0) {
+        event.preventDefault();
+        commitAction({
+          action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: selectedIds } },
+          message: `Delete ${selectedIds.length} component(s)`
+        });
+        setSelectedIds([]);
+        return;
+      }
+      
+      // --- Editing ---
+      if (event.key === 'Enter' && selectedIds.length === 1) {
+        event.preventDefault();
+        setActivelyEditingId(selectedIds[0]);
+        return;
+      }
+
+      // --- Grouping / Ungrouping ---
+      if (isCtrlOrCmd && event.key.toLowerCase() === 'g') {
+        event.preventDefault();
+        
+        if (event.shiftKey) { // Ungroup
+          if (selectedIds.length !== 1) return;
+          const selected = allComponents[selectedIds[0]];
+          if (selected?.componentType === 'layout' && selected.children.length > 0) {
+            commitAction({
+              action: { type: 'COMPONENT_UNWRAP', payload: { componentId: selected.id } },
+              message: `Unwrap container`
+            });
+          }
+        } else { // Group
+          if (selectedIds.length === 0) return;
+          const firstSelected = allComponents[selectedIds[0]];
+          if (!firstSelected) return;
+          commitAction({
+            action: { type: 'COMPONENTS_WRAP', payload: { componentIds: selectedIds, parentId: firstSelected.parentId } },
+            message: `Wrap ${selectedIds.length} component(s)`
+          });
+        }
+        return;
+      }
+
+      // --- Nudging and Container Jumping ---
+      if (event.key.startsWith('Arrow') && selectedIds.length === 1) { // Only nudge single items for now
+        event.preventDefault();
+        const component = allComponents[selectedIds[0]];
+        if (!component) return;
+        const parent = allComponents[component.parentId];
+        if (!parent || parent.componentType !== 'layout') return;
+
+        if (event.shiftKey) { // Container Jumping
+          const grandparent = allComponents[parent.parentId];
+          if (!grandparent || grandparent.componentType !== 'layout') return;
+          
+          const parentIndex = grandparent.children.indexOf(parent.id);
+          const moveDirection = (event.key === 'ArrowUp' || event.key === 'ArrowLeft') ? -1 : 1;
+          const targetParentIndex = parentIndex + moveDirection;
+
+          if (targetParentIndex >= 0 && targetParentIndex < grandparent.children.length) {
+            const newParentId = grandparent.children[targetParentIndex];
+            const newParent = allComponents[newParentId];
+            if (newParent && newParent.componentType === 'layout') {
+              commitAction({
+                action: { type: 'COMPONENT_MOVE', payload: { componentId: component.id, oldParentId: parent.id, newParentId, newIndex: 0 } },
+                message: `Move component to new container`
+              });
+            }
+          }
+        } else { // Nudging
+          const oldIndex = parent.children.indexOf(component.id);
+          const moveDirection = (event.key === 'ArrowUp' || event.key === 'ArrowLeft') ? -1 : 1;
+          const newIndex = oldIndex + moveDirection;
+          if (newIndex >= 0 && newIndex < parent.children.length) {
+            commitAction({
+              action: { type: 'COMPONENT_REORDER', payload: { componentId: component.id, parentId: parent.id, oldIndex, newIndex } },
+              message: `Reorder component`
+            });
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIds, activelyEditingId, setActivelyEditingId, allComponents, commitAction, setSelectedIds]);
+
   const handleCanvasClick = (e: React.MouseEvent) => {
-    // This handler on the form card itself selects the root.
-    // It stops propagation to prevent the container's deselect handler.
     e.stopPropagation();
     setSelectedIds([rootId]);
     setIsPropertiesPanelVisible(true);
   };
 
   const handleContainerClick = () => {
-    // This handler on the gray background deselects everything.
     setSelectedIds([]);
   }
 

@@ -1,0 +1,30 @@
+/* src/components/EditableText.module.css */
+.inlineInput {
+  /* Reset all browser defaults */
+  appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+
+  /* Inherit typography to be invisible */
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+
+  /* Ensure box model matches the label it replaces */
+  box-sizing: border-box;
+  width: 100%;
+
+  /* 
+    FIX: Use an inset box-shadow for the border.
+    This is the key to a "rock-solid" edit state, as shadows do NOT affect the
+    element's box model and therefore cannot cause a layout shift.
+  */
+  caret-color: var(--surface-fg-theme-primary);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--surface-border-theme);
+}
