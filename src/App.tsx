@@ -22,7 +22,7 @@ import { useCanvasDnd } from './data/useCanvasDnd';
 import { useUndoRedo } from './data/useUndoRedo';
 import { useUrlSync } from './data/useUrlSync';
 import {
-  selectedCanvasComponentIdsAtom,
+  canvasInteractionAtom,
   isComponentBrowserVisibleAtom,
   activeToolbarTabAtom,
   appViewModeAtom,
@@ -53,20 +53,16 @@ const getComponentName = (component: CanvasComponent): string => {
 
 function App() {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
-  const setSelectedComponentIds = useSetAtom(selectedCanvasComponentIdsAtom);
+  const setInteractionState = useSetAtom(canvasInteractionAtom);
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
   const viewMode = useAtomValue(appViewModeAtom);
   const activeDndId = useAtomValue(activeDndIdAtom);
   
-  // 1. Get `activeDndItem` directly from the hook
   const { activeDndItem, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
   const { undo, redo } = useUndoRedo();
   useUrlSync();
-
-  // --- THIS useState IS NOW REMOVED ---
-  // const [activeDndItem, setActiveDndItem] = React.useState<Active | null>(null);
 
   // Global keyboard listener for Undo/Redo
   useEffect(() => {
@@ -92,9 +88,9 @@ function App() {
 
   useEffect(() => {
     if (!isLeftPanelVisible) {
-      setSelectedComponentIds([]);
+      setInteractionState({ mode: 'idle' });
     }
-  }, [isLeftPanelVisible, setSelectedComponentIds]);
+  }, [isLeftPanelVisible, setInteractionState]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -106,7 +102,6 @@ function App() {
   );
 
   const renderDragOverlay = () => {
-    // This function remains unchanged as it now reads `activeDndItem` from the hook
     if (!activeDndItem) return null;
 
     const activeData = activeDndItem.data.current as DndData;
@@ -125,8 +120,13 @@ function App() {
         return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
       }
       
-      // UPDATED: Use the helper to get the correct label for the preview
-      return <div style={{ pointerEvents: 'none' }}><TextInputPreview label={getComponentName(activeComponent)} /></div>;
+      // FIX: Pass the correct props to TextInputPreview. The drag overlay is never
+      // in an editing state, so isEditing is always false.
+      return (
+        <div style={{ pointerEvents: 'none' }}>
+          <TextInputPreview label={getComponentName(activeComponent)} isEditing={false} />
+        </div>
+      );
     }
   };
 
@@ -185,7 +185,6 @@ function App() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <DndContext 
         sensors={sensors} 
-        // 2. Simplify the event handlers. The hook now manages the active item internally.
         onDragStart={handleDragStart} 
         onDragOver={handleDragOver} 
         onDragEnd={handleDragEnd} 

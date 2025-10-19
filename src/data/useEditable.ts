@@ -1,23 +1,29 @@
 // src/data/useEditable.ts
-// NEW FILE
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 
-interface UseEditableOptions {
-  isMultiLine?: boolean;
-}
+// Define a type for the elements the hook can work with.
+type EditableElement = HTMLInputElement | HTMLTextAreaElement;
 
 /**
  * A hook to manage the state of an in-place editable text input.
  * It handles the internal value, commit/cancel logic, and keyboard events.
+ * FIX: Now uses generics to correctly type the ref and event handlers.
+ * The default type is HTMLInputElement.
  */
-export const useEditable = (
+export const useEditable = <T extends EditableElement = HTMLInputElement>(
   initialValue: string,
   onCommit: (newValue: string) => void,
   onCancel: () => void,
-  options?: UseEditableOptions
 ) => {
   const [currentValue, setCurrentValue] = useState(initialValue);
-  const ref = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  const ref = useRef<T>(null);
+
+  // FIX: This effect syncs the internal state with the initialValue prop.
+  // This prevents the input from resetting on every keystroke when the parent re-renders,
+  // while still allowing the editor to be reset when a different component is selected.
+  useEffect(() => {
+    setCurrentValue(initialValue);
+  }, [initialValue]);
 
   // Focus and select text when the component mounts (i.e., when editing begins)
   useEffect(() => {
@@ -37,13 +43,13 @@ export const useEditable = (
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<T>) => {
     if (e.key === 'Escape') {
       e.preventDefault();
       onCancel();
     }
     // For single-line inputs, Enter commits the change.
-    if (e.key === 'Enter' && !options?.isMultiLine) {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleCommit();
     }
@@ -56,7 +62,7 @@ export const useEditable = (
   return {
     ref,
     value: currentValue,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setCurrentValue(e.target.value),
+    onChange: (e: React.ChangeEvent<T>) => setCurrentValue(e.target.value),
     onKeyDown: handleKeyDown,
     onBlur: handleBlur,
   };

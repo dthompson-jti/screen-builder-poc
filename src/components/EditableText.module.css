@@ -20,10 +20,10 @@
   width: 100%;
 
   /* 
-    FIX: Use an inset box-shadow for the border.
-    This is the key to a "rock-solid" edit state, as shadows do NOT affect the
-    element's box model and therefore cannot cause a layout shift.
+    UPDATED: Use a combination of padding and box-shadow for a perfect, shift-free overlay.
+    The 1px vertical padding matches the new label style.
   */
+  padding: 1px 0;
   caret-color: var(--surface-fg-theme-primary);
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px var(--surface-border-theme);

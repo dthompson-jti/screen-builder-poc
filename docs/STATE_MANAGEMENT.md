@@ -1,7 +1,6 @@
-### **New File:** `/docs/STATE_MANAGEMENT.md`
+Of course. Here is the complete, updated `STATE_MANAGEMENT.md` document.
 
-This new document provides a much-needed deep dive into the project's state management architecture.
-
+### `/src/docs/STATE_MANAGEMENT.md`
 ```markdown
 # State Management Guide
 
@@ -32,7 +31,7 @@ This file is the "control panel" for the application's UI. It contains atoms tha
 *   Which view is currently active (`appViewModeAtom`: 'editor', 'preview', or 'settings').
 *   The visibility of panels (`isComponentBrowserVisibleAtom`, `isPropertiesPanelVisibleAtom`).
 *   The state of UI controls (`activeToolbarTabAtom`, `componentSearchQueryAtom`).
-*   The IDs of selected components on the canvas (`selectedCanvasComponentIdsAtom`).
+*   The interactive state of the canvas, including which components are selected (`selectedCanvasComponentIdsAtom`) and which, if any, is currently being edited in-place (`activelyEditingComponentIdAtom`). These atoms work together to control the UI's response to user input.
 *   The state of modals (`isDataBindingModalOpenAtom`).
 
 These atoms are typically simple and are read from and written to directly by UI components.
@@ -71,7 +70,7 @@ This is the most critical state management file in the project. It manages the a
 
 **Workflow:**
 
-1.  **Define the Action:** Determine which `HistoryAction` from `historyAtoms.ts` corresponds to the change you want to make. For example, to add a component, you need the `COMPONENT_ADD` action type.
+1.  **Define the Action:** Determine which `HistoryAction` from `historyAtoms.ts` corresponds to the change you want to make. For example, to add a component, you need the `COMPONENT_ADD` action type. To update the properties of a form field (like its label), you need the `COMPONENT_UPDATE_FORM_PROPERTIES` action.
 2.  **Get the Dispatcher:** Use the `useSetAtom` hook in your component to get the `commitAction` function.
     ```typescript
     import { useSetAtom } from 'jotai';
@@ -101,4 +100,5 @@ By centralizing all mutations through this single atom, we ensure that:
 *   Every change is a predictable, testable transformation.
 *   Every change is automatically recorded in the undo/redo history.
 *   The core application logic is decoupled from the UI components that trigger it.
-
+```
+END:

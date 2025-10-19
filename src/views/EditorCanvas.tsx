@@ -5,26 +5,22 @@ import { useDroppable, DraggableSyntheticListeners, ClientRect } from '@dnd-kit/
 import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
-  selectedCanvasComponentIdsAtom, 
+  canvasInteractionAtom,
+  selectedCanvasComponentIdsAtom, // Read-only derived atom
   overDndIdAtom, 
   dropPlaceholderAtom, 
   activeDndIdAtom, 
   isPropertiesPanelVisibleAtom,
-  activelyEditingComponentIdAtom,
 } from '../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom, formNameAtom } from '../data/historyAtoms';
 import { CanvasComponent, FormComponent, LayoutComponent, DndData } from '../types';
+import { useEditable } from '../data/useEditable';
 import { SelectionToolbar } from '../components/SelectionToolbar';
 import { CanvasEmptyState } from '../components/CanvasEmptyState';
 import { TextInputPreview } from '../components/TextInputPreview';
 import DropdownPreview from '../components/DropdownPreview';
 import RadioButtonsPreview from '../components/RadioButtonsPreview';
 import styles from './EditorCanvas.module.css';
-
-interface ComponentProps {
-  component: CanvasComponent;
-  dndListeners?: DraggableSyntheticListeners;
-}
 
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
@@ -33,7 +29,8 @@ const getComponentName = (component: CanvasComponent): string => {
 
 // --- Floating Toolbar for Multi-Select ---
 const FloatingSelectionToolbar = () => {
-  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+  const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
 
@@ -53,8 +50,12 @@ const FloatingSelectionToolbar = () => {
       action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: selectedIds } },
       message: `Delete ${selectedIds.length} components`
     });
-    setSelectedIds([]);
+    setInteractionState({ mode: 'idle' });
   };
+
+  if (interactionState.mode !== 'selecting' || interactionState.ids.length <= 1) {
+    return null;
+  }
 
   return (
     <div className={styles.floatingSelectionToolbar}>
@@ -135,7 +136,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
 
   return (
     <div ref={setNodeRef} style={sortableStyle} className={className} {...attributes} data-id={component.id}>
-      {React.cloneElement(children as React.ReactElement<ComponentProps>, { dndListeners: listeners })}
+      {React.cloneElement(children as React.ReactElement, { dndListeners: listeners })}
     </div>
   );
 };
@@ -163,7 +164,7 @@ const DropPlaceholder = ({ placeholderProps }: { placeholderProps: { viewportRec
 
 // --- Layout Container Component ---
 const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
-  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const overId = useAtomValue(overDndIdAtom);
@@ -172,7 +173,8 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   const rootId = useAtomValue(rootComponentIdAtom);
 
   const isRoot = component.id === rootId;
-  const isSelected = selectedIds.includes(component.id);
+  const isSelected = (interactionState.mode === 'selecting' && interactionState.ids.includes(component.id)) ||
+                     (interactionState.mode === 'editing' && interactionState.id === component.id);
   const appearance = component.properties.appearance;
 
   const containerContentRef = useRef<HTMLDivElement>(null);
@@ -192,10 +194,15 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (e.shiftKey) {
-      setSelectedIds(prev => prev.includes(component.id) ? prev.filter(id => id !== component.id) : [...prev, component.id]);
+    if (isRoot) return;
+    
+    if (e.shiftKey && interactionState.mode === 'selecting') {
+      const newIds = interactionState.ids.includes(component.id)
+        ? interactionState.ids.filter(id => id !== component.id)
+        : [...interactionState.ids, component.id];
+      setInteractionState(newIds.length > 0 ? { mode: 'selecting', ids: newIds } : { mode: 'idle' });
     } else {
-      setSelectedIds([component.id]);
+      setInteractionState({ mode: 'selecting', ids: [component.id] });
     }
   };
 
@@ -204,12 +211,10 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
       message: `Delete '${component.name}'`
     });
-    setSelectedIds([]);
+    setInteractionState({ mode: 'idle' });
   };
   
-  const handleRename = () => {
-    // Layout containers can't be renamed inline
-  };
+  const handleRename = () => {}; // Layouts can't be renamed inline
 
   const handleNudge = (direction: 'up' | 'down') => {
       const parent = allComponents[component.parentId];
@@ -253,9 +258,8 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
   };
 
   const arrangement = component.properties.arrangement;
-  if (arrangement === 'stack') {
-    contentLayoutStyle.flexDirection = 'column';
-  } else if (arrangement === 'row') {
+  if (arrangement === 'stack') contentLayoutStyle.flexDirection = 'column';
+  else if (arrangement === 'row') {
     contentLayoutStyle.flexDirection = 'row';
     contentLayoutStyle.flexWrap = 'nowrap';
     contentLayoutStyle.justifyContent = component.properties.distribution;
@@ -273,52 +277,28 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
       '2-col-split-left': '2fr 1fr',
     };
     const { columnLayout } = component.properties;
-    contentLayoutStyle.gridTemplateColumns = typeof columnLayout === 'number'
-      ? `repeat(${columnLayout}, 1fr)`
-      : gridTemplateMap[columnLayout] || '1fr';
+    contentLayoutStyle.gridTemplateColumns = typeof columnLayout === 'number' ? `repeat(${columnLayout}, 1fr)` : gridTemplateMap[columnLayout] || '1fr';
   }
 
   const parentRect = containerContentRef.current?.getBoundingClientRect();
   const showLinePlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.viewportRect && parentRect;
   
-  const renderEmptyState = () => {
-    if (isRoot) {
-      return <CanvasEmptyState />;
-    }
-    return <span className={styles.emptyText}>Drag components here</span>;
-  };
+  const renderEmptyState = () => isRoot ? <CanvasEmptyState /> : <span className={styles.emptyText}>Drag components here</span>;
+
+  const showToolbar = interactionState.mode === 'selecting' && interactionState.ids.length === 1 && interactionState.ids[0] === component.id && !isRoot;
 
   return (
     <div className={containerClasses} onClick={handleSelect}>
-      {isSelected && selectedIds.length === 1 && !isRoot && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
-      <div 
-        ref={setMergedRefs} 
-        className={styles.layoutContainerContent} 
-        style={contentAppearanceStyle}
-        data-appearance-type={appearance?.type || 'transparent'}
-        data-bordered={appearance?.bordered || false}
-        data-arrangement={arrangement}
-      >
+      {showToolbar && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
+      <div ref={setMergedRefs} className={styles.layoutContainerContent} style={contentAppearanceStyle} data-appearance-type={appearance?.type || 'transparent'} data-bordered={appearance?.bordered || false} data-arrangement={arrangement}>
         <div style={contentLayoutStyle} className="layout-content-wrapper">
-          {isEmpty ? (
-              renderEmptyState()
-          ) : (
+          {isEmpty ? ( renderEmptyState() ) : (
             <SortableContext items={component.children} strategy={verticalListSortingStrategy}>
-              {component.children.map(childId => (
-                <CanvasNode key={childId} componentId={childId} />
-              ))}
+              {component.children.map(childId => <CanvasNode key={childId} componentId={childId} />)}
             </SortableContext>
           )}
         </div>
-        {showLinePlaceholder && (
-          <DropPlaceholder
-            placeholderProps={{
-              viewportRect: dropPlaceholder.viewportRect!,
-              isGrid: dropPlaceholder.isGrid,
-              parentRect: parentRect,
-            }}
-          />
-        )}
+        {showLinePlaceholder && <DropPlaceholder placeholderProps={{ viewportRect: dropPlaceholder.viewportRect!, isGrid: dropPlaceholder.isGrid, parentRect: parentRect }} />}
       </div>
     </div>
   );
@@ -326,42 +306,56 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 
 // --- Form Item (e.g., TextInput) ---
 const FormItem = ({ component, dndListeners }: { component: FormComponent, dndListeners?: DraggableSyntheticListeners }) => {
-  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
-  const [activelyEditingId, setActivelyEditingId] = useAtom(activelyEditingComponentIdAtom);
+  const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
 
-  const isSelected = selectedIds.includes(component.id);
-  const isEditing = activelyEditingId === component.id;
+  const isSelected = (interactionState.mode === 'selecting' && interactionState.ids.includes(component.id));
+  const isEditing = interactionState.mode === 'editing' && interactionState.id === component.id;
+
+  // Hooks must be called at the top level of the component.
+  const editable = useEditable(
+    component.properties.label,
+    (newLabel) => { // onCommit
+      commitAction({
+        action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newLabel } } },
+        message: `Rename to '${newLabel}'`
+      });
+      setInteractionState({ mode: 'selecting', ids: [component.id] });
+    },
+    () => { // onCancel
+      setInteractionState({ mode: 'selecting', ids: [component.id] });
+    }
+  );
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (e.altKey) {
+      setInteractionState({ mode: 'editing', id: component.id });
+      return;
+    }
+    
+    if (e.shiftKey) {
+      const currentIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
+      const newIds = currentIds.includes(component.id)
+        ? currentIds.filter(id => id !== component.id)
+        : [...currentIds, component.id];
+      setInteractionState(newIds.length > 0 ? { mode: 'selecting', ids: newIds } : { mode: 'idle' });
+    } else {
+      setInteractionState({ mode: 'selecting', ids: [component.id] });
+    }
+  };
 
   const handleDelete = () => {
     commitAction({
       action: { type: 'COMPONENT_DELETE', payload: { componentId: component.id } },
       message: `Delete '${component.properties.label}'`
     });
-    setSelectedIds([]);
-  };
-
-  const handleSelect = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // ALT+CLICK is a discrete action: it deselects others and immediately enters edit mode.
-    if (e.altKey) {
-      setSelectedIds([component.id]); // Set selection to only this component
-      setActivelyEditingId(component.id);
-      return;
-    }
-    // Standard SHIFT+CLICK for multi-select
-    if (e.shiftKey) {
-      setSelectedIds(prev => prev.includes(component.id) ? prev.filter(id => id !== component.id) : [...prev, component.id]);
-    } else {
-      // Standard single click
-      setSelectedIds([component.id]);
-    }
+    setInteractionState({ mode: 'idle' });
   };
   
-  const handleRename = () => {
-      setActivelyEditingId(component.id);
-  };
+  const handleRename = () => setInteractionState({ mode: 'editing', id: component.id });
 
   const handleNudge = (direction: 'up' | 'down') => {
       const parent = allComponents[component.parentId];
@@ -375,39 +369,36 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
           });
       }
   };
-  
-  // FIX: isEditing takes precedence over isSelected to prevent the flicker/shift.
-  const wrapperClassName = `${styles.formComponentWrapper} ${isEditing ? styles.isEditing : (isSelected ? styles.selected : '')}`;
 
+  const wrapperClassName = `${styles.formComponentWrapper} ${isSelected ? styles.selected : ''}`;
+  
   const renderPreview = () => {
     const { label, controlType } = component.properties;
-    
+    const commonProps = {
+      label,
+      isEditing,
+      // Conditionally pass the editableProps object.
+      editableProps: isEditing ? {
+        ref: editable.ref,
+        value: editable.value,
+        onChange: editable.onChange,
+        onKeyDown: editable.onKeyDown,
+        onBlur: editable.onBlur
+      } : undefined
+    };
+
     switch (controlType) {
-      case 'dropdown':
-        return <DropdownPreview 
-          label={label}
-          isEditing={isEditing}
-          componentId={component.id}
-        />;
-      case 'radio-buttons':
-        return <RadioButtonsPreview 
-          label={label}
-          isEditing={isEditing}
-          componentId={component.id}
-        />;
-      case 'text-input':
-      default:
-        return <TextInputPreview 
-          label={label}
-          isEditing={isEditing}
-          componentId={component.id}
-        />;
+      case 'dropdown': return <DropdownPreview {...commonProps} />;
+      case 'radio-buttons': return <RadioButtonsPreview {...commonProps} />;
+      default: return <TextInputPreview {...commonProps} />;
     }
   };
 
+  const showToolbar = isSelected && !isEditing && interactionState.mode === 'selecting' && interactionState.ids.length === 1;
+
   return (
     <div className={wrapperClassName} onClick={handleSelect}>
-      {isSelected && selectedIds.length === 1 && !isEditing && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
+      {showToolbar && <SelectionToolbar onDelete={handleDelete} onRename={handleRename} onNudge={handleNudge} listeners={dndListeners} />}
       {renderPreview()}
     </div>
   );
@@ -418,99 +409,79 @@ const FormItem = ({ component, dndListeners }: { component: FormComponent, dndLi
 export const EditorCanvas = () => {
   const rootId = useAtomValue(rootComponentIdAtom);
   const screenName = useAtomValue(formNameAtom);
-  const [selectedIds, setSelectedIds] = useAtom(selectedCanvasComponentIdsAtom);
+  const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
+  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom); // Use derived atom for reading
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
-  const [activelyEditingId, setActivelyEditingId] = useAtom(activelyEditingComponentIdAtom);
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
 
-  // Comprehensive keyboard shortcut listener
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isTypingInInput = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
-      if (isTypingInInput || activelyEditingId) return;
+      const isTyping = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
+      if (isTyping || interactionState.mode === 'editing') return;
 
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
-      // --- Deleting ---
       if ((event.key === 'Delete' || event.key === 'Backspace') && selectedIds.length > 0) {
         event.preventDefault();
-        commitAction({
-          action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: selectedIds } },
-          message: `Delete ${selectedIds.length} component(s)`
-        });
-        setSelectedIds([]);
+        commitAction({ action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: selectedIds } }, message: `Delete ${selectedIds.length} component(s)` });
+        setInteractionState({ mode: 'idle' });
         return;
       }
       
-      // --- Editing ---
       if (event.key === 'Enter' && selectedIds.length === 1) {
         event.preventDefault();
-        setActivelyEditingId(selectedIds[0]);
-        return;
-      }
-
-      // --- Grouping / Ungrouping ---
-      if (isCtrlOrCmd && event.key.toLowerCase() === 'g') {
-        event.preventDefault();
-        
-        if (event.shiftKey) { // Ungroup
-          if (selectedIds.length !== 1) return;
-          const selected = allComponents[selectedIds[0]];
-          if (selected?.componentType === 'layout' && selected.children.length > 0) {
-            commitAction({
-              action: { type: 'COMPONENT_UNWRAP', payload: { componentId: selected.id } },
-              message: `Unwrap container`
-            });
-          }
-        } else { // Group
-          if (selectedIds.length === 0) return;
-          const firstSelected = allComponents[selectedIds[0]];
-          if (!firstSelected) return;
-          commitAction({
-            action: { type: 'COMPONENTS_WRAP', payload: { componentIds: selectedIds, parentId: firstSelected.parentId } },
-            message: `Wrap ${selectedIds.length} component(s)`
-          });
+        const component = allComponents[selectedIds[0]];
+        if (component && component.componentType !== 'layout') {
+          setInteractionState({ mode: 'editing', id: selectedIds[0] });
         }
         return;
       }
 
-      // --- Nudging and Container Jumping ---
-      if (event.key.startsWith('Arrow') && selectedIds.length === 1) { // Only nudge single items for now
+      if (isCtrlOrCmd && event.key.toLowerCase() === 'g') {
+        event.preventDefault();
+        if (event.shiftKey) {
+          if (selectedIds.length !== 1) return;
+          const selected = allComponents[selectedIds[0]];
+          if (selected?.componentType === 'layout' && selected.children.length > 0) {
+            commitAction({ action: { type: 'COMPONENT_UNWRAP', payload: { componentId: selected.id } }, message: `Unwrap container` });
+          }
+        } else {
+          if (selectedIds.length === 0) return;
+          const firstSelected = allComponents[selectedIds[0]];
+          if (!firstSelected) return;
+          commitAction({ action: { type: 'COMPONENTS_WRAP', payload: { componentIds: selectedIds, parentId: firstSelected.parentId } }, message: `Wrap ${selectedIds.length} component(s)` });
+        }
+        return;
+      }
+
+      if (event.key.startsWith('Arrow') && selectedIds.length === 1) {
         event.preventDefault();
         const component = allComponents[selectedIds[0]];
         if (!component) return;
         const parent = allComponents[component.parentId];
         if (!parent || parent.componentType !== 'layout') return;
 
-        if (event.shiftKey) { // Container Jumping
+        if (event.shiftKey) {
           const grandparent = allComponents[parent.parentId];
           if (!grandparent || grandparent.componentType !== 'layout') return;
-          
           const parentIndex = grandparent.children.indexOf(parent.id);
           const moveDirection = (event.key === 'ArrowUp' || event.key === 'ArrowLeft') ? -1 : 1;
           const targetParentIndex = parentIndex + moveDirection;
-
           if (targetParentIndex >= 0 && targetParentIndex < grandparent.children.length) {
             const newParentId = grandparent.children[targetParentIndex];
             const newParent = allComponents[newParentId];
             if (newParent && newParent.componentType === 'layout') {
-              commitAction({
-                action: { type: 'COMPONENT_MOVE', payload: { componentId: component.id, oldParentId: parent.id, newParentId, newIndex: 0 } },
-                message: `Move component to new container`
-              });
+              commitAction({ action: { type: 'COMPONENT_MOVE', payload: { componentId: component.id, oldParentId: parent.id, newParentId, newIndex: 0 } }, message: `Move component to new container` });
             }
           }
-        } else { // Nudging
+        } else {
           const oldIndex = parent.children.indexOf(component.id);
           const moveDirection = (event.key === 'ArrowUp' || event.key === 'ArrowLeft') ? -1 : 1;
           const newIndex = oldIndex + moveDirection;
           if (newIndex >= 0 && newIndex < parent.children.length) {
-            commitAction({
-              action: { type: 'COMPONENT_REORDER', payload: { componentId: component.id, parentId: parent.id, oldIndex, newIndex } },
-              message: `Reorder component`
-            });
+            commitAction({ action: { type: 'COMPONENT_REORDER', payload: { componentId: component.id, parentId: parent.id, oldIndex, newIndex } }, message: `Reorder component` });
           }
         }
       }
@@ -518,29 +489,25 @@ export const EditorCanvas = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedIds, activelyEditingId, setActivelyEditingId, allComponents, commitAction, setSelectedIds]);
+  }, [interactionState, selectedIds, allComponents, commitAction, setInteractionState]);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedIds([rootId]);
+    setInteractionState({ mode: 'selecting', ids: [rootId] });
     setIsPropertiesPanelVisible(true);
   };
 
-  const handleContainerClick = () => {
-    setSelectedIds([]);
-  }
+  const handleContainerClick = () => setInteractionState({ mode: 'idle' });
 
   return (
     <div className={styles.canvasContainer} onClick={handleContainerClick}>
       <div className={styles.formCard} onClick={handleCanvasClick}>
-        <div className={styles.formCardHeader}>
-          <h2>{screenName}</h2>
-        </div>
+        <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
         <div className={styles.canvasDroppableArea}>
           {rootId && <CanvasNode componentId={rootId} />}
         </div>
       </div>
-      {selectedIds.length > 1 && <FloatingSelectionToolbar />}
+      <FloatingSelectionToolbar />
     </div>
   );
 };

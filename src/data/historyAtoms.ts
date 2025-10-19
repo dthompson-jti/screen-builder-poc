@@ -3,7 +3,7 @@ import { atom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
 import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties } from '../types';
-import { selectedCanvasComponentIdsAtom } from './atoms';
+import { canvasInteractionAtom, CanvasInteractionState } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
 export type NormalizedCanvasComponents = {
@@ -18,7 +18,8 @@ export interface UndoableState {
 
 interface ActionMeta {
   message: string;
-  selectedIds: string[];
+  // FIX: Store the entire interaction state to allow for a perfect undo/redo.
+  interactionState: CanvasInteractionState;
 }
 
 type HistoryData = {
@@ -321,8 +322,9 @@ export const commitActionAtom = atom(
       });
       return nextState;
     });
-    const currentSelectedIds = get(selectedCanvasComponentIdsAtom);
-    const newMeta: ActionMeta = { message: action.message, selectedIds: currentSelectedIds };
+    // FIX: Get the interaction state from the correct source atom.
+    const currentInteractionState = get(canvasInteractionAtom);
+    const newMeta: ActionMeta = { message: action.message, interactionState: currentInteractionState };
     set(actionMetaHistoryAtom, (currentMetaHistory) => ({
       past: [...currentMetaHistory.past, newMeta],
       future: [],
@@ -345,7 +347,8 @@ export const undoAtom = atom(null, (_get, set) => {
     if (!currentMetaHistory.past.length) return currentMetaHistory;
     const lastMeta = currentMetaHistory.past[currentMetaHistory.past.length - 1];
     const newPastMetas = currentMetaHistory.past.slice(0, -1);
-    set(selectedCanvasComponentIdsAtom, lastMeta.selectedIds);
+    // FIX: Set the source atom, not the derived one, to restore the full interaction state.
+    set(canvasInteractionAtom, lastMeta.interactionState);
     return {
       past: newPastMetas,
       future: [lastMeta, ...currentMetaHistory.future],
@@ -368,7 +371,8 @@ export const redoAtom = atom(null, (_get, set) => {
     if (!currentMetaHistory.future.length) return currentMetaHistory;
     const nextMeta = currentMetaHistory.future[0];
     const newFutureMetas = currentMetaHistory.future.slice(1);
-    set(selectedCanvasComponentIdsAtom, nextMeta.selectedIds);
+    // FIX: Set the source atom, not the derived one, to restore the full interaction state.
+    set(canvasInteractionAtom, nextMeta.interactionState);
     return {
       past: [...currentMetaHistory.past, nextMeta],
       future: newFutureMetas,

@@ -1,26 +1,44 @@
 // src/components/DropdownPreview.tsx
-import styles from './TextInputPreview.module.css'; // Re-use styles for simplicity
-import selectStyles from './Select.module.css';
-import { InlineTextInput } from './InlineTextInput';
+import React from 'react';
+import styles from './FormFieldPreview.module.css';
+
+// A type for the props passed down from the useEditable hook
+interface EditableProps {
+  ref: React.RefObject<HTMLInputElement | null>;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onBlur: () => void;
+}
 
 interface DropdownPreviewProps {
   label: string;
-  isEditing?: boolean;
-  componentId?: string;
+  isEditing: boolean;
+  editableProps?: EditableProps;
 }
 
-const DropdownPreview = ({ label, isEditing, componentId }: DropdownPreviewProps) => (
-  <div className={styles.fieldPreview}>
-    {isEditing && componentId ? (
-      <InlineTextInput componentId={componentId} initialValue={label} />
-    ) : (
-      <label onMouseDown={e => e.stopPropagation()}>{label}</label>
-    )}
-    <div className={selectStyles.selectTrigger} style={{ pointerEvents: 'none' }}>
-      <span>{`Select ${label.toLowerCase()}`}</span>
-      <span className={`material-symbols-rounded ${selectStyles.selectIcon}`}>expand_more</span>
+const DropdownPreview = ({ label, isEditing, editableProps }: DropdownPreviewProps) => {
+  return (
+    <div className={styles.previewWrapper}>
+      <label className={`${styles.previewLabel} ${isEditing ? styles.isEditing : ''}`}>{label}</label>
+      
+      {isEditing && editableProps && (
+        <input
+          ref={editableProps.ref as React.RefObject<HTMLInputElement>}
+          type="text"
+          value={editableProps.value}
+          onChange={editableProps.onChange}
+          onKeyDown={editableProps.onKeyDown}
+          onBlur={editableProps.onBlur}
+          className={styles.editingInput}
+        />
+      )}
+
+      <div className={`${styles.previewInput} ${styles.previewDropdown}`}>
+        <span className="material-symbols-rounded">arrow_drop_down</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default DropdownPreview;

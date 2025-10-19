@@ -1,56 +1,52 @@
 /* src/components/SelectionToolbar.module.css */
-.selectionToolbar {
+.toolbarWrapper {
   position: absolute;
-  top: -44px;
-  left: 0;
-  transform: none;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.selectionToolbar {
   display: flex;
   align-items: center;
+  gap: var(--spacing-1);
   background-color: var(--surface-bg-brand-solid);
   border-radius: var(--spacing-2);
   padding: var(--spacing-1);
   color: var(--control-fg-on-solid);
-  z-index: 10;
-  box-shadow: var(--surface-shadow-md);
-  /* FIX: Remove the gap from the root, it will be handled by the actions wrapper */
+  box-shadow: var(--surface-shadow-lg);
+  animation: fadeIn 0.1s ease-out;
 }
 
-.toolbarDragHandle {
-  cursor: grab;
+.toolbarButton {
   padding: var(--spacing-1p5);
-  border-radius: 6px;
-  transition: background-color 0.2s, border-color 0.2s;
-  border: 1px solid transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: auto; /* Override default button height */
 }
 
-.toolbarDragHandle .material-symbols-rounded {
-  color: var(--control-fg-on-solid);
+.toolbarButton:first-of-type {
+  cursor: grab;
 }
-
-.toolbarDragHandle:hover {
-  background-color: var(--control-bg-on-solid-hover);
-  border-color: var(--control-border-tertiary-faint-hover);
-}
-
-.toolbarDragHandle:active {
+.toolbarButton:first-of-type:active {
   cursor: grabbing;
-  background-color: var(--control-bg-on-solid-pressed);
-  border-color: var(--control-border-tertiary-faint-pressed);
 }
 
-.toolbarDivider {
+.divider {
   width: 1px;
   height: 20px;
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
 }
 
-/* FIX: New wrapper for the toolbar buttons to provide spacing and the event firewall */
-.toolbarActions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
+.menuPopover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 200px;
+  background-color: var(--surface-bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--surface-border-secondary);
+  box-shadow: var(--surface-shadow-xl);
+  padding: var(--spacing-1);
+  animation: fadeIn 0.1s ease-out;
 }

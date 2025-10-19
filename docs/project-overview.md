@@ -75,6 +75,7 @@ This directory contains all the application's logic, state, and data definitions
     *   **Purpose:** A simple custom hook that provides a clean API for performing undo/redo actions, including showing toast notifications.
 *   **`useUrlSync.ts`**
     *   **Purpose:** A custom hook to synchronize application state (like the current view or preview width) with the browser's URL query parameters. This enables shareable links.
+*   **`useIsMac.ts`**: A simple utility hook to determine if the user is on a Mac, used for displaying OS-aware keyboard shortcuts (⌘ vs. Ctrl).
 *   **`toastAtoms.ts`**
     *   **Purpose:** Defines the state and logic for the application's toast notification system.
 *   **`*Mock.ts` files**
@@ -116,3 +117,5 @@ These are smaller, often presentational components used across multiple views.
     *   **Purpose:** Implements the draggable vertical panels used for the component browser and properties panel.
 *   **`SelectionToolbar.tsx`**
     *   **Purpose:** The floating toolbar that appears when a component is selected on the canvas, providing actions like delete, settings, and wrap.
+*   **`InlineTextInput.tsx`**: A specialized input component that appears in place of a label during an edit. It uses the `useEditable` hook to manage its state.
+*   **`SelectionToolbarMenu.tsx`**: The popover menu that appears from the `SelectionToolbar`, displaying a full list of actions and their keyboard shortcuts.

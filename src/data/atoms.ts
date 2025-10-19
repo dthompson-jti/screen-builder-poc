@@ -15,7 +15,6 @@ export type ScreenType = 'case-init' | 'insert' | 'update' | 'search' | 'folder-
 export const appViewModeAtom = atom<AppViewMode>('editor');
 export const isMenuOpenAtom = atom(false);
 export const isSettingsMenuOpenAtom = atom(false);
-// Change so breadcrumb is always shown.
 export const isShowBreadcrumbAtom = atom(true);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
 export const isComponentBrowserVisibleAtom = atom(false);
@@ -29,7 +28,6 @@ export const isToolbarCompactAtom = atom(false);
 // =================================================================
 //                         Settings State
 // =================================================================
-// NOTE: formNameAtom is now managed in historyAtoms.ts
 export const isFormNameEditingAtom = atom(false);
 export const isFormNameMenuOpenAtom = atom(false);
 export const settingsLayoutModeAtom = atom<SettingsLayoutMode>('single-column');
@@ -43,20 +41,36 @@ export const isReadOnlyAtom = atom(true);
 // =================================================================
 //                         Canvas State
 // =================================================================
-// NOTE: canvasComponentsAtom is now managed in historyAtoms.ts
 
-// The selected component ID is now an array to support multi-select.
-// The first ID in the array is considered the "primary" selection for the properties panel.
-export const selectedCanvasComponentIdsAtom = atom<string[]>([]);
+// NEW: A unified, discriminated union to represent the canvas interaction state.
+// This makes invalid states (e.g., editing and multi-select) impossible.
+export type CanvasInteractionState =
+  | { mode: 'idle' }
+  | { mode: 'selecting'; ids: string[] }
+  | { mode: 'editing'; id: string };
 
-// NEW: The ID of the component being edited in-place on the canvas.
-export const activelyEditingComponentIdAtom = atom<string | null>(null);
+export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle' });
+
+// Derived, read-only atoms for convenience and backward compatibility.
+// Components that only need to read selection/editing state can use these
+// without needing to handle the full discriminated union.
+export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
+  const state = get(canvasInteractionAtom);
+  if (state.mode === 'selecting') return state.ids;
+  if (state.mode === 'editing') return [state.id];
+  return [];
+});
+
+export const activelyEditingComponentIdAtom = atom<string | null>((get) => {
+  const state = get(canvasInteractionAtom);
+  return state.mode === 'editing' ? state.id : null;
+});
+
 
 // Atoms to track the global state of a drag-and-drop operation.
 export const activeDndIdAtom = atom<UniqueIdentifier | null>(null);
 export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
 
-// FIX: The rect is now explicitly a viewport-relative rect. The component will translate it.
 export const dropPlaceholderAtom = atom<{ parentId: string; index: number; viewportRect: ClientRect | null; isGrid: boolean; } | null>(null);
 
 

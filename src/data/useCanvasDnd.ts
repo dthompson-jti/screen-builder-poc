@@ -1,9 +1,9 @@
 // src/data/useCanvasDnd.ts
 
-import { useState } from 'react'; // 1. Import useState
+import { useState } from 'react';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect } from '@dnd-kit/core';
-import { selectedCanvasComponentIdsAtom, activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom } from './atoms';
+import { activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom, canvasInteractionAtom } from './atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
 import { DndData, CanvasComponent } from '../types';
 
@@ -21,18 +21,20 @@ const getComponentName = (component: CanvasComponent): string => {
 }
 
 export const useCanvasDnd = () => {
-  const setSelectedIds = useSetAtom(selectedCanvasComponentIdsAtom);
+  const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const setActiveId = useSetAtom(activeDndIdAtom);
   const setOverId = useSetAtom(overDndIdAtom);
   const setDropPlaceholder = useSetAtom(dropPlaceholderAtom);
-  const [activeDndItem, setActiveDndItem] = useState<Active | null>(null); // 2. Manage the state here
+  const [activeDndItem, setActiveDndItem] = useState<Active | null>(null);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id);
-    setActiveDndItem(event.active); // 3. Set the active item when a drag starts
-    setSelectedIds([]);
+    setActiveDndItem(event.active);
+    // ATOMIC STATE TRANSITION: When a drag starts, immediately clear any
+    // selections or editing states to prevent conflicts and visual bugs.
+    setInteractionState({ mode: 'idle' });
   };
   
   const handleDragOver = (event: DragOverEvent) => {
@@ -92,9 +94,6 @@ export const useCanvasDnd = () => {
           origin,
           parentId,
           index,
-          // FIX: Pass the nested binding data from the drag operation
-          // into the action payload. This allows the reducer to create
-          // the pre-bound component.
           bindingData: activeData.data ? {
             fieldId: activeData.id,
             ...activeData.data
@@ -184,11 +183,11 @@ export const useCanvasDnd = () => {
     setActiveId(null);
     setOverId(null);
     setDropPlaceholder(null);
-    setActiveDndItem(null); // 4. Clear the active item when a drag ends
+    setActiveDndItem(null);
   };
   
   return {
-    activeDndItem, // 5. Return the state from the hook
+    activeDndItem,
     handleDragStart,
     handleDragOver,
     handleDragEnd,

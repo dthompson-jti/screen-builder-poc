@@ -1,20 +1,40 @@
 // src/components/TextInputPreview.tsx
-import styles from './TextInputPreview.module.css';
-import { InlineTextInput } from './InlineTextInput';
+import React from 'react';
+import styles from './FormFieldPreview.module.css';
+
+// A type for the props passed down from the useEditable hook
+interface EditableProps {
+  ref: React.RefObject<HTMLInputElement | null>;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onBlur: () => void;
+}
 
 interface TextInputPreviewProps {
   label: string;
-  isEditing?: boolean;
-  componentId?: string;
+  isEditing: boolean;
+  editableProps?: EditableProps;
 }
 
-export const TextInputPreview = ({ label, isEditing, componentId }: TextInputPreviewProps) => (
-  <div className={styles.fieldPreview}>
-    {isEditing && componentId ? (
-      <InlineTextInput componentId={componentId} initialValue={label} />
-    ) : (
-      <label onMouseDown={e => e.stopPropagation()}>{label}</label>
-    )}
-    <input type="text" placeholder={`Enter ${label.toLowerCase()}`} disabled />
-  </div>
-);
+export const TextInputPreview = ({ label, isEditing, editableProps }: TextInputPreviewProps) => {
+  return (
+    <div className={styles.previewWrapper}>
+      <label className={`${styles.previewLabel} ${isEditing ? styles.isEditing : ''}`}>{label}</label>
+      
+      {isEditing && editableProps && (
+        <input
+          ref={editableProps.ref as React.RefObject<HTMLInputElement>}
+          type="text"
+          value={editableProps.value}
+          onChange={editableProps.onChange}
+          onKeyDown={editableProps.onKeyDown}
+          onBlur={editableProps.onBlur}
+          className={styles.editingInput}
+        />
+      )}
+      
+      <div className={styles.previewInput}></div>
+    </div>
+  );
+};
