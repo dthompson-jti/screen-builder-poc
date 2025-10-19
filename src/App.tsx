@@ -30,7 +30,7 @@ import {
   activeDndIdAtom,
 } from './data/atoms';
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData, CanvasComponent, FormComponent } from './types';
+import { DndData, CanvasComponent } from './types';
 import DropdownPreview from './components/DropdownPreview';
 import RadioButtonsPreview from './components/RadioButtonsPreview';
 
@@ -126,7 +126,7 @@ function App() {
       }
       
       if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
-        const formComponent = activeComponent as FormComponent;
+        const formComponent = activeComponent; // No cast needed here due to type guard
         const commonProps = {
             label: getComponentName(formComponent),
             isEditing: false,
