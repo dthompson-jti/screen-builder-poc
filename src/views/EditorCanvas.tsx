@@ -22,6 +22,11 @@ import DropdownPreview from '../components/DropdownPreview';
 import RadioButtonsPreview from '../components/RadioButtonsPreview';
 import styles from './EditorCanvas.module.css';
 
+// NEW: Shared props interface to solve TypeScript error with cloneElement
+interface CanvasComponentProps {
+  dndListeners?: DraggableSyntheticListeners;
+}
+
 // Helper to get the display name/label
 const getComponentName = (component: CanvasComponent): string => {
     return component.componentType === 'layout' ? component.name : component.properties.label;
@@ -136,7 +141,7 @@ const SortableItem = ({ component, children }: { component: CanvasComponent, chi
 
   return (
     <div ref={setNodeRef} style={sortableStyle} className={className} data-id={component.id}>
-      {React.cloneElement(children as React.ReactElement, { dndListeners: listeners })}
+      {React.cloneElement(children as React.ReactElement<CanvasComponentProps>, { dndListeners: listeners })}
     </div>
   );
 };
@@ -163,7 +168,7 @@ const DropPlaceholder = ({ placeholderProps }: { placeholderProps: { viewportRec
 
 
 // --- Layout Container Component ---
-const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent, dndListeners?: DraggableSyntheticListeners }) => {
+const LayoutContainer = ({ component, dndListeners }: { component: LayoutComponent } & CanvasComponentProps) => {
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -305,7 +310,7 @@ const LayoutContainer = ({ component, dndListeners }: { component: LayoutCompone
 };
 
 // --- Form Item (e.g., TextInput) ---
-const FormItem = ({ component, dndListeners }: { component: FormComponent, dndListeners?: DraggableSyntheticListeners }) => {
+const FormItem = ({ component, dndListeners }: { component: FormComponent } & CanvasComponentProps) => {
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);

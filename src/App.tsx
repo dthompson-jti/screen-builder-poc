@@ -115,7 +115,10 @@ function App() {
     if (isNew) {
       return <BrowserItemPreview name={name ?? ''} icon={icon ?? ''} />;
     } else {
-      const activeComponent = allComponents[activeDndItem.id as string];
+      const componentId = activeDndItem.id;
+      if (typeof componentId !== 'string') return null; // Type guard
+
+      const activeComponent = allComponents[componentId];
       if (!activeComponent) return null;
       
       if (activeComponent.componentType === 'layout') {
