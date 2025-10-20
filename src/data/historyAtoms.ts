@@ -3,7 +3,7 @@ import { atom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
 import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties } from '../types';
-import { canvasInteractionAtom, CanvasInteractionState } from './atoms';
+import { canvasInteractionAtom, CanvasInteractionState, scrollRequestAtom } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
 export type NormalizedCanvasComponents = {
@@ -171,7 +171,12 @@ export const commitActionAtom = atom(
             presentState.components[newId] = newComponent;
             const parent = presentState.components[parentId];
             if (parent && parent.componentType === 'layout') {
+              const childrenCountBefore = parent.children.length;
               parent.children.splice(index, 0, newId);
+              // Check if component was added to the end of the root container to trigger auto-scroll
+              if (parentId === presentState.rootComponentId && index === childrenCountBefore) {
+                set(scrollRequestAtom, { componentId: newId });
+              }
             }
             break;
           }

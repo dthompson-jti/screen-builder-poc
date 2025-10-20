@@ -19,10 +19,16 @@
   width: 100%;
   margin: var(--spacing-8) auto; 
   box-shadow: var(--surface-shadow-lg);
-  transition: background-color 0.2s ease, border-color 0.2s ease, outline-color 0.2s;
+  transition: background-color 0.2s ease, border-color 0.2s ease, outline-color 0.2s, box-shadow 0.2s;
   border: 1px solid var(--surface-border-secondary);
   position: relative;
   min-height: 200px;
+  /* No z-index needed now */
+}
+
+.formCard.isBackgroundTarget {
+  border-color: var(--control-border-selected);
+  box-shadow: var(--surface-shadow-lg), 0 0 0 2px var(--control-border-selected);
 }
 
 .formCardHeader {

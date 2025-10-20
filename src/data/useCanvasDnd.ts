@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect } from '@dnd-kit/core';
 import { activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom, canvasInteractionAtom } from './atoms';
-import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
+import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from './historyAtoms';
 import { DndData, CanvasComponent } from '../types';
 
+const CANVAS_BACKGROUND_ID = '--canvas-background--';
+
 const findHoveredContainer = (overId: string, allComponents: Record<string, CanvasComponent>): string | null => {
+  if (overId === CANVAS_BACKGROUND_ID) return CANVAS_BACKGROUND_ID;
   const overComponent = allComponents[overId];
   if (!overComponent) return null;
   if (overComponent.componentType === 'layout') return overId;
@@ -36,6 +39,7 @@ export const useCanvasDnd = () => {
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
+  const rootId = useAtomValue(rootComponentIdAtom);
   const setActiveId = useSetAtom(activeDndIdAtom);
   const setOverId = useSetAtom(overDndIdAtom);
   const setDropPlaceholder = useSetAtom(dropPlaceholderAtom);
@@ -58,7 +62,7 @@ export const useCanvasDnd = () => {
     const overId = over.id as string;
     const hoveredContainerId = findHoveredContainer(overId, allComponents);
     setOverId(hoveredContainerId);
-    const dropTarget = getDropTarget(over, draggingRect, allComponents);
+    const dropTarget = getDropTarget(over, draggingRect, allComponents, rootId);
     if (dropTarget) {
       setDropPlaceholder(dropTarget);
     } else {
@@ -77,7 +81,7 @@ export const useCanvasDnd = () => {
         resetState();
         return;
     }
-    const finalDropTarget = getDropTarget(over, draggingRect, allComponents);
+    const finalDropTarget = getDropTarget(over, draggingRect, allComponents, rootId);
     if (!finalDropTarget) {
       resetState();
       return;
@@ -106,7 +110,6 @@ export const useCanvasDnd = () => {
           index,
           controlType,
           bindingData: activeData.data ? {
-            // FIX: Use a safe string conversion to satisfy both TypeScript and ESLint.
             fieldId: String(activeData.id),
             ...activeData.data
           } : undefined,
@@ -147,9 +150,41 @@ export const useCanvasDnd = () => {
   const getDropTarget = (
     over: Over, 
     draggingRect: ClientRect, 
-    allComponents: Record<string, CanvasComponent>
+    allComponents: Record<string, CanvasComponent>,
+    rootId: string
   ): { parentId: string; index: number; viewportRect: ClientRect | null; isGrid: boolean } | null => {
     const overId = over.id as string;
+    
+    if (overId === CANVAS_BACKGROUND_ID) {
+      const rootComponent = allComponents[rootId];
+      if (!rootComponent || rootComponent.componentType !== 'layout') return null;
+
+      const TOP_ZONE_HEIGHT = 32;
+      const isTopDrop = draggingRect.top < TOP_ZONE_HEIGHT;
+      
+      const index = isTopDrop ? 0 : rootComponent.children.length;
+      let placeholderViewportRect: ClientRect | null = null;
+      
+      if (rootComponent.children.length > 0) {
+        const relevantChildId = isTopDrop ? rootComponent.children[0] : rootComponent.children[rootComponent.children.length - 1];
+        const childNode = document.querySelector(`[data-id="${relevantChildId}"]`);
+        const childRect = childNode?.getBoundingClientRect();
+
+        if (childRect) {
+            placeholderViewportRect = {
+                top: isTopDrop ? childRect.top : childRect.bottom,
+                left: childRect.left,
+                width: childRect.width,
+                height: 4,
+                right: childRect.right,
+                bottom: isTopDrop ? childRect.top + 4 : childRect.bottom + 4,
+            };
+        }
+      }
+      
+      return { parentId: rootId, index, viewportRect: placeholderViewportRect, isGrid: false };
+    }
+
     const overComponent = allComponents[overId];
     if (!overComponent) return null;
 
@@ -167,17 +202,29 @@ export const useCanvasDnd = () => {
     const overRect = over.rect;
     
     if (overId === parentId) {
-        const lastChildId = children[children.length - 1];
-        const lastChildNode = lastChildId ? document.querySelector(`[data-id="${lastChildId}"]`) : null;
-        const lastChildRect = lastChildNode?.getBoundingClientRect();
+        // Smart container drop logic
+        const dropPointY = draggingRect.top + draggingRect.height / 2;
+        const containerMidPointY = overRect.top + overRect.height / 2;
+        const isTopHalf = dropPointY < containerMidPointY;
+        const index = isTopHalf ? 0 : children.length;
 
-        const viewportRect = lastChildRect ? {
-            ...lastChildRect,
-            top: lastChildRect.bottom,
-            height: 4,
-        } : null;
-
-        return { parentId, index: children.length, viewportRect, isGrid };
+        let placeholderViewportRect: ClientRect | null = null;
+        if (children.length > 0) {
+            const relevantChildId = isTopHalf ? children[0] : children[children.length - 1];
+            const childNode = document.querySelector(`[data-id="${relevantChildId}"]`);
+            const childRect = childNode?.getBoundingClientRect();
+            if (childRect) {
+                placeholderViewportRect = {
+                    top: isTopHalf ? childRect.top : childRect.bottom,
+                    left: childRect.left,
+                    width: childRect.width,
+                    height: 4,
+                    right: childRect.right,
+                    bottom: isTopHalf ? childRect.top + 4 : childRect.bottom + 4,
+                };
+            }
+        }
+        return { parentId, index, viewportRect: placeholderViewportRect, isGrid };
     }
 
     const indexInParent = children.indexOf(overId);

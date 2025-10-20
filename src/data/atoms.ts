@@ -83,6 +83,9 @@ export const overDndIdAtom = atom<UniqueIdentifier | null>(null);
 
 export const dropPlaceholderAtom = atom<{ parentId: string; index: number; viewportRect: ClientRect | null; isGrid: boolean; } | null>(null);
 
+// Atom to signal a scroll-to-component request
+export const scrollRequestAtom = atom<null | { componentId: string }>(null);
+
 
 // =================================================================
 //                     Component Browser State

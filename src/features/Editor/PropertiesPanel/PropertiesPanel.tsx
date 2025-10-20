@@ -9,7 +9,6 @@ import {
 } from '../../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from '../../../data/historyAtoms';
 import { DataBindingPicker } from '../../../components/DataBindingPicker';
-import { StaticBindingDisplay } from '../../../components/StaticBindingDisplay';
 import { PanelHeader } from '../../../components/PanelHeader';
 import { Select, SelectItem } from '../../../components/Select';
 import { Tooltip } from '../../../components/Tooltip';
@@ -305,26 +304,16 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
   };
 
   const renderBindingControl = () => {
-    if (component.origin === 'general') {
-      return (
-        <div className={styles.propItem}>
-          <label>Data binding</label>
-          <DataBindingPicker 
-            binding={component.binding}
-            onOpen={handleOpenBindingModal}
-          />
-        </div>
-      );
-    }
-    if (component.origin === 'data') {
-      return (
-        <div className={styles.propItem}>
-          <label>Data binding</label>
-          <StaticBindingDisplay binding={component.binding} />
-        </div>
-      );
-    }
-    return null;
+    // Always show the editable picker, regardless of origin.
+    return (
+      <div className={styles.propItem}>
+        <label>Data binding</label>
+        <DataBindingPicker 
+          binding={component.binding}
+          onOpen={handleOpenBindingModal}
+        />
+      </div>
+    );
   };
 
   if (component.properties.controlType === 'plain-text') {
@@ -430,7 +419,6 @@ export const PropertiesPanel = () => {
         </div>
       );
     }
-    // FIX: Add null check for selectedComponent
     if (!selectedComponent) {
       return (
         <div className={styles.propertiesPanelPlaceholder}>
@@ -440,7 +428,6 @@ export const PropertiesPanel = () => {
       );
     }
 
-    // FIX: Use type guards to narrow the component type for TypeScript
     if (selectedComponent.componentType === 'layout') {
       return <LayoutProperties component={selectedComponent} />;
     }

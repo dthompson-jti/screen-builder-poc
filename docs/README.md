@@ -49,9 +49,10 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Ctrl/Cmd + Click:** Toggles a single component into or out of the current selection without deselecting others.
 -   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor". This is based on the component order in the data tree, not visual position, ensuring predictable behavior. This is constrained to components that share the same parent container.
 
-### Action Discoverability ("Smart Toolbar")
--   **Single Source of Truth:** The `[...]` menu on the `SelectionToolbar` is the complete index of all actions possible for a component.
--   **Discoverable & Disabled:** Actions that cannot be performed in the current context are shown in the menu but are disabled, teaching the user the full capability of the tool.
+### Action Discoverability ("Smart Toolbar" & Context Menu)
+-   **Multiple Access Points:** Actions can be triggered via the `SelectionToolbar`, the new right-click `CanvasContextMenu`, and keyboard hotkeys.
+-   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible in any given context. This ensures consistency across all UI surfaces.
+-   **Discoverable & Disabled:** Both the `SelectionToolbar`'s `[...]` menu and the `CanvasContextMenu` serve as a complete index of all possible actions. Actions that cannot be performed are shown but are disabled, teaching the user the full capability of the tool.
 -   **Contextual Shortcuts:** The top-level toolbar provides shortcuts to the most common actions, and includes a "smart" slot that shows a contextual action like **Wrap** or **Unwrap**.
 
 ### Drag-and-Drop (DnD) Contracts
@@ -69,11 +70,11 @@ The project uses a **hybrid CSS architecture** organized into layers to control 
 
 ### Core Application (`src/`)
 *   **`main.tsx`**: The application's entry point.
-*   **`App.tsx`**: The root React component and application shell.
+*   **`App.tsx`**: The root React component and application shell. Renders the top-level context menu portal.
 *   **`types.ts`**: Centralized TypeScript type definitions.
 
 ### Data & State Management (`src/data/`)
-*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom` and the `selectionAnchorIdAtom` for range-select.
+*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom`, the `selectionAnchorIdAtom` for range-select, and the new `contextMenuStateAtom`.
 *   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core canvas state via a reducer pattern.
 *   **`useCanvasDnd.ts`**: A custom hook encapsulating all drag-and-drop logic for the canvas.
 *   **`useEditorHotkeys.ts`**: A custom hook that centralizes all global keyboard shortcut logic.
@@ -81,10 +82,12 @@ The project uses a **hybrid CSS architecture** organized into layers to control 
 
 ### Features (`src/features/`)
 *   **`Editor/`**: The main form-building feature.
-    *   `EditorCanvas.tsx`: The main container component.
+    *   `EditorCanvas.tsx`: The main container component, now with the primary `onContextMenu` handler.
     *   `CanvasNode.tsx`: The recursive engine for rendering the component tree.
     *   `CanvasRenderers.tsx`: Pure presentation logic (The View).
-    *   `CanvasWrappers.tsx`: Manages all user interaction logic (selection, DnD, context menus).
+    *   `CanvasWrappers.tsx`: Manages user interaction logic (selection, DnD).
+    *   `CanvasContextMenu.tsx`: The new component that renders the right-click context menu.
+    *   `useComponentCapabilities.ts`: A new hook that centralizes the logic for determining which actions are possible for the current selection.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
 *   **`ComponentBrowser/`**: The left-hand panel for adding new components.
 *   **`AppHeader/`**: The main application header.

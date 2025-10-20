@@ -1,14 +1,17 @@
 // src/features/Editor/EditorCanvas.tsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
+import { useDroppable } from '@dnd-kit/core';
 import { 
   canvasInteractionAtom,
   isPropertiesPanelVisibleAtom,
   contextMenuStateAtom,
   selectionAnchorIdAtom,
+  overDndIdAtom,
 } from '../../data/atoms';
 import { rootComponentIdAtom, formNameAtom } from '../../data/historyAtoms';
 import { useEditorHotkeys } from '../../data/useEditorHotkeys';
+import { useAutoScroller } from '../../data/useAutoScroller';
 
 import { CanvasNode } from './CanvasNode';
 import { FloatingSelectionToolbar } from './CanvasUI';
@@ -25,6 +28,8 @@ const findComponentId = (element: HTMLElement | null): string | null => {
   return null;
 };
 
+const CANVAS_BACKGROUND_ID = '--canvas-background--';
+
 export const EditorCanvas = () => {
   const rootId = useAtomValue(rootComponentIdAtom);
   const screenName = useAtomValue(formNameAtom);
@@ -32,8 +37,18 @@ export const EditorCanvas = () => {
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
   const setContextMenuState = useSetAtom(contextMenuStateAtom);
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
+  const overId = useAtomValue(overDndIdAtom);
   
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
+
+  const setMergedRefs = (node: HTMLDivElement | null) => {
+    canvasContainerRef.current = node;
+    setBackgroundNodeRef(node);
+  };
+
   useEditorHotkeys();
+  useAutoScroller(canvasContainerRef);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -44,8 +59,6 @@ export const EditorCanvas = () => {
   };
 
   const handleContainerClick = (e: React.MouseEvent) => {
-    // This now correctly only fires when clicking the gray background,
-    // not when a right-click happens inside the form card.
     if (e.target === e.currentTarget) {
       setInteractionState({ mode: 'idle' });
       setAnchorId(null);
@@ -91,12 +104,11 @@ export const EditorCanvas = () => {
     }
   };
 
+  const isOverBackground = overId === CANVAS_BACKGROUND_ID;
+
   return (
-    // FIXED: The onContextMenu handler MUST be on the same element as the one that
-    // needs to stop propagation to prevent the deselect click from firing.
-    // Putting it here ensures it captures all right-clicks within the canvas area.
-    <div className={styles.canvasContainer} onClick={handleContainerClick} onContextMenu={handleContextMenu}>
-      <div className={styles.formCard} onClick={handleCanvasClick}>
+    <div ref={setMergedRefs} className={styles.canvasContainer} onClick={handleContainerClick} onContextMenu={handleContextMenu}>
+      <div className={`${styles.formCard} ${isOverBackground ? styles.isBackgroundTarget : ''}`} onClick={handleCanvasClick}>
         <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
         <div className={styles.canvasDroppableArea}>
           {rootId && <CanvasNode componentId={rootId} />}
