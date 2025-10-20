@@ -1,0 +1,46 @@
+/* src/components/IconToggleGroup.module.css */
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--surface-border-primary);
+  border-radius: 6px;
+  overflow: hidden;
+  /* UPDATED: Change from fit-content to 100% to fill the container */
+  width: 100%;
+}
+
+.toggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2);
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-secondary);
+  border: none;
+  border-right: 1px solid var(--surface-border-primary);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  height: 38px;
+  /* NEW: Allow buttons to grow and fill the available space */
+  flex: 1;
+}
+
+.toggleGroup button:last-child {
+  border-right: none;
+}
+
+.toggleButton:hover:not([data-state='on']) {
+  background-color: var(--surface-bg-secondary);
+  color: var(--surface-fg-primary);
+}
+
+.toggleButton[data-state='on'] {
+  background-color: var(--control-bg-selected);
+  color: var(--control-fg-selected);
+  cursor: default;
+}
+
+.toggleButton .material-symbols-rounded {
+  font-size: 20px;
+}

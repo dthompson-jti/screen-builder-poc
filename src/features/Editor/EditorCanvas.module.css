@@ -23,18 +23,17 @@
   border: 1px solid var(--surface-border-secondary);
   position: relative;
   min-height: 200px;
-  /* No z-index needed now */
 }
-
-/* ADDED: Add pointer cursor to the form card itself for the root selection affordance. */
-.formCard:not(.selected) {
-  cursor: pointer;
-}
-
 
 .formCard.isBackgroundTarget {
   border-color: var(--control-border-selected);
   box-shadow: var(--surface-shadow-lg), 0 0 0 2px var(--control-border-selected);
+}
+
+/* NEW: Style for the outer canvas card when the root component is selected */
+.formCard.isRootSelected {
+  border-color: var(--control-border-selected);
+  box-shadow: var(--surface-shadow-lg), 0 0 0 1px var(--control-border-selected);
 }
 
 .formCardHeader {
@@ -54,13 +53,8 @@
   user-select: none; 
 }
 
-/* NEW: Add this rule to give all selectable components the correct cursor affordance. */
-.selectableWrapper {
-  cursor: pointer;
-}
-
 .formComponentWrapper {
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   padding: var(--spacing-1);
   margin: 0;
   border-radius: var(--spacing-2);
@@ -81,20 +75,21 @@
   background-color: var(--surface-bg-primary_hover);
 }
 
-.selected > .formComponentWrapper {
+/* UPDATED: This rule now only applies to NON-ROOT selected items */
+.selected > .formComponentWrapper:not([data-is-root="true"]) {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
+  box-shadow: 0 0 0 1px var(--control-border-selected);
 }
 
-/* FIX: When a component is selected, its cursor should be the default arrow,
-   as the main interactions are now with the toolbar, not the component itself. */
-.selected {
-  cursor: default;
+/* NEW: This rule applies only to the ROOT's wrapper when it's selected */
+.selected > .formComponentWrapper[data-is-root="true"] {
+  border-color: var(--control-border-selected); /* Changes the dashed border's color */
+  background-color: var(--control-bg-selected); /* Adds the subtle background tint */
 }
-
 
 .layoutContainer {
-  border: 2px dashed var(--surface-border-tertiary);
+  border: 1px dashed var(--surface-border-tertiary);
   min-height: 40px;
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, border-style 0.2s;
 }
@@ -104,12 +99,13 @@
 }
 
 :not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
-  box-shadow: 0 0 0 2px var(--surface-border-primary);
+  box-shadow: 0 0 0 1px var(--surface-border-primary);
 }
 
-.selected > .layoutContainer {
+/* UPDATED: This rule now only applies to NON-ROOT selected containers */
+.selected > .layoutContainer:not([data-is-root="true"]) {
   border-style: solid;
-  border-width: 2px;
+  border-width: 1px;
 }
 
 :not(.selected) > .layoutContainer:hover {
@@ -167,7 +163,6 @@
 
 /* --- Floating Selection Toolbar Styles --- */
 .floatingSelectionToolbar {
-  /* MODIFIED: Changed from 'absolute' to 'fixed' to pin to the viewport */
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -189,7 +184,6 @@
   font-weight: 500;
   padding: 0 var(--spacing-2);
   white-space: nowrap;
-  /* ADDED: Prevents accidental text selection */
   user-select: none;
 }
 

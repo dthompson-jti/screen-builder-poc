@@ -96,7 +96,11 @@ export const LayoutRenderer = ({ component }: { component: LayoutComponent }) =>
   const showLinePlaceholder = dropPlaceholder?.parentId === component.id && dropPlaceholder.viewportRect && parentRect;
   
   return (
-    <div className={containerClasses} data-has-user-border={appearance?.bordered}>
+    <div 
+      className={containerClasses} 
+      data-has-user-border={appearance?.bordered}
+      data-is-root={isRoot}
+    >
       <div ref={setMergedRefs} className={styles.layoutContainerContent} style={contentAppearanceStyle} data-appearance-type={appearance?.type || 'transparent'} data-bordered={appearance?.bordered || false} data-arrangement={arrangement}>
         <div style={contentLayoutStyle} className="layout-content-wrapper">
           {isEmpty ? 

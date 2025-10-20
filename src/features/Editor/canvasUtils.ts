@@ -6,10 +6,10 @@ export const getComponentName = (component: CanvasComponent): string => {
   if (component.componentType === 'layout') {
     return component.name;
   }
-  // Remove FormComponent from import, rely on local const declaration
+  
   const formComponent = component;
   if (formComponent.properties.controlType === 'plain-text') {
     return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
   }
-  return formComponent.properties.label;
+  return formComponent.properties.label || 'Form Field';
 };

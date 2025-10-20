@@ -8,6 +8,7 @@ import {
   contextMenuStateAtom,
   selectionAnchorIdAtom,
   overDndIdAtom,
+  selectedCanvasComponentIdsAtom, // Import selector atom
 } from '../../data/atoms';
 import { rootComponentIdAtom, formNameAtom } from '../../data/historyAtoms';
 import { useEditorHotkeys } from '../../data/useEditorHotkeys';
@@ -38,6 +39,7 @@ export const EditorCanvas = () => {
   const setContextMenuState = useSetAtom(contextMenuStateAtom);
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
   const overId = useAtomValue(overDndIdAtom);
+  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
@@ -105,10 +107,17 @@ export const EditorCanvas = () => {
   };
 
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
+  const isRootSelected = selectedIds.length === 1 && selectedIds[0] === rootId;
+
+  const formCardClasses = [
+    styles.formCard,
+    isOverBackground ? styles.isBackgroundTarget : '',
+    isRootSelected ? styles.isRootSelected : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div ref={setMergedRefs} className={styles.canvasContainer} onClick={handleContainerClick} onContextMenu={handleContextMenu}>
-      <div className={`${styles.formCard} ${isOverBackground ? styles.isBackgroundTarget : ''}`} onClick={handleCanvasClick}>
+      <div className={formCardClasses} onClick={handleCanvasClick}>
         <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
         <div className={styles.canvasDroppableArea}>
           {rootId && <CanvasNode componentId={rootId} />}

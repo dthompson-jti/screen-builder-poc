@@ -26,10 +26,11 @@
 
 .propSection { margin-bottom: var(--spacing-6); }
 .propSection h4 {
-  font-size: 0.8em;
+  /* UPDATED: Set font size to 1rem (16px) */
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--surface-fg-secondary);
-  text-transform: uppercase;
+  color: var(--surface-fg-primary);
+  text-transform: capitalize;
   margin: 0 0 var(--spacing-3) 0;
   border-bottom: 1px solid var(--surface-border-secondary);
   padding-bottom: var(--spacing-2);
@@ -37,9 +38,10 @@
 .propItem, .propItemToggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
 
 .propItem label, .propItemToggle label {
-  font-size: 0.9em;
+  /* UPDATED: Set font size to 0.875rem (14px) */
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--surface-fg-primary);
+  color: var(--surface-fg-secondary);
 }
 
 .propItemToggle { flex-direction: row; justify-content: space-between; align-items: center; }
@@ -98,4 +100,22 @@
 
 .styleSwatch.selected .checkmark {
   opacity: 1;
+}
+
+.propTextarea {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--surface-border-primary);
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: var(--font-family-sans);
+    background-color: var(--surface-bg-primary);
+    color: var(--surface-fg-primary);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+}
+.propTextarea:focus {
+    border-color: var(--surface-border-theme);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
