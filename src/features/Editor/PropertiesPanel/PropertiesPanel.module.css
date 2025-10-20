@@ -26,7 +26,6 @@
 
 .propSection { margin-bottom: var(--spacing-6); }
 .propSection h4 {
-  /* UPDATED: Set font size to 1rem (16px) */
   font-size: 1rem;
   font-weight: 600;
   color: var(--surface-fg-primary);
@@ -38,7 +37,6 @@
 .propItem, .propItemToggle { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--spacing-4); }
 
 .propItem label, .propItemToggle label {
-  /* UPDATED: Set font size to 0.875rem (14px) */
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--surface-fg-secondary);
@@ -76,7 +74,8 @@
   aspect-ratio: 1;
   border-radius: 6px;
   cursor: pointer;
-  border: 2px solid var(--surface-border-secondary);
+  /* UPDATED: Change border to 1px to match other minor selections */
+  border: 1px solid var(--surface-border-secondary);
   transition: border-color 0.2s, box-shadow 0.2s;
   display: flex;
   align-items: center;
@@ -89,7 +88,8 @@
 
 .styleSwatch.selected {
   border-color: var(--control-border-selected);
-  box-shadow: 0 0 0 2px var(--control-border-selected);
+  /* UPDATED: Use a 1px box-shadow for consistency with canvas selection */
+  box-shadow: 0 0 0 1px var(--control-border-selected);
 }
 
 .styleSwatch .checkmark {
