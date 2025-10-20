@@ -137,6 +137,9 @@ function App() {
       const commonProps = {
           label: formComponent.properties.label,
           content: formComponent.properties.content,
+          required: formComponent.properties.required,
+          hintText: formComponent.properties.hintText,
+          placeholder: formComponent.properties.placeholder,
           isEditing: false,
       };
       

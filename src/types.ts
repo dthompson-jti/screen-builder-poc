@@ -1,7 +1,60 @@
 // src/types.ts
-// NEW FILE: Centralized type definitions for the application.
+import { UniqueIdentifier } from '@dnd-kit/core';
 
-// --- Base & Data Binding ---
+// =================================================================
+//                 COMPONENT BROWSER & DND-KIT
+// =================================================================
+export interface DraggableComponent {
+  id: string;
+  name: string;
+  type: 'layout' | 'widget' | 'field';
+  icon: string;
+  iconColor?: string;
+  nodeId?: string;
+  nodeName?: string;
+  path?: string;
+}
+
+export interface ComponentGroup {
+  title: string;
+  components: DraggableComponent[];
+}
+
+export interface ComponentNode {
+  id: string;
+  name: string;
+  connections: number;
+}
+
+export interface DropdownItem {
+  id: string;
+  name: string;
+  isNavigable: boolean;
+  icon: string;
+  iconColor: string;
+}
+
+export interface DndData {
+  id: UniqueIdentifier;
+  name: string;
+  type: string;
+  icon?: string;
+  isNew?: boolean;
+  origin?: 'data' | 'general';
+  controlType?: FormComponent['properties']['controlType'];
+  childrenCount?: number;
+  data?: {
+    nodeId: string;
+    nodeName: string;
+    path: string;
+  };
+}
+
+
+// =================================================================
+//                       CANVAS COMPONENTS
+// =================================================================
+
 export interface BoundData {
   nodeId: string;
   nodeName: string;
@@ -10,9 +63,7 @@ export interface BoundData {
   path: string;
 }
 
-// --- Canvas Components ---
 export type AppearanceType = 'transparent' | 'primary' | 'secondary' | 'tertiary' | 'info' | 'warning' | 'error';
-
 export interface AppearanceProperties {
   type: AppearanceType;
   bordered: boolean;
@@ -30,7 +81,7 @@ interface BaseComponent {
 
 export interface LayoutComponent extends BaseComponent {
   componentType: 'layout';
-  name: string; // Name/Label for layouts remains at the top level
+  name: string;
   children: string[];
   properties: {
     arrangement: 'stack' | 'row' | 'wrap' | 'grid';
@@ -46,67 +97,19 @@ export interface FormComponent extends BaseComponent {
   componentType: 'widget' | 'field';
   origin?: 'data' | 'general';
   binding: BoundData | null;
-  // NEW: Nested properties object for form-specific attributes
   properties: {
     label: string;
-    content?: string; // NEW: Used for Plain Text component
+    content?: string;
     fieldName: string;
     required: boolean;
-    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text'; // NEW: Add 'plain-text'
+    hintText?: string;
+    placeholder?: string;
+    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text';
   };
 }
 
 export type CanvasComponent = LayoutComponent | FormComponent;
 
 export type NormalizedCanvasComponents = {
-  [id:string]: CanvasComponent;
+  [id: string]: CanvasComponent;
 };
-
-// --- Component Browser & Navigator ---
-export interface DraggableComponent {
-  id: string;
-  name: string;
-  type: 'widget' | 'field' | 'layout';
-  icon: string;
-  iconColor?: string;
-  nodeId?: string;
-  nodeName?: string;
-  path?: string;
-  controlType?: FormComponent['properties']['controlType']; // NEW: For creating specific widgets
-}
-
-export interface ComponentGroup {
-  title: string;
-  components: DraggableComponent[];
-}
-
-export interface DropdownItem {
-  id: string;
-  name: string;
-  isNavigable: boolean;
-  icon: string;
-  iconColor: string;
-}
-
-export interface ComponentNode {
-  id: string;
-  name: string;
-  connections: number;
-}
-
-// --- Drag and Drop ---
-export interface DndData {
-  id: string;
-  name: string;
-  type: 'layout' | 'widget' | 'field';
-  icon?: string;
-  isNew?: boolean;
-  origin?: 'data' | 'general';
-  childrenCount?: number;
-  controlType?: FormComponent['properties']['controlType']; // NEW: Pass controlType in DND data
-  data?: {
-    nodeId: string;
-    nodeName: string;
-    path: string;
-  };
-}

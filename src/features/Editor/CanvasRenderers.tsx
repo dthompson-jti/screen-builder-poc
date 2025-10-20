@@ -14,7 +14,6 @@ import { EditableProps } from '../../data/useEditable';
 import { CanvasNode } from './CanvasNode';
 import { CanvasEmptyState } from './CanvasEmptyState';
 import { DropPlaceholder } from './CanvasUI';
-// REMOVED: import { getComponentName } from './canvasUtils'; 
 
 import { TextInputPreview } from '../Editor/previews/TextInputPreview';
 import DropdownPreview from '../Editor/previews/DropdownPreview';
@@ -25,8 +24,8 @@ import styles from './EditorCanvas.module.css';
 
 // --- RENDERER COMPONENTS (PURE) ---
 export const FormItemRenderer = React.memo(({ component, isEditing, editable }: { component: FormComponent, isEditing: boolean, editable?: EditableProps<HTMLInputElement | HTMLTextAreaElement>}) => {
-    const { label, controlType, content } = component.properties;
-    const commonProps = { label, content, isEditing };
+    const { label, controlType, content, required, hintText, placeholder } = component.properties;
+    const commonProps = { label, content, required, hintText, placeholder, isEditing };
 
     if (controlType === 'plain-text') {
         return <PlainTextPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLTextAreaElement> : undefined} />;
@@ -119,7 +118,6 @@ export const ComponentRenderer = ({ component, isEditing, editable }: { componen
   if (component.componentType === 'layout') {
     return <LayoutRenderer component={component} />;
   }
-  // FIX: Re-introduce the .formComponentWrapper for FormItems so the selection style can target it.
   return (
     <div className={styles.formComponentWrapper}>
       <FormItemRenderer component={component} isEditing={isEditing} editable={editable} />

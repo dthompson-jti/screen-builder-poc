@@ -1,6 +1,6 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useEffect, useRef } from 'react';
-import { useAtom, useSetAtom, useAtomValue } from 'jotai'; // FIXED: Added useAtomValue
+import { useEffect, useRef, useCallback } from 'react';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
   contextMenuStateAtom,
   canvasInteractionAtom,
@@ -21,7 +21,9 @@ export const CanvasContextMenu = () => {
   const targetIds = menuState.target?.type === 'component' ? menuState.target.ids : [];
   const capabilities = useComponentCapabilities(targetIds);
 
-  const closeMenu = () => setMenuState(prev => ({ ...prev, isOpen: false }));
+  const closeMenu = useCallback(() => {
+    setMenuState(prev => ({ ...prev, isOpen: false }));
+  }, [setMenuState]);
 
   useOnClickOutside(menuRef, closeMenu);
 
@@ -38,7 +40,7 @@ export const CanvasContextMenu = () => {
       window.removeEventListener('keydown', handleKeyDown);
       canvasContainer?.removeEventListener('scroll', closeMenu);
     };
-  }, []);
+  }, [closeMenu]);
 
   if (!menuState.isOpen || !menuState.target) {
     return null;

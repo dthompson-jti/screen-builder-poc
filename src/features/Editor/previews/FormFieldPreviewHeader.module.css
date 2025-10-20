@@ -1,0 +1,42 @@
+/* src/features/Editor/previews/FormFieldPreviewHeader.module.css */
+
+.previewLabel {
+  display: block;
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--surface-fg-secondary);
+  margin-bottom: var(--spacing-2);
+  visibility: visible;
+  user-select: none;
+}
+
+.previewLabel.isEditing {
+  visibility: hidden;
+}
+
+.requiredAsterisk {
+  color: var(--primitives-red-400);
+  font-weight: 700;
+  margin-left: var(--spacing-1);
+}
+
+.editingInput {
+  font-family: var(--font-family-sans);
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+  background-color: var(--surface-bg-primary);
+  border: 1px solid var(--surface-border-theme);
+  border-radius: 4px; /* Smaller radius for inline look */
+  outline: none;
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+  pointer-events: all; /* The input itself must be interactive */
+  
+  position: absolute;
+  top: var(--spacing-3);
+  left: var(--spacing-3);
+  width: calc(100% - var(--spacing-3) * 2);
+  height: 20px; /* Match label line-height */
+  padding: 2px 4px;
+  margin: 0;
+}

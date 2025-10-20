@@ -300,7 +300,8 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
   
   const handleLabelChange = (newLabel: string) => {
     const newFieldName = sanitizeLabelToFieldName(newLabel);
-    handlePropertyChange({ label: newLabel, fieldName: newFieldName });
+    const newPlaceholder = `Enter ${newLabel}`;
+    handlePropertyChange({ label: newLabel, fieldName: newFieldName, placeholder: newPlaceholder });
   };
 
   const renderBindingControl = () => {
@@ -352,6 +353,24 @@ const FormItemProperties = ({ component }: { component: FormComponent }) => {
             type="text"
             value={component.properties.label}
             onChange={(e) => handleLabelChange(e.target.value)}
+          />
+        </div>
+        <div className={styles.propItem}>
+          <label htmlFor={`placeholder-${component.id}`}>Placeholder</label>
+          <input
+            id={`placeholder-${component.id}`}
+            type="text"
+            value={component.properties.placeholder || ''}
+            onChange={(e) => handlePropertyChange({ placeholder: e.target.value })}
+          />
+        </div>
+        <div className={styles.propItem}>
+          <label htmlFor={`hint-${component.id}`}>Hint Text</label>
+          <input
+            id={`hint-${component.id}`}
+            type="text"
+            value={component.properties.hintText || ''}
+            onChange={(e) => handlePropertyChange({ hintText: e.target.value })}
           />
         </div>
       </div>

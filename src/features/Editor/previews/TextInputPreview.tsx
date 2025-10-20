@@ -1,32 +1,32 @@
 // src/features/Editor/previews/TextInputPreview.tsx
 import { EditableProps } from '../../../data/useEditable';
-import styles from './FormFieldPreview.module.css'; // FIXED PATH
+import { FormFieldPreviewHeader } from './FormFieldPreviewHeader';
+import styles from './FormFieldPreview.module.css';
 
 interface TextInputPreviewProps {
   label: string;
   isEditing: boolean;
+  required: boolean;
+  hintText?: string;
+  placeholder?: string;
   editableProps?: EditableProps<HTMLInputElement>;
 }
 
-export const TextInputPreview = ({ label, isEditing, editableProps }: TextInputPreviewProps) => {
+export const TextInputPreview = ({ label, isEditing, required, hintText, placeholder, editableProps }: TextInputPreviewProps) => {
   return (
     <div className={styles.previewWrapper}>
-      <label className={`${styles.previewLabel} ${isEditing ? styles.isEditing : ''}`}>{label}</label>
+      <FormFieldPreviewHeader 
+        label={label}
+        required={required}
+        isEditing={isEditing}
+        editableProps={editableProps}
+      />
       
-      {isEditing && editableProps && (
-        <input
-          ref={editableProps.ref}
-          type="text"
-          value={editableProps.value}
-          onChange={editableProps.onChange}
-          onKeyDown={editableProps.onKeyDown}
-          onBlur={editableProps.onBlur}
-          className={styles.editingInput}
-          onClick={(e) => e.stopPropagation()}
-        />
-      )}
-      
-      <div className={styles.previewInput}></div>
+      <div className={styles.previewInput}>
+        {placeholder}
+      </div>
+
+      {hintText && <div className={styles.hintText}>{hintText}</div>}
     </div>
   );
 };

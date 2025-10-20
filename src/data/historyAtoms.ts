@@ -2,13 +2,11 @@
 import { atom } from 'jotai';
 import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
-import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties } from '../types';
+import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties, NormalizedCanvasComponents } from '../types';
 import { canvasInteractionAtom, CanvasInteractionState, scrollRequestAtom } from './atoms';
 
 // 1. DEFINE THE CORE SHAPES
-export type NormalizedCanvasComponents = {
-  [id: string]: CanvasComponent;
-};
+// NormalizedCanvasComponents is now imported from ../types
 
 export interface UndoableState {
   formName: string;
@@ -163,6 +161,7 @@ export const commitActionAtom = atom(
                   content: controlType === 'plain-text' ? 'Plain Text' : undefined,
                   fieldName: controlType === 'plain-text' ? '' : fieldName,
                   required: false,
+                  placeholder: origin === 'data' ? `Enter ${name}` : '',
                   controlType: controlType || 'text-input',
                 },
               };
