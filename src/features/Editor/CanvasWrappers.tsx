@@ -140,7 +140,7 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
     });
   };
 
-  const className = isSelected && !isRoot ? styles.selected : '';
+  const className = isSelected ? styles.selected : '';
 
   return (
     <div className={className} onClick={handleSelect}>
