@@ -14,6 +14,7 @@ import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from 
 import { CanvasComponent, DndData, LayoutComponent } from '../../types';
 import { SelectionToolbar } from './SelectionToolbar';
 import { getComponentName } from './canvasUtils';
+import { useComponentCapabilities } from './useComponentCapabilities'; // IMPORTED
 
 import styles from './EditorCanvas.module.css';
 
@@ -41,10 +42,9 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const isLayout = component.componentType === 'layout';
   const isPlainText = !isLayout && component.properties.controlType === 'plain-text';
 
+  // REFACTORED: Use the centralized capabilities hook
+  const { canRename, canWrap, canUnwrap } = useComponentCapabilities(isSelected ? [component.id] : []);
   const parent = allComponents[component.parentId] as LayoutComponent | undefined;
-  const canRename = !isRoot;
-  const canWrap = !isRoot;
-  const canUnwrap = isLayout && !isRoot && component.children.length > 0 && !!parent;
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -165,8 +165,6 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
 export const SortableWrapper = ({ component, children }: { component: CanvasComponent, children: React.ReactNode }) => {
   const rootId = useAtomValue(rootComponentIdAtom);
   const isRoot = component.id === rootId;
-  // FIXED: Removed the check for an empty container from the disabled logic.
-  // An empty container is a valid draggable item. Only the root is not.
   const isDisabled = isRoot;
 
   const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 

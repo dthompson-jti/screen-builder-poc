@@ -49,7 +49,6 @@ export type CanvasInteractionState =
 
 export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle' });
 
-// NEW: An atom to store the starting point for a shift-click range selection.
 export const selectionAnchorIdAtom = atom<string | null>(null);
 
 export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
@@ -62,6 +61,19 @@ export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
 export const activelyEditingComponentIdAtom = atom<string | null>((get) => {
   const state = get(canvasInteractionAtom);
   return state.mode === 'editing' ? state.id : null;
+});
+
+// --- NEW: Context Menu State ---
+export interface ContextMenuState {
+  isOpen: boolean;
+  position: { x: number; y: number };
+  target: { type: 'component'; ids: string[] } | { type: 'canvas' } | null;
+}
+
+export const contextMenuStateAtom = atom<ContextMenuState>({
+  isOpen: false,
+  position: { x: 0, y: 0 },
+  target: null,
 });
 
 

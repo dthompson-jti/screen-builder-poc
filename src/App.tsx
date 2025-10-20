@@ -1,10 +1,9 @@
 // src/App.tsx
-
 import { useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai'; 
+import { useAtomValue, useSetAtom } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
 
-// Features (new import paths)
+// Features
 import { AppHeader } from './features/AppHeader/AppHeader';
 import { ComponentBrowser } from './features/ComponentBrowser/ComponentBrowser';
 import { GeneralComponentsBrowser } from './features/ComponentBrowser/GeneralComponentsBrowser';
@@ -25,6 +24,7 @@ import { SettingsPage } from './features/Settings/SettingsPage';
 import { ResizablePanel } from './components/ResizablePanel';
 import { DataBindingModal } from './components/DataBindingModal';
 import { ToastContainer } from './components/ToastContainer';
+import { CanvasContextMenu } from './features/Editor/CanvasContextMenu';
 
 // Data and Hooks
 import { useCanvasDnd } from './data/useCanvasDnd';
@@ -41,7 +41,6 @@ import {
 import { canvasComponentsByIdAtom } from './data/historyAtoms';
 import { DndData } from './types';
 
-
 const dropAnimation: DropAnimation = {
   duration: 0,
   sideEffects: defaultDropAnimationSideEffects({
@@ -55,6 +54,10 @@ const dropAnimation: DropAnimation = {
 
 const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
+
+const ContextMenuRenderer = () => {
+  return <CanvasContextMenu />;
+};
 
 function App() {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -72,7 +75,6 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const activeElement = document.activeElement;
-      // KEPT IMPROVEMENT: Prevents undo/redo while typing in inputs.
       const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
       if (isTyping) return;
 
@@ -110,7 +112,6 @@ function App() {
     })
   );
 
-  // KEPT IMPROVEMENT: This version is cleaner and more robust.
   const renderDragOverlay = () => {
     if (!activeDndItem) return null;
 
@@ -183,7 +184,6 @@ function App() {
       case 'editor':
       default:
         return (
-          // LAYOUT FIX: Reverted to using inline styles to match the original, working layout.
           <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
             <MainToolbar />
             <ResizablePanel
@@ -219,14 +219,13 @@ function App() {
       autoScroll={true}
       collisionDetection={rectIntersection}
     >
-      {/* LAYOUT FIX: Reverted to using inline styles for the main container. */}
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
         <AppHeader />
         {renderMainContent()}
         <DataBindingModal />
         <ToastContainer />
+        <ContextMenuRenderer />
       </div>
-       {/* LAYOUT FIX: Moved DragOverlay back inside the DndContext provider. */}
        <DragOverlay dropAnimation={dropAnimation}>
         {activeDndId ? renderDragOverlay() : null}
       </DragOverlay>
