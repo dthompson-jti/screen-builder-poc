@@ -47,9 +47,15 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const parent = allComponents[component.parentId] as LayoutComponent | undefined;
 
   const handleSelect = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isRoot) return;
+    // FIX: If the click is on the root component itself, do nothing and let the
+    // event bubble up to the canvas's main click handler which correctly selects the root.
+    if (isRoot) {
+      return;
+    }
 
+    // For any other component, stop propagation to prevent the canvas handler from firing.
+    e.stopPropagation();
+    
     setIsPropertiesPanelVisible(true);
 
     if ((e.altKey && !isLayout) || (e.detail === 2 && isPlainText)) {
@@ -140,7 +146,8 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
     });
   };
 
-  const className = isSelected ? styles.selected : '';
+  // FIX: Add a dedicated, styleable class 'selectableWrapper' to this div.
+  const className = `${styles.selectableWrapper} ${isSelected ? styles.selected : ''}`;
 
   return (
     <div className={className} onClick={handleSelect}>

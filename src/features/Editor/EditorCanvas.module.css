@@ -26,6 +26,12 @@
   /* No z-index needed now */
 }
 
+/* ADDED: Add pointer cursor to the form card itself for the root selection affordance. */
+.formCard:not(.selected) {
+  cursor: pointer;
+}
+
+
 .formCard.isBackgroundTarget {
   border-color: var(--control-border-selected);
   box-shadow: var(--surface-shadow-lg), 0 0 0 2px var(--control-border-selected);
@@ -46,6 +52,11 @@
   color: var(--surface-fg-primary);
   flex-grow: 1;
   user-select: none; 
+}
+
+/* NEW: Add this rule to give all selectable components the correct cursor affordance. */
+.selectableWrapper {
+  cursor: pointer;
 }
 
 .formComponentWrapper {
@@ -74,6 +85,13 @@
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
+
+/* FIX: When a component is selected, its cursor should be the default arrow,
+   as the main interactions are now with the toolbar, not the component itself. */
+.selected {
+  cursor: default;
+}
+
 
 .layoutContainer {
   border: 2px dashed var(--surface-border-tertiary);
