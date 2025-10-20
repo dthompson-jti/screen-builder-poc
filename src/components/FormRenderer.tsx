@@ -104,7 +104,12 @@ const FormComponentPreview = ({ component }: { component: FormComponent }) => {
   
   return (
     <div style={wrapperStyle}>
-      <TextInputPreview label={component.properties.label} isEditing={false} />
+      <TextInputPreview
+        label={component.properties.label}
+        isEditing={false}
+        // FIX: Add the missing 'required' prop to satisfy the component's interface.
+        required={component.properties.required}
+      />
     </div>
   );
 };
