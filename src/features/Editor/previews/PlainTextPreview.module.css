@@ -18,7 +18,17 @@
   white-space: pre-wrap; /* Respects newlines and whitespace */
   word-break: break-word;
   user-select: none; /* ADDED: Prevents text selection */
+  margin: 0;
 }
+
+/* Add default heading styles for visual distinction on the canvas */
+.textContent[data-element-type='h1'] { font-size: 2em; font-weight: 700; }
+.textContent[data-element-type='h2'] { font-size: 1.5em; font-weight: 700; }
+.textContent[data-element-type='h3'] { font-size: 1.25em; font-weight: 700; }
+.textContent[data-element-type='h4'] { font-size: 1.1em; font-weight: 700; }
+.textContent[data-element-type='h5'] { font-size: 1em; font-weight: 700; }
+.textContent[data-element-type='h6'] { font-size: 0.9em; font-weight: 700; }
+.textContent[data-element-type='p'] { font-size: 0.9em; font-weight: 400; }
 
 .placeholder {
   color: var(--surface-fg-tertiary);

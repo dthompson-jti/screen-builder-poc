@@ -1,10 +1,14 @@
 // src/features/Editor/SelectionToolbarMenu.tsx
 import { useRef } from 'react';
+import { useSetAtom } from 'jotai';
 import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { useIsMac } from '../../data/useIsMac';
+import { useComponentCapabilities } from './useComponentCapabilities';
+import { commitActionAtom } from '../../data/historyAtoms';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarMenuProps {
+  selectedId: string;
   onDelete: () => void;
   onRename: () => void;
   onNudge: (direction: 'up' | 'down') => void;
@@ -18,6 +22,7 @@ interface SelectionToolbarMenuProps {
 }
 
 export const SelectionToolbarMenu = ({
+  selectedId,
   onDelete,
   onRename,
   onNudge,
@@ -32,6 +37,8 @@ export const SelectionToolbarMenu = ({
   const menuRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(menuRef, onClose);
   const isMac = useIsMac();
+  const commitAction = useSetAtom(commitActionAtom);
+  const capabilities = useComponentCapabilities([selectedId]);
 
   const modKey = isMac ? '⌘' : 'Ctrl';
   const altKey = isMac ? '⌥' : 'Alt+';
@@ -43,12 +50,33 @@ export const SelectionToolbarMenu = ({
     }
   };
 
+  const handleConvert = (targetType: 'heading' | 'paragraph' | 'link') => {
+    commitAction({
+      action: { type: 'COMPONENT_CONVERT', payload: { componentId: selectedId, targetType } },
+      message: `Convert component to ${targetType}`
+    });
+    onClose();
+  };
+
   return (
     <div className={styles.menuPopover} ref={menuRef}>
       <button className="menu-item" onClick={createHandler(onRename)} disabled={!canRename}>
         <span className="material-symbols-rounded">edit</span>
         <span>Rename</span>
         <span className="hotkey">Enter</span>
+      </button>
+      <div className={styles.menuDivider} />
+      <button className="menu-item" onClick={() => handleConvert('heading')} disabled={!capabilities.canConvertToHeading}>
+        <span className="material-symbols-rounded">title</span>
+        <span>Convert to Heading</span>
+      </button>
+      <button className="menu-item" onClick={() => handleConvert('paragraph')} disabled={!capabilities.canConvertToParagraph}>
+        <span className="material-symbols-rounded">notes</span>
+        <span>Convert to Paragraph</span>
+      </button>
+      <button className="menu-item" onClick={() => handleConvert('link')} disabled={!capabilities.canConvertToLink}>
+        <span className="material-symbols-rounded">link</span>
+        <span>Convert to Link</span>
       </button>
 
       <div className={styles.menuDivider} />

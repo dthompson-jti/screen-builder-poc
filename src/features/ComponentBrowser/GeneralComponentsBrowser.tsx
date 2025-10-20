@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai';
 import { useDraggable } from '@dnd-kit/core';
 import { isComponentBrowserVisibleAtom } from '../../data/atoms';
 import { generalComponents } from '../../data/generalComponentsMock';
-import { DraggableComponent, DndData } from '../../types';
+import { DraggableComponent, DndData, FormComponent } from '../../types';
 import { PanelHeader } from '../../components/PanelHeader';
 import panelStyles from '../../components/panel.module.css';
 
@@ -11,15 +11,19 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `new-${component.id}`, // Use a prefix to ensure it's unique from canvas items
     data: {
-      // FIX: Structure the payload to match the DndData type precisely.
-      // Top-level properties:
       id: component.id,
       name: component.name,
       type: component.type,
       icon: component.icon,
       isNew: true,
       origin: 'general',
-      // Nested `data` property for binding info (null for general components):
+      controlType: 
+        (component.id === 'heading' || component.id === 'paragraph') ? 'plain-text' : 
+        (component.id === 'layout-container') ? undefined : component.id as FormComponent['properties']['controlType'],
+      controlTypeProps: 
+        component.id === 'heading' ? { textElement: 'h2', content: 'Heading' } :
+        component.id === 'paragraph' ? { textElement: 'p', content: 'This is a paragraph of text.' } :
+        undefined,
       data: undefined,
     } satisfies DndData,
   });
@@ -52,8 +56,15 @@ export const GeneralComponentsBrowser = () => {
       <PanelHeader title="General Components" onClose={handleClosePanel} />
       <div className={panelStyles.componentListContainer}>
         <ul className={panelStyles.componentList}>
-          {generalComponents.map((component) => (
-            <DraggableListItem key={component.id} component={component} />
+          {generalComponents.map((group) => (
+            <li key={group.title}>
+              <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
+              <ul>
+                {group.components.map((component) => (
+                  <DraggableListItem key={component.id} component={component} />
+                ))}
+              </ul>
+            </li>
           ))}
         </ul>
       </div>

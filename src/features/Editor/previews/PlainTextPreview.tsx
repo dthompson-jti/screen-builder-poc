@@ -1,5 +1,6 @@
 // src/features/Editor/previews/PlainTextPreview.tsx
 import React from 'react';
+import { FormComponent } from '../../../types';
 import styles from './PlainTextPreview.module.css';
 
 interface EditableProps {
@@ -15,10 +16,12 @@ interface PlainTextPreviewProps {
   content?: string;
   isEditing: boolean;
   editableProps?: EditableProps;
+  textElement?: FormComponent['properties']['textElement'];
 }
 
-const PlainTextPreview = ({ content, isEditing, editableProps }: PlainTextPreviewProps) => {
+const PlainTextPreview = ({ content, isEditing, editableProps, textElement = 'p' }: PlainTextPreviewProps) => {
   const hasContent = content && content.trim().length > 0;
+  const Tag = textElement;
 
   return (
     <div className={styles.previewWrapper}>
@@ -33,9 +36,9 @@ const PlainTextPreview = ({ content, isEditing, editableProps }: PlainTextPrevie
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
-        <div className={`${styles.textContent} ${!hasContent ? styles.placeholder : ''}`}>
+        <Tag className={`${styles.textContent} ${!hasContent ? styles.placeholder : ''}`} data-element-type={Tag}>
           {hasContent ? content : 'Enter text'}
-        </div>
+        </Tag>
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import { useIsMac } from '../../data/useIsMac';
 import styles from './SelectionToolbar.module.css';
 
 interface SelectionToolbarProps {
+  componentId: string;
   onDelete: () => void;
   onRename: () => void;
   onNudge: (direction: 'up' | 'down') => void;
@@ -20,6 +21,7 @@ interface SelectionToolbarProps {
 }
 
 export const SelectionToolbar = ({
+  componentId,
   onDelete,
   onRename,
   onNudge,
@@ -104,6 +106,7 @@ export const SelectionToolbar = ({
       </div>
       {isMenuOpen && (
         <SelectionToolbarMenu
+          selectedId={componentId}
           onDelete={onDelete}
           onRename={onRename}
           onNudge={onNudge}

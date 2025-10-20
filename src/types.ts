@@ -42,6 +42,7 @@ export interface DndData {
   isNew?: boolean;
   origin?: 'data' | 'general';
   controlType?: FormComponent['properties']['controlType'];
+  controlTypeProps?: Partial<FormComponent['properties']>;
   childrenCount?: number;
   data?: {
     nodeId: string;
@@ -104,7 +105,12 @@ export interface FormComponent extends BaseComponent {
     required: boolean;
     hintText?: string;
     placeholder?: string;
-    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text';
+    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text' | 'link';
+    // Properties for Link
+    href?: string;
+    target?: '_self' | '_blank';
+    // Properties for Plain Text
+    textElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'div';
   };
 }
 

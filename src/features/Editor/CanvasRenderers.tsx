@@ -19,22 +19,26 @@ import { TextInputPreview } from '../Editor/previews/TextInputPreview';
 import DropdownPreview from '../Editor/previews/DropdownPreview';
 import RadioButtonsPreview from '../Editor/previews/RadioButtonsPreview';
 import PlainTextPreview from '../Editor/previews/PlainTextPreview';
+import LinkPreview from '../Editor/previews/LinkPreview';
 
 import styles from './EditorCanvas.module.css';
 
 // --- RENDERER COMPONENTS (PURE) ---
 export const FormItemRenderer = React.memo(({ component, isEditing, editable }: { component: FormComponent, isEditing: boolean, editable?: EditableProps<HTMLInputElement | HTMLTextAreaElement>}) => {
-    const { label, controlType, content, required, hintText, placeholder } = component.properties;
+    const { label, controlType, content, required, hintText, placeholder, textElement, href } = component.properties;
     const commonProps = { label, content, required, hintText, placeholder, isEditing };
 
     if (controlType === 'plain-text') {
-        return <PlainTextPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLTextAreaElement> : undefined} />;
+        return <PlainTextPreview {...commonProps} textElement={textElement} editableProps={isEditing ? editable as EditableProps<HTMLTextAreaElement> : undefined} />;
     }
     if (controlType === 'dropdown') {
         return <DropdownPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
     }
     if (controlType === 'radio-buttons') {
         return <RadioButtonsPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
+    }
+    if (controlType === 'link') {
+        return <LinkPreview content={content} href={href} isEditing={isEditing} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
     }
     return <TextInputPreview {...commonProps} editableProps={isEditing ? editable as EditableProps<HTMLInputElement> : undefined} />;
 });

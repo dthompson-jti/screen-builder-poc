@@ -17,6 +17,7 @@ import PlainTextPreview from './features/Editor/previews/PlainTextPreview';
 import { TextInputPreview } from './features/Editor/previews/TextInputPreview';
 import DropdownPreview from './features/Editor/previews/DropdownPreview';
 import RadioButtonsPreview from './features/Editor/previews/RadioButtonsPreview';
+import LinkPreview from './features/Editor/previews/LinkPreview';
 import { PreviewView } from './features/Preview/PreviewView';
 import { SettingsPage } from './features/Settings/SettingsPage';
 
@@ -146,13 +147,16 @@ function App() {
       let previewElement;
       switch (formComponent.properties.controlType) {
           case 'plain-text':
-              previewElement = <PlainTextPreview {...commonProps} />;
+              previewElement = <PlainTextPreview {...commonProps} textElement={formComponent.properties.textElement} />;
               break;
           case 'dropdown':
               previewElement = <DropdownPreview {...commonProps} />;
               break;
           case 'radio-buttons':
               previewElement = <RadioButtonsPreview {...commonProps} />;
+              break;
+          case 'link':
+              previewElement = <LinkPreview {...commonProps} />;
               break;
           case 'text-input':
           default:
@@ -233,7 +237,7 @@ function App() {
         {activeDndId ? renderDragOverlay() : null}
       </DragOverlay>
     </DndContext>
-  )
+  );
 }
 
 export default App;

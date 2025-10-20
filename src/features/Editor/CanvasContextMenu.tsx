@@ -86,6 +86,13 @@ export const CanvasContextMenu = () => {
     setInteractionState({ mode: 'editing', id: targetIds[0] });
   };
 
+  const handleConvert = (targetType: 'heading' | 'paragraph' | 'link') => {
+    commitAction({
+      action: { type: 'COMPONENT_CONVERT', payload: { componentId: targetIds[0], targetType } },
+      message: `Convert component to ${targetType}`
+    });
+  };
+
   const handleNudge = (direction: 'up' | 'down') => {
     const component = allComponents[targetIds[0]];
     const parent = allComponents[component.parentId];
@@ -120,6 +127,19 @@ export const CanvasContextMenu = () => {
         <div className={styles.menuDivider} />
         {isSingle && (
           <>
+            <button className="menu-item" onClick={handleAction(() => handleConvert('heading'))} disabled={!capabilities.canConvertToHeading}>
+                <span className="material-symbols-rounded">title</span>
+                <span>Convert to Heading</span>
+            </button>
+            <button className="menu-item" onClick={handleAction(() => handleConvert('paragraph'))} disabled={!capabilities.canConvertToParagraph}>
+                <span className="material-symbols-rounded">notes</span>
+                <span>Convert to Paragraph</span>
+            </button>
+            <button className="menu-item" onClick={handleAction(() => handleConvert('link'))} disabled={!capabilities.canConvertToLink}>
+                <span className="material-symbols-rounded">link</span>
+                <span>Convert to Link</span>
+            </button>
+            <div className={styles.menuDivider} />
             <button className="menu-item" disabled={!capabilities.canNudgeUp} onClick={handleAction(() => handleNudge('up'))}>
               Move Up
             </button>

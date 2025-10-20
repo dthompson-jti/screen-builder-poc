@@ -153,6 +153,7 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
     <div className={className} onClick={handleSelect}>
       {showToolbar && (
         <SelectionToolbar 
+          componentId={component.id}
           onDelete={handleDelete} 
           onRename={handleRename} 
           onNudge={handleNudge} 

@@ -87,6 +87,15 @@ const displayOptions: { value: FormComponent['properties']['controlType']; label
     { value: 'radio-buttons', label: 'Radio Buttons', icon: 'radio_button_checked' },
 ];
 
+const textElementOptions: { value: NonNullable<FormComponent['properties']['textElement']>; label: string; icon: string }[] = [
+    { value: 'h1', label: 'H1', icon: 'looks_one' },
+    { value: 'h2', label: 'H2', icon: 'looks_two' },
+    { value: 'h3', label: 'H3', icon: 'looks_3' },
+    { value: 'h4', label: 'H4', icon: 'looks_4' },
+    { value: 'h5', label: 'H5', icon: 'looks_5' },
+    { value: 'h6', label: 'H6', icon: 'looks_6' },
+];
+
 const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   const setBindingRequest = useSetAtom(dataBindingRequestAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -121,12 +130,23 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   };
 
   if (controlType === 'plain-text') {
+    const isHeading = component.properties.textElement?.startsWith('h');
     return (
       <>
         <div className={styles.propSection}>
-          <h4>Content</h4>
+          <h4>Text Settings</h4>
+          {isHeading && (
+            <div className={styles.propItem}>
+              <label>Heading Level</label>
+              <IconToggleGroup
+                  options={textElementOptions}
+                  value={component.properties.textElement || 'p'}
+                  onValueChange={value => handlePropertyChange({ textElement: value as FormComponent['properties']['textElement'] })}
+              />
+            </div>
+          )}
           <div className={styles.propItem}>
-            <label htmlFor={`content-${component.id}`}>Text</label>
+            <label htmlFor={`content-${component.id}`}>Content</label>
             <textarea
               id={`content-${component.id}`}
               className={styles.propTextarea}
@@ -138,6 +158,46 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
         </div>
         <ContextualLayoutProperties component={component} />
       </>
+    );
+  }
+
+  if (controlType === 'link') {
+    return (
+        <>
+            <div className={styles.propSection}>
+                <h4>Link Settings</h4>
+                <div className={styles.propItem}>
+                    <label htmlFor={`content-${component.id}`}>Text</label>
+                    <input
+                        id={`content-${component.id}`}
+                        type="text"
+                        value={component.properties.content || ''}
+                        onChange={(e) => handlePropertyChange({ content: e.target.value })}
+                    />
+                </div>
+                <div className={styles.propItem}>
+                    <label htmlFor={`href-${component.id}`}>URL</label>
+                    <input
+                        id={`href-${component.id}`}
+                        type="text"
+                        placeholder="https://example.com"
+                        value={component.properties.href || ''}
+                        onChange={(e) => handlePropertyChange({ href: e.target.value })}
+                    />
+                </div>
+                <div className={styles.propItem}>
+                    <label>Target</label>
+                    <Select
+                        value={component.properties.target || '_self'}
+                        onValueChange={value => handlePropertyChange({ target: value as '_self' | '_blank' })}
+                    >
+                        <SelectItem value="_self">Open in same tab</SelectItem>
+                        <SelectItem value="_blank">Open in new tab</SelectItem>
+                    </Select>
+                </div>
+            </div>
+            <ContextualLayoutProperties component={component} />
+        </>
     );
   }
 

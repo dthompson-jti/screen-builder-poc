@@ -35,6 +35,7 @@ export type HistoryAction =
       parentId: string; 
       index: number; 
       controlType?: FormComponent['properties']['controlType']; // NEW: Allow specifying control type
+      controlTypeProps?: Partial<FormComponent['properties']>;
       bindingData?: { nodeId: string, nodeName: string, fieldId: string, path: string };
     } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
@@ -43,6 +44,7 @@ export type HistoryAction =
   | { type: 'COMPONENT_REORDER'; payload: { componentId: string; parentId: string; oldIndex: number; newIndex: number; } }
   | { type: 'COMPONENTS_WRAP'; payload: { componentIds: string[]; parentId: string; } }
   | { type: 'COMPONENT_UNWRAP'; payload: { componentId: string; } } // NEW
+  | { type: 'COMPONENT_CONVERT'; payload: { componentId: string; targetType: 'heading' | 'paragraph' | 'link' } }
   | { type: 'COMPONENT_UPDATE_BINDING'; payload: { componentId: string; newBinding: BoundData | null } }
   | { type: 'COMPONENT_UPDATE_PROPERTIES'; payload: { componentId: string; newProperties: Partial<Omit<LayoutComponent['properties'], 'appearance'>>; } }
   | { type: 'COMPONENT_UPDATE_APPEARANCE'; payload: { componentId: string; newAppearance: Partial<AppearanceProperties>; } }
@@ -117,7 +119,7 @@ export const commitActionAtom = atom(
 
         switch (action.action.type) {
           case 'COMPONENT_ADD': {
-            const { componentType, name, origin, parentId, index, controlType, bindingData } = action.action.payload;
+            const { componentType, name, origin, parentId, index, controlType, controlTypeProps, bindingData } = action.action.payload;
             const newId = nanoid(8);
             let newComponent: CanvasComponent;
 
@@ -150,6 +152,8 @@ export const commitActionAtom = atom(
                 index === 0 ? word.toLowerCase() : word.toUpperCase()
               ).replace(/\s+/g, '');
 
+              const isTextual = controlType === 'plain-text' || controlType === 'link';
+
               newComponent = {
                 id: newId,
                 parentId,
@@ -157,12 +161,15 @@ export const commitActionAtom = atom(
                 origin,
                 binding: newBinding,
                 properties: {
-                  label: controlType === 'plain-text' ? '' : name,
-                  content: controlType === 'plain-text' ? 'Plain Text' : undefined,
-                  fieldName: controlType === 'plain-text' ? '' : fieldName,
+                  label: isTextual ? '' : name,
+                  content: isTextual ? name : undefined,
+                  fieldName: isTextual ? '' : fieldName,
                   required: false,
                   placeholder: origin === 'data' ? `Enter ${name}` : '',
                   controlType: controlType || 'text-input',
+                  href: controlType === 'link' ? '#' : undefined,
+                  target: controlType === 'link' ? '_self' : undefined,
+                  ...controlTypeProps,
                 },
               };
             }
@@ -271,6 +278,29 @@ export const commitActionAtom = atom(
 
             // Delete the container
             delete presentState.components[componentId];
+            break;
+          }
+          case 'COMPONENT_CONVERT': {
+            const { componentId, targetType } = action.action.payload;
+            const component = presentState.components[componentId];
+            if (!component || component.componentType === 'layout') break;
+
+            if (targetType === 'heading') {
+              component.properties.controlType = 'plain-text';
+              component.properties.textElement = 'h2'; // Default to H2 when converting
+              component.properties.href = undefined;
+              component.properties.target = undefined;
+            } else if (targetType === 'paragraph') {
+              component.properties.controlType = 'plain-text';
+              component.properties.textElement = 'p';
+              component.properties.href = undefined;
+              component.properties.target = undefined;
+            } else if (targetType === 'link') {
+              component.properties.controlType = 'link';
+              component.properties.href = '#';
+              component.properties.target = '_self';
+              component.properties.textElement = undefined; // Clean up unused prop
+            }
             break;
           }
           case 'COMPONENT_UPDATE_PROPERTIES': {
