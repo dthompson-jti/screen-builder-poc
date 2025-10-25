@@ -93,7 +93,7 @@
 
 .selectItem[data-highlighted] {
   background-color: var(--control-bg-tertiary-hover);
-  box-shadow: inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-faint-hover);
 }
 
 .selectItem[data-highlighted] .selectItemIcon {

@@ -1,6 +1,7 @@
 // src/features/AppHeader/AppHeader.tsx
 import { useAtom } from 'jotai';
 import { useLayoutEffect, useRef, useState } from 'react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   isMenuOpenAtom,
   appViewModeAtom,
@@ -15,7 +16,6 @@ import { Tooltip } from '../../components/Tooltip';
 import { Button } from '../../components/Button';
 import styles from './AppHeader.module.css';
 
-// ... (rest of file is unchanged)
 export const AppHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useAtom(isMenuOpenAtom);
   const [viewMode, setViewMode] = useAtom(appViewModeAtom);
@@ -36,10 +36,6 @@ export const AppHeader = () => {
     }
   }, [viewMode]);
 
-  const handleToggleMenu = () => {
-      setIsMenuOpen(p => !p);
-  };
-
   const handleTabClick = (mode: AppViewMode) => {
     setViewMode(mode);
   };
@@ -47,18 +43,22 @@ export const AppHeader = () => {
   return (
     <header className={styles.appHeader}>
       <div className={styles.headerLeft}>
-        <Tooltip content="Toggle Menu">
-          <Button
-            variant="tertiary"
-            size="s"
-            iconOnly
-            aria-label="Toggle Menu"
-            onClick={handleToggleMenu}
-          >
-            <span className="material-symbols-rounded">menu</span>
-          </Button>
-        </Tooltip>
-        {isMenuOpen && <HeaderMenu />}
+        <DropdownMenu.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <Tooltip content="Toggle Menu">
+            <DropdownMenu.Trigger asChild>
+              <Button
+                variant="tertiary"
+                size="s"
+                iconOnly
+                aria-label="Toggle Menu"
+              >
+                <span className="material-symbols-rounded">menu</span>
+              </Button>
+            </DropdownMenu.Trigger>
+          </Tooltip>
+          <HeaderMenu />
+        </DropdownMenu.Root>
+
         <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
         <div className={styles.verticalDivider} />
         <div className={styles.formIdentifier}>

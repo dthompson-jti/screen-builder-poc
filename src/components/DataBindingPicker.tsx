@@ -28,7 +28,6 @@ export const DataBindingPicker = ({ binding, onOpen }: DataBindingPickerProps) =
             iconOnly
             aria-label="Select data binding"
             tabIndex={-1}
-            style={{pointerEvents: 'none'}}
           >
             <span className="material-symbols-rounded">more_horiz</span>
           </Button>

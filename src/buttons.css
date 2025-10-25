@@ -87,18 +87,19 @@
 .btn[data-variant="tertiary"] {
   background: none;
   color: var(--surface-fg-secondary);
+  /* Reserve space for border to prevent layout shift on hover */
+  border-width: 1px 1px 2px 1px;
+  border-color: transparent;
 }
 .btn[data-variant="tertiary"]:hover:not(:disabled) {
   background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-tertiary-hover);
-  border-color: var(--control-border-tertiary-faint-hover);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
+  border-color: var(--control-border-tertiary-hover);
 }
 .btn[data-variant="tertiary"]:active:not(:disabled) {
   background-color: var(--control-bg-tertiary-pressed);
   color: var(--control-fg-tertiary-hover);
-  border-color: var(--control-border-tertiary-faint-pressed);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
+  border-color: var(--control-border-tertiary-pressed);
 }
 
 /* --- Quaternary Button --- */
@@ -107,7 +108,7 @@
   color: var(--control-fg-quaternary);
 }
 .btn[data-variant="quaternary"]:hover:not(:disabled) {
-  background-color: var(--control-bg-tertiary-hover);
+  background-color: var(--control-bg-quaternary-hover);
   color: var(--control-fg-quaternary-hover);
   border-color: var(--control-border-quaternary-hover);
 }

@@ -54,26 +54,24 @@
   border-radius: 6px;
   border-left: 6px solid transparent;
   
-  outline: 1px solid transparent;
-  outline-offset: -1px;
-
-  /* FIX: Remove font-weight from the transition as it no longer changes. */
-  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s, outline-color 0.2s;
+  /* Reserve space for border to prevent layout shift */
+  border: 1px solid transparent;
+  
+  transition: background-color 0.2s, color 0.2s, border-left-color 0.2s, border-color 0.2s;
 }
 
 /* On hover, apply background and color the outline for the faint border effect. */
 .settingsNavigatorList a:hover:not(.active) {
   background-color: var(--control-bg-quaternary-hover);
-  outline-color: var(--quaternary-border-color-on-hover, transparent);
+  border-color: var(--control-border-quaternary-hover);
 }
 
 /* The active state changes the border color and text styles. */
 .settingsNavigatorList a.active {
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
-  /* FIX: The font-weight is no longer changed, ensuring text stability. */
   border-left-color: var(--control-border-selected);
-  outline-color: transparent; 
+  border-color: transparent; 
 }
 .settingsNavigatorList a.active:hover {
   background-color: var(--control-bg-selected-hover);

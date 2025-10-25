@@ -53,8 +53,7 @@
 }
 
 .formComponentWrapper {
-  /* UPDATED: Change back to 2px to establish selection hierarchy */
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   padding: var(--spacing-1);
   margin: 0;
   border-radius: var(--spacing-2);
@@ -78,19 +77,16 @@
 .selected > .formComponentWrapper:not([data-is-root="true"]) {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
-  /* REMOVED: 2px border is strong enough, no need for extra shadow. */
 }
 
 .selected > .formComponentWrapper[data-is-root="true"] {
-  /* This is the inner dashed line for the root. 1px is appropriate here. */
   border-width: 1px;
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
 
 .layoutContainer {
-  /* UPDATED: Default border is now 2px to match wrapper and prevent layout shift. */
-  border: 2px dashed var(--surface-border-tertiary);
+  border: 1px dashed var(--surface-border-tertiary);
   min-height: 40px;
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, border-style 0.2s;
 }
@@ -100,12 +96,12 @@
 }
 
 :not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
-  box-shadow: 0 0 0 2px var(--surface-border-primary);
+  box-shadow: 0 0 0 1px var(--surface-border-primary);
 }
 
 .selected > .layoutContainer:not([data-is-root="true"]) {
   border-style: solid;
-  border-width: 2px;
+  border-width: 1px;
 }
 
 :not(.selected) > .layoutContainer:hover {

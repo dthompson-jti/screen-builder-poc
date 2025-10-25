@@ -8,7 +8,7 @@ These foundational rules ensure a consistent, high-craft, and maintainable user 
 
 -   **Single Source of Truth:** Every piece of data and every visual element must have one, and only one, unambiguous source of truth. State is managed centrally (Jotai), styling is encapsulated within components, and content is separated from presentation.
 -   **Intrinsic Sizing and Natural Flow:** Components and layouts are intrinsically sized by default. We avoid fixed heights in favor of `min-height` and modern CSS (Flexbox, Grid) to allow content to flow naturally. The canvas feels like a fluid, living document.
--   **State-Driven Appearance:** The UI reflects the application's state by changing the appearance of existing elements (via modifier classes or `data-attributes`), not by swapping out chunks of the DOM. This ensures UI stability and eliminates jarring visual jumps.
+-   **State-Driven Appearance:** The UI reflects the application's state by changing the appearance of existing elements (via `data-*` attributes), not by swapping out chunks of the DOM. This ensures UI stability and eliminates jarring visual jumps.
 -   **High-Craft Transitions:** All state changes are communicated through smooth, purposeful transitions on performant CSS properties (`transform`, `opacity`, etc.).
 
 ## 2. Directory Structure & Import Guidelines
@@ -50,7 +50,7 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor". This is based on the component order in the data tree, not visual position, ensuring predictable behavior. This is constrained to components that share the same parent container.
 
 ### Action Discoverability ("Smart Toolbar" & Context Menu)
--   **Multiple Access Points:** Actions can be triggered via the `SelectionToolbar`, the new right-click `CanvasContextMenu`, and keyboard hotkeys.
+-   **Multiple Access Points:** Actions can be triggered via the `SelectionToolbar`, the right-click `CanvasContextMenu`, and keyboard hotkeys.
 -   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible in any given context. This ensures consistency across all UI surfaces.
 -   **Discoverable & Disabled:** Both the `SelectionToolbar`'s `[...]` menu and the `CanvasContextMenu` serve as a complete index of all possible actions. Actions that cannot be performed are shown but are disabled, teaching the user the full capability of the tool.
 -   **Contextual Shortcuts:** The top-level toolbar provides shortcuts to the most common actions, and includes a "smart" slot that shows a contextual action like **Wrap** or **Unwrap**.
@@ -61,20 +61,30 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 
 ## 5. Styling Architecture
 
-The project uses a **hybrid CSS architecture** organized into layers to control specificity.
-1.  **`base` Layer:** Global utility classes and design tokens.
-2.  **`components` Layer:** Shared appearance styles using `data-attributes`.
-3.  **Unlayered (CSS Modules):** The default for component-specific, scoped layout and styling.
+The project uses a **systematic CSS architecture** organized into layers to control specificity and promote a cohesive design language.
+
+-   **Design Tokens:** The styling foundation is a two-tiered token system:
+    -   `primitives.css`: Contains raw, context-agnostic values like hex codes and spacing units.
+    -   `semantics.css`: Maps primitive values to semantic, purpose-driven variable names (e.g., `--control-bg-hover`).
+-   **Data-Attribute Styling:** Components use `data-*` attributes for styling variants (e.g., `<Button data-variant="tertiary" data-size="s">`). This provides superior semantic clarity and simplifies style composition over traditional modifier classes.
+-   **Layered Cascade:** The global style cascade is managed in a single location (`src/index.css`) using CSS `@layer`. This provides predictable style application and prevents specificity conflicts between global styles, shared component styles, and scoped CSS Modules.
+-   **Robust Primitives:** Core UI patterns that require complex state management and accessibility (dropdowns, context menus, tooltips) are built using **Radix UI**, enhancing stability and craft.
 
 ## 6. Key File Manifest
 
 ### Core Application (`src/`)
 *   **`main.tsx`**: The application's entry point.
-*   **`App.tsx`**: The root React component and application shell. Renders the top-level context menu portal.
+*   **`App.tsx`**: The root React component and application shell.
 *   **`types.ts`**: Centralized TypeScript type definitions.
+*   **`index.css`**: The single source of truth for the CSS cascade layer order.
+
+### Styling (`src/`)
+*   **`primitives.css`**: Raw, non-semantic design tokens (colors, spacing).
+*   **`semantics.css`**: Semantic design tokens that map to primitives.
+*   **`buttons.css`**, **`forms.css`**, **`menu.css`**: Global base styles for common HTML elements and UI patterns.
 
 ### Data & State Management (`src/data/`)
-*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom`, the `selectionAnchorIdAtom` for range-select, and the new `contextMenuStateAtom`.
+*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom` and the `selectionAnchorIdAtom` for range-select.
 *   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core canvas state via a reducer pattern.
 *   **`useCanvasDnd.ts`**: A custom hook encapsulating all drag-and-drop logic for the canvas.
 *   **`useEditorHotkeys.ts`**: A custom hook that centralizes all global keyboard shortcut logic.
@@ -82,17 +92,18 @@ The project uses a **hybrid CSS architecture** organized into layers to control 
 
 ### Features (`src/features/`)
 *   **`Editor/`**: The main form-building feature.
-    *   `EditorCanvas.tsx`: The main container component, now with the primary `onContextMenu` handler.
+    *   `EditorCanvas.tsx`: The main container component with the primary `onContextMenu` handler.
     *   `CanvasNode.tsx`: The recursive engine for rendering the component tree.
     *   `CanvasRenderers.tsx`: Pure presentation logic (The View).
     *   `CanvasWrappers.tsx`: Manages user interaction logic (selection, DnD).
-    *   `CanvasContextMenu.tsx`: The new component that renders the right-click context menu.
-    *   `useComponentCapabilities.ts`: A new hook that centralizes the logic for determining which actions are possible for the current selection.
+    *   `CanvasContextMenu.tsx`: The component that renders the right-click context menu via Radix UI.
+    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible for the current selection.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
 *   **`ComponentBrowser/`**: The left-hand panel for adding new components.
-*   **`AppHeader/`**: The main application header.
+*   **`AppHeader/`**: The main application header, including the main menu implemented with Radix UI.
 *   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
 
 ### Reusable Components (`src/components/`)
+*   **`Button.tsx`**: The new, composable, data-attribute-driven button component.
 *   **`FormRenderer.tsx`**: A crucial, "pure" component that recursively renders the form state with no editor logic.
-*   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives.
+*   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives, many built on Radix UI.

@@ -3,7 +3,8 @@
 @layer base, components;
 
 /* 1. Foundational Design Tokens */
-@import './design-tokens.css';
+@import './primitives.css';
+@import './semantics.css';
 
 /* 2. Global utility styles */
 @import './animations.css' layer(base);
@@ -32,8 +33,6 @@ body {
   color: var(--surface-fg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* NEW: Permanently enable the faint border style on hover for quaternary-like controls. */
-  --quaternary-border-color-on-hover: var(--surface-border-tertiary);
 }
 
 .material-symbols-outlined, .material-symbols-rounded {

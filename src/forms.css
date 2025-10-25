@@ -1,5 +1,4 @@
 /* src/forms.css */
-/* NEW FILE: Centralized styles for all standard form elements. */
 
 /*
   NOTE: The @layer wrapper is REMOVED from this file.
@@ -102,7 +101,3 @@ input[type="checkbox"]:checked:hover {
 input[type="checkbox"]:checked::before {
     transform: scale(1);
 }
-
-
-/* --- Custom Switch Component --- */
-/* FIX: The old .form-switch styles have been removed and replaced by the new Radix-based Switch component. */

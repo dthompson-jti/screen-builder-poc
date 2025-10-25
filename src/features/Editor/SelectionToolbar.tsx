@@ -57,6 +57,7 @@ export const SelectionToolbar = ({
         <Button 
           variant="on-solid"
           size="s"
+          iconOnly
           {...listeners}
           aria-label="Drag to reorder"
           className={styles.dragHandle}
@@ -68,6 +69,7 @@ export const SelectionToolbar = ({
           <Button 
             variant="on-solid"
             size="s"
+            iconOnly
             onClick={onRename}
             aria-label="Rename component"
             disabled={!canRename}
@@ -82,6 +84,7 @@ export const SelectionToolbar = ({
             <Button
               variant="on-solid"
               size="s"
+              iconOnly
               onClick={onUnwrap}
               aria-label="Unwrap container"
             >
@@ -94,6 +97,7 @@ export const SelectionToolbar = ({
             <Button
               variant="on-solid"
               size="s"
+              iconOnly
               onClick={onWrap}
               aria-label="Wrap in container"
             >
@@ -105,6 +109,7 @@ export const SelectionToolbar = ({
         <Button 
           variant="on-solid"
           size="s"
+          iconOnly
           onClick={handleMenuToggle}
           aria-label="More options"
         >

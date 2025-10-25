@@ -34,15 +34,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s, outline-color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, border-width 0.2s;
   box-sizing: border-box;
   color: var(--surface-fg-quaternary);
   /* Base state reserves 2px for the active border to prevent layout shift. */
   border: 2px solid transparent;
-  /* Base state has a transparent outline that will be colored on hover. */
-  outline: 1px solid transparent;
-  /* Pull the outline inside the border box to prevent increasing the element size. */
-  outline-offset: -1px;
 }
 
 .toolbarButton .material-symbols-rounded {
@@ -54,13 +50,13 @@
 .toolbarButton:hover:not(.active):not(:disabled) {
   background-color: var(--control-bg-quaternary-hover);
   color: var(--surface-fg-secondary);
-  outline-color: var(--quaternary-border-color-on-hover, transparent);
+  border-color: var(--control-border-quaternary-hover);
+  border-width: 1px;
 }
 
 .toolbarButton.active {
   color: var(--control-fg-selected);
-  /* Ensure the hover outline is turned off when the button is active. */
-  outline-color: transparent;
+  border-width: 2px;
 }
 
 .mainToolbar.compact .toolbarButton {

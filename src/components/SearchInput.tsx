@@ -49,7 +49,7 @@ export const SearchInput = ({
       {variant === 'standalone' && value && (
         <Button
           variant="quaternary"
-          size="s"
+          size="xs"
           iconOnly
           onClick={() => onChange('')}
           aria-label="Clear search"

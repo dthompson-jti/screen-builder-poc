@@ -70,15 +70,15 @@ export const FloatingSelectionToolbar = () => {
     <div className={`${styles.floatingSelectionToolbar} anim-fadeIn`}>
       <span className={styles.floatingToolbarText}>{selectedIds.length} selected</span>
       <div className={styles.floatingToolbarDivider} />
-      <Button variant="on-solid" size="s" onClick={handleWrap} aria-label="Wrap in container">
+      <Button variant="on-solid" size="s" iconOnly onClick={handleWrap} aria-label="Wrap in container">
         <span className="material-symbols-rounded">add_box</span>
       </Button>
       <Tooltip content="Repath items (Coming Soon)">
-        <Button variant="on-solid" size="s" aria-label="Repath selected components" disabled>
+        <Button variant="on-solid" size="s" iconOnly aria-label="Repath selected components" disabled>
           <span className="material-symbols-rounded">alt_route</span>
         </Button>
       </Tooltip>
-      <Button variant="on-solid" size="s" onClick={handleDelete} aria-label="Delete selected components">
+      <Button variant="on-solid" size="s" iconOnly onClick={handleDelete} aria-label="Delete selected components">
         <span className="material-symbols-rounded">delete</span>
       </Button>
     </div>

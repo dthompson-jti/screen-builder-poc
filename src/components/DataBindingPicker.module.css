@@ -19,7 +19,7 @@
 }
 
 .pickerControl:hover {
-  border-color: var(--surface-border-theme);
+  border-color: var(--control-border-tertiary-hover);
 }
 
 .pickerControl.unbound {
