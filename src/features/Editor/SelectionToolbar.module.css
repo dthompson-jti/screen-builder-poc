@@ -19,18 +19,6 @@
   animation: fadeIn 0.1s ease-out;
 }
 
-.toolbarButton {
-  padding: var(--spacing-1p5);
-  height: auto; /* Override default button height */
-}
-
-.toolbarButton:first-of-type {
-  cursor: grab;
-}
-.toolbarButton:first-of-type:active {
-  cursor: grabbing;
-}
-
 .divider {
   width: 1px;
   height: 20px;
@@ -49,12 +37,12 @@
   border: 1px solid var(--surface-border-secondary);
   box-shadow: var(--surface-shadow-xl);
   padding: var(--spacing-1);
-  animation: fadeIn 0.1s ease-out;
   z-index: 1001; /* Ensure menu is on top */
 }
 
 /* ADDED: Ensures menu items do not wrap their content */
-.menuPopover > .menu-item {
+.menuPopover > .menu-item,
+.menuPopover > [role="menuitem"] {
   white-space: nowrap;
 }
 

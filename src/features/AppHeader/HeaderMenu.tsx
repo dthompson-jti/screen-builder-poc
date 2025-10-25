@@ -1,89 +1,91 @@
 // src/features/AppHeader/HeaderMenu.tsx
-import { useRef } from 'react';
-import { useAtom } from 'jotai';
-import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../../data/atoms';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useAtom, useSetAtom } from 'jotai';
+import { isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom, isMenuOpenAtom } from '../../data/atoms';
 import { useUndoRedo } from '../../data/useUndoRedo';
-import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { useIsMac } from '../../data/useIsMac';
 import styles from './HeaderMenu.module.css';
 
-const MenuOption = ({ label, isChecked, onClick, disabled, hotkey }: { label: string, isChecked?: boolean, onClick: () => void, disabled?: boolean, hotkey?: string }) => (
-    <button className="menu-item" onClick={onClick} disabled={disabled}>
-        <span className="checkmark-container">
-            {isChecked && <span className="material-symbols-rounded">check</span>}
-        </span>
+const RadixMenuOption = ({ label, onSelect, disabled, hotkey }: { label: string, onSelect: () => void, disabled?: boolean, hotkey?: string }) => (
+    <DropdownMenu.Item className="menu-item" onSelect={onSelect} disabled={disabled}>
+        <span className="checkmark-container" />
         <span>{label}</span>
         {hotkey && <span className="hotkey">{hotkey}</span>}
-    </button>
+    </DropdownMenu.Item>
+);
+
+const RadixMenuCheckboxOption = ({ label, isChecked, onSelect }: { label: string, isChecked: boolean, onSelect: () => void }) => (
+    <DropdownMenu.CheckboxItem className="menu-item" checked={isChecked} onSelect={onSelect}>
+        <span className="checkmark-container">
+            <DropdownMenu.ItemIndicator>
+                <span className="material-symbols-rounded">check</span>
+            </DropdownMenu.ItemIndicator>
+        </span>
+        <span>{label}</span>
+    </DropdownMenu.CheckboxItem>
 );
 
 export const HeaderMenu = () => {
-    const [, setIsMenuOpen] = useAtom(isMenuOpenAtom);
+    const setIsMenuOpen = useSetAtom(isMenuOpenAtom);
     const [isCompact, setIsCompact] = useAtom(isToolbarCompactAtom);
     const [isShowBreadcrumb, setIsShowBreadcrumb] = useAtom(isShowBreadcrumbAtom);
     const [layoutMode, setLayoutMode] = useAtom(settingsLayoutModeAtom);
-    const menuRef = useRef<HTMLDivElement>(null);
 
     const { undo, redo, canUndo, canRedo } = useUndoRedo();
     const isMac = useIsMac();
-
-    useOnClickOutside(menuRef, () => setIsMenuOpen(false));
-
-    const handleUndo = () => {
-        undo();
-        setIsMenuOpen(false);
-    }
-    const handleRedo = () => {
-        redo();
-        setIsMenuOpen(false);
-    }
-
-    const handleToggleCompact = () => {
-        setIsCompact(p => !p);
-        setIsMenuOpen(false);
-    };
-
-    const handleToggleBreadcrumb = () => {
-        setIsShowBreadcrumb(p => !p);
-        setIsMenuOpen(false);
-    };
     
-    const handleToggleLayoutMode = () => {
-        setLayoutMode(p => p === 'single-column' ? 'two-column' : 'single-column');
-        setIsMenuOpen(false);
-    }
-
+    // Radix handles closing the menu on item selection automatically.
+    
     return (
-        <div className={styles.headerMenuPopover} ref={menuRef}>
-            <MenuOption label="Undo" onClick={handleUndo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
-            <MenuOption label="Redo" onClick={handleRedo} hotkey={isMac ? "⇧⌘Z" : "Ctrl+Y"} disabled={!canRedo} />
-            <div className={styles.menuDivider}></div>
-            <MenuOption 
-                label="Compact left menu"
-                isChecked={isCompact}
-                onClick={handleToggleCompact}
-            />
-            <MenuOption 
-                label="Show data navigator full path"
-                isChecked={isShowBreadcrumb}
-                onClick={handleToggleBreadcrumb}
-            />
-            <MenuOption 
-                label="Show settings in two columns"
-                isChecked={layoutMode === 'two-column'}
-                onClick={handleToggleLayoutMode}
-            />
-            <div className={styles.menuDivider}></div>
-            <MenuOption 
-                label="Show version history"
-                isChecked={false}
-                onClick={() => {}}
-                disabled
-            />
-            <MenuOption label="Export" onClick={() => {}} disabled />
-            <MenuOption label="Import" onClick={() => {}} disabled />
-            <div className={styles.menuDivider}></div>
-            <MenuOption label="Switch to classic editor" onClick={() => {}} disabled />
-        </div>
+        <DropdownMenu.Portal>
+            <DropdownMenu.Content 
+                className="anim-fadeIn"
+                style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 2px)', 
+                    left: 0,
+                    zIndex: 1000,
+                    width: 280,
+                    backgroundColor: 'var(--surface-bg-primary)',
+                    borderRadius: 'var(--spacing-2)',
+                    boxShadow: 'var(--surface-shadow-xl)',
+                    padding: 'var(--spacing-1)',
+                    border: '1px solid var(--surface-border-primary)',
+                }}
+                onCloseAutoFocus={(e: Event) => e.preventDefault()}
+                onEscapeKeyDown={() => setIsMenuOpen(false)}
+                sideOffset={6}
+                align="start"
+            >
+                <RadixMenuOption label="Undo" onSelect={undo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
+                <RadixMenuOption label="Redo" onSelect={redo} hotkey={isMac ? "⇧⌘Z" : "Ctrl+Y"} disabled={!canRedo} />
+                <DropdownMenu.Separator className={styles.menuDivider} />
+                <RadixMenuCheckboxOption 
+                    label="Compact left menu"
+                    isChecked={isCompact}
+                    onSelect={() => setIsCompact(p => !p)}
+                />
+                <RadixMenuCheckboxOption 
+                    label="Show data navigator full path"
+                    isChecked={isShowBreadcrumb}
+                    onSelect={() => setIsShowBreadcrumb(p => !p)}
+                />
+                <RadixMenuCheckboxOption 
+                    label="Show settings in two columns"
+                    isChecked={layoutMode === 'two-column'}
+                    onSelect={() => setLayoutMode(p => p === 'single-column' ? 'two-column' : 'single-column')}
+                />
+                <DropdownMenu.Separator className={styles.menuDivider} />
+                <RadixMenuCheckboxOption 
+                    label="Show version history"
+                    isChecked={false}
+                    onSelect={() => {}}
+                />
+                <RadixMenuOption label="Export" onSelect={() => {}} disabled />
+                <RadixMenuOption label="Import" onSelect={() => {}} disabled />
+                <DropdownMenu.Separator className={styles.menuDivider} />
+                <RadixMenuOption label="Switch to classic editor" onSelect={() => {}} disabled />
+            </DropdownMenu.Content>
+        </DropdownMenu.Portal>
     );
 };

@@ -1,61 +1,27 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useEffect, useRef, useCallback } from 'react';
-import { useAtom, useSetAtom, useAtomValue } from 'jotai';
+import { useSetAtom, useAtomValue } from 'jotai';
+import * as ContextMenu from '@radix-ui/react-context-menu';
 import {
-  contextMenuStateAtom,
   canvasInteractionAtom,
 } from '../../data/atoms';
 import { commitActionAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
-import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { useComponentCapabilities } from './useComponentCapabilities';
-import styles from './SelectionToolbar.module.css';
+import styles from './SelectionToolbar.module.css'; // Re-use menu styles
 
-export const CanvasContextMenu = () => {
-  const [menuState, setMenuState] = useAtom(contextMenuStateAtom);
+interface CanvasContextMenuProps {
+  targetIds: string[];
+  children: React.ReactNode;
+}
+
+const MenuContent = ({ targetIds }: { targetIds: string[] }) => {
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
-  
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const targetIds = menuState.target?.type === 'component' ? menuState.target.ids : [];
   const capabilities = useComponentCapabilities(targetIds);
 
-  const closeMenu = useCallback(() => {
-    setMenuState(prev => ({ ...prev, isOpen: false }));
-  }, [setMenuState]);
-
-  useOnClickOutside(menuRef, closeMenu);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeMenu();
-    };
-    const canvasContainer = document.querySelector('.canvasContainer');
-    
-    window.addEventListener('keydown', handleKeyDown);
-    canvasContainer?.addEventListener('scroll', closeMenu, { once: true });
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      canvasContainer?.removeEventListener('scroll', closeMenu);
-    };
-  }, [closeMenu]);
-
-  if (!menuState.isOpen || !menuState.target) {
-    return null;
-  }
-
-  const menuStyle: React.CSSProperties = {
-    top: `${menuState.position.y}px`,
-    left: `${menuState.position.x}px`,
-    position: 'fixed',
-  };
-
-  const handleAction = (action: () => void) => (e: React.MouseEvent) => {
+  const handleAction = (action: () => void) => (e: Event) => {
     e.stopPropagation();
     action();
-    closeMenu();
   };
   
   const handleDelete = () => {
@@ -118,67 +84,81 @@ export const CanvasContextMenu = () => {
     return (
       <>
         {isSingle && (
-          <button className="menu-item" disabled={!capabilities.canRename} onClick={handleAction(handleRename)}>
+          <ContextMenu.Item className="menu-item" disabled={!capabilities.canRename} onSelect={handleAction(handleRename)}>
             Rename
-          </button>
+          </ContextMenu.Item>
         )}
-        <button className="menu-item" disabled>Copy {isSingle ? '' : `[${targetIds.length}] Items`}</button>
-        <button className="menu-item" disabled>Paste</button>
-        <div className={styles.menuDivider} />
+        <ContextMenu.Item className="menu-item" disabled>Copy {isSingle ? '' : `[${targetIds.length}] Items`}</ContextMenu.Item>
+        <ContextMenu.Item className="menu-item" disabled>Paste</ContextMenu.Item>
+        <ContextMenu.Separator className={styles.menuDivider} />
         {isSingle && (
           <>
-            <button className="menu-item" onClick={handleAction(() => handleConvert('heading'))} disabled={!capabilities.canConvertToHeading}>
+            <ContextMenu.Item className="menu-item" onSelect={handleAction(() => handleConvert('heading'))} disabled={!capabilities.canConvertToHeading}>
                 <span className="material-symbols-rounded">title</span>
                 <span>Convert to Heading</span>
-            </button>
-            <button className="menu-item" onClick={handleAction(() => handleConvert('paragraph'))} disabled={!capabilities.canConvertToParagraph}>
+            </ContextMenu.Item>
+            <ContextMenu.Item className="menu-item" onSelect={handleAction(() => handleConvert('paragraph'))} disabled={!capabilities.canConvertToParagraph}>
                 <span className="material-symbols-rounded">notes</span>
                 <span>Convert to Paragraph</span>
-            </button>
-            <button className="menu-item" onClick={handleAction(() => handleConvert('link'))} disabled={!capabilities.canConvertToLink}>
+            </ContextMenu.Item>
+            <ContextMenu.Item className="menu-item" onSelect={handleAction(() => handleConvert('link'))} disabled={!capabilities.canConvertToLink}>
                 <span className="material-symbols-rounded">link</span>
                 <span>Convert to Link</span>
-            </button>
-            <div className={styles.menuDivider} />
-            <button className="menu-item" disabled={!capabilities.canNudgeUp} onClick={handleAction(() => handleNudge('up'))}>
+            </ContextMenu.Item>
+            <ContextMenu.Separator className={styles.menuDivider} />
+            <ContextMenu.Item className="menu-item" disabled={!capabilities.canNudgeUp} onSelect={handleAction(() => handleNudge('up'))}>
               Move Up
-            </button>
-            <button className="menu-item" disabled={!capabilities.canNudgeDown} onClick={handleAction(() => handleNudge('down'))}>
+            </ContextMenu.Item>
+            <ContextMenu.Item className="menu-item" disabled={!capabilities.canNudgeDown} onSelect={handleAction(() => handleNudge('down'))}>
               Move Down
-            </button>
-            <button className="menu-item" disabled={!capabilities.canSelectParent} onClick={handleAction(handleSelectParent)}>
+            </ContextMenu.Item>
+            <ContextMenu.Item className="menu-item" disabled={!capabilities.canSelectParent} onSelect={handleAction(handleSelectParent)}>
               Select Parent
-            </button>
+            </ContextMenu.Item>
           </>
         )}
-        <button className="menu-item" disabled={!capabilities.canWrap} onClick={handleAction(handleWrap)}>
+        <ContextMenu.Item className="menu-item" disabled={!capabilities.canWrap} onSelect={handleAction(handleWrap)}>
           Wrap in Container
-        </button>
+        </ContextMenu.Item>
         {isSingle && capabilities.canUnwrap && (
-          <button className="menu-item" onClick={handleAction(handleUnwrap)}>
+          <ContextMenu.Item className="menu-item" onSelect={handleAction(handleUnwrap)}>
             Unwrap Container
-          </button>
+          </ContextMenu.Item>
         )}
-        <div className={styles.menuDivider} />
-        <button className="menu-item" disabled={!capabilities.canDelete} onClick={handleAction(handleDelete)}>
+        <ContextMenu.Separator className={styles.menuDivider} />
+        <ContextMenu.Item className="menu-item" disabled={!capabilities.canDelete} onSelect={handleAction(handleDelete)}>
           Delete {isSingle ? '' : `[${targetIds.length}] Items`}
-        </button>
+        </ContextMenu.Item>
       </>
     );
   };
 
   const renderCanvasMenu = () => (
     <>
-      <button className="menu-item" disabled>
+      <ContextMenu.Item className="menu-item" disabled>
         What actions should go here?
-      </button>
-      <button className="menu-item" disabled>Paste</button>
+      </ContextMenu.Item>
+      <ContextMenu.Item className="menu-item" disabled>Paste</ContextMenu.Item>
     </>
   );
 
   return (
-    <div className={styles.menuPopover} style={menuStyle} ref={menuRef} onContextMenu={e => e.preventDefault()}>
-      {menuState.target?.type === 'component' ? renderComponentMenu() : renderCanvasMenu()}
-    </div>
+    <ContextMenu.Content className={`${styles.menuPopover} anim-fadeIn`}>
+        {targetIds.length > 0 ? renderComponentMenu() : renderCanvasMenu()}
+    </ContextMenu.Content>
+  );
+};
+
+
+export const CanvasContextMenu = ({ targetIds, children }: CanvasContextMenuProps) => {
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger asChild>
+        {children}
+      </ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        <MenuContent targetIds={targetIds} />
+      </ContextMenu.Portal>
+    </ContextMenu.Root>
   );
 };

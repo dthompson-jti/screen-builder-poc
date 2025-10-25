@@ -7,11 +7,12 @@ import {
   AppViewMode,
   isScreenTypePopoverOpenAtom,
 } from '../../data/atoms';
-import { HeaderMenu } from './HeaderMenu'; // CORRECTED PATH
+import { HeaderMenu } from './HeaderMenu';
 import { FormNameEditor } from './FormNameEditor';
 import { ScreenTypeBadge } from './ScreenTypeBadge';
 import { ScreenTypePopover } from './ScreenTypePopover';
 import { Tooltip } from '../../components/Tooltip';
+import { Button } from '../../components/Button';
 import styles from './AppHeader.module.css';
 
 // ... (rest of file is unchanged)
@@ -47,13 +48,15 @@ export const AppHeader = () => {
     <header className={styles.appHeader}>
       <div className={styles.headerLeft}>
         <Tooltip content="Toggle Menu">
-          <button
-            className="btn btn-tertiary icon-only"
+          <Button
+            variant="tertiary"
+            size="s"
+            iconOnly
             aria-label="Toggle Menu"
             onClick={handleToggleMenu}
           >
             <span className="material-symbols-rounded">menu</span>
-          </button>
+          </Button>
         </Tooltip>
         {isMenuOpen && <HeaderMenu />}
         <h1 className={styles.appHeaderTitle}>Screen Studio</h1>
@@ -77,8 +80,8 @@ export const AppHeader = () => {
       </div>
 
       <div className={styles.headerRight}>
-        <button className="btn btn-primary">Save</button>
-        <button className="btn btn-secondary">Close</button>
+        <Button variant="primary" size="m">Save</Button>
+        <Button variant="secondary" size="m">Close</Button>
       </div>
     </header>
   );

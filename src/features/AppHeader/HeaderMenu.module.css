@@ -1,24 +1,5 @@
 /* src/features/AppHeader/HeaderMenu.module.css */
 
-.headerMenuPopover {
-    position: absolute;
-    top: calc(100% + 2px); 
-    left: 0;
-    z-index: 1000;
-    width: 280px;
-    background-color: var(--surface-bg-primary);
-    border-radius: var(--spacing-2);
-    box-shadow: var(--surface-shadow-xl);
-    padding: var(--spacing-1);
-    border: 1px solid var(--surface-border-primary);
-    animation: fadeIn 0.15s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .menuDivider {
     height: 1px;
     background-color: var(--surface-border-secondary);

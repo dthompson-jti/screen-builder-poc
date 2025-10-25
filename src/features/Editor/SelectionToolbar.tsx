@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { DraggableSyntheticListeners } from '@dnd-kit/core';
 import { SelectionToolbarMenu } from './SelectionToolbarMenu';
 import { Tooltip } from '../../components/Tooltip';
+import { Button } from '../../components/Button';
 import { useIsMac } from '../../data/useIsMac';
 import styles from './SelectionToolbar.module.css';
 
@@ -53,56 +54,62 @@ export const SelectionToolbar = ({
   return (
     <div className={styles.toolbarWrapper}>
       <div className={styles.selectionToolbar} onClick={(e) => e.stopPropagation()}>
-        <button 
-          className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+        <Button 
+          variant="on-solid"
+          size="s"
           {...listeners}
           aria-label="Drag to reorder"
+          style={{ cursor: 'grab' }}
         >
           <span className="material-symbols-rounded">drag_indicator</span>
-        </button>
+        </Button>
         <div className={styles.divider} />
         <Tooltip content={renameTooltipContent} side="top">
-          <button 
-            className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+          <Button 
+            variant="on-solid"
+            size="s"
             onClick={onRename}
             aria-label="Rename component"
             disabled={!canRename}
           >
             <span className="material-symbols-rounded">edit</span>
-          </button>
+          </Button>
         </Tooltip>
 
         {/* --- SMART CONTEXTUAL BUTTON --- */}
         {canUnwrap && (
           <Tooltip content="Unwrap Container" side="top">
-            <button
-              className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+            <Button
+              variant="on-solid"
+              size="s"
               onClick={onUnwrap}
               aria-label="Unwrap container"
             >
               <span className="material-symbols-rounded">disabled_by_default</span>
-            </button>
+            </Button>
           </Tooltip>
         )}
         {canWrap && !canUnwrap && (
            <Tooltip content="Wrap in Container" side="top">
-            <button
-              className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+            <Button
+              variant="on-solid"
+              size="s"
               onClick={onWrap}
               aria-label="Wrap in container"
             >
               <span className="material-symbols-rounded">add_box</span>
-            </button>
+            </Button>
           </Tooltip>
         )}
 
-        <button 
-          className={`btn btn-tertiary on-solid ${styles.toolbarButton}`}
+        <Button 
+          variant="on-solid"
+          size="s"
           onClick={handleMenuToggle}
           aria-label="More options"
         >
           <span className="material-symbols-rounded">more_vert</span>
-        </button>
+        </Button>
       </div>
       {isMenuOpen && (
         <SelectionToolbarMenu

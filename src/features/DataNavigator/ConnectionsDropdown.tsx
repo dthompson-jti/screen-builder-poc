@@ -6,6 +6,7 @@ import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { NodeNavigator } from '../../data/navigator.js';
 import { SearchInput } from '../../components/SearchInput';
 import { Tooltip } from '../../components/Tooltip';
+import { Button } from '../../components/Button';
 import styles from './ConnectionsDropdown.module.css';
 
 interface ConnectionsDropdownProps {
@@ -56,13 +57,15 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
       <div className={styles.dropdownHeaderRow}>
         <h5>Navigate to...</h5>
         <Tooltip content="Close">
-          <button 
-            className="btn btn-quaternary icon-only" 
+          <Button 
+            variant="quaternary"
+            size="s"
+            iconOnly
             onClick={onClose}
             aria-label="Close connections dropdown"
           >
             <span className="material-symbols-rounded">close</span>
-          </button>
+          </Button>
         </Tooltip>
       </div>
       

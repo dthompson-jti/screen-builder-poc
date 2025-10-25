@@ -5,7 +5,6 @@ import { useDroppable } from '@dnd-kit/core';
 import { 
   canvasInteractionAtom,
   isPropertiesPanelVisibleAtom,
-  contextMenuStateAtom,
   selectionAnchorIdAtom,
   overDndIdAtom,
   selectedCanvasComponentIdsAtom, // Import selector atom
@@ -16,6 +15,7 @@ import { useAutoScroller } from '../../data/useAutoScroller';
 
 import { CanvasNode } from './CanvasNode';
 import { FloatingSelectionToolbar } from './CanvasUI';
+import { CanvasContextMenu } from './CanvasContextMenu';
 
 import styles from './EditorCanvas.module.css';
 
@@ -36,7 +36,6 @@ export const EditorCanvas = () => {
   const screenName = useAtomValue(formNameAtom);
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
-  const setContextMenuState = useSetAtom(contextMenuStateAtom);
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
@@ -54,7 +53,6 @@ export const EditorCanvas = () => {
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setContextMenuState(prev => ({ ...prev, isOpen: false }));
     setInteractionState({ mode: 'selecting', ids: [rootId] });
     setIsPropertiesPanelVisible(true);
     setAnchorId(rootId);
@@ -64,15 +62,10 @@ export const EditorCanvas = () => {
     if (e.target === e.currentTarget) {
       setInteractionState({ mode: 'idle' });
       setAnchorId(null);
-      setContextMenuState(prev => ({ ...prev, isOpen: false }));
     }
   }
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const targetId = findComponentId(e.target as HTMLElement);
-    
+  const handleContextMenuOpen = (targetId: string | null) => {
     const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
 
     if (!targetId) { 
@@ -80,30 +73,28 @@ export const EditorCanvas = () => {
         setInteractionState({ mode: 'idle' });
         setAnchorId(null);
       }
-      setContextMenuState({
-        isOpen: true,
-        position: { x: e.clientX, y: e.clientY },
-        target: { type: 'canvas' },
-      });
     } else { 
       const isTargetSelected = currentSelectedIds.includes(targetId);
       
       if (!isTargetSelected) {
         setInteractionState({ mode: 'selecting', ids: [targetId] });
         setAnchorId(targetId);
-        setContextMenuState({
-          isOpen: true,
-          position: { x: e.clientX, y: e.clientY },
-          target: { type: 'component', ids: [targetId] },
-        });
-      } else {
-        setContextMenuState({
-          isOpen: true,
-          position: { x: e.clientX, y: e.clientY },
-          target: { type: 'component', ids: currentSelectedIds },
-        });
       }
     }
+  };
+
+  const getContextMenuTargetIds = (target: HTMLElement | null): string[] => {
+    const targetId = findComponentId(target);
+    const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
+    const isTargetSelected = !!targetId && currentSelectedIds.includes(targetId);
+    
+    if (targetId && isTargetSelected) {
+      return currentSelectedIds;
+    }
+    if (targetId) {
+      return [targetId];
+    }
+    return [];
   };
 
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
@@ -114,16 +105,25 @@ export const EditorCanvas = () => {
     isOverBackground ? styles.isBackgroundTarget : '',
     isRootSelected ? styles.isRootSelected : '',
   ].filter(Boolean).join(' ');
+  
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={setMergedRefs} className={styles.canvasContainer} onClick={handleContainerClick} onContextMenu={handleContextMenu}>
-      <div className={formCardClasses} onClick={handleCanvasClick}>
-        <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
-        <div className={styles.canvasDroppableArea}>
-          {rootId && <CanvasNode componentId={rootId} />}
+    <CanvasContextMenu targetIds={getContextMenuTargetIds(canvasRef.current)}>
+        <div 
+            ref={setMergedRefs} 
+            className={styles.canvasContainer} 
+            onClick={handleContainerClick} 
+            onContextMenu={(e) => handleContextMenuOpen(findComponentId(e.target as HTMLElement))}
+        >
+            <div ref={canvasRef} className={formCardClasses} onClick={handleCanvasClick}>
+                <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
+                <div className={styles.canvasDroppableArea}>
+                {rootId && <CanvasNode componentId={rootId} />}
+                </div>
+            </div>
+            <FloatingSelectionToolbar />
         </div>
-      </div>
-      <FloatingSelectionToolbar />
-    </div>
+    </CanvasContextMenu>
   );
 };

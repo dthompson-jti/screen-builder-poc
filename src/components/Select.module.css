@@ -91,10 +91,9 @@
   font-size: 20px;
 }
 
-/* Default highlighted state uses a single inset shadow for the faint border. */
 .selectItem[data-highlighted] {
-  background-color: var(--control-bg-quaternary-hover);
-  box-shadow: inset 0 0 0 1px var(--quaternary-border-color-on-hover, transparent);
+  background-color: var(--control-bg-tertiary-hover);
+  box-shadow: inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
 }
 
 .selectItem[data-highlighted] .selectItemIcon {

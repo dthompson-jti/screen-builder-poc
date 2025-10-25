@@ -16,22 +16,23 @@ textarea {
   border: 1px solid var(--surface-border-primary);
   border-radius: 6px;
   font-size: 0.9em;
-  background-color: var(--surface-bg-primary);
+  background-color: transparent;
   color: var(--surface-fg-primary);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
-/* FIX: Add a hover state to make fields more responsive */
 input[type="text"]:not(:disabled):hover,
 textarea:not(:disabled):hover {
-    border-color: var(--surface-border-theme-hover);
+    background-color: var(--control-bg-quaternary-hover);
+    border-color: var(--control-border-quaternary-hover);
 }
 
 input[type="text"]:focus,
 textarea:focus {
     border-color: var(--surface-border-theme);
     box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+    background-color: var(--surface-bg-primary);
 }
 
 input[type="text"]:disabled,

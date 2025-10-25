@@ -1,6 +1,7 @@
 // src/components/PanelHeader.tsx
 import React from 'react';
 import { Tooltip } from './Tooltip';
+import { Button } from './Button';
 import panelStyles from './panel.module.css'; // Uses shared panel styles
 
 interface PanelHeaderProps {
@@ -13,13 +14,15 @@ export const PanelHeader: React.FC<PanelHeaderProps> = ({ title, onClose }) => {
     <div className={panelStyles.componentBrowserHeader}>
       <h4>{title}</h4>
       <Tooltip content="Close Panel">
-        <button 
-          className="btn btn-quaternary icon-only" 
+        <Button 
+          variant="quaternary"
+          size="s"
+          iconOnly
           aria-label="Close Panel"
           onClick={onClose}
         >
           <span className="material-symbols-rounded">close</span>
-        </button>
+        </Button>
       </Tooltip>
     </div>
   );

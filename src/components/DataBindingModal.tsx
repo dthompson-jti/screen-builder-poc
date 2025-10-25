@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Modal } from './Modal';
+import { Button } from './Button';
 import { DataNavigatorView } from '../features/DataNavigator/DataNavigatorView';
 import { SelectableListItem } from './SelectableListItem';
 import {
@@ -78,9 +79,9 @@ export const DataBindingModal = () => {
         <div className={styles.modalHeader}>
           <h3>Select Data Binding</h3>
           <Tooltip content="Close">
-            <button className="btn btn-quaternary icon-only" onClick={handleClose} aria-label="Close">
+            <Button variant="quaternary" size="s" iconOnly onClick={handleClose} aria-label="Close">
               <span className="material-symbols-rounded">close</span>
-            </button>
+            </Button>
           </Tooltip>
         </div>
         <div className={styles.modalContent}>
@@ -111,10 +112,10 @@ export const DataBindingModal = () => {
             />
         </div>
         <div className={styles.modalFooter}>
-          <button className="btn btn-secondary" onClick={handleUnbind}>Unbind</button>
+          <Button variant="secondary" size="m" onClick={handleUnbind}>Unbind</Button>
           <div className={styles.footerActionsRight}>
-            <button className="btn btn-secondary" onClick={handleClose}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleApply}>Apply</button>
+            <Button variant="secondary" size="m" onClick={handleClose}>Cancel</Button>
+            <Button variant="primary" size="m" onClick={handleApply}>Apply</Button>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 /* src/components/SearchInput.module.css */
 
 /*
-  FIX: The @layer wrapper is removed. CSS Modules are not part of the 'base'
+  NOTE: The @layer wrapper is removed. CSS Modules are not part of the 'base'
   layer by default, so their higher precedence is now guaranteed by the
   architecture set up in index.css.
 */
@@ -30,7 +30,7 @@
   border-color: var(--surface-border-primary);
 }
 .wrapper[data-variant="standalone"]:hover {
-  border-color: var(--surface-border-secondary-hover);
+  border-color: var(--control-border-quaternary-hover);
 }
 /* The focus state applies ONLY to this single outer wrapper. */
 .wrapper[data-variant="standalone"].focused {
@@ -77,33 +77,6 @@
 
 .wrapper input::placeholder {
   color: var(--control-fg-placeholder);
-}
-
-.clearButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 28px;
-  width: 28px;
-  padding: var(--spacing-1p5);
-  background: none;
-  border: 1px solid transparent;
-  color: var(--surface-fg-secondary);
-  border-radius: var(--spacing-2);
-  cursor: pointer;
-  /* FIX: Remove transform from transition as it is no longer used. */
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-.clearButton:hover:not(:disabled) {
-  background-color: var(--control-bg-tertiary-hover); 
-  color: var(--control-fg-tertiary-hover);
-  /* The 'x' button inside searches should also take on this style. */
-  border-color: var(--quaternary-border-color-on-hover, transparent);
-}
-.clearButton:active:not(:disabled) {
-  /* FIX: Remove transform. */
-  background-color: var(--control-bg-tertiary-pressed);
-  color: var(--control-fg-tertiary-hover);
 }
 
 .visuallyHidden {

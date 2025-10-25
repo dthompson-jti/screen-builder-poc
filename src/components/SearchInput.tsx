@@ -1,5 +1,6 @@
 // src/components/SearchInput.tsx
 import React, { useState, useRef, useEffect } from 'react';
+import { Button } from './Button';
 import styles from './SearchInput.module.css';
 
 interface SearchInputProps {
@@ -46,13 +47,15 @@ export const SearchInput = ({
         onBlur={() => setIsFocused(false)}
       />
       {variant === 'standalone' && value && (
-        <button
-          className={styles.clearButton}
+        <Button
+          variant="quaternary"
+          size="xs"
+          iconOnly
           onClick={() => onChange('')}
           aria-label="Clear search"
         >
           <span className="material-symbols-rounded">close</span>
-        </button>
+        </Button>
       )}
     </div>
   );

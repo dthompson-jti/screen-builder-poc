@@ -7,14 +7,13 @@
   justify-content: center;
   font-weight: 500;
   cursor: pointer;
-  border-radius: var(--spacing-2);
-  /* FIX: Remove transform from the transition property as it's no longer used on active state. */
   transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
   box-sizing: border-box;
   line-height: 1;
-  border: none;
+  border: 1px solid transparent;
   font-family: var(--font-family-sans);
   font-size: 14px;
+  white-space: nowrap;
 }
 .btn:disabled {
   opacity: 0.5;
@@ -22,122 +21,114 @@
   transform: none;
   box-shadow: none;
 }
+.btn .material-symbols-rounded {
+  transition: color 0.2s;
+}
+
+/* ======================================================================== */
+/*                              SIZE VARIANTS                               */
+/* ======================================================================== */
+
+/* --- Medium (m) --- */
+.btn[data-size="m"] { height: 38px; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--spacing-2); }
+.btn[data-size="m"][data-icon-only="true"] { width: 38px; padding: var(--spacing-2); border-radius: var(--radius-xl); }
+.btn[data-size="m"] .material-symbols-rounded { font-size: 20px; }
+
+/* --- Small (s) --- */
+.btn[data-size="s"] { height: 34px; padding: var(--spacing-1p5) var(--spacing-2); border-radius: var(--spacing-2); }
+.btn[data-size="s"][data-icon-only="true"] { width: 34px; padding: var(--spacing-1p5); border-radius: var(--radius-lg); }
+.btn[data-size="s"] .material-symbols-rounded { font-size: 20px; }
+
+/* --- Extra Small (xs) --- */
+.btn[data-size="xs"] { height: 1.5rem; padding: 0.5rem 0.375rem; border-radius: var(--radius-md); font-size: 12px; }
+.btn[data-size="xs"][data-icon-only="true"] { width: 1.5rem; padding: 0.5rem; border-radius: var(--radius-md); }
+.btn[data-size="xs"] .material-symbols-rounded { font-size: 16px; }
+
+/* ======================================================================== */
+/*                             STYLE VARIANTS                               */
+/* ======================================================================== */
 
 /* --- Primary Button --- */
-.btn-primary {
-  padding: calc(var(--spacing-2) + 1px) var(--spacing-4); 
-  height: 38px;
+.btn[data-variant="primary"] {
   background-color: var(--control-bg-theme);
   color: var(--control-fg-on-solid);
-  border: 1px solid var(--control-border-primary);
+  border-color: var(--control-border-primary);
   box-shadow: inset 0 -2px 0 0 var(--control-border-primary);
 }
-.btn-primary:hover:not(:disabled) {
+.btn[data-variant="primary"]:hover:not(:disabled) {
   background-color: var(--control-bg-theme-hover);
   border-color: var(--control-border-primary-hover);
-  box-shadow: inset 0 -3px 0 0 var(--control-border-primary-hover);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-primary-hover);
 }
-.btn-primary:active:not(:disabled) {
+.btn[data-variant="primary"]:active:not(:disabled) {
   background-color: var(--control-bg-theme-pressed);
   border-color: var(--control-border-primary-pressed);
-  /* FIX: Remove transform and match hover state's shadow thickness. */
-  box-shadow: inset 0 -3px 0 0 var(--control-border-primary-pressed);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-primary-pressed);
 }
 
 /* --- Secondary Button --- */
-.btn-secondary {
-  padding: var(--spacing-2) var(--spacing-4); 
-  height: 38px; 
+.btn[data-variant="secondary"] {
   background-color: var(--control-bg-secondary);
   color: var(--surface-fg-primary);
-  border: 1px solid var(--control-border-secondary); 
-  box-shadow: none;
+  border-color: var(--control-border-secondary);
 }
-.btn-secondary:hover:not(:disabled) {
+.btn[data-variant="secondary"]:hover:not(:disabled) {
   background-color: var(--control-bg-secondary-hover);
   border-color: var(--control-border-secondary-hover);
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-hover);
 }
-.btn-secondary:active:not(:disabled), .btn-secondary.active {
-  background-color: var(--primitives-grey-100);
+.btn[data-variant="secondary"]:active:not(:disabled), .btn[data-variant="secondary"].active {
+  background-color: var(--control-bg-secondary-pressed);
   border-color: var(--control-border-secondary-pressed);
-  /* FIX: Remove transform and match hover state's shadow thickness. */
   box-shadow: inset 0 -2px 0 0 var(--control-border-secondary-pressed);
 }
-.btn-secondary.icon-only {
-  width: 38px;
-  padding: var(--spacing-2);
-  border-radius: var(--spacing-2);
-}
 
-/* --- Tertiary Button Styles --- */
-.btn-tertiary {
-  padding: var(--spacing-1p5);
-  height: 34px;
+/* --- Tertiary Button --- */
+.btn[data-variant="tertiary"] {
   background: none;
-  border: 1px solid transparent; 
   color: var(--surface-fg-secondary);
-  border-radius: var(--spacing-2);
 }
-.btn-tertiary.icon-text {
-  padding: var(--spacing-1p5) var(--spacing-2);
-  gap: var(--spacing-2);
-  color: var(--surface-fg-tertiary);
-}
-.btn-tertiary.icon-only {
-  padding: var(--spacing-1p5);
-}
-.btn-tertiary:hover:not(:disabled) {
+.btn[data-variant="tertiary"]:hover:not(:disabled) {
   background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-tertiary-hover);
-  /* Use faint border for top/sides */
-  border-top: 1px solid var(--control-border-tertiary-faint-hover);
-  border-right: 1px solid var(--control-border-tertiary-faint-hover);
-  border-left: 1px solid var(--control-border-tertiary-faint-hover);
-  border-bottom: 1px solid transparent; /* Bottom border is handled by shadow */
-  /* Use stronger inset shadow for the bottom border effect */
-  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-hover);
+  border-color: var(--control-border-tertiary-faint-hover);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
 }
-.btn-tertiary:active:not(:disabled) {
+.btn[data-variant="tertiary"]:active:not(:disabled) {
   background-color: var(--control-bg-tertiary-pressed);
   color: var(--control-fg-tertiary-hover);
-  /* FIX: Ensure active border matches hover border style. */
-  border-top: 1px solid var(--control-border-tertiary-faint-pressed);
-  border-right: 1px solid var(--control-border-tertiary-faint-pressed);
-  border-left: 1px solid var(--control-border-tertiary-faint-pressed);
-  border-bottom: 1px solid transparent;
-  /* FIX: Remove transform and match hover state's shadow thickness. */
-  box-shadow: inset 0 -3px 0 0 var(--control-border-tertiary-pressed);
+  border-color: var(--control-border-tertiary-faint-pressed);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
 }
 
-/* --- Quaternary Button Styles --- */
-.btn-quaternary {
-  padding: var(--spacing-1p5);
-  height: 34px;
+/* --- Quaternary Button --- */
+.btn[data-variant="quaternary"] {
   background: none;
-  border: 1px solid transparent;
   color: var(--control-fg-quaternary);
-  border-radius: var(--spacing-2);
 }
-.btn-quaternary.icon-text {
-  padding: var(--spacing-1p5) var(--spacing-2);
-  gap: var(--spacing-2);
-}
-.btn-quaternary:hover:not(:disabled) {
+.btn[data-variant="quaternary"]:hover:not(:disabled) {
   background-color: var(--control-bg-quaternary-hover);
   color: var(--control-fg-quaternary-hover);
-  /* For quaternary button borders, the border should only be on hover state. */
-  border-color: var(--quaternary-border-color-on-hover, transparent);
+  border-color: var(--control-border-quaternary-hover);
 }
-.btn-quaternary:active:not(:disabled) {
-  /* FIX: Remove transform. The background change is the only feedback. */
+.btn[data-variant="quaternary"]:active:not(:disabled) {
   background-color: var(--control-bg-quaternary-pressed);
+  border-color: var(--control-border-quaternary-pressed);
 }
 
-/* --- Modifiers --- */
-.btn.on-solid {
+/* --- On Solid Button --- */
+.btn[data-variant="on-solid"] {
+  background: none;
   color: var(--control-fg-on-solid);
 }
-.btn.on-solid:hover:not(:disabled) {
+.btn[data-variant="on-solid"]:hover:not(:disabled) {
+  background-color: var(--control-bg-on-solid-hover);
   color: var(--control-fg-on-solid-hover);
+  border-color: var(--control-border-tertiary-faint-hover);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
+}
+.btn[data-variant="on-solid"]:active:not(:disabled) {
+  background-color: var(--control-bg-on-solid-pressed);
+  border-color: var(--control-border-tertiary-faint-pressed);
+  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-pressed);
 }

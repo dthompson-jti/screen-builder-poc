@@ -20,7 +20,7 @@
     margin: 1px 0; /* Tiny vertical gaps between items */
     border-radius: 6px; /* Slightly tighter radius */
 
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 
     /* Base Colors */
     color: var(--surface-fg-primary);
@@ -36,8 +36,8 @@
 }
 
 .menu-item:hover:not(:disabled) {
-    background-color: var(--control-bg-quaternary-hover);
-    /* Removed the inset shadow border for a cleaner, more standard menu look */
+    background-color: var(--control-bg-tertiary-hover);
+    box-shadow: inset 0 0 0 1px var(--control-border-tertiary-faint-hover);
 }
 
 .menu-item .material-symbols-rounded {

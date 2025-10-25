@@ -8,6 +8,7 @@ import {
 } from '../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from '../../data/historyAtoms';
 import { Tooltip } from '../../components/Tooltip'; 
+import { Button } from '../../components/Button';
 
 import styles from './EditorCanvas.module.css';
 
@@ -66,21 +67,20 @@ export const FloatingSelectionToolbar = () => {
   }
 
   return (
-    <div className={styles.floatingSelectionToolbar}>
+    <div className={`${styles.floatingSelectionToolbar} anim-fadeIn`}>
       <span className={styles.floatingToolbarText}>{selectedIds.length} selected</span>
       <div className={styles.floatingToolbarDivider} />
-      <button className="btn btn-tertiary on-solid" onClick={handleWrap} aria-label="Wrap in container">
-        {/* FIXED: Standardized wrap icon to 'add_box' */}
+      <Button variant="on-solid" size="s" onClick={handleWrap} aria-label="Wrap in container">
         <span className="material-symbols-rounded">add_box</span>
-      </button>
+      </Button>
       <Tooltip content="Repath items (Coming Soon)">
-        <button className="btn btn-tertiary on-solid" aria-label="Repath selected components" disabled>
+        <Button variant="on-solid" size="s" aria-label="Repath selected components" disabled>
           <span className="material-symbols-rounded">alt_route</span>
-        </button>
+        </Button>
       </Tooltip>
-      <button className="btn btn-tertiary on-solid" onClick={handleDelete} aria-label="Delete selected components">
+      <Button variant="on-solid" size="s" onClick={handleDelete} aria-label="Delete selected components">
         <span className="material-symbols-rounded">delete</span>
-      </button>
+      </Button>
     </div>
   );
 };

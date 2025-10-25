@@ -3,6 +3,7 @@
 import { useSetAtom } from 'jotai';
 import { isPropertiesPanelVisibleAtom } from '../data/atoms';
 import { Tooltip } from './Tooltip';
+import { Button } from './Button';
 import styles from './ScreenToolbar.module.css';
 
 export const ScreenToolbar = () => {
@@ -16,13 +17,15 @@ export const ScreenToolbar = () => {
   return (
     <div className={styles.screenToolbar}>
       <Tooltip content="Screen Settings">
-        <button 
-          className="btn btn-secondary icon-only" 
+        <Button 
+          variant="secondary"
+          size="m"
+          iconOnly
           aria-label="Screen settings" 
           onClick={handleSettingsClick}
         >
           <span className="material-symbols-rounded">settings</span>
-        </button>
+        </Button>
       </Tooltip>
     </div>
   );

@@ -6,6 +6,7 @@ import { isFormNameEditingAtom, isFormNameMenuOpenAtom } from '../../data/atoms'
 import { formNameAtom, commitActionAtom } from '../../data/historyAtoms';
 import { FormNameMenu } from './FormNameMenu';
 import { Tooltip } from '../../components/Tooltip';
+import { Button } from '../../components/Button';
 import styles from './FormNameEditor.module.css';
 
 // A new sub-component to handle the portal and positioning
@@ -117,17 +118,20 @@ export const FormNameEditor = () => {
             >
               {formName}
             </span>
-            <button
-              className={`${styles.menuButton} ${isMenuOpen ? styles.active : ''}`}
-              onClick={handleMenuClick}
-              aria-label="Form options"
-              aria-haspopup="true"
-              aria-expanded={isMenuOpen}
-            >
-              <Tooltip content="Form options">
+            <Tooltip content="Form options">
+              <Button
+                variant="tertiary"
+                size="s"
+                iconOnly
+                className={isMenuOpen ? styles.active : ''}
+                onClick={handleMenuClick}
+                aria-label="Form options"
+                aria-haspopup="true"
+                aria-expanded={isMenuOpen}
+              >
                 <span className="material-symbols-rounded">keyboard_arrow_down</span>
-              </Tooltip>
-            </button>
+              </Button>
+            </Tooltip>
           </>
         )}
       </div>
