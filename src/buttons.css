@@ -107,7 +107,7 @@
   color: var(--control-fg-quaternary);
 }
 .btn[data-variant="quaternary"]:hover:not(:disabled) {
-  background-color: var(--control-bg-quaternary-hover);
+  background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-quaternary-hover);
   border-color: var(--control-border-quaternary-hover);
 }

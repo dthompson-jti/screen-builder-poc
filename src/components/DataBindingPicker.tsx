@@ -1,6 +1,7 @@
 // src/components/DataBindingPicker.tsx
 import { BoundData } from '../types';
 import { Tooltip } from './Tooltip';
+import { Button } from './Button';
 import styles from './DataBindingPicker.module.css';
 
 interface DataBindingPickerProps {
@@ -21,9 +22,16 @@ export const DataBindingPicker = ({ binding, onOpen }: DataBindingPickerProps) =
           {isBound ? binding.fieldName : 'No data binding'}
         </span>
         <Tooltip content="Select data binding">
-          <button className="btn btn-quaternary icon-only" aria-label="Select data binding" tabIndex={-1} style={{pointerEvents: 'none'}}>
+          <Button
+            variant="quaternary"
+            size="s"
+            iconOnly
+            aria-label="Select data binding"
+            tabIndex={-1}
+            style={{pointerEvents: 'none'}}
+          >
             <span className="material-symbols-rounded">more_horiz</span>
-          </button>
+          </Button>
         </Tooltip>
       </div>
       {isBound && <span className={styles.pickerHelperText}>{binding.path}</span>}

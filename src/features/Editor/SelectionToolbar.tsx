@@ -59,7 +59,7 @@ export const SelectionToolbar = ({
           size="s"
           {...listeners}
           aria-label="Drag to reorder"
-          style={{ cursor: 'grab' }}
+          className={styles.dragHandle}
         >
           <span className="material-symbols-rounded">drag_indicator</span>
         </Button>

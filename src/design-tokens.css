@@ -370,8 +370,8 @@
   --control-border-tertiary-faint: var(--primitives-dark-tint-900);
   --control-border-tertiary-faint-hover: var(--primitives-dark-tint-800); /* Lighter top/side border color on hover */
   --control-border-tertiary-faint-pressed: var(--primitives-dark-tint-700); /* Lighter top/side border color on press */
-  --control-border-quaternary-hover: var(--primitives-dark-tint-700);
-  --control-border-quaternary-pressed: var(--primitives-dark-tint-600);
+  --control-border-quaternary-hover: var(--primitives-dark-tint-600);
+  --control-border-quaternary-pressed: var(--primitives-dark-tint-500);
   --control-border-disabled: var(--primitives-grey-300);
   --control-border-disabled-faint: var(--primitives-grey-200);
   --control-border-alert: var(--primitives-red-600);

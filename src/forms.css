@@ -13,10 +13,10 @@ textarea {
   font-family: var(--font-family-sans);
   width: 100%;
   padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid var(--surface-border-primary);
+  border: 1px solid var(--surface-border-tertiary);
   border-radius: 6px;
   font-size: 0.9em;
-  background-color: transparent;
+  background-color: var(--surface-bg-primary);
   color: var(--surface-fg-primary);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
@@ -24,8 +24,8 @@ textarea {
 
 input[type="text"]:not(:disabled):hover,
 textarea:not(:disabled):hover {
-    background-color: var(--control-bg-quaternary-hover);
-    border-color: var(--control-border-quaternary-hover);
+    background-color: var(--surface-bg-primary);
+    border-color: var(--control-border-tertiary-hover);
 }
 
 input[type="text"]:focus,

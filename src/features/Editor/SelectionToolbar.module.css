@@ -19,6 +19,13 @@
   animation: fadeIn 0.1s ease-out;
 }
 
+.dragHandle {
+  cursor: grab;
+}
+.dragHandle:active {
+  cursor: grabbing;
+}
+
 .divider {
   width: 1px;
   height: 20px;
