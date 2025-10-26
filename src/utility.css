@@ -1,0 +1,44 @@
+/* src/utility.css */
+/* NEW FILE: Defines the utility token layer referenced by semantics. */
+
+:root {
+  /* ----------------------------------------- */
+  /*             UTILITY - ALPHA               */
+  /* ----------------------------------------- */
+  
+  /* Alpha White */
+  --utility-alpha-white-10: #FFFFFF19;
+  --utility-alpha-white-20: #FFFFFF33;
+  --utility-alpha-white-30: #FFFFFF4C;
+  --utility-alpha-white-40: #FFFFFF66;
+  --utility-alpha-white-50: #FFFFFF7F;
+  --utility-alpha-white-60: #FFFFFF99;
+  --utility-alpha-white-70: #FFFFFFB2;
+  --utility-alpha-white-80: #FFFFFFCC;
+  --utility-alpha-white-90: #FFFFFFE5;
+  --utility-alpha-white-100: #FFFFFF;
+
+  /* Alpha Black */
+  --utility-alpha-black-10: #00000019;
+  --utility-alpha-black-20: #00000033;
+  --utility-alpha-black-30: #0000004C;
+  --utility-alpha-black-40: #00000066;
+  --utility-alpha-black-50: #0000007F;
+  --utility-alpha-black-60: #00000099;
+  --utility-alpha-black-70: #000000B2;
+  --utility-alpha-black-80: #000000CC;
+  --utility-alpha-black-90: #000000E5;
+  --utility-alpha-black-100: #000000;
+
+  /* Alpha Grey */
+  --utility-alpha-grey-10: var(--primitives-gray-tint-25);
+  --utility-alpha-grey-20: var(--primitives-gray-tint-50);
+  --utility-alpha-grey-30: var(--primitives-gray-tint-100);
+  --utility-alpha-grey-40: var(--primitives-gray-tint-200);
+  --utility-alpha-grey-50: var(--primitives-gray-tint-300);
+  --utility-alpha-grey-60: var(--primitives-gray-tint-400);
+  --utility-alpha-grey-70: var(--primitives-gray-tint-500);
+  --utility-alpha-grey-80: var(--primitives-gray-tint-600);
+  --utility-alpha-grey-90: var(--primitives-gray-tint-700);
+  --utility-alpha-grey-100: var(--primitives-gray-tint-800);
+}

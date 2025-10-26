@@ -1,5 +1,5 @@
 /* src/primitives.css */
-/* NEW FILE: Contains only primitive, non-semantic design tokens. */
+/* Contains only primitive, non-semantic design tokens. */
 
 :root {
   /* ----------------------------------------- */
@@ -58,6 +58,20 @@
   --primitives-grey-800: #252B37;
   --primitives-grey-900: #181D27;
   --primitives-grey-950: #0A0C12;
+  
+  /* Grey Tint (Alpha) */
+  --primitives-gray-tint-25: #F9F9F94C;
+  --primitives-gray-tint-50: #F1F1F14C;
+  --primitives-gray-tint-100: #E2E2E44C;
+  --primitives-gray-tint-200: #E9EAEB4C;
+  --primitives-gray-tint-300: #D5D7DA4C;
+  --primitives-gray-tint-400: #A4A7AE4C;
+  --primitives-gray-tint-500: #7176804C;
+  --primitives-gray-tint-600: #5358624C;
+  --primitives-gray-tint-700: #4146514C;
+  --primitives-gray-tint-800: #252B3799;
+  --primitives-gray-tint-900: #181D274C;
+  --primitives-gray-tint-950: #0A0D124C;
 
   /* Red */
   --primitives-red-25: #FEFAFA;
@@ -122,34 +136,6 @@
   --primitives-blue-800: #055986;
   --primitives-blue-900: #0A4A6F;
   --primitives-blue-950: #062B40;
-
-  /* ----------------------------------------- */
-  /*                    ALPHA                  */
-  /* ----------------------------------------- */
-
-  /* Alpha White */
-  --primitives-alpha-white-10: #FFFFFF1A;
-  --primitives-alpha-white-20: #FFFFFF33;
-  --primitives-alpha-white-30: #FFFFFF4D;
-  --primitives-alpha-white-40: #FFFFFF66;
-  --primitives-alpha-white-50: #FFFFFF80;
-  --primitives-alpha-white-60: #FFFFFF99;
-  --primitives-alpha-white-70: #FFFFFFB3;
-  --primitives-alpha-white-80: #FFFFFFCC;
-  --primitives-alpha-white-90: #FFFFFFE6;
-  --primitives-alpha-white-100: #FFFFFFFF;
-
-  /* Alpha Black */
-  --primitives-alpha-black-10: #0000001A;
-  --primitives-alpha-black-20: #00000033;
-  --primitives-alpha-black-30: #0000004D;
-  --primitives-alpha-black-40: #00000066;
-  --primitives-alpha-black-50: #00000080;
-  --primitives-alpha-black-60: #00000099;
-  --primitives-alpha-black-70: #000000B3;
-  --primitives-alpha-black-80: #000000CC;
-  --primitives-alpha-black-90: #000000E6;
-  --primitives-alpha-black-100: #000000FF;
 
   /* ----------------------------------------- */
   /*                   SPACING                 */

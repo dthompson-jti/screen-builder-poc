@@ -4,6 +4,7 @@
 
 /* 1. Foundational Design Tokens */
 @import './primitives.css';
+@import './utility.css';
 @import './semantics.css';
 
 /* 2. Global utility styles */

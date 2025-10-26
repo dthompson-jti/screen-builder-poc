@@ -1,5 +1,5 @@
 /* src/semantics.css */
-/* NEW FILE: Contains only semantic design tokens that map to primitives. */
+/* Contains only semantic design tokens that map to primitives. */
 
 :root {
   /* ----------------------------------------- */
@@ -60,6 +60,8 @@
   --surface-fg-warning-secondary: var(--primitives-yellow-500);
   --surface-fg-success-primary: var(--primitives-green-600);
   --surface-fg-success-secondary: var(--primitives-green-500);
+  --surface-fg-info-primary: var(--primitives-blue-600);
+  --surface-fg-info-secondary: var(--primitives-blue-500);
 
   /* Border */
   --surface-border-primary: var(--primitives-grey-300);
@@ -77,7 +79,7 @@
   --surface-border-theme: var(--primitives-theme-500);
   --surface-border-theme-hover: var(--primitives-theme-600);
   --surface-border-theme_alt: var(--primitives-theme-600);
-  --surface-border-secondary_alt: #00000014; /* Mapped from old token */
+  --surface-border-secondary_alt: #00000014;
 
   /* Shadows */
   --surface-shadow-xs: 0 1px 2px 0 #0A0C120C;
@@ -103,14 +105,14 @@
   --control-bg-secondary-pressed: var(--primitives-grey-100);
   --control-bg-selected: var(--primitives-theme-50);
   --control-bg-selected-hover: var(--primitives-theme-100);
-  --control-bg-tertiary: var(--primitives-grey-20);
-  --control-bg-tertiary-hover: var(--primitives-grey-100);
-  --control-bg-tertiary-pressed: var(--primitives-grey-400);
-  --control-bg-quaternary: var(--primitives-alpha-black-10);
-  --control-bg-quaternary-hover: var(--primitives-alpha-black-30);
-  --control-bg-quaternary-pressed: var(--primitives-alpha-black-50);
-  --control-bg-on-solid-hover: var(--primitives-alpha-white-20);
-  --control-bg-on-solid-pressed: var(--primitives-alpha-white-40);
+  --control-bg-tertiary: var(--utility-alpha-grey-10);
+  --control-bg-tertiary-hover: var(--utility-alpha-grey-30);
+  --control-bg-tertiary-pressed: var(--utility-alpha-grey-60);
+  --control-bg-quaternary: transparent; /* Explicitly transparent at rest for components like buttons */
+  --control-bg-quaternary-hover: var(--utility-alpha-grey-30); /* CORRECTED based on Figma */
+  --control-bg-quaternary-pressed: var(--utility-alpha-grey-60); /* CORRECTED based on Figma */
+  --control-bg-on-solid-hover: var(--utility-alpha-white-20);
+  --control-bg-on-solid-pressed: var(--utility-alpha-white-40);
   --control-bg-disabled: var(--primitives-grey-50);
   --control-bg-disabled_subtle: var(--primitives-grey-30);
   --control-bg-alert: var(--primitives-red-50);
@@ -172,16 +174,12 @@
   --control-border-secondary: var(--primitives-grey-600);
   --control-border-secondary-hover: var(--primitives-grey-700);
   --control-border-secondary-pressed: var(--primitives-grey-700);
-  --control-border-tertiary: var(--primitives-alpha-black-20);
-  --control-border-tertiary-hover: var(--primitives-alpha-black-50);
-  --control-border-tertiary-pressed: var(--primitives-alpha-black-70);
-  --control-border-tertiary-faint: var(--primitives-alpha-black-30);
-  --control-border-tertiary-faint-hover: var(--primitives-alpha-black-30);
-  --control-border-tertiary-faint-pressed: var(--primitives-alpha-black-60);
-  --control-border-on-solid-hover: var(--primitives-alpha-black-50);
-  --control-border-on-solid-pressed: var(--primitives-alpha-black-70);
-  --control-border-quaternary-hover: var(--primitives-alpha-black-30);
-  --control-border-quaternary-pressed: var(--primitives-alpha-black-50);
+  --control-border-tertiary: var(--utility-alpha-black-20);
+  --control-border-tertiary-hover: var(--utility-alpha-black-50);
+  --control-border-tertiary-pressed: var(--utility-alpha-black-70);
+  --control-border-quaternary: var(--utility-alpha-black-10);
+  --control-border-quaternary-hover: var(--utility-alpha-black-30);
+  --control-border-quaternary-pressed: var(--utility-alpha-black-50);
   --control-border-disabled: var(--primitives-grey-300);
   --control-border-disabled-faint: var(--primitives-grey-200);
   --control-border-alert: var(--primitives-red-600);

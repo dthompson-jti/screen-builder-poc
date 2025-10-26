@@ -114,6 +114,7 @@
 }
 .btn[data-variant="quaternary"]:active:not(:disabled) {
   background-color: var(--control-bg-quaternary-pressed);
+  color: var(--control-fg-quaternary-hover);
   border-color: var(--control-border-quaternary-pressed);
 }
 
@@ -128,11 +129,11 @@
 }
 .btn[data-variant="on-solid"]:hover:not(:disabled) {
   background-color: var(--control-bg-on-solid-hover);
-  border-color: var(--control-border-on-solid-hover);
+  border-color: var(--control-border-tertiary-hover); /* Re-using tertiary border seems appropriate here */
   box-shadow: none;
 }
 .btn[data-variant="on-solid"]:active:not(:disabled) {
   background-color: var(--control-bg-on-solid-pressed);
-  border-color: var(--control-border-on-solid-pressed);
+  border-color: var(--control-border-tertiary-pressed); /* Re-using tertiary border seems appropriate here */
   box-shadow: none;
 }
