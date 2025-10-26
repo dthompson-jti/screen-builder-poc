@@ -103,9 +103,9 @@
   --control-bg-secondary-pressed: var(--primitives-grey-100);
   --control-bg-selected: var(--primitives-theme-50);
   --control-bg-selected-hover: var(--primitives-theme-100);
-  --control-bg-tertiary: var(--primitives-alpha-grey-10);
-  --control-bg-tertiary-hover: var(--primitives-alpha-grey-30);
-  --control-bg-tertiary-pressed: var(--primitives-alpha-grey-60);
+  --control-bg-tertiary: var(--primitives-grey-20);
+  --control-bg-tertiary-hover: var(--primitives-grey-100);
+  --control-bg-tertiary-pressed: var(--primitives-grey-400);
   --control-bg-quaternary: var(--primitives-alpha-black-10);
   --control-bg-quaternary-hover: var(--primitives-alpha-black-30);
   --control-bg-quaternary-pressed: var(--primitives-alpha-black-50);
@@ -178,6 +178,8 @@
   --control-border-tertiary-faint: var(--primitives-alpha-black-30);
   --control-border-tertiary-faint-hover: var(--primitives-alpha-black-30);
   --control-border-tertiary-faint-pressed: var(--primitives-alpha-black-60);
+  --control-border-on-solid-hover: var(--primitives-alpha-black-50);
+  --control-border-on-solid-pressed: var(--primitives-alpha-black-70);
   --control-border-quaternary-hover: var(--primitives-alpha-black-30);
   --control-border-quaternary-pressed: var(--primitives-alpha-black-50);
   --control-border-disabled: var(--primitives-grey-300);

@@ -127,12 +127,12 @@
   box-shadow: none;
 }
 .btn[data-variant="on-solid"]:hover:not(:disabled) {
-  background-color: var(--control-bg-tertiary-hover);
-  border-color: var(--control-border-tertiary-hover);
+  background-color: var(--control-bg-on-solid-hover);
+  border-color: var(--control-border-on-solid-hover);
   box-shadow: none;
 }
 .btn[data-variant="on-solid"]:active:not(:disabled) {
-  background-color: var(--control-bg-tertiary-pressed);
-  border-color: var(--control-border-tertiary-pressed);
+  background-color: var(--control-bg-on-solid-pressed);
+  border-color: var(--control-border-on-solid-pressed);
   box-shadow: none;
 }
