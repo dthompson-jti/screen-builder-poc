@@ -51,6 +51,12 @@
 .menu-item .material-symbols-rounded {
     font-size: 18px;
     color: var(--surface-fg-secondary); /* Icons slightly softer than text */
+    /* UPDATED: Match opsz to font-size */
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 18;
 }
 
 .menu-item.active .material-symbols-rounded, .menu-item[data-state="checked"] .material-symbols-rounded {

@@ -25,7 +25,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
         {icon && <span className={`material-symbols-rounded ${styles.selectItemIcon}`}>{icon}</span>}
         <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
         <RadixSelect.ItemIndicator className={styles.selectItemIndicator}>
-          <span className="material-symbols-rounded" style={{ fontSize: '18px' }}>check</span>
+          <span className="material-symbols-rounded">check</span>
         </RadixSelect.ItemIndicator>
       </RadixSelect.Item>
     );

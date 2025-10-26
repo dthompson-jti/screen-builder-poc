@@ -72,6 +72,7 @@
 
 :not(.selected) > .formComponentWrapper:not(.layoutContainer):hover {
   background-color: var(--surface-bg-primary_hover);
+  border-color: var(--control-border-tertiary-hover);
 }
 
 .selected > .formComponentWrapper:not([data-is-root="true"]) {

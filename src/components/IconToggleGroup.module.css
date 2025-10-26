@@ -3,10 +3,10 @@
 .toggleGroup {
   display: flex;
   align-items: center;
-  border: 1px solid var(--surface-border-primary);
   border-radius: 6px;
   overflow: hidden;
   width: 100%;
+  position: relative; /* For z-index context */
 }
 
 .toggleButton {
@@ -16,39 +16,41 @@
   padding: var(--spacing-2);
   background-color: var(--surface-bg-primary);
   color: var(--surface-fg-secondary);
-  border: none;
-  border-right: 1px solid var(--surface-border-primary);
+  border: 1px solid var(--surface-border-primary);
+  margin-left: -1px; /* Collapse borders */
+  position: relative; /* for z-index */
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+  /* Delay z-index change to prevent flicker on exit */
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, z-index 0s 0.2s;
   height: 38px;
   flex: 1;
-  box-shadow: inset 0 0 0 1px transparent;
-  /* FIX: Default radius is 0 for all buttons */
   border-radius: 0;
 }
 
-/* FIX: Apply the correct border-radius only to the first and last buttons in the group */
 .toggleGroup button:first-child {
-  border-top-left-radius: 5px; /* 1px less than container to prevent clipping issues */
-  border-bottom-left-radius: 5px;
+  margin-left: 0;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
 .toggleGroup button:last-child {
-  border-right: none;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 .toggleButton:hover:not([data-state='on']) {
+  border-color: var(--control-border-tertiary-hover);
   background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-tertiary-hover);
-  box-shadow: inset 0 0 0 1px var(--control-border-tertiary-hover);
+  z-index: 1; /* Bring hovered border to front */
+  transition-delay: 0s;
 }
 
 .toggleButton[data-state='on'] {
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
+  border-color: var(--control-border-selected);
+  z-index: 2; /* Selected is higher than hover */
   cursor: default;
-  box-shadow: inset 0 0 0 1px var(--control-border-selected);
 }
 
 .toggleButton .material-symbols-rounded {

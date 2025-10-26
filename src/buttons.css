@@ -42,7 +42,15 @@
 /* --- Extra Small (xs) --- */
 .btn[data-size="xs"] { height: 1.5rem; padding: 0.5rem 0.375rem; border-radius: var(--radius-md); font-size: 12px; }
 .btn[data-size="xs"][data-icon-only="true"] { width: 1.5rem; padding: 0.5rem; border-radius: var(--radius-md); }
-.btn[data-size="xs"] .material-symbols-rounded { font-size: 16px; }
+.btn[data-size="xs"] .material-symbols-rounded {
+  font-size: 16px;
+  /* UPDATED: Match opsz to font-size */
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 16;
+}
 
 /* ======================================================================== */
 /*                             STYLE VARIANTS                               */

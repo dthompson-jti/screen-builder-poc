@@ -30,7 +30,7 @@
   border-color: var(--surface-border-primary);
 }
 .wrapper[data-variant="standalone"]:hover {
-  border-color: var(--control-border-quaternary-hover);
+  border-color: var(--control-border-tertiary-hover);
 }
 /* The focus state applies ONLY to this single outer wrapper. */
 .wrapper[data-variant="standalone"].focused {
