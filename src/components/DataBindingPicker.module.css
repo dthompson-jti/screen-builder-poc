@@ -10,6 +10,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  /* DEFINITIVE FIX: Standardize height. */
+  height: 38px;
   padding: var(--spacing-1p5) var(--spacing-2) var(--spacing-1p5) var(--spacing-3);
   border: 1px solid var(--surface-border-primary);
   border-radius: 6px;
@@ -20,6 +22,12 @@
 
 .pickerControl:hover {
   border-color: var(--control-border-tertiary-hover);
+}
+
+/* DEFINITIVE FIX: Add standard outer focus ring. */
+.pickerControl:focus-visible {
+  border-color: var(--surface-border-theme);
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
 
 .pickerControl.unbound {

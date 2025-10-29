@@ -88,11 +88,11 @@
     color: var(--surface-fg-secondary);
 }
 
-/* ROBUST FIX: Use an inset box-shadow for keyboard focus to prevent clipping. */
+/* DEFINITIVE FIX: Standardize on outer focus ring for menu items. */
 .menu-item[data-highlighted]:focus-visible:not([data-disabled]) {
     background-color: transparent;
-    border-color: transparent;
-    box-shadow: inset 0 0 0 2px var(--control-focus-ring-standard);
+    border-color: var(--surface-border-theme);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
 
 
@@ -121,8 +121,8 @@
 }
 .menu-item.destructive[data-highlighted]:focus-visible:not([data-disabled]) {
     background-color: transparent;
-    /* Use inset shadow for destructive items as well */
-    box-shadow: inset 0 0 0 2px var(--control-focus-ring-error);
+    border-color: var(--surface-border-alert);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-error);
     color: var(--surface-fg-alert-primary); /* Revert text color on focus */
 }
 .menu-item.destructive[data-highlighted]:focus-visible:not([data-disabled]) .material-symbols-rounded,

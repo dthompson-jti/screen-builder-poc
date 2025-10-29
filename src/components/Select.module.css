@@ -15,7 +15,6 @@
   background-color: var(--surface-bg-primary);
   color: var(--surface-fg-primary);
   outline: none;
-  /* FIX: Reverted transition to remove 'margin' as it's no longer used for focus. */
   transition: border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   position: relative;
@@ -25,13 +24,12 @@
   border-color: var(--control-border-tertiary-hover);
 }
 
-/* ROBUST FIX: Use an inset box-shadow for focus. This prevents layout shift AND is immune to parent overflow clipping. */
+/* DEFINITIVE FIX: Standardize on outer focus ring. */
 .selectTrigger[data-state='open'], 
 .selectTrigger:focus-visible,
 .selectTrigger[data-focused='true'] {
   border-color: var(--surface-border-theme);
-  /* The inset shadow draws the focus ring *inside* the element, solving the clipping issue. */
-  box-shadow: inset 0 0 0 1px var(--control-focus-ring-standard);
+  box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
 }
 
 .selectIcon {
@@ -48,11 +46,14 @@
 /* All visual styling (bg, border, shadow) comes from the global .menu-popover class. */
 .selectContent {
   width: var(--radix-select-trigger-width);
-  overflow: hidden;
+  /* REMOVED overflow: hidden; to allow focus rings to escape. */
 }
 
 .selectViewport {
   max-height: 256px;
+  /* DEFINITIVE FIX: Move overflow here to clip scrolling content while preserving focus rings on items. */
+  overflow: hidden;
+  border-radius: 6px; /* Match the item radius to clip corners cleanly */
 }
 
 /* The decorative icon, rendered when an item is not checked */
