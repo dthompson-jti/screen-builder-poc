@@ -10,48 +10,46 @@ interface AnimatedTabsProps {
   isPanelTabs?: boolean;
 }
 
-const TabList = ({ children, activeValue }: { children: React.ReactNode; activeValue: string }) => {
-  return (
-    <Tabs.List className="tab-list">
-      {React.Children.map(children, (child) => {
-        if (!React.isValidElement<{ value: string; children: React.ReactNode }>(child)) {
-          return null;
-        }
-
-        const { value, children: tabChildren } = child.props;
-        const isActive = activeValue === value;
-
-        return (
-          <Tabs.Trigger value={value} className={`tab-button ${isActive ? 'active' : ''}`}>
-            {tabChildren}
-            {isActive && (
-              <motion.div
-                layoutId="tab-underline"
-                className="tab-underline"
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              />
-            )}
-          </Tabs.Trigger>
-        );
-      })}
-    </Tabs.List>
-  );
-};
-
 export const AnimatedTabs = ({ value, onValueChange, children, isPanelTabs = false }: AnimatedTabsProps) => {
-  // Combine base class with a conditional class for targeting header tabs specifically.
   const containerClass = `animated-tabs-root ${isPanelTabs ? 'panel-tabs' : 'tab-group'}`;
 
   return (
     <Tabs.Root value={value} onValueChange={onValueChange} className={containerClass}>
-      <TabList activeValue={value}>{children}</TabList>
+      {/* 
+        DEFINITIVE FIX: <Tabs.List> must be a DIRECT child of <Tabs.Root> to establish the
+        React Context connection required by Radix UI. The previous <TabList> wrapper component
+        broke this connection, causing the conditional rendering logic to fail. All logic
+        is now correctly placed inside the required Radix structure.
+      */}
+      <Tabs.List className="" >
+        {React.Children.map(children, (child) => {
+          if (!React.isValidElement<{ value: string; children: React.ReactNode }>(child)) {
+            return null;
+          }
+
+          const childValue = child.props.value;
+          const isActive = value === childValue;
+
+          return (
+            <Tabs.Trigger value={childValue} className="tab-button">
+              {child.props.children}
+              {isActive && (
+                <motion.div
+                  layoutId="tab-underline"
+                  className="tab-underline"
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                />
+              )}
+            </Tabs.Trigger>
+          );
+        })}
+      </Tabs.List>
     </Tabs.Root>
   );
 };
 
-// Dummy component to satisfy typing and provide props to the parent.
-// The `value` prop is destructured but not used, which is the intended pattern.
-// The linter error is resolved by only destructuring the `children` prop.
+// This component is a pure data carrier. Its only job is to hold props
+// for the parent to read. It renders nothing itself.
 export const Tab = ({ children }: { value: string; children: React.ReactNode }) => {
   return <>{children}</>;
 };

@@ -6,7 +6,7 @@
   font-family: var(--font-family-sans);
   border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
-  /* FIX: Stretch all children vertically by default. */
+  /* DEFINITIVE FIX 1: The parent header must be a flex container that stretches its children. */
   align-items: stretch;
   justify-content: space-between;
   padding: 0 var(--spacing-2) 0 var(--spacing-4);
@@ -16,14 +16,13 @@
 .headerLeft, .headerRight {
   display: flex;
   align-items: center;
-  /* FIX: Explicitly re-center the side columns. */
+  /* Override parent stretch for side columns */
   align-self: center;
 }
 
 .headerLeft {
   gap: var(--spacing-4);
   position: relative; /* For menu popover */
-  /* This ensures the left side doesn't get crushed if the center content is wide */
   min-width: 0; 
 }
 
@@ -32,12 +31,12 @@
   position: relative;
 }
 
-/* UPDATED: Center container is now a flex item that stretches */
 .headerCenter {
   display: flex;
   justify-content: center;
-  align-self: stretch; /* Make it fill the header's height */
-  position: relative; /* Create positioning context for the underline */
+  /* This inherits the 'stretch' from the parent, making this container 56px tall */
+  align-self: stretch; 
+  position: relative;
 }
 
 .appHeaderTitle {

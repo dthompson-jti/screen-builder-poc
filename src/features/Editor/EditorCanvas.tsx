@@ -58,43 +58,27 @@ export const EditorCanvas = () => {
     setAnchorId(rootId);
   };
 
-  const handleContainerClick = (e: React.MouseEvent) => {
+  const handleBackgroundClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setInteractionState({ mode: 'idle' });
       setAnchorId(null);
     }
   }
 
-  const handleContextMenuOpen = (targetId: string | null) => {
+  const handleContextMenu = (e: React.MouseEvent) => {
+    const targetId = findComponentId(e.target as HTMLElement);
     const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
+    const isTargetAlreadySelected = targetId ? currentSelectedIds.includes(targetId) : false;
 
-    if (!targetId) { 
-      if (interactionState.mode !== 'idle') {
-        setInteractionState({ mode: 'idle' });
-        setAnchorId(null);
-      }
-    } else { 
-      const isTargetSelected = currentSelectedIds.includes(targetId);
-      
-      if (!isTargetSelected) {
-        setInteractionState({ mode: 'selecting', ids: [targetId] });
-        setAnchorId(targetId);
-      }
+    // If we right-click a new item, it becomes the sole selection.
+    if (targetId && !isTargetAlreadySelected) {
+      setInteractionState({ mode: 'selecting', ids: [targetId] });
+      setAnchorId(targetId);
+    } else if (!targetId) {
+      // If we right-click the background, clear selection if one exists.
+      if (currentSelectedIds.length > 0) setInteractionState({ mode: 'idle' });
     }
-  };
-
-  const getContextMenuTargetIds = (target: HTMLElement | null): string[] => {
-    const targetId = findComponentId(target);
-    const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
-    const isTargetSelected = !!targetId && currentSelectedIds.includes(targetId);
-    
-    if (targetId && isTargetSelected) {
-      return currentSelectedIds;
-    }
-    if (targetId) {
-      return [targetId];
-    }
-    return [];
+    // If right-clicking an already selected item, the selection is maintained.
   };
 
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
@@ -109,12 +93,12 @@ export const EditorCanvas = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
-    <CanvasContextMenu targetIds={getContextMenuTargetIds(canvasRef.current)}>
+    <CanvasContextMenu>
         <div 
             ref={setMergedRefs} 
             className={styles.canvasContainer} 
-            onClick={handleContainerClick} 
-            onContextMenu={(e) => handleContextMenuOpen(findComponentId(e.target as HTMLElement))}
+            onClick={handleBackgroundClick} 
+            onContextMenu={handleContextMenu}
         >
             <div ref={canvasRef} className={formCardClasses} onClick={handleCanvasClick}>
                 <div className={styles.formCardHeader}><h2>{screenName}</h2></div>

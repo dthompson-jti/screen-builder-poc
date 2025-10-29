@@ -114,13 +114,11 @@ export const SelectionToolbar = ({
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className="popover-content"
-              style={{ minWidth: 240, padding: 'var(--spacing-1)' }}
+              className="menu-popover"
               sideOffset={8}
               align="start"
               onCloseAutoFocus={(e) => e.preventDefault()}
             >
-              {/* DropdownMenu doesn't have a direct component for this, so we render it as a child */}
               <SelectionToolbarMenu
                 selectedId={componentId}
                 onDelete={onDelete}
@@ -130,9 +128,6 @@ export const SelectionToolbar = ({
                 onDuplicate={onDuplicate}
                 onWrap={onWrap}
                 onUnwrap={onUnwrap}
-                canWrap={canWrap}
-                canUnwrap={canUnwrap}
-                canRename={canRename}
               />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>

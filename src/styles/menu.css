@@ -1,4 +1,28 @@
 /* src/styles/menu.css */
+/* This is the single source of truth for all menu popovers and items. */
+
+/* --- Menu Popover Container --- */
+.menu-popover {
+    background-color: var(--surface-bg-primary);
+    border-radius: var(--spacing-2);
+    box-shadow: var(--surface-shadow-xl);
+    border: 1px solid var(--surface-border-primary);
+    z-index: 1100;
+    padding: var(--spacing-1); /* Consistent padding for all menus */
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* Subtle spacing between items */
+}
+.menu-popover[data-state='open'] {
+  animation: popover-show 150ms ease-out;
+}
+.menu-popover[data-state='closed'] {
+  animation: popover-hide 150ms ease-in;
+}
+
+
+/* --- Menu Item (Restored from Original) --- */
 .menu-item {
     /* Layout */
     display: flex;

@@ -1,11 +1,26 @@
 // src/features/Editor/SelectionToolbarMenu.tsx
-import { useRef } from 'react';
+import React from 'react';
 import { useSetAtom } from 'jotai';
-import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { useIsMac } from '../../data/useIsMac';
 import { useComponentCapabilities } from './useComponentCapabilities';
 import { commitActionAtom } from '../../data/historyAtoms';
-import styles from './SelectionToolbar.module.css';
+
+interface MenuItemProps {
+  icon: string;
+  label: string;
+  hotkey?: string;
+  onClick: () => void;
+  disabled?: boolean;
+  destructive?: boolean;
+}
+
+const MenuItem: React.FC<MenuItemProps> = ({ icon, label, hotkey, onClick, disabled, destructive }) => (
+  <button className={`menu-item ${destructive ? 'destructive' : ''}`} onClick={onClick} disabled={disabled}>
+    <span className="material-symbols-rounded">{icon}</span>
+    <span>{label}</span>
+    {hotkey && <span className="hotkey">{hotkey}</span>}
+  </button>
+);
 
 interface SelectionToolbarMenuProps {
   selectedId: string;
@@ -16,9 +31,10 @@ interface SelectionToolbarMenuProps {
   onDuplicate: () => void;
   onWrap: () => void;
   onUnwrap: () => void;
-  canWrap: boolean;
-  canUnwrap: boolean;
-  canRename: boolean;
+  // These props are no longer needed as the component gets capabilities directly
+  // canWrap: boolean;
+  // canUnwrap: boolean;
+  // canRename: boolean;
 }
 
 export const SelectionToolbarMenu = ({
@@ -30,18 +46,13 @@ export const SelectionToolbarMenu = ({
   onDuplicate,
   onWrap,
   onUnwrap,
-  canWrap,
-  canUnwrap,
-  canRename,
 }: SelectionToolbarMenuProps) => {
-  const menuRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(menuRef, onClose);
   const isMac = useIsMac();
   const commitAction = useSetAtom(commitActionAtom);
   const capabilities = useComponentCapabilities([selectedId]);
 
   const modKey = isMac ? '⌘' : 'Ctrl';
-  const altKey = isMac ? '⌥' : 'Alt+';
+  const altKey = isMac ? '⌥' : 'Alt'; // Using Option symbol for Mac
 
   const createHandler = (action: () => void) => () => {
     action();
@@ -57,63 +68,40 @@ export const SelectionToolbarMenu = ({
     });
     onClose();
   };
+  
+  const canConvert = capabilities.canConvertToHeading || capabilities.canConvertToParagraph || capabilities.canConvertToLink;
 
   return (
-    <div className={styles.menuPopover} ref={menuRef}>
-      <button className="menu-item" onClick={createHandler(onRename)} disabled={!canRename}>
-        <span className="material-symbols-rounded">edit</span>
-        <span>Rename</span>
-        <span className="hotkey">Enter</span>
-      </button>
-      <div className={styles.menuDivider} />
-      <button className="menu-item" onClick={() => handleConvert('heading')} disabled={!capabilities.canConvertToHeading}>
-        <span className="material-symbols-rounded">title</span>
-        <span>Convert to Heading</span>
-      </button>
-      <button className="menu-item" onClick={() => handleConvert('paragraph')} disabled={!capabilities.canConvertToParagraph}>
-        <span className="material-symbols-rounded">notes</span>
-        <span>Convert to Paragraph</span>
-      </button>
-      <button className="menu-item" onClick={() => handleConvert('link')} disabled={!capabilities.canConvertToLink}>
-        <span className="material-symbols-rounded">link</span>
-        <span>Convert to Link</span>
-      </button>
-
-      <div className={styles.menuDivider} />
+    // Use React.Fragment as the root, the parent popover provides the container
+    <>
+      <MenuItem icon="edit" label="Rename" hotkey="Enter" onClick={createHandler(onRename)} disabled={!capabilities.canRename} />
       
-      <button className="menu-item" onClick={createHandler(() => onNudge('up'))}>
-        <span className="material-symbols-rounded">arrow_upward</span>
-        <span>Move Up</span>
-        <span className="hotkey">↑</span>
-      </button>
-      <button className="menu-item" onClick={createHandler(() => onNudge('down'))}>
-        <span className="material-symbols-rounded">arrow_downward</span>
-        <span>Move Down</span>
-        <span className="hotkey">↓</span>
-      </button>
-      <button className="menu-item" onClick={createHandler(onWrap)} disabled={!canWrap}>
-        <span className="material-symbols-rounded">add_box</span>
-        <span>Wrap in Container</span>
-        <span className="hotkey">{modKey}{isMac ? '' : '+'}{altKey}G</span>
-      </button>
-      <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
-        <span className="material-symbols-rounded">disabled_by_default</span>
-        <span>Unwrap Container</span>
-        <span className="hotkey">{modKey}{isMac ? ' Shift ' : '+Shift+'}G</span>
-      </button>
+      {canConvert && <div style={{ height: '1px', backgroundColor: 'var(--surface-border-secondary)', margin: 'var(--spacing-1) 0' }}></div>}
+      
+      {capabilities.canConvertToHeading && (
+        <MenuItem icon="title" label="Convert to Heading" onClick={() => handleConvert('heading')} />
+      )}
+      {capabilities.canConvertToParagraph && (
+        <MenuItem icon="notes" label="Convert to Paragraph" onClick={() => handleConvert('paragraph')} />
+      )}
+      {capabilities.canConvertToLink && (
+        <MenuItem icon="link" label="Convert to Link" onClick={() => handleConvert('link')} />
+      )}
 
-      <div className={styles.menuDivider} />
+      <div style={{ height: '1px', backgroundColor: 'var(--surface-border-secondary)', margin: 'var(--spacing-1) 0' }}></div>
+      
+      <MenuItem icon="arrow_upward" label="Move Up" hotkey="↑" onClick={createHandler(() => onNudge('up'))} disabled={!capabilities.canNudgeUp} />
+      <MenuItem icon="arrow_downward" label="Move Down" hotkey="↓" onClick={createHandler(() => onNudge('down'))} disabled={!capabilities.canNudgeDown} />
+      <MenuItem icon="add_box" label="Wrap in Container" hotkey={`${modKey}+${altKey}+G`} onClick={createHandler(onWrap)} disabled={!capabilities.canWrap} />
+      
+      {capabilities.canUnwrap && (
+        <MenuItem icon="disabled_by_default" label="Unwrap Container" hotkey={`${modKey}+Shift+G`} onClick={createHandler(onUnwrap)} />
+      )}
 
-      <button className="menu-item" onClick={createHandler(onDuplicate)} disabled>
-        <span className="material-symbols-rounded">content_copy</span>
-        <span>Duplicate</span>
-        <span className="hotkey">{modKey}{isMac ? '' : '+'}D</span>
-      </button>
-      <button className="menu-item destructive" onClick={createHandler(onDelete)}>
-        <span className="material-symbols-rounded">delete</span>
-        <span>Delete</span>
-        <span className="hotkey">{isMac ? '⌫' : 'Del'}</span>
-      </button>
-    </div>
+      <div style={{ height: '1px', backgroundColor: 'var(--surface-border-secondary)', margin: 'var(--spacing-1) 0' }}></div>
+
+      <MenuItem icon="content_copy" label="Duplicate" hotkey={`${modKey}+D`} onClick={createHandler(onDuplicate)} disabled />
+      <MenuItem icon="delete" label="Delete" hotkey={isMac ? '⌫' : 'Del'} onClick={createHandler(onDelete)} destructive />
+    </>
   );
 };

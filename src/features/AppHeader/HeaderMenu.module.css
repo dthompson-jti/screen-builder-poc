@@ -1,7 +1,0 @@
-/* src/features/AppHeader/HeaderMenu.module.css */
-
-.menuDivider {
-    height: 1px;
-    background-color: var(--surface-border-secondary);
-    margin: var(--spacing-1) 0;
-}
