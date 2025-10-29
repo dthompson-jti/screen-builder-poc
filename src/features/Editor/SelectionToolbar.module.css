@@ -26,11 +26,13 @@
   cursor: grabbing;
 }
 
+/* FIX: Changed color to a high-contrast token for visibility. */
 .divider {
   width: 1px;
-  height: 20px;
-  background-color: var(--primitives-dark-tint-700);
+  height: 24px;
+  background-color: var(--surface-border-tertiary); /* semi-transparent white */
   margin: 0 var(--spacing-1);
+  opacity: 0.5;
 }
 
 .menuDivider {

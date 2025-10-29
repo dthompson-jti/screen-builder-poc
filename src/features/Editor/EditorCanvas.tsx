@@ -1,5 +1,5 @@
 // src/features/Editor/EditorCanvas.tsx
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { useDroppable } from '@dnd-kit/core';
 import { 
@@ -40,8 +40,6 @@ export const EditorCanvas = () => {
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   
-  const [contextMenuKey, setContextMenuKey] = useState(0);
-  
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
 
@@ -59,10 +57,7 @@ export const EditorCanvas = () => {
         return;
       }
       
-      setContextMenuKey(prev => prev + 1);
-
       const targetId = findComponentId(event.target as HTMLElement);
-      // FIX: Use the 'interactionState' variable from the hook's scope.
       const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
       const isTargetAlreadySelected = targetId ? currentSelectedIds.includes(targetId) : false;
 
@@ -79,7 +74,7 @@ export const EditorCanvas = () => {
     return () => {
       window.removeEventListener('contextmenu', handleGlobalContextMenu, { capture: true });
     };
-  }, [interactionState, setInteractionState, setAnchorId]); // FIX: Add interactionState to dependency array.
+  }, [interactionState, setInteractionState, setAnchorId]);
 
 
   const handleCanvasClick = (e: React.MouseEvent) => {
@@ -108,7 +103,8 @@ export const EditorCanvas = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
-    <CanvasContextMenu key={contextMenuKey}>
+    // CRITICAL FIX: Removed the `key` prop which was causing the component to unmount during event propagation.
+    <CanvasContextMenu>
         <div 
             ref={setMergedRefs} 
             className={styles.canvasContainer} 
