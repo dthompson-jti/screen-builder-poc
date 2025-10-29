@@ -1,6 +1,5 @@
 // src/App.tsx
-import { useEffect } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { DndContext, DragOverlay, DropAnimation, defaultDropAnimationSideEffects, PointerSensor, useSensor, useSensors, rectIntersection } from '@dnd-kit/core';
 
 // Features
@@ -11,13 +10,7 @@ import { PlaceholderPanel } from './features/ComponentBrowser/PlaceholderPanel';
 import { EditorCanvas } from './features/Editor/EditorCanvas';
 import { MainToolbar } from './features/Editor/MainToolbar';
 import { PropertiesPanel } from './features/Editor/PropertiesPanel/PropertiesPanel';
-import { BrowserItemPreview } from './features/Editor/previews/BrowserItemPreview';
-import { ContainerPreview } from './features/Editor/previews/ContainerPreview';
-import PlainTextPreview from './features/Editor/previews/PlainTextPreview';
-import { TextInputPreview } from './features/Editor/previews/TextInputPreview';
-import DropdownPreview from './features/Editor/previews/DropdownPreview';
-import RadioButtonsPreview from './features/Editor/previews/RadioButtonsPreview';
-import LinkPreview from './features/Editor/previews/LinkPreview';
+import { DndDragOverlay } from './features/Editor/DndDragOverlay';
 import { PreviewView } from './features/Preview/PreviewView';
 import { SettingsPage } from './features/Settings/SettingsPage';
 
@@ -28,18 +21,15 @@ import { ToastContainer } from './components/ToastContainer';
 
 // Data and Hooks
 import { useCanvasDnd } from './data/useCanvasDnd';
-import { useUndoRedo } from './data/useUndoRedo';
+import { useEditorHotkeys } from './data/useEditorHotkeys';
 import { useUrlSync } from './data/useUrlSync';
 import {
-  canvasInteractionAtom,
   isComponentBrowserVisibleAtom,
   activeToolbarTabAtom,
   appViewModeAtom,
   isPropertiesPanelVisibleAtom,
   activeDndIdAtom,
 } from './data/atoms';
-import { canvasComponentsByIdAtom } from './data/historyAtoms';
-import { DndData } from './types';
 
 const dropAnimation: DropAnimation = {
   duration: 0,
@@ -56,8 +46,6 @@ const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
 
 function App() {
-  const allComponents = useAtomValue(canvasComponentsByIdAtom);
-  const setInteractionState = useSetAtom(canvasInteractionAtom);
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
   const isRightPanelVisible = useAtomValue(isPropertiesPanelVisibleAtom);
   const activeTabId = useAtomValue(activeToolbarTabAtom);
@@ -65,39 +53,10 @@ function App() {
   const activeDndId = useAtomValue(activeDndIdAtom);
   
   const { activeDndItem, handleDragStart, handleDragOver, handleDragEnd } = useCanvasDnd();
-  const { undo, redo } = useUndoRedo();
+  
+  // Centralized hotkey management
+  useEditorHotkeys();
   useUrlSync();
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const activeElement = document.activeElement;
-      const isTyping = activeElement?.tagName === 'INPUT' || activeElement?.tagName === 'TEXTAREA';
-      if (isTyping) return;
-
-      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-      const isUndo = (isMac ? event.metaKey : event.ctrlKey) && event.key === 'z' && !event.shiftKey;
-      const isRedo = (isMac ? event.metaKey && event.shiftKey : event.ctrlKey) && (event.key === 'y' || (isMac && event.key === 'z'));
-
-      if (isUndo) {
-        event.preventDefault();
-        undo();
-      } else if (isRedo) {
-        event.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [undo, redo]);
-
-  useEffect(() => {
-    if (!isLeftPanelVisible) {
-      setInteractionState({ mode: 'idle' });
-    }
-  }, [isLeftPanelVisible, setInteractionState]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -107,62 +66,6 @@ function App() {
       },
     })
   );
-
-  const renderDragOverlay = () => {
-    if (!activeDndItem) return null;
-
-    const activeData = activeDndItem.data.current as DndData;
-    const { isNew, name, icon } = activeData || {};
-
-    if (isNew) {
-      return <BrowserItemPreview name={name ?? ''} icon={icon ?? ''} />;
-    }
-    
-    const componentId = activeDndItem.id;
-    if (typeof componentId !== 'string') return null;
-
-    const activeComponent = allComponents[componentId];
-    if (!activeComponent) return null;
-    
-    if (activeComponent.componentType === 'layout') {
-      return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
-    }
-    
-    if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
-      const formComponent = activeComponent;
-      const commonProps = {
-          label: formComponent.properties.label,
-          content: formComponent.properties.content,
-          required: formComponent.properties.required,
-          hintText: formComponent.properties.hintText,
-          placeholder: formComponent.properties.placeholder,
-          isEditing: false,
-      };
-      
-      let previewElement;
-      switch (formComponent.properties.controlType) {
-          case 'plain-text':
-              previewElement = <PlainTextPreview {...commonProps} textElement={formComponent.properties.textElement} />;
-              break;
-          case 'dropdown':
-              previewElement = <DropdownPreview {...commonProps} />;
-              break;
-          case 'radio-buttons':
-              previewElement = <RadioButtonsPreview {...commonProps} />;
-              break;
-          case 'link':
-              previewElement = <LinkPreview {...commonProps} />;
-              break;
-          case 'text-input':
-          default:
-              previewElement = <TextInputPreview {...commonProps} />;
-              break;
-      }
-      return <div style={{ pointerEvents: 'none', opacity: 0.85 }}>{previewElement}</div>;
-    }
-    
-    return null;
-  };
 
   const renderLeftPanelContent = () => {
     if (!isLeftPanelVisible) return null;
@@ -228,7 +131,7 @@ function App() {
         <ToastContainer />
       </div>
        <DragOverlay dropAnimation={dropAnimation}>
-        {activeDndId ? renderDragOverlay() : null}
+        {activeDndId ? <DndDragOverlay activeItem={activeDndItem} /> : null}
       </DragOverlay>
     </DndContext>
   );

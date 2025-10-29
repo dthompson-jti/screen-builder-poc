@@ -16,7 +16,9 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ icon, label, hotkey, onClick, disabled, destructive }) => (
   <button className={`menu-item ${destructive ? 'destructive' : ''}`} onClick={onClick} disabled={disabled}>
-    <span className="material-symbols-rounded">{icon}</span>
+    <span className="checkmark-container">
+      <span className="material-symbols-rounded">{icon}</span>
+    </span>
     <span>{label}</span>
     {hotkey && <span className="hotkey">{hotkey}</span>}
   </button>
@@ -31,10 +33,6 @@ interface SelectionToolbarMenuProps {
   onDuplicate: () => void;
   onWrap: () => void;
   onUnwrap: () => void;
-  // These props are no longer needed as the component gets capabilities directly
-  // canWrap: boolean;
-  // canUnwrap: boolean;
-  // canRename: boolean;
 }
 
 export const SelectionToolbarMenu = ({

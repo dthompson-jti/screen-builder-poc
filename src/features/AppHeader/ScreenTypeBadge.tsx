@@ -26,19 +26,24 @@ export const ScreenTypeBadge = () => {
       </Tooltip>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="popover-content"
-          style={{ minWidth: 200, padding: 'var(--spacing-1)' }}
+          className="menu-popover"
+          style={{ minWidth: 200 }}
           sideOffset={5}
         >
           {screenTypeOptions.map(type => (
-            <DropdownMenu.Item
+            <DropdownMenu.CheckboxItem
               key={type}
               className="menu-item"
+              checked={screenType === type}
               onSelect={() => handleSelect(type)}
             >
-              <span className="checkmark-container" />
+              <span className="checkmark-container">
+                <DropdownMenu.ItemIndicator>
+                  <span className="material-symbols-rounded">check</span>
+                </DropdownMenu.ItemIndicator>
+              </span>
               <span>{screenTypeConfig[type].label}</span>
-            </DropdownMenu.Item>
+            </DropdownMenu.CheckboxItem>
           ))}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

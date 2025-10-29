@@ -21,12 +21,16 @@ export const FormNameMenu = ({ onRename }: FormNameMenuProps) => {
             onRename();
           }}
         >
-          <span className="material-symbols-rounded">edit</span>
+          <span className="checkmark-container">
+            <span className="material-symbols-rounded">edit</span>
+          </span>
           <span>Rename</span>
           <span className="hotkey">Enter</span>
         </DropdownMenu.Item>
         <DropdownMenu.Item className="menu-item" disabled>
-          <span className="material-symbols-rounded">history</span>
+          <span className="checkmark-container">
+            <span className="material-symbols-rounded">history</span>
+          </span>
           <span>Version History</span>
         </DropdownMenu.Item>
       </DropdownMenu.Content>

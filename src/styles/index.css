@@ -24,7 +24,6 @@
 @import './modal.css' layer(components);
 @import './popover.css' layer(components);
 @import './accordion.css' layer(components);
-@import './toggle.css' layer(components);
 @import './tooltip.css' layer(components);
 @import './toast.css' layer(components);
 

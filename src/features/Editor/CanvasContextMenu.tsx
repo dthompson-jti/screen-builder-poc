@@ -23,9 +23,14 @@ const MenuContent = () => {
     return (
       <>
         <div className="menu-item" style={{ cursor: 'default', color: 'var(--surface-fg-secondary)' }}>
-          What actions should go here?
+          <span className="checkmark-container" />
+          <span>No items selected</span>
         </div>
-        <div className="menu-item" style={{ cursor: 'default', opacity: 0.5 }}>Paste</div>
+        <ContextMenu.Separator style={{ height: '1px', backgroundColor: 'var(--surface-border-secondary)', margin: 'var(--spacing-1) 0' }} />
+        <div className="menu-item" style={{ opacity: 0.5 }} data-disabled>
+          <span className="checkmark-container" />
+          <span>Paste</span>
+        </div>
       </>
     );
   }
@@ -50,11 +55,15 @@ const MenuContent = () => {
     return (
       <>
         <button className="menu-item" onClick={handleWrap} disabled={!capabilities.canWrap}>
-          <span className="material-symbols-rounded">add_box</span>
+          <span className="checkmark-container">
+            <span className="material-symbols-rounded">add_box</span>
+          </span>
           <span>Wrap in Container</span>
         </button>
         <button className="menu-item destructive" onClick={handleDelete} disabled={!capabilities.canDelete}>
-          <span className="material-symbols-rounded">delete</span>
+          <span className="checkmark-container">
+            <span className="material-symbols-rounded">delete</span>
+          </span>
           <span>Delete [{targetIds.length}] Items</span>
         </button>
       </>

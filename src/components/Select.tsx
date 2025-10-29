@@ -20,14 +20,15 @@ interface SelectItemProps {
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, icon, ...props }, forwardedRef) => {
     return (
+      // Use the global .menu-item class for styling
       <RadixSelect.Item className="menu-item" {...props} ref={forwardedRef}>
-        {/* Slot A: Fixed-width container for alignment */}
+        {/* Slot A: Fixed-width container for alignment from global menu.css */}
         <div className="checkmark-container">
           {/* The checkmark, rendered by Radix when state is 'checked' */}
           <RadixSelect.ItemIndicator>
             <span className="material-symbols-rounded">check</span>
           </RadixSelect.ItemIndicator>
-          {/* The decorative icon, always rendered in the DOM but hidden via CSS when checked */}
+          {/* The decorative icon, hidden via CSS when checked */}
           {icon && <span className={`material-symbols-rounded ${styles.selectItemIcon}`}>{icon}</span>}
         </div>
         {/* Slot B: Label */}
@@ -53,7 +54,8 @@ export const Select = ({ children, value, onValueChange, placeholder }: SelectPr
         </RadixSelect.Icon>
       </RadixSelect.Trigger>
       <RadixSelect.Portal>
-        <RadixSelect.Content className={styles.selectContent} position="popper" sideOffset={5}>
+        {/* Use global .menu-popover for appearance and local .selectContent for width */}
+        <RadixSelect.Content className={`${styles.selectContent} menu-popover`} position="popper" sideOffset={5}>
           <RadixSelect.ScrollUpButton className="menu-item">
             <span className="material-symbols-rounded">expand_less</span>
           </RadixSelect.ScrollUpButton>

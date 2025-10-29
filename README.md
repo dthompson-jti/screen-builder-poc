@@ -22,6 +22,9 @@ This project uses a **feature-based architecture**. The goal is to group files b
 
 **Import Rule:** Always use relative paths (`./`, `../`). This project does not use TypeScript path aliases.
 
+### A Note on File Naming
+Due to environmental constraints during analysis and interaction with LLMs, all TypeScript files (`.ts`, `.tsx`, `.d.ts`) are represented with a `.txt` extension in provided file lists. The local development environment uses the correct file extensions, and all tooling (Vite, TypeScript, ESLint) is configured accordingly. This is a known, intentional convention for the purpose of these reviews.
+
 ## 3. State Management Architecture
 
 The project uses **Jotai** for its minimal, atomic state management model. State is divided into two tiers:

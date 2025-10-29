@@ -1,6 +1,6 @@
 // src/components/DataBindingModal.tsx
-import { useEffect } from 'react';
-import { useAtom, useSetAtom, useAtomValue } from 'jotai';
+import { useEffect, useState } from 'react';
+import { useAtom, useSetAtom, useAtomValue, atom } from 'jotai';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { DataNavigatorView } from '../features/DataNavigator/DataNavigatorView';
@@ -9,9 +9,6 @@ import {
   dataBindingRequestAtom,
   isDataBindingModalOpenAtom,
   dataBindingResultAtom,
-  modalPendingSelectionAtom,
-  modalSelectedNodeIdAtom,
-  modalComponentSearchQueryAtom,
 } from '../data/atoms';
 import {
   componentListData,
@@ -26,17 +23,24 @@ export const DataBindingModal = () => {
   const isOpen = useAtomValue(isDataBindingModalOpenAtom);
   const [request, setRequest] = useAtom(dataBindingRequestAtom);
   const setResult = useSetAtom(dataBindingResultAtom);
-  const [pendingSelection, setPendingSelection] = useAtom(modalPendingSelectionAtom);
-  const setSelectedNodeId = useSetAtom(modalSelectedNodeIdAtom);
-  const setSearchQuery = useSetAtom(modalComponentSearchQueryAtom);
+  
+  // State scoped to the modal
+  const [pendingSelection, setPendingSelection] = useState<BoundData | null>(null);
+  const [modalAtoms] = useState(() => ({
+    selectedNodeIdAtom: atom('arrest'),
+    searchQueryAtom: atom(''),
+  }));
+  const setSelectedNodeId = useSetAtom(modalAtoms.selectedNodeIdAtom);
+  const setSearchQuery = useSetAtom(modalAtoms.searchQueryAtom);
 
   useEffect(() => {
     if (request) {
       setPendingSelection(request.currentBinding || null);
+      // Reset modal state when it opens with a new request
       setSelectedNodeId('arrest');
       setSearchQuery('');
     }
-  }, [request, setPendingSelection, setSelectedNodeId, setSearchQuery]);
+  }, [request, setSelectedNodeId, setSearchQuery]);
 
   const handleClose = () => {
     setRequest(null);
@@ -88,10 +92,7 @@ export const DataBindingModal = () => {
           <DataNavigatorView
             treeData={componentTreeData}
             componentData={componentListData}
-            atoms={{
-              selectedNodeIdAtom: modalSelectedNodeIdAtom,
-              searchQueryAtom: modalComponentSearchQueryAtom,
-            }}
+            atoms={modalAtoms}
             renderComponentItem={(component) => (
               <SelectableListItem
                 component={component}

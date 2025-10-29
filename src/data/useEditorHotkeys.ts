@@ -3,12 +3,14 @@ import { useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { canvasInteractionAtom, selectedCanvasComponentIdsAtom } from './atoms';
 import { canvasComponentsByIdAtom, commitActionAtom } from './historyAtoms';
+import { useUndoRedo } from './useUndoRedo';
 
 export const useEditorHotkeys = () => {
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
+  const { undo, redo } = useUndoRedo();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -22,10 +24,26 @@ export const useEditorHotkeys = () => {
         return;
       }
       
-      if (interactionState.mode === 'editing') return;
-
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const isCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+      // Undo/Redo Logic
+      const isUndo = isCtrlOrCmd && event.key === 'z' && !event.shiftKey;
+      const isRedo = (isMac && isCtrlOrCmd && event.shiftKey && event.key === 'z') || (!isMac && isCtrlOrCmd && event.key === 'y');
+
+      if (isUndo) {
+        event.preventDefault();
+        undo();
+        return;
+      }
+      if (isRedo) {
+        event.preventDefault();
+        redo();
+        return;
+      }
+      
+      // Editor-specific hotkeys (only when not editing text)
+      if (interactionState.mode === 'editing') return;
 
       if ((event.key === 'Delete' || event.key === 'Backspace') && selectedIds.length > 0) {
         event.preventDefault();
@@ -93,5 +111,5 @@ export const useEditorHotkeys = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [interactionState, selectedIds, allComponents, commitAction, setInteractionState]);
+  }, [interactionState, selectedIds, allComponents, commitAction, setInteractionState, undo, redo]);
 };

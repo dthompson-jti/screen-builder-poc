@@ -12,7 +12,7 @@ export const SelectableListItem = ({ component, isSelected, onSelect }: Selectab
   const iconStyle = component.iconColor ? { color: component.iconColor } : {};
   // Use the global 'menu-item' class for shared styling.
   // Use the Radix-standard 'data-state' attribute for selection state.
-  const className = `menu-item ${panelStyles.selectable}`;
+  const className = `menu-item`;
 
   return (
     <li 

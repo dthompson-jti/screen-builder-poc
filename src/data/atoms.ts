@@ -13,8 +13,6 @@ export type SettingsLayoutMode = 'single-column' | 'two-column';
 export type ScreenType = 'case-init' | 'insert' | 'update' | 'search' | 'folder-view' | 'header-screen';
 
 export const appViewModeAtom = atom<AppViewMode>('editor');
-// FIX: Ensure menu is closed by default.
-export const isMenuOpenAtom = atom(false);
 export const isSettingsMenuOpenAtom = atom(false);
 export const isShowBreadcrumbAtom = atom(true);
 export const activeToolbarTabAtom = atom<ToolbarTabId>('data');
@@ -139,11 +137,6 @@ interface DataBindingResult {
 }
 
 export const dataBindingResultAtom = atom<DataBindingResult | null>(null);
-
-// --- Atoms Scoped to the Modal ---
-export const modalPendingSelectionAtom = atom<BoundData | null>(null);
-export const modalSelectedNodeIdAtom = atom<string>('arrest');
-export const modalComponentSearchQueryAtom = atom('');
 
 // =================================================================
 //                         Preview Mode State

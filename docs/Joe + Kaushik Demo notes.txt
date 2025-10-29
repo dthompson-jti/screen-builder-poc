@@ -1,0 +1,57 @@
+Explore, data type in the data navigator, on hover, progressive.
+
+---------
+
+
+multi-add
+
+what would more complex, e.g.: 6 panels look-up
+
+like properties on right, but what does it look like with full set of properties?
+
+See path full time, always, not a toggle
+
+discussion re: doc def.
+
+Joe, kind of like the split, top = nav, lower = content... could have doc def on bottom
+
+Other examples, statues... sometimes person
+
+entities... 
+
+idea: checkbox for what to show... when doing folder views, want transients, in other case don't want.  would also be nice to classify widgets better (some for data insert, some for data viewing)... filter out the ones
+
+need a way out incase our filtering isn't right for an edge case
+
+common vs. uncommon?  not clear how to filter... but a way to show all might be needed.... maybe if entity is shown, there is a way to navigate to it from the bottom
+
+=========
+
+data-first vs. UI-type first
+
+one scenario: help with show-if... other scenarios?
+
+KM: See value for above, but... JJ... thought about static binding once... could be a good enhancement... makes sense for show if, but don't see much use for binding to data-later.  this has some relationship to repathing.  could lead to less custom fields.  general is a reasonable name.
+
+data binding might be needed for repath anyways.  transients are a use-case for this.
+
+========
+
+JJ. Nod towards single column, but some are more important.  Put in main settings. API ewnabled, read only.  Show key things as badges by name.
+
+
+========
+
+JJ. Suggest having a legacy mode
+
+--------
+
+Like (love) template idea, but how would you do it?
+
+Does template need to be scoped to an entity?  
+
+--------
+
+I like it a lot better
+
+

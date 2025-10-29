@@ -120,8 +120,4 @@
 .componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
 
-.componentListItem.selectable {
-  cursor: pointer;
-}
-
-/* REMOVED: .selected state styles are now handled by the global menu.css via [data-state="checked"] */
+/* REMOVED: .selectable and .selected styles are now handled by the global menu.css */
