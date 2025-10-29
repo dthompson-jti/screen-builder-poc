@@ -1,0 +1,27 @@
+/* src/tooltip.css */
+
+.tooltip-content {
+  background-color: var(--primitives-grey-900);
+  color: var(--surface-fg-white);
+  border-radius: var(--spacing-1);
+  padding: var(--spacing-1p5) var(--spacing-3);
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: var(--surface-shadow-md);
+  border: 1px solid var(--primitives-grey-800);
+  user-select: none;
+  z-index: 2100; /* Ensure it's above other UI */
+}
+
+.tooltip-content[data-state='delayed-open'] {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.tooltip-content[data-state='closed'] {
+  animation: fadeOut 0.15s ease-in;
+}
+
+.tooltip-arrow {
+  fill: var(--primitives-grey-800);
+}

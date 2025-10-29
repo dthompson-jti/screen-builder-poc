@@ -76,48 +76,48 @@ export const DataBindingModal = () => {
   return (
     <Modal isOpen={isOpen} onClose={handleClose} width="600px" height="90vh">
       <div className={styles.dataBindingModalContainer}>
-        <div className={styles.modalHeader}>
+        <Modal.Header>
           <h3>Select Data Binding</h3>
           <Tooltip content="Close">
             <Button variant="quaternary" size="s" iconOnly onClick={handleClose} aria-label="Close">
               <span className="material-symbols-rounded">close</span>
             </Button>
           </Tooltip>
-        </div>
-        <div className={styles.modalContent}>
-            <DataNavigatorView
-              treeData={componentTreeData}
-              componentData={componentListData}
-              atoms={{
-                selectedNodeIdAtom: modalSelectedNodeIdAtom,
-                searchQueryAtom: modalComponentSearchQueryAtom,
-              }}
-              renderComponentItem={(component) => (
-                <SelectableListItem
-                  component={component}
-                  isSelected={pendingSelection?.fieldId === component.id}
-                  onSelect={handleSelect}
+        </Modal.Header>
+        <Modal.Content>
+          <DataNavigatorView
+            treeData={componentTreeData}
+            componentData={componentListData}
+            atoms={{
+              selectedNodeIdAtom: modalSelectedNodeIdAtom,
+              searchQueryAtom: modalComponentSearchQueryAtom,
+            }}
+            renderComponentItem={(component) => (
+              <SelectableListItem
+                component={component}
+                isSelected={pendingSelection?.fieldId === component.id}
+                onSelect={handleSelect}
+              />
+            )}
+            renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
+                <ConnectionsDropdown 
+                    navigator={navigator} 
+                    selectedNodeId={selectedNodeId} 
+                    onClose={onClose}
                 />
-              )}
-              renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
-                  <ConnectionsDropdown 
-                      navigator={navigator} 
-                      selectedNodeId={selectedNodeId} 
-                      onClose={onClose}
-                  />
-              )}
-              showBreadcrumb={true}
-              isInsideModal={true}
-              autoFocusSearch={true}
-            />
-        </div>
-        <div className={styles.modalFooter}>
+            )}
+            showBreadcrumb={true}
+            isInsideModal={true}
+            autoFocusSearch={true}
+          />
+        </Modal.Content>
+        <Modal.Footer>
           <Button variant="secondary" size="m" onClick={handleUnbind}>Unbind</Button>
           <div className={styles.footerActionsRight}>
             <Button variant="secondary" size="m" onClick={handleClose}>Cancel</Button>
             <Button variant="primary" size="m" onClick={handleApply}>Apply</Button>
           </div>
-        </div>
+        </Modal.Footer>
       </div>
     </Modal>
   );

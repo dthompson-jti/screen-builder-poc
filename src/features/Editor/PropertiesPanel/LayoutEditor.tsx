@@ -6,6 +6,7 @@ import { registerPropertyEditor, PropertyEditorProps } from './propertyEditorReg
 import { Select, SelectItem } from '../../../components/Select';
 import { Tooltip } from '../../../components/Tooltip';
 import { Switch } from '../../../components/Switch';
+import { Accordion, AccordionItem } from '../../../components/Accordion';
 import { getComponentName } from '../canvasUtils';
 import styles from './PropertiesPanel.module.css';
 
@@ -55,40 +56,39 @@ const AppearancePropertiesEditor = ({ component }: { component: LayoutComponent 
   };
 
   return (
-    <div className={styles.propSection}>
-      <h4>Appearance</h4>
-      <div className={styles.propItem}>
-        <label>Style</label>
-        <div className={styles.styleSwatchGrid}>
-            {presetOptions.map(preset => {
-                const isSelected = appearance.type === preset.type && appearance.bordered === preset.bordered;
-                return (
-                    <StyleSwatch 
-                        key={preset.id}
-                        type={preset.type}
-                        bordered={preset.bordered}
-                        isSelected={isSelected}
-                        onClick={() => handleAppearanceChange({ type: preset.type, bordered: preset.bordered })}
-                        title={preset.label}
-                    />
-                );
-            })}
+    <AccordionItem value="appearance" trigger="Appearance">
+        <div className={styles.propItem}>
+            <label>Style</label>
+            <div className={styles.styleSwatchGrid}>
+                {presetOptions.map(preset => {
+                    const isSelected = appearance.type === preset.type && appearance.bordered === preset.bordered;
+                    return (
+                        <StyleSwatch 
+                            key={preset.id}
+                            type={preset.type}
+                            bordered={preset.bordered}
+                            isSelected={isSelected}
+                            onClick={() => handleAppearanceChange({ type: preset.type, bordered: preset.bordered })}
+                            title={preset.label}
+                        />
+                    );
+                })}
+            </div>
         </div>
-      </div>
-      <div className={styles.propItem}>
-        <label>Padding</label>
-        <Select
-          value={appearance.padding}
-          onValueChange={value => handleAppearanceChange({ padding: value as AppearanceProperties['padding'] })}
-        >
-          <SelectItem value="none">None</SelectItem>
-          <SelectItem value="sm">Small (8px)</SelectItem>
-          <SelectItem value="md">Medium (16px)</SelectItem>
-          <SelectItem value="lg">Large (24px)</SelectItem>
-          <SelectItem value="xl">Extra Large (32px)</SelectItem>
-        </Select>
-      </div>
-    </div>
+        <div className={styles.propItem}>
+            <label>Padding</label>
+            <Select
+            value={appearance.padding}
+            onValueChange={value => handleAppearanceChange({ padding: value as AppearanceProperties['padding'] })}
+            >
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="sm">Small (8px)</SelectItem>
+            <SelectItem value="md">Medium (16px)</SelectItem>
+            <SelectItem value="lg">Large (24px)</SelectItem>
+            <SelectItem value="xl">Extra Large (32px)</SelectItem>
+            </Select>
+        </div>
+    </AccordionItem>
   );
 };
 
@@ -120,8 +120,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
   if (!isParentGrid && !isParentWrappingRow) return null;
 
   return (
-    <div className={styles.propSection}>
-      <h4>Layout (in Parent)</h4>
+    <AccordionItem value="contextual-layout" trigger="Layout (in Parent)">
       {isParentGrid && (
         <div className={styles.propItem}>
           <label>Column Span</label>
@@ -147,7 +146,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
           />
         </div>
       )}
-    </div>
+    </AccordionItem>
   );
 };
 
@@ -171,9 +170,8 @@ const LayoutEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   const arrangement = component.properties.arrangement;
   
   return (
-    <>
-      <div className={styles.propSection}>
-        <h4>Layout</h4>
+    <Accordion defaultValue={['layout', 'appearance', 'contextual-layout']}>
+      <AccordionItem value="layout" trigger="Layout">
         <div className={styles.propItem}>
           <label>Arrangement</label>
           <Select 
@@ -240,10 +238,10 @@ const LayoutEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             <SelectItem value="lg">Large (24px)</SelectItem>
           </Select>
         </div>
-      </div>
+      </AccordionItem>
       <AppearancePropertiesEditor component={component} />
       <ContextualLayoutProperties component={component} />
-    </>
+    </Accordion>
   );
 };
 

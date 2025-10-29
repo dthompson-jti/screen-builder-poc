@@ -19,6 +19,16 @@
 @import './components/navigator.css' layer(base);
 @import './appearance.css' layer(components);
 
+/* 4. Radix Primitive Themes */
+@import './modal.css' layer(components);
+@import './popover.css' layer(components);
+@import './toggle-group.css' layer(components);
+@import './accordion.css' layer(components);
+@import './toggle.css' layer(components);
+@import './tooltip.css' layer(components);
+@import './toast.css' layer(components);
+
+
 :root {
   --font-family-sans: 'Inter', sans-serif;
 }

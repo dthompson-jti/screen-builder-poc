@@ -1,7 +1,6 @@
 // src/components/Tooltip.tsx
 import React from 'react';
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import styles from './Tooltip.module.css';
 
 interface TooltipProps {
   children: React.ReactElement;
@@ -24,9 +23,9 @@ export const Tooltip = ({ children, content, delay = 300, side = 'top' }: Toolti
       <RadixTooltip.Root delayDuration={delay}>
         <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
         <RadixTooltip.Portal>
-          <RadixTooltip.Content className={styles.tooltipContent} side={side} sideOffset={5}>
+          <RadixTooltip.Content className="tooltip-content" side={side} sideOffset={5}>
             {content}
-            <RadixTooltip.Arrow className={styles.tooltipArrow} />
+            <RadixTooltip.Arrow className="tooltip-arrow" />
           </RadixTooltip.Content>
         </RadixTooltip.Portal>
       </RadixTooltip.Root>

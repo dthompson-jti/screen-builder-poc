@@ -25,7 +25,6 @@ import { SettingsPage } from './features/Settings/SettingsPage';
 import { ResizablePanel } from './components/ResizablePanel';
 import { DataBindingModal } from './components/DataBindingModal';
 import { ToastContainer } from './components/ToastContainer';
-import { CanvasContextMenu } from './features/Editor/CanvasContextMenu';
 
 // Data and Hooks
 import { useCanvasDnd } from './data/useCanvasDnd';
@@ -55,10 +54,6 @@ const dropAnimation: DropAnimation = {
 
 const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
-
-const ContextMenuRenderer = () => {
-  return <CanvasContextMenu />;
-};
 
 function App() {
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -231,7 +226,6 @@ function App() {
         {renderMainContent()}
         <DataBindingModal />
         <ToastContainer />
-        <ContextMenuRenderer />
       </div>
        <DragOverlay dropAnimation={dropAnimation}>
         {activeDndId ? renderDragOverlay() : null}

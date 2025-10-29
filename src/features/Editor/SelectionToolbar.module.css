@@ -1,10 +1,10 @@
-/* src/features/Editor/EditorCanvas/SelectionToolbar.module.css */
+/* src/features/Editor/SelectionToolbar.module.css */
 .toolbarWrapper {
   position: absolute;
   top: -44px; /* Adjusted to give more breathing room above selection */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 10;
 }
 
 .selectionToolbar {
@@ -31,28 +31,6 @@
   height: 20px;
   background-color: var(--primitives-dark-tint-700);
   margin: 0 var(--spacing-1);
-}
-
-.menuPopover {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  width: max-content; /* Allow it to grow to fit content */
-  min-width: 240px;   /* Ensure a healthy minimum width */
-  /* FIX: Use primary background for consistency with all other popovers */
-  background-color: var(--surface-bg-primary);
-  /* FIX: Use consistent border-radius */
-  border-radius: var(--spacing-2);
-  border: 1px solid var(--surface-border-secondary);
-  box-shadow: var(--surface-shadow-xl);
-  padding: var(--spacing-1);
-  z-index: 1001; /* Ensure menu is on top */
-}
-
-/* ADDED: Ensures menu items do not wrap their content */
-.menuPopover > .menu-item,
-.menuPopover > [role="menuitem"] {
-  white-space: nowrap;
 }
 
 .menuDivider {

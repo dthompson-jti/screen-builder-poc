@@ -4,10 +4,8 @@ import { commitActionAtom } from '../../../data/historyAtoms';
 import { LayoutComponent, CanvasComponent } from '../../../types';
 import { registerPropertyEditor, PropertyEditorProps } from './propertyEditorRegistry';
 import { Select, SelectItem } from '../../../components/Select';
+import { Accordion, AccordionItem } from '../../../components/Accordion';
 import styles from './PropertiesPanel.module.css';
-
-// The Root Editor is a simplified version of the Layout Editor.
-// It does not include Appearance or Contextual Layout properties.
 
 const RootEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   const commitAction = useSetAtom(commitActionAtom);
@@ -29,9 +27,8 @@ const RootEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   const arrangement = component.properties.arrangement;
   
   return (
-    <>
-      <div className={styles.propSection}>
-        <h4>Layout</h4>
+    <Accordion defaultValue={['layout']}>
+      <AccordionItem value="layout" trigger="Layout">
         <div className={styles.propItem}>
           <label>Arrangement</label>
           <Select 
@@ -98,12 +95,11 @@ const RootEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             <SelectItem value="lg">Large (24px)</SelectItem>
           </Select>
         </div>
-      </div>
-    </>
+      </AccordionItem>
+    </Accordion>
   );
 };
 
-// We can register this under a unique key for the dispatcher to find.
 registerPropertyEditor('root', RootEditor);
 
 export default RootEditor;

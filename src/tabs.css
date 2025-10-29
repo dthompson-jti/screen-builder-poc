@@ -1,15 +1,23 @@
-/* src/components/tabs.css */
-/* Single source of truth for all tab component styles. */
+/* src/tabs.css */
+/* Single source of truth for all tab component styles, adapted for Radix. */
 
-.tab-group, .panel-tabs {
+.tab-list {
   display: flex;
-  position: relative; /* Positioning context for the underline */
+  position: relative; /* Anchor for the underline */
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
 }
 
-.tab-group {
+.tab-group .tab-list {
   gap: var(--spacing-2);
   margin-left: auto;
   margin-right: auto;
+}
+
+.panel-tabs .tab-list {
+  width: 100%;
 }
 
 .tab-button {
@@ -32,7 +40,12 @@
   padding: var(--spacing-3) 0;
 }
 
-.tab-button.active, .tab-button:hover:not(:disabled) {
+.tab-button:hover:not([data-state='active']),
+.tab-button:focus-visible:not([data-state='active']) {
+  color: var(--surface-fg-theme-strong);
+}
+
+.tab-button[data-state='active'] {
   color: var(--surface-fg-theme-strong);
 }
 
@@ -41,21 +54,16 @@
   cursor: not-allowed;
 }
 
-/* FIX: Remove the tab-bar-line rule entirely. */
-
 .tab-underline {
   position: absolute;
   height: 2px;
   background-color: var(--surface-fg-theme-strong);
-  transition: left 0.3s ease, width 0.3s ease;
   z-index: 2;
-  /* FIX: Use a robust calc() function to perfectly align the underline */
-  /* with the parent's border by accounting for padding and border width. */
-  bottom: calc(-1 * (var(--spacing-2) + 1px));
+  /* Position the underline perfectly on the AppHeader's bottom border */
+  bottom: -10px;
 }
 
-/* FIX: The PropertiesPanel has no padding, so its underline needs a simpler offset. */
-/* This specific rule overrides the general one above. */
+/* For panel tabs, align with the bottom of the tab container */
 .panel-tabs .tab-underline {
   bottom: -1px;
 }

@@ -1,7 +1,7 @@
 // src/components/Toast.tsx
-import { motion } from 'framer-motion';
+import React from 'react';
+import * as RadixToast from '@radix-ui/react-toast';
 import { Toast as ToastType } from '../data/toastAtoms';
-import styles from './Toast.module.css';
 
 interface ToastProps {
   toast: ToastType;
@@ -9,15 +9,9 @@ interface ToastProps {
 
 export const Toast: React.FC<ToastProps> = ({ toast }) => {
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 50, scale: 0.3 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 20, scale: 0.5, transition: { duration: 0.2 } }}
-      className={styles.toastWrapper}
-    >
+    <RadixToast.Root className="toast-root">
       <span className="material-symbols-rounded">{toast.icon}</span>
-      <span>{toast.message}</span>
-    </motion.div>
+      <RadixToast.Description>{toast.message}</RadixToast.Description>
+    </RadixToast.Root>
   );
 };

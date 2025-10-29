@@ -1,7 +1,6 @@
 // src/components/Modal.tsx
-import React, { useRef, useEffect } from 'react';
-import { useOnClickOutside } from '../data/useOnClickOutside';
-import styles from './Modal.module.css';
+import React from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,40 +10,41 @@ interface ModalProps {
   height?: string | number;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, width = 'auto', height = 'auto' }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOnClickOutside(modalRef, onClose);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) {
-    return null;
-  }
-
+const Modal: React.FC<ModalProps> & {
+  Header: React.FC<React.PropsWithChildren<unknown>>;
+  Content: React.FC<React.PropsWithChildren<unknown>>;
+  Footer: React.FC<React.PropsWithChildren<unknown>>;
+} = ({ isOpen, onClose, children, width = 'auto', height = 'auto' }) => {
   return (
-    <div className={styles.modalBackdrop}>
-      <div 
-        ref={modalRef} 
-        className={styles.modalContainer}
-        style={{ width, height }}
-        role="dialog"
-        aria-modal="true"
-      >
-        {children}
-      </div>
-    </div>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="modal-backdrop" />
+        <Dialog.Content 
+          className="modal-container" 
+          style={{ width, height }}
+          onEscapeKeyDown={onClose}
+        >
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };
+
+const ModalHeader: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+  <div className="modal-header">{children}</div>
+);
+
+const ModalContent: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+  <div className="modal-content">{children}</div>
+);
+
+const ModalFooter: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+  <div className="modal-footer">{children}</div>
+);
+
+Modal.Header = ModalHeader;
+Modal.Content = ModalContent;
+Modal.Footer = ModalFooter;
+
+export { Modal };

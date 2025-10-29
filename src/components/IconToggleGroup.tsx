@@ -1,6 +1,6 @@
 // src/components/IconToggleGroup.tsx
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { Tooltip } from './Tooltip';
-import styles from './IconToggleGroup.module.css';
 
 interface IconToggleOption<T extends string> {
   value: T;
@@ -21,23 +21,31 @@ export const IconToggleGroup = <T extends string>({
   onValueChange,
   id,
 }: IconToggleGroupProps<T>) => {
+  const handleValueChange = (newValue: T) => {
+    if (newValue) { // Radix onValueChange can be empty if all are deselected
+      onValueChange(newValue);
+    }
+  };
+
   return (
-    <div className={styles.toggleGroup} role="radiogroup" id={id}>
+    <ToggleGroup.Root
+      type="single"
+      className="toggle-group"
+      value={value}
+      onValueChange={handleValueChange}
+      aria-label={id}
+    >
       {options.map((option) => (
         <Tooltip content={option.label} key={option.value}>
-          <button
-            type="button"
-            role="radio"
-            aria-checked={value === option.value}
-            data-state={value === option.value ? 'on' : 'off'}
-            className={styles.toggleButton}
-            onClick={() => onValueChange(option.value)}
+          <ToggleGroup.Item
+            value={option.value}
             aria-label={option.label}
+            className="toggle-group-item"
           >
             <span className="material-symbols-rounded">{option.icon}</span>
-          </button>
+          </ToggleGroup.Item>
         </Tooltip>
       ))}
-    </div>
+    </ToggleGroup.Root>
   );
 };

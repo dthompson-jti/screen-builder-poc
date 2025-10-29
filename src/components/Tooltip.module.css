@@ -1,40 +1,63 @@
-/* src/components/Tooltip.module.css */
-/* NEW FILE */
-
-.tooltipContent {
+/* src/components/Toast.module.css */
+.toastRoot {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
   background-color: var(--primitives-grey-900);
   color: var(--surface-fg-white);
-  border-radius: var(--spacing-1);
-  padding: var(--spacing-1p5) var(--spacing-3);
-  font-size: 0.85em;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--spacing-2);
+  box-shadow: var(--surface-shadow-lg);
+  font-size: 0.9em;
   font-weight: 500;
-  line-height: 1.4;
-  box-shadow: var(--surface-shadow-md);
   border: 1px solid var(--primitives-grey-800);
-  user-select: none;
-  z-index: 2100; /* Ensure it's above other UI */
 }
 
-/* Animate using Radix's data states for robustness */
-.tooltipContent[data-state='delayed-open'] {
-  animation: fadeIn 0.15s ease-out;
+.toastRoot .material-symbols-rounded {
+  font-size: 20px;
+  color: var(--surface-fg-secondary);
 }
 
-.tooltipContent[data-state='closed'] {
-  animation: fadeOut 0.15s ease-in;
+.toastRoot[data-state='open'] {
+  animation: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toastRoot[data-state='closed'] {
+  animation: hide 100ms ease-in;
+}
+.toastRoot[data-swipe='move'] {
+  transform: translateY(var(--radix-toast-swipe-move-y));
+}
+.toastRoot[data-swipe='cancel'] {
+  transform: translateY(0);
+  transition: transform 200ms ease-out;
+}
+.toastRoot[data-swipe='end'] {
+  animation: swipeOut 100ms ease-out;
 }
 
-.tooltipArrow {
-  fill: var(--primitives-grey-800);
+@keyframes hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-2px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes slideIn {
+  from {
+    transform: translateY(calc(100% + var(--viewport-padding)));
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(-2px) scale(0.98); }
+@keyframes swipeOut {
+  from {
+    transform: translateY(var(--radix-toast-swipe-end-y));
+  }
+  to {
+    transform: translateY(calc(100% + var(--viewport-padding)));
+  }
 }

@@ -1,15 +1,14 @@
-/* src/components/IconToggleGroup.module.css */
+/* src/toggle-group.css */
 
-.toggleGroup {
-  display: flex;
+.toggle-group {
+  display: inline-flex;
   align-items: center;
   border-radius: 6px;
   overflow: hidden;
-  width: 100%;
-  position: relative; /* For z-index context */
+  position: relative;
 }
 
-.toggleButton {
+.toggle-group-item {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,42 +16,46 @@
   background-color: var(--surface-bg-primary);
   color: var(--surface-fg-secondary);
   border: 1px solid var(--surface-border-primary);
-  margin-left: -1px; /* Collapse borders */
-  position: relative; /* for z-index */
+  margin-left: -1px;
+  position: relative;
   cursor: pointer;
-  /* Delay z-index change to prevent flicker on exit */
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, z-index 0s 0.2s;
   height: 38px;
   flex: 1;
   border-radius: 0;
 }
 
-.toggleGroup button:first-child {
+.toggle-group > .toggle-group-item:first-child {
   margin-left: 0;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
 }
-.toggleGroup button:last-child {
+.toggle-group > .toggle-group-item:last-child {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-.toggleButton:hover:not([data-state='on']) {
+.toggle-group-item:hover:not([data-state='on']) {
   border-color: var(--control-border-tertiary-hover);
   background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-tertiary-hover);
-  z-index: 1; /* Bring hovered border to front */
+  z-index: 1;
   transition-delay: 0s;
 }
 
-.toggleButton[data-state='on'] {
+.toggle-group-item[data-state='on'] {
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
   border-color: var(--control-border-selected);
-  z-index: 2; /* Selected is higher than hover */
+  z-index: 2;
   cursor: default;
 }
 
-.toggleButton .material-symbols-rounded {
+.toggle-group-item .material-symbols-rounded {
   font-size: 20px;
+  transition: font-variation-settings 0.2s;
+}
+
+.toggle-group-item[data-state='on'] .material-symbols-rounded {
+  font-variation-settings: 'FILL' 1;
 }

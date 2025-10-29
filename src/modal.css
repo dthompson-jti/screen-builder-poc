@@ -1,0 +1,81 @@
+/* src/modal.css */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 12, 18, 0.7);
+  z-index: 1000;
+}
+.modal-backdrop[data-state='open'] {
+  animation: modal-overlay-show 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-backdrop[data-state='closed'] {
+  animation: modal-overlay-hide 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--surface-bg-primary);
+  border-radius: var(--spacing-3);
+  box-shadow: var(--surface-shadow-2xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--surface-border-primary);
+  z-index: 1001;
+}
+.modal-container[data-state='open'] {
+  animation: modal-content-show 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-container[data-state='closed'] {
+  animation: modal-content-hide 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-overlay-show {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modal-overlay-hide {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modal-content-show {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes modal-content-hide {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(.96); }
+}
+
+/* Sub-component styles for Modal structure */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--surface-border-secondary);
+  flex-shrink: 0;
+  background-color: var(--surface-bg-secondary);
+}
+
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  overflow-x: hidden;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--surface-border-secondary);
+  flex-shrink: 0;
+  background-color: var(--surface-bg-secondary);
+}

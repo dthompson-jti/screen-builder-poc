@@ -9,6 +9,7 @@ import { Switch } from '../../../components/Switch';
 import { Tooltip } from '../../../components/Tooltip';
 import { IconToggleGroup } from '../../../components/IconToggleGroup';
 import { Select, SelectItem } from '../../../components/Select';
+import { Accordion, AccordionItem } from '../../../components/Accordion';
 import { getComponentName } from '../canvasUtils';
 import styles from './PropertiesPanel.module.css';
 
@@ -50,8 +51,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
     if (!isParentGrid && !isParentWrappingRow) return null;
   
     return (
-      <div className={styles.propSection}>
-        <h4>Layout (in Parent)</h4>
+      <AccordionItem value="contextual-layout" trigger="Layout (in Parent)">
         {isParentGrid && (
             <div className={styles.propItem}>
             <label>Column Span</label>
@@ -77,7 +77,7 @@ const ContextualLayoutProperties = ({ component }: { component: FormComponent | 
             />
           </div>
         )}
-      </div>
+      </AccordionItem>
     );
 };
 
@@ -132,9 +132,8 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
   if (controlType === 'plain-text') {
     const isHeading = component.properties.textElement?.startsWith('h');
     return (
-      <>
-        <div className={styles.propSection}>
-          <h4>Text Settings</h4>
+      <Accordion defaultValue={['text-settings', 'contextual-layout']}>
+        <AccordionItem value="text-settings" trigger="Text Settings">
           {isHeading && (
             <div className={styles.propItem}>
               <label>Heading Level</label>
@@ -155,17 +154,16 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
               rows={6}
             />
           </div>
-        </div>
+        </AccordionItem>
         <ContextualLayoutProperties component={component} />
-      </>
+      </Accordion>
     );
   }
 
   if (controlType === 'link') {
     return (
-        <>
-            <div className={styles.propSection}>
-                <h4>Link Settings</h4>
+        <Accordion defaultValue={['link-settings', 'contextual-layout']}>
+            <AccordionItem value="link-settings" trigger="Link Settings">
                 <div className={styles.propItem}>
                     <label htmlFor={`content-${component.id}`}>Text</label>
                     <input
@@ -195,16 +193,15 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
                         <SelectItem value="_blank">Open in new tab</SelectItem>
                     </Select>
                 </div>
-            </div>
+            </AccordionItem>
             <ContextualLayoutProperties component={component} />
-        </>
+        </Accordion>
     );
   }
 
   return (
-    <>
-      <div className={styles.propSection}>
-        <h4>Display</h4>
+    <Accordion defaultValue={['display', 'data', 'field-settings', 'validation', 'contextual-layout']}>
+      <AccordionItem value="display" trigger="Display">
         <div className={styles.propItem}>
           <label htmlFor="display-as-toggle">Display as</label>
           <IconToggleGroup
@@ -214,10 +211,9 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             onValueChange={value => handlePropertyChange({ controlType: value })}
           />
         </div>
-      </div>
+      </AccordionItem>
 
-      <div className={styles.propSection}>
-        <h4>Data</h4>
+      <AccordionItem value="data" trigger="Data">
         <div className={styles.propItem}>
           <label>Data binding</label>
           <DataBindingPicker 
@@ -225,10 +221,9 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             onOpen={handleOpenBindingModal}
           />
         </div>
-      </div>
+      </AccordionItem>
 
-      <div className={styles.propSection}>
-        <h4>Field Settings</h4>
+      <AccordionItem value="field-settings" trigger="Field Settings">
         <div className={styles.propItem}>
           <label htmlFor={`label-${component.id}`}>Label</label>
           <input
@@ -258,10 +253,9 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             onChange={(e) => handlePropertyChange({ hintText: e.target.value })}
           />
         </div>
-      </div>
+      </AccordionItem>
 
-      <div className={styles.propSection}>
-        <h4>Validation</h4>
+      <AccordionItem value="validation" trigger="Validation">
         <div className={styles.propItemToggle}>
           <label htmlFor={`required-${component.id}`}>Required</label>
           <Switch
@@ -270,10 +264,10 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             onCheckedChange={(checked) => handlePropertyChange({ required: checked })}
           />
         </div>
-      </div>
+      </AccordionItem>
 
       <ContextualLayoutProperties component={component} />
-    </>
+    </Accordion>
   );
 };
 
