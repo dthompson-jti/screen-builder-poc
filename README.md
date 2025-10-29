@@ -33,6 +33,10 @@ The project uses **Jotai** for its minimal, atomic state management model. State
 
 To modify the canvas state, you **must** use the `commitActionAtom`. This is a write-only atom that acts as the central dispatcher for all mutations, ensuring every change is predictable, testable, and automatically recorded in the undo/redo history.
 
+### Reliable Undo/Redo with State Restoration
+
+The undo/redo system is architected for a professional user experience. Beyond just reverting the state of the canvas components, it also saves and restores the **complete interaction state** (including the user's current selection) with every action. This ensures that undoing an action feels like a true reversal of the last step, perfectly restoring the user's context without losing their selection.
+
 ## 4. Canvas & Interaction Architecture
 
 The canvas is built on a contract of stability, clarity, and intuitive interaction.
@@ -49,12 +53,16 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Ctrl/Cmd + Click:** Toggles a single component into or out of the current selection without deselecting others.
 -   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor". This is based on the component order in the data tree, not visual position, ensuring predictable behavior. This is constrained to components that share the same parent container.
 
-### Action Discoverability ("Smart Toolbar" & Context Menu)
+### Action Discoverability ("Intelligent Disclosure")
 -   **Multiple Access Points:** Actions can be triggered via the `SelectionToolbar`, the right-click `CanvasContextMenu`, and keyboard hotkeys.
--   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible in any given context. This ensures consistency across all UI surfaces.
--   **Discoverable & Disabled:** Both the `SelectionToolbar`'s `[...]` menu and the `CanvasContextMenu` serve as a complete index of all possible actions. Actions that cannot be performed are shown but are disabled, teaching the user the full capability of the tool.
--   **Contextual Shortcuts:** The top-level toolbar provides shortcuts to the most common actions, and includes a "smart" slot that shows a contextual action like **Wrap** or **Unwrap**.
--   **Visual Consistency:** A unified styling system for all menu items (`menu.css`) ensures that actions look and feel identical whether they appear in a dropdown, context menu, or select list. This visual consistency reinforces predictability and makes the application easier to learn.
+-   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible for any given selection. This ensures absolute consistency across all UI surfaces.
+-   **Intelligent Disclosure:** The menus follow a refined UX pattern for discoverability:
+    -   Actions that are **impossible** for a given component type (e.g., "Unwrap" on a non-container) are **hidden entirely** to reduce clutter.
+    -   Actions that are **possible** but temporarily unavailable (e.g., "Move Up" when an item is already at the top) are **shown but disabled**. This teaches the user the full capability of the tool.
+-   **Contextual Shortcuts:** The top-level `SelectionToolbar` includes a "smart" slot that shows a high-priority contextual action like **Wrap** or **Unwrap**.
+
+### Global Hotkey System
+To ensure a fast and predictable workflow, the application features a comprehensive set of keyboard hotkeys. All global editor hotkeys—including undo/redo, delete, wrap/unwrap, and component nudging—are managed in a single, centralized hook (`src/data/useEditorHotkeys.ts`). This centralization makes the system easy to maintain and prevents conflicts between different parts of the application.
 
 ### Drag-and-Drop (DnD) Contracts
 -   **Stability Above All:** Layout-shifting animations are disabled during a drag operation to keep drop targets "rock solid".
@@ -73,10 +81,15 @@ The project uses a **systematic CSS architecture** organized into layers to cont
 -   **Robust Primitives:** Core UI patterns that require complex state management and accessibility (dropdowns, context menus, tooltips) are built using **Radix UI**, enhancing stability and craft.
 
 ### Component System & Shared Styles
-To enforce the "Single Source of Truth" principle for our UI, we use shared, global stylesheets for common component patterns. A prime example is **`menu.css`**, which provides a single, unified style definition for all list-based selection components. It styles primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) to ensure they are visually indistinguishable. This system is built on two key patterns:
-1.  **Shared Structure:** All menu items use a consistent internal flexbox layout with defined "slots" for icons, labels, and shortcuts. This guarantees perfect alignment, even when items have different content.
-2.  **Shared State Styling:** The stylesheet targets Radix's `data-*` attributes (`[data-highlighted]`, `[data-state="checked"]`, `[data-disabled]`) and standard pseudo-classes (`:hover`) to provide a consistent look and feel for all interaction states across the entire application.
+To enforce the "Single Source of Truth" principle for our UI, we use shared, global stylesheets for common component patterns. A prime example is **`menu.css`**, which provides a single, unified style definition for all list-based selection components. This system guarantees that primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) are visually indistinguishable. It is built on two key patterns:
+1.  **Shared Container:** All menu popovers use the `.menu-popover` class, which defines the container's shape, shadow, and padding.
+2.  **Shared Item Structure:** All menu items use the `.menu-item` class, which leverages a consistent internal flexbox layout with defined "slots" for icons, labels, and shortcuts. This guarantees perfect alignment and styling, even when items have different content.
+3.  **Shared State Styling:** The stylesheet targets Radix's `data-*` attributes (`[data-highlighted]`, `[data-state="checked"]`, `[data-disabled]`) and standard pseudo-classes (`:hover`) to provide a consistent look and feel for all interaction states across the entire application.
 
 ### Border Convention
 -   **Standard Border:** The default border thickness for static and interactive elements is `1px`.
 -   **Hover/Focus Border (Layout Shift Prevention):** For components that gain a border on hover (like buttons or menu items), we use a high-craft technique to prevent layout shift. The component has a `1px solid transparent` border in its resting state. On hover, the `border-color` is changed, and an additional `inset 0 -1px 0 0 var(...)` box-shadow is applied. This combination creates the visual effect of a `1px` top/left/right border and a `2px` bottom border without altering the element's box model, resulting in a perfectly stable interaction.
+
+## 6. A Guide to Project Philosophy
+
+This document is more than a technical manual; it is a guide to the project's philosophy. The conventions and architectural patterns described here are not arbitrary rules, but deliberate choices made to uphold a core set of values: architectural purity, user-centric design, and a commitment to high-craft execution. Every contribution should be measured against these principles to ensure the project remains cohesive, maintainable, and a pleasure to both use and develop.
