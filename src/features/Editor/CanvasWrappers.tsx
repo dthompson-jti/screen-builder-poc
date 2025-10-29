@@ -12,9 +12,9 @@ import {
 } from '../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../../data/historyAtoms';
 import { CanvasComponent, DndData, LayoutComponent } from '../../types';
-import { SelectionToolbar } from './SelectionToolbar';
+import { SelectionToolbar } from './SelectionToolbar'; // Restored import
 import { getComponentName } from './canvasUtils';
-import { useComponentCapabilities } from './useComponentCapabilities'; // IMPORTED
+import { useComponentCapabilities } from './useComponentCapabilities';
 
 import styles from './EditorCanvas.module.css';
 
@@ -42,18 +42,14 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
   const isLayout = component.componentType === 'layout';
   const isPlainText = !isLayout && component.properties.controlType === 'plain-text';
 
-  // REFACTORED: Use the centralized capabilities hook
   const { canRename, canWrap, canUnwrap } = useComponentCapabilities(isSelected ? [component.id] : []);
   const parent = allComponents[component.parentId] as LayoutComponent | undefined;
 
   const handleSelect = (e: React.MouseEvent) => {
-    // FIX: If the click is on the root component itself, do nothing and let the
-    // event bubble up to the canvas's main click handler which correctly selects the root.
     if (isRoot) {
       return;
     }
 
-    // For any other component, stop propagation to prevent the canvas handler from firing.
     e.stopPropagation();
     
     setIsPropertiesPanelVisible(true);
@@ -146,7 +142,6 @@ export const SelectionWrapper = ({ component, dndListeners, children }: Selectio
     });
   };
 
-  // FIX: Add a dedicated, styleable class 'selectableWrapper' to this div.
   const className = `${styles.selectableWrapper} ${isSelected ? styles.selected : ''}`;
 
   return (

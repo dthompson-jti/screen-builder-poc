@@ -24,7 +24,6 @@
 }
 
 /* --- States --- */
-/* FIX: Target both native :disabled and Radix's [data-disabled] attribute */
 .menu-item:disabled,
 .menu-item[data-disabled] {
     color: var(--control-fg-disabled) !important;
@@ -44,15 +43,19 @@
 }
 
 /* Hover / Keyboard Nav Highlight */
+.menu-item:hover:not(:disabled),
 .menu-item[data-highlighted]:not([data-disabled]) {
     outline: none;
     background-color: var(--control-bg-tertiary-hover);
     border-color: var(--control-border-tertiary-hover);
-    box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
+    box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-hover); /* Creates 2px bottom border effect */
     color: var(--surface-fg-primary);
 }
+.menu-item:hover:not(:disabled) .material-symbols-rounded,
 .menu-item[data-highlighted]:not([data-disabled]) .material-symbols-rounded,
+.menu-item:hover:not(:disabled) .hotkey,
 .menu-item[data-highlighted]:not([data-disabled]) .hotkey,
+.menu-item:hover:not(:disabled) .chevron,
 .menu-item[data-highlighted]:not([data-disabled]) .chevron {
     color: var(--surface-fg-secondary);
 }
@@ -75,13 +78,16 @@
 .menu-item.destructive .hotkey {
     color: var(--surface-fg-alert-primary);
 }
+.menu-item.destructive:hover:not(:disabled),
 .menu-item.destructive[data-highlighted]:not([data-disabled]) {
-    background-color: var(--surface-bg-error-solid);
+    background-color: var(--control-bg-alert-hover);
+    border-color: var(--control-border-tertiary-hover);
+    box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-hover);
     color: var(--control-fg-on-solid);
-    border-color: transparent;
-    box-shadow: none; /* No inset border on destructive hover */
 }
+.menu-item.destructive:hover:not(:disabled) .material-symbols-rounded,
 .menu-item.destructive[data-highlighted]:not([data-disabled]) .material-symbols-rounded,
+.menu-item.destructive:hover:not(:disabled) .hotkey,
 .menu-item.destructive[data-highlighted]:not([data-disabled]) .hotkey {
     color: var(--control-fg-on-solid);
 }

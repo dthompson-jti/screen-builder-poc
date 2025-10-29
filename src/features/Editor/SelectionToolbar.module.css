@@ -39,8 +39,10 @@
   left: 0;
   width: max-content; /* Allow it to grow to fit content */
   min-width: 240px;   /* Ensure a healthy minimum width */
-  background-color: var(--surface-bg-secondary);
-  border-radius: 12px;
+  /* FIX: Use primary background for consistency with all other popovers */
+  background-color: var(--surface-bg-primary);
+  /* FIX: Use consistent border-radius */
+  border-radius: var(--spacing-2);
   border: 1px solid var(--surface-border-secondary);
   box-shadow: var(--surface-shadow-xl);
   padding: var(--spacing-1);

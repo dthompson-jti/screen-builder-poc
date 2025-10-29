@@ -108,8 +108,10 @@
   left: 0;
   z-index: 100;
   width: 220px;
-  background-color: var(--surface-bg-secondary);
-  border-radius: 12px;
+  /* FIX: Use primary background for consistency */
+  background-color: var(--surface-bg-primary);
+  /* FIX: Use consistent border-radius */
+  border-radius: var(--spacing-2);
   border: 1px solid var(--surface-border-secondary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: var(--spacing-1);
