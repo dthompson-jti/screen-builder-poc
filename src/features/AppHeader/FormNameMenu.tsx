@@ -32,7 +32,7 @@ export const FormNameMenu = ({ onRename, onClose }: FormNameMenuProps) => {
         <span className="material-symbols-rounded">content_copy</span>
         Duplicate
       </button>
-      <button className="menu-item" disabled>
+      <button className="menu-item destructive" disabled>
         <span className="material-symbols-rounded">delete</span>
         Delete
       </button>

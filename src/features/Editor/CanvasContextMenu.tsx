@@ -126,7 +126,7 @@ const MenuContent = ({ targetIds }: { targetIds: string[] }) => {
           </ContextMenu.Item>
         )}
         <ContextMenu.Separator className={styles.menuDivider} />
-        <ContextMenu.Item className="menu-item" disabled={!capabilities.canDelete} onSelect={handleAction(handleDelete)}>
+        <ContextMenu.Item className="menu-item destructive" disabled={!capabilities.canDelete} onSelect={handleAction(handleDelete)}>
           Delete {isSingle ? '' : `[${targetIds.length}] Items`}
         </ContextMenu.Item>
       </>

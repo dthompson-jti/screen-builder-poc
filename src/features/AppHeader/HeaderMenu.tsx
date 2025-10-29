@@ -1,4 +1,5 @@
 // src/features/AppHeader/HeaderMenu.tsx
+import React from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAtom } from 'jotai';
 import { isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../../data/atoms';
@@ -16,7 +17,7 @@ const RadixMenuOption = ({ label, onSelect, disabled, hotkey }: { label: string,
 
 const RadixMenuCheckboxOption = ({ label, isChecked, onSelect }: { label: string, isChecked: boolean, onSelect: (e: Event) => void }) => (
     <DropdownMenu.CheckboxItem 
-        className={`menu-item ${isChecked ? 'active' : ''}`} 
+        className="menu-item"
         checked={isChecked} 
         onSelect={onSelect}
     >
@@ -28,6 +29,35 @@ const RadixMenuCheckboxOption = ({ label, isChecked, onSelect }: { label: string
         <span>{label}</span>
     </DropdownMenu.CheckboxItem>
 );
+
+const RadixMenuSubTrigger = ({ label, children }: { label: string, children: React.ReactNode }) => (
+    <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger className="menu-item">
+            <span className="checkmark-container" />
+            <span>{label}</span>
+            <span className="hotkey" /> 
+            <span className="material-symbols-rounded chevron">chevron_right</span>
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.Portal>
+            <DropdownMenu.SubContent 
+                className="anim-fadeIn"
+                style={{
+                    width: 280,
+                    backgroundColor: 'var(--surface-bg-primary)',
+                    borderRadius: 'var(--spacing-2)',
+                    boxShadow: 'var(--surface-shadow-xl)',
+                    padding: 'var(--spacing-1)',
+                    border: '1px solid var(--surface-border-primary)',
+                }}
+                sideOffset={4}
+                alignOffset={-4}
+            >
+                {children}
+            </DropdownMenu.SubContent>
+        </DropdownMenu.Portal>
+    </DropdownMenu.Sub>
+);
+
 
 export const HeaderMenu = () => {
     const [isCompact, setIsCompact] = useAtom(isToolbarCompactAtom);
@@ -56,21 +86,25 @@ export const HeaderMenu = () => {
                 <RadixMenuOption label="Undo" onSelect={undo} hotkey={isMac ? "⌘Z" : "Ctrl+Z"} disabled={!canUndo} />
                 <RadixMenuOption label="Redo" onSelect={redo} hotkey={isMac ? "⇧⌘Z" : "Ctrl+Y"} disabled={!canRedo} />
                 <DropdownMenu.Separator className={styles.menuDivider} />
-                <RadixMenuCheckboxOption 
-                    label="Compact left menu"
-                    isChecked={isCompact}
-                    onSelect={() => setIsCompact(p => !p)}
-                />
-                <RadixMenuCheckboxOption 
-                    label="Show data navigator full path"
-                    isChecked={isShowBreadcrumb}
-                    onSelect={() => setIsShowBreadcrumb(p => !p)}
-                />
-                <RadixMenuCheckboxOption 
-                    label="Show settings in two columns"
-                    isChecked={layoutMode === 'two-column'}
-                    onSelect={() => setLayoutMode(p => p === 'single-column' ? 'two-column' : 'single-column')}
-                />
+                
+                <RadixMenuSubTrigger label="View Options">
+                    <RadixMenuCheckboxOption 
+                        label="Compact left menu"
+                        isChecked={isCompact}
+                        onSelect={() => setIsCompact(p => !p)}
+                    />
+                    <RadixMenuCheckboxOption 
+                        label="Show data navigator full path"
+                        isChecked={isShowBreadcrumb}
+                        onSelect={() => setIsShowBreadcrumb(p => !p)}
+                    />
+                    <RadixMenuCheckboxOption 
+                        label="Show settings in two columns"
+                        isChecked={layoutMode === 'two-column'}
+                        onSelect={() => setLayoutMode(p => p === 'single-column' ? 'two-column' : 'single-column')}
+                    />
+                </RadixMenuSubTrigger>
+                
                 <DropdownMenu.Separator className={styles.menuDivider} />
                 <RadixMenuCheckboxOption 
                     label="Show version history"

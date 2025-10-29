@@ -68,54 +68,68 @@
   cursor: default;
 }
 
+/* --- Select Item (Aligned with menu.css) --- */
 .selectItem {
-  font-size: 0.9em;
-  line-height: 1;
-  color: var(--surface-fg-primary);
-  border-radius: 6px;
+  /* Layout */
   display: flex;
   align-items: center;
-  gap: var(--spacing-2); /* NEW: Add gap for icon */
-  height: 32px;
-  padding: 0 var(--spacing-3) 0 34px;
-  position: relative;
+  gap: var(--spacing-3);
   user-select: none;
   outline: none;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
-}
 
-/* NEW: Style for the optional icon */
-.selectItemIcon {
-  color: var(--surface-fg-secondary);
-  font-size: 20px;
+  /* Typography */
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--surface-fg-primary);
+  
+  /* Sizing & Appearance */
+  padding: var(--spacing-2) var(--spacing-1p5); /* 8px 6px */
+  border-radius: var(--spacing-2); /* 8px */
+  border: 1px solid transparent;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
 .selectItem[data-highlighted] {
   background-color: var(--control-bg-tertiary-hover);
-  box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover);
+  border-color: var(--control-border-tertiary-hover);
 }
-
 .selectItem[data-highlighted] .selectItemIcon {
-  color: var(--surface-fg-primary);
+  color: var(--surface-fg-secondary);
 }
 
+
+/* Slot A: Container for icon/checkmark */
+.selectItemLeftSlot {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* The checkmark indicator */
 .selectItemIndicator {
-  position: absolute;
-  left: 6px;
-  width: 25px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   color: var(--surface-fg-theme-strong);
 }
-
-/* UPDATED: Target the icon inside the indicator to set its size and optical size */
 .selectItemIndicator .material-symbols-rounded {
   font-size: 18px;
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 18;
+  font-variation-settings: 'opsz' 18;
+}
+
+/* The optional decorative icon */
+.selectItemIcon {
+  color: var(--surface-fg-secondary);
+  font-size: 18px;
+  font-variation-settings: 'opsz' 18;
+}
+
+/* When the item is checked, hide the decorative icon to prevent overlap */
+.selectItem[data-state='checked'] .selectItemIcon {
+  display: none;
 }

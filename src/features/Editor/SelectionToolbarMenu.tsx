@@ -99,7 +99,6 @@ export const SelectionToolbarMenu = ({
       <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
         <span className="material-symbols-rounded">disabled_by_default</span>
         <span>Unwrap Container</span>
-        {/* FIXED: Replaced shift symbol with text "Shift" for clarity */}
         <span className="hotkey">{modKey}{isMac ? ' Shift ' : '+Shift+'}G</span>
       </button>
 
@@ -110,7 +109,7 @@ export const SelectionToolbarMenu = ({
         <span>Duplicate</span>
         <span className="hotkey">{modKey}{isMac ? '' : '+'}D</span>
       </button>
-      <button className="menu-item" onClick={createHandler(onDelete)}>
+      <button className="menu-item destructive" onClick={createHandler(onDelete)}>
         <span className="material-symbols-rounded">delete</span>
         <span>Delete</span>
         <span className="hotkey">{isMac ? '⌫' : 'Del'}</span>

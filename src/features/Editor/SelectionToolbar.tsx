@@ -1,19 +1,19 @@
-// src/features/Editor/SelectionToolbar.tsx
-import { useState } from 'react';
-import { DraggableSyntheticListeners } from '@dnd-kit/core';
-import { SelectionToolbarMenu } from './SelectionToolbarMenu';
-import { Tooltip } from '../../components/Tooltip';
-import { Button } from '../../components/Button';
+// src/features/Editor/SelectionToolbarMenu.tsx
+import { useRef } from 'react';
+import { useSetAtom } from 'jotai';
+import { useOnClickOutside } from '../../data/useOnClickOutside';
 import { useIsMac } from '../../data/useIsMac';
+import { useComponentCapabilities } from './useComponentCapabilities';
+import { commitActionAtom } from '../../data/historyAtoms';
 import styles from './SelectionToolbar.module.css';
 
-interface SelectionToolbarProps {
-  componentId: string;
+interface SelectionToolbarMenuProps {
+  selectedId: string;
   onDelete: () => void;
   onRename: () => void;
   onNudge: (direction: 'up' | 'down') => void;
-  listeners?: DraggableSyntheticListeners;
-  onDuplicate?: () => void;
+  onClose: () => void;
+  onDuplicate: () => void;
   onWrap: () => void;
   onUnwrap: () => void;
   canWrap: boolean;
@@ -21,116 +21,99 @@ interface SelectionToolbarProps {
   canRename: boolean;
 }
 
-export const SelectionToolbar = ({
-  componentId,
+export const SelectionToolbarMenu = ({
+  selectedId,
   onDelete,
   onRename,
   onNudge,
-  listeners,
-  onDuplicate = () => {},
+  onClose,
+  onDuplicate,
   onWrap,
   onUnwrap,
   canWrap,
   canUnwrap,
   canRename,
-}: SelectionToolbarProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+}: SelectionToolbarMenuProps) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(menuRef, onClose);
   const isMac = useIsMac();
+  const commitAction = useSetAtom(commitActionAtom);
+  const capabilities = useComponentCapabilities([selectedId]);
 
-  const handleMenuToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsMenuOpen(prev => !prev);
+  const modKey = isMac ? '⌘' : 'Ctrl';
+  const altKey = isMac ? '⌥' : 'Alt+';
+
+  const createHandler = (action: () => void) => () => {
+    action();
+    if (action !== onDelete) {
+      onClose();
+    }
   };
 
-  const renameTooltipContent = (
-    <div style={{ textAlign: 'left' }}>
-      <div>Rename (Enter)</div>
-      <div style={{ color: 'var(--surface-fg-secondary)' }}>
-        or {isMac ? 'Option' : 'Alt'}+Click label
-      </div>
-    </div>
-  );
+  const handleConvert = (targetType: 'heading' | 'paragraph' | 'link') => {
+    commitAction({
+      action: { type: 'COMPONENT_CONVERT', payload: { componentId: selectedId, targetType } },
+      message: `Convert component to ${targetType}`
+    });
+    onClose();
+  };
 
   return (
-    <div className={styles.toolbarWrapper}>
-      <div className={styles.selectionToolbar} onClick={(e) => e.stopPropagation()}>
-        <Button 
-          variant="on-solid"
-          size="s"
-          iconOnly
-          {...listeners}
-          aria-label="Drag to reorder"
-          className={styles.dragHandle}
-        >
-          <span className="material-symbols-rounded">drag_indicator</span>
-        </Button>
-        <div className={styles.divider} />
-        <Tooltip content={renameTooltipContent} side="top">
-          <Button 
-            variant="on-solid"
-            size="s"
-            iconOnly
-            onClick={onRename}
-            aria-label="Rename component"
-            disabled={!canRename}
-          >
-            <span className="material-symbols-rounded">edit</span>
-          </Button>
-        </Tooltip>
+    <div className={styles.menuPopover} ref={menuRef}>
+      <button className="menu-item" onClick={createHandler(onRename)} disabled={!canRename}>
+        <span className="material-symbols-rounded">edit</span>
+        <span>Rename</span>
+        <span className="hotkey">Enter</span>
+      </button>
+      <div className={styles.menuDivider} />
+      <button className="menu-item" onClick={() => handleConvert('heading')} disabled={!capabilities.canConvertToHeading}>
+        <span className="material-symbols-rounded">title</span>
+        <span>Convert to Heading</span>
+      </button>
+      <button className="menu-item" onClick={() => handleConvert('paragraph')} disabled={!capabilities.canConvertToParagraph}>
+        <span className="material-symbols-rounded">notes</span>
+        <span>Convert to Paragraph</span>
+      </button>
+      <button className="menu-item" onClick={() => handleConvert('link')} disabled={!capabilities.canConvertToLink}>
+        <span className="material-symbols-rounded">link</span>
+        <span>Convert to Link</span>
+      </button>
 
-        {/* --- SMART CONTEXTUAL BUTTON --- */}
-        {canUnwrap && (
-          <Tooltip content="Unwrap Container" side="top">
-            <Button
-              variant="on-solid"
-              size="s"
-              iconOnly
-              onClick={onUnwrap}
-              aria-label="Unwrap container"
-            >
-              <span className="material-symbols-rounded">disabled_by_default</span>
-            </Button>
-          </Tooltip>
-        )}
-        {canWrap && !canUnwrap && (
-           <Tooltip content="Wrap in Container" side="top">
-            <Button
-              variant="on-solid"
-              size="s"
-              iconOnly
-              onClick={onWrap}
-              aria-label="Wrap in container"
-            >
-              <span className="material-symbols-rounded">add_box</span>
-            </Button>
-          </Tooltip>
-        )}
+      <div className={styles.menuDivider} />
+      
+      <button className="menu-item" onClick={createHandler(() => onNudge('up'))}>
+        <span className="material-symbols-rounded">arrow_upward</span>
+        <span>Move Up</span>
+        <span className="hotkey">↑</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(() => onNudge('down'))}>
+        <span className="material-symbols-rounded">arrow_downward</span>
+        <span>Move Down</span>
+        <span className="hotkey">↓</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(onWrap)} disabled={!canWrap}>
+        <span className="material-symbols-rounded">add_box</span>
+        <span>Wrap in Container</span>
+        <span className="hotkey">{modKey}{isMac ? '' : '+'}{altKey}G</span>
+      </button>
+      <button className="menu-item" onClick={createHandler(onUnwrap)} disabled={!canUnwrap}>
+        <span className="material-symbols-rounded">disabled_by_default</span>
+        <span>Unwrap Container</span>
+        <span className="hotkey">{modKey}{isMac ? ' Shift ' : '+Shift+'}G</span>
+      </button>
 
-        <Button 
-          variant="on-solid"
-          size="s"
-          iconOnly
-          onClick={handleMenuToggle}
-          aria-label="More options"
-        >
-          <span className="material-symbols-rounded">more_vert</span>
-        </Button>
-      </div>
-      {isMenuOpen && (
-        <SelectionToolbarMenu
-          selectedId={componentId}
-          onDelete={onDelete}
-          onRename={onRename}
-          onNudge={onNudge}
-          onClose={() => setIsMenuOpen(false)}
-          onDuplicate={onDuplicate}
-          onWrap={onWrap}
-          onUnwrap={onUnwrap}
-          canWrap={canWrap}
-          canUnwrap={canUnwrap}
-          canRename={canRename}
-        />
-      )}
+      <div className={styles.menuDivider} />
+
+      <button className="menu-item" onClick={createHandler(onDuplicate)} disabled>
+        <span className="material-symbols-rounded">content_copy</span>
+        <span>Duplicate</span>
+        <span className="hotkey">{modKey}{isMac ? '' : '+'}D</span>
+      </button>
+      <button className="menu-item destructive" onClick={createHandler(onDelete)}>
+        <span className="material-symbols-rounded">delete</span>
+        <span>Delete</span>
+        <span className="hotkey">{isMac ? '⌫' : 'Del'}</span>
+      </button>
     </div>
   );
 };

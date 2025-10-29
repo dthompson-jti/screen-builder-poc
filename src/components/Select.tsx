@@ -14,19 +14,24 @@ interface SelectItemProps {
   children: React.ReactNode;
   value: string;
   className?: string;
-  icon?: string; // NEW: Optional icon prop
+  icon?: string;
 }
 
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, icon, ...props }, forwardedRef) => { // Destructure icon
+  ({ children, icon, ...props }, forwardedRef) => {
     return (
       <RadixSelect.Item className={styles.selectItem} {...props} ref={forwardedRef}>
-        {/* NEW: Conditionally render icon */}
-        {icon && <span className={`material-symbols-rounded ${styles.selectItemIcon}`}>{icon}</span>}
+        {/* Slot A: Fixed-width container for alignment */}
+        <div className={styles.selectItemLeftSlot}>
+          {/* The checkmark, rendered by Radix when state is 'checked' */}
+          <RadixSelect.ItemIndicator className={styles.selectItemIndicator}>
+            <span className="material-symbols-rounded">check</span>
+          </RadixSelect.ItemIndicator>
+          {/* The decorative icon, always rendered in the DOM but hidden via CSS when checked */}
+          {icon && <span className={`material-symbols-rounded ${styles.selectItemIcon}`}>{icon}</span>}
+        </div>
+        {/* Slot B: Label */}
         <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
-        <RadixSelect.ItemIndicator className={styles.selectItemIndicator}>
-          <span className="material-symbols-rounded">check</span>
-        </RadixSelect.ItemIndicator>
       </RadixSelect.Item>
     );
   }
