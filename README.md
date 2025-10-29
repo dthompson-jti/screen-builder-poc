@@ -54,6 +54,7 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible in any given context. This ensures consistency across all UI surfaces.
 -   **Discoverable & Disabled:** Both the `SelectionToolbar`'s `[...]` menu and the `CanvasContextMenu` serve as a complete index of all possible actions. Actions that cannot be performed are shown but are disabled, teaching the user the full capability of the tool.
 -   **Contextual Shortcuts:** The top-level toolbar provides shortcuts to the most common actions, and includes a "smart" slot that shows a contextual action like **Wrap** or **Unwrap**.
+-   **Visual Consistency:** A unified styling system for all menu items (`menu.css`) ensures that actions look and feel identical whether they appear in a dropdown, context menu, or select list. This visual consistency reinforces predictability and makes the application easier to learn.
 
 ### Drag-and-Drop (DnD) Contracts
 -   **Stability Above All:** Layout-shifting animations are disabled during a drag operation to keep drop targets "rock solid".
@@ -70,4 +71,12 @@ The project uses a **systematic CSS architecture** organized into layers to cont
 -   **Data-Attribute Styling:** Components use `data-*` attributes for styling variants (e.g., `<Button data-variant="tertiary" data-size="s">`). This provides superior semantic clarity and simplifies style composition over traditional modifier classes.
 -   **Layered Cascade:** The global style cascade is managed in a single location (`src/index.css`) using CSS `@layer`. This provides predictable style application and prevents specificity conflicts between global styles, shared component styles, and scoped CSS Modules.
 -   **Robust Primitives:** Core UI patterns that require complex state management and accessibility (dropdowns, context menus, tooltips) are built using **Radix UI**, enhancing stability and craft.
--   **Border Convention:** The standard border thickness for all components is `1px`. The standard hover state for interactive elements like inputs and dropdowns is `1px solid var(--control-border-tertiary-hove
+
+### Component System & Shared Styles
+To enforce the "Single Source of Truth" principle for our UI, we use shared, global stylesheets for common component patterns. A prime example is **`menu.css`**, which provides a single, unified style definition for all list-based selection components. It styles primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) to ensure they are visually indistinguishable. This system is built on two key patterns:
+1.  **Shared Structure:** All menu items use a consistent internal flexbox layout with defined "slots" for icons, labels, and shortcuts. This guarantees perfect alignment, even when items have different content.
+2.  **Shared State Styling:** The stylesheet targets Radix's `data-*` attributes (`[data-highlighted]`, `[data-state="checked"]`, `[data-disabled]`) and standard pseudo-classes (`:hover`) to provide a consistent look and feel for all interaction states across the entire application.
+
+### Border Convention
+-   **Standard Border:** The default border thickness for static and interactive elements is `1px`.
+-   **Hover/Focus Border (Layout Shift Prevention):** For components that gain a border on hover (like buttons or menu items), we use a high-craft technique to prevent layout shift. The component has a `1px solid transparent` border in its resting state. On hover, the `border-color` is changed, and an additional `inset 0 -1px 0 0 var(...)` box-shadow is applied. This combination creates the visual effect of a `1px` top/left/right border and a `2px` bottom border without altering the element's box model, resulting in a perfectly stable interaction.
