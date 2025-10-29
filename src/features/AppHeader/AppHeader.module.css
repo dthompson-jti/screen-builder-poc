@@ -29,6 +29,14 @@
   position: relative;
 }
 
+/* UPDATED: Center container is now a flex item that stretches */
+.headerCenter {
+  display: flex;
+  justify-content: center;
+  align-self: stretch; /* Make it fill the header's height */
+  position: relative; /* Create positioning context for the underline */
+}
+
 .appHeaderTitle {
   font-size: 1.25em;
   font-weight: 500;

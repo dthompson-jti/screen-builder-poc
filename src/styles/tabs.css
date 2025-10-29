@@ -1,4 +1,4 @@
-/* src/tabs.css */
+/* src/styles/tabs.css */
 /* Single source of truth for all tab component styles, adapted for Radix. */
 
 .tab-list {
@@ -8,6 +8,7 @@
   padding: 0;
   margin: 0;
   background: none;
+  height: 100%; /* Ensure the list fills the new taller parent */
 }
 
 .tab-group .tab-list {
@@ -33,6 +34,9 @@
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.21px;
+  display: flex;
+  align-items: center;
+  height: 100%; /* UPDATED: Make button fill the available vertical space */
 }
 
 .panel-tabs .tab-button {
@@ -60,7 +64,7 @@
   background-color: var(--surface-fg-theme-strong);
   z-index: 2;
   /* Position the underline perfectly on the AppHeader's bottom border */
-  bottom: -10px;
+  bottom: 0; /* UPDATED: Now aligns to the bottom of the full-height tab button */
 }
 
 /* For panel tabs, align with the bottom of the tab container */

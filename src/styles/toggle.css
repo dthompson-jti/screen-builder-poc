@@ -1,4 +1,4 @@
-/* src/toggle.css */
+/* src/styles/toggle.css */
 
 .toggle-button {
   display: inline-flex;
@@ -31,4 +31,6 @@
   background-color: var(--control-bg-tertiary-pressed);
   color: var(--control-fg-tertiary-hover);
   border-color: var(--control-border-tertiary-pressed);
+  /* Use inset box-shadow to create a 2px bottom border effect without layout shift */
+  box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-pressed);
 }

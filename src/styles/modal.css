@@ -1,4 +1,4 @@
-/* src/modal.css */
+/* src/styles/modal.css */
 
 .modal-backdrop {
   position: fixed;
@@ -61,6 +61,11 @@
   border-bottom: 1px solid var(--surface-border-secondary);
   flex-shrink: 0;
   background-color: var(--surface-bg-secondary);
+}
+
+/* ADDED: Reset heading margins within the modal header for consistent height */
+.modal-header h3 {
+  margin: 0;
 }
 
 .modal-content {

@@ -1,4 +1,4 @@
-/* src/menu.css */
+/* src/styles/menu.css */
 .menu-item {
     /* Layout */
     display: flex;
@@ -45,20 +45,20 @@
 }
 
 /* Hover / Keyboard Nav Highlight */
-.menu-item:hover:not(:disabled),
-.menu-item[data-highlighted]:not([data-disabled]) {
+.menu-item:hover:not(:disabled):not([data-state='checked']),
+.menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) {
     outline: none;
     background-color: var(--control-bg-tertiary-hover);
     border-color: var(--control-border-tertiary-hover);
     box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-hover); /* Creates 2px bottom border effect */
     color: var(--surface-fg-primary);
 }
-.menu-item:hover:not(:disabled) .material-symbols-rounded,
-.menu-item[data-highlighted]:not([data-disabled]) .material-symbols-rounded,
-.menu-item:hover:not(:disabled) .hotkey,
-.menu-item[data-highlighted]:not([data-disabled]) .hotkey,
-.menu-item:hover:not(:disabled) .chevron,
-.menu-item[data-highlighted]:not([data-disabled]) .chevron {
+.menu-item:hover:not(:disabled):not([data-state='checked']) .material-symbols-rounded,
+.menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .material-symbols-rounded,
+.menu-item:hover:not(:disabled):not([data-state='checked']) .hotkey,
+.menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .hotkey,
+.menu-item:hover:not(:disabled):not([data-state='checked']) .chevron,
+.menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .chevron {
     color: var(--surface-fg-secondary);
 }
 
@@ -104,8 +104,15 @@
 }
 
 
-/* C. Toggle Item State */
-.menu-item[data-state="checked"] .material-symbols-rounded {
+/* C. Toggle Item / Selected State */
+.menu-item[data-state="checked"] {
+    background-color: var(--control-bg-selected);
+    border-color: var(--control-border-selected);
+    color: var(--control-fg-selected);
+}
+.menu-item[data-state="checked"] .material-symbols-rounded,
+.menu-item[data-state="checked"] .hotkey,
+.menu-item[data-state="checked"] .chevron {
     color: var(--control-fg-selected);
 }
 

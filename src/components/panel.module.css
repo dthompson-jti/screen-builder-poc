@@ -123,23 +123,5 @@
 .componentListItem.selectable {
   cursor: pointer;
 }
-.componentListItem.selected {
-  background-color: var(--control-bg-selected);
-  font-weight: 500;
-}
-.componentListItem.selected:hover {
-  background-color: var(--control-bg-selected-hover);
-}
-.componentListItem.selected .componentName {
-  color: var(--control-fg-selected);
-}
-.selectionCheck {
-  margin-left: auto;
-  color: var(--control-fg-selected);
-}
 
-/* --- Search Container (Layout Only) --- */
-.searchContainer {
-  padding: var(--spacing-2) var(--spacing-4);
-  display: flex;
-}
+/* REMOVED: .selected state styles are now handled by the global menu.css via [data-state="checked"] */

@@ -1,4 +1,4 @@
-/* src/toggle-group.css */
+/* src/styles/toggle-group.css */
 
 .toggle-group {
   display: inline-flex;
@@ -19,7 +19,7 @@
   margin-left: -1px;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s, z-index 0s 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, z-index 0s 0.2s;
   height: 38px;
   flex: 1;
   border-radius: 0;
@@ -47,6 +47,8 @@
   background-color: var(--control-bg-selected);
   color: var(--control-fg-selected);
   border-color: var(--control-border-selected);
+  /* Use inset box-shadow to create a 2px bottom border effect without layout shift */
+  box-shadow: inset 0 -1px 0 0 var(--control-border-selected);
   z-index: 2;
   cursor: default;
 }

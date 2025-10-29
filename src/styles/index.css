@@ -1,4 +1,4 @@
-/* src/index.css */
+/* src/styles/index.css */
 
 @layer base, components;
 
@@ -16,7 +16,7 @@
 @import './buttons.css' layer(base);
 @import './menu.css' layer(base);
 @import './tabs.css' layer(base);
-@import './components/navigator.css' layer(base);
+@import './navigator.css' layer(base);
 @import './appearance.css' layer(components);
 
 /* 4. Radix Primitive Themes */
