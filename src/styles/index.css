@@ -1,6 +1,7 @@
 /* src/styles/index.css */
 
-@layer base, components;
+/* Add a new, higher-precedence layer for targeted overrides */
+@layer base, components, overrides;
 
 /* 1. Foundational Design Tokens */
 @import './primitives.css';
@@ -22,11 +23,13 @@
 /* 4. Radix Primitive Themes */
 @import './modal.css' layer(components);
 @import './popover.css' layer(components);
-@import './toggle-group.css' layer(components);
 @import './accordion.css' layer(components);
 @import './toggle.css' layer(components);
 @import './tooltip.css' layer(components);
 @import './toast.css' layer(components);
+
+/* FIX: The toggle-group is moved to a higher-precedence layer. */
+@import './toggle-group.css' layer(overrides);
 
 
 :root {

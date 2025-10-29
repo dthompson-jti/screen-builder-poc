@@ -25,17 +25,17 @@
   border-radius: 0;
 }
 
-.toggle-group > .toggle-group-item:first-child {
+.toggle-group .toggle-group-item:first-child {
   margin-left: 0;
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
 }
-.toggle-group > .toggle-group-item:last-child {
+.toggle-group .toggle-group-item:last-child {
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
 }
 
-.toggle-group-item:hover:not([data-state='on']) {
+.toggle-group-item:hover:not([aria-checked='true']) {
   border-color: var(--control-border-tertiary-hover);
   background-color: var(--control-bg-tertiary-hover);
   color: var(--control-fg-tertiary-hover);
@@ -43,21 +43,23 @@
   transition-delay: 0s;
 }
 
-.toggle-group-item[data-state='on'] {
-  background-color: var(--control-bg-selected);
-  color: var(--control-fg-selected);
-  border-color: var(--control-border-selected);
-  /* Use inset box-shadow to create a 2px bottom border effect without layout shift */
-  box-shadow: inset 0 -1px 0 0 var(--control-border-selected);
+/* FIX: Target [aria-checked='true'] to avoid state conflicts with the Tooltip wrapper. */
+.toggle-group .toggle-group-item[aria-checked='true'] {
+  background-color: var(--control-bg-theme);
+  color: var(--control-fg-on-solid);
+  border-color: var(--control-border-primary);
   z-index: 2;
   cursor: default;
+  box-shadow: none;
 }
 
 .toggle-group-item .material-symbols-rounded {
   font-size: 20px;
-  transition: font-variation-settings 0.2s;
+  transition: font-variation-settings 0.2s, color 0.2s;
 }
 
-.toggle-group-item[data-state='on'] .material-symbols-rounded {
+/* FIX: Match the selector to target the icon within the selected item correctly. */
+.toggle-group .toggle-group-item[aria-checked='true'] .material-symbols-rounded {
   font-variation-settings: 'FILL' 1;
+  color: var(--control-fg-on-solid);
 }

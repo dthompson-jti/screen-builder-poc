@@ -6,7 +6,8 @@
   font-family: var(--font-family-sans);
   border-bottom: 1px solid var(--surface-border-secondary);
   display: flex;
-  align-items: center;
+  /* FIX: Stretch all children vertically by default. */
+  align-items: stretch;
   justify-content: space-between;
   padding: 0 var(--spacing-2) 0 var(--spacing-4);
   height: 56px;
@@ -15,6 +16,8 @@
 .headerLeft, .headerRight {
   display: flex;
   align-items: center;
+  /* FIX: Explicitly re-center the side columns. */
+  align-self: center;
 }
 
 .headerLeft {

@@ -39,7 +39,8 @@ const TabList = ({ children, activeValue }: { children: React.ReactNode; activeV
 };
 
 export const AnimatedTabs = ({ value, onValueChange, children, isPanelTabs = false }: AnimatedTabsProps) => {
-  const containerClass = isPanelTabs ? 'panel-tabs' : 'tab-group';
+  // Combine base class with a conditional class for targeting header tabs specifically.
+  const containerClass = `animated-tabs-root ${isPanelTabs ? 'panel-tabs' : 'tab-group'}`;
 
   return (
     <Tabs.Root value={value} onValueChange={onValueChange} className={containerClass}>

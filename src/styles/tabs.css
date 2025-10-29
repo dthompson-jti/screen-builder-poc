@@ -1,23 +1,41 @@
 /* src/styles/tabs.css */
 /* Single source of truth for all tab component styles, adapted for Radix. */
 
-.tab-list {
+.animated-tabs-root {
+  height: 100%;
+}
+
+.tab-group {
+  height: 100%;
+  display: flex;
+}
+
+/*
+  DEFINITIVE FIX: Target the stable `role="tablist"` attribute.
+  The component library was not rendering the `.tab-list` className,
+  causing all previous style rules to fail. This new selector is resilient.
+*/
+.tab-group [role='tablist'],
+.panel-tabs [role='tablist'] {
   display: flex;
   position: relative; /* Anchor for the underline */
   border: none;
   padding: 0;
   margin: 0;
   background: none;
-  height: 100%; /* Ensure the list fills the new taller parent */
+  height: 100%;
+  flex-grow: 1;
+  /* Use !important to override the inline `align-items: center` from Radix. */
+  align-items: stretch !important;
 }
 
-.tab-group .tab-list {
+.tab-group [role='tablist'] {
   gap: var(--spacing-2);
   margin-left: auto;
   margin-right: auto;
 }
 
-.panel-tabs .tab-list {
+.panel-tabs [role='tablist'] {
   width: 100%;
 }
 
@@ -36,7 +54,7 @@
   letter-spacing: -0.21px;
   display: flex;
   align-items: center;
-  height: 100%; /* UPDATED: Make button fill the available vertical space */
+  height: 100%;
 }
 
 .panel-tabs .tab-button {
@@ -63,8 +81,7 @@
   height: 2px;
   background-color: var(--surface-fg-theme-strong);
   z-index: 2;
-  /* Position the underline perfectly on the AppHeader's bottom border */
-  bottom: 0; /* UPDATED: Now aligns to the bottom of the full-height tab button */
+  bottom: 0;
 }
 
 /* For panel tabs, align with the bottom of the tab container */
