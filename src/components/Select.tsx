@@ -1,5 +1,5 @@
 // src/components/Select.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import * as RadixSelect from '@radix-ui/react-select';
 import styles from './Select.module.css';
 
@@ -20,11 +20,11 @@ interface SelectItemProps {
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({ children, icon, ...props }, forwardedRef) => {
     return (
-      <RadixSelect.Item className={styles.selectItem} {...props} ref={forwardedRef}>
+      <RadixSelect.Item className="menu-item" {...props} ref={forwardedRef}>
         {/* Slot A: Fixed-width container for alignment */}
-        <div className={styles.selectItemLeftSlot}>
+        <div className="checkmark-container">
           {/* The checkmark, rendered by Radix when state is 'checked' */}
-          <RadixSelect.ItemIndicator className={styles.selectItemIndicator}>
+          <RadixSelect.ItemIndicator>
             <span className="material-symbols-rounded">check</span>
           </RadixSelect.ItemIndicator>
           {/* The decorative icon, always rendered in the DOM but hidden via CSS when checked */}
@@ -38,9 +38,15 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
 );
 
 export const Select = ({ children, value, onValueChange, placeholder }: SelectProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <RadixSelect.Root value={value} onValueChange={onValueChange}>
-      <RadixSelect.Trigger className={styles.selectTrigger} aria-label={placeholder}>
+    <RadixSelect.Root value={value} onValueChange={onValueChange} open={isOpen} onOpenChange={setIsOpen}>
+      <RadixSelect.Trigger 
+        className={styles.selectTrigger} 
+        aria-label={placeholder}
+        data-focused={isOpen} // Add data attribute for focus styling
+      >
         <RadixSelect.Value placeholder={placeholder} />
         <RadixSelect.Icon className={styles.selectIcon}>
           <span className="material-symbols-rounded">expand_more</span>
@@ -48,13 +54,13 @@ export const Select = ({ children, value, onValueChange, placeholder }: SelectPr
       </RadixSelect.Trigger>
       <RadixSelect.Portal>
         <RadixSelect.Content className={styles.selectContent} position="popper" sideOffset={5}>
-          <RadixSelect.ScrollUpButton className={styles.selectScrollButton}>
+          <RadixSelect.ScrollUpButton className="menu-item">
             <span className="material-symbols-rounded">expand_less</span>
           </RadixSelect.ScrollUpButton>
           <RadixSelect.Viewport className={styles.selectViewport}>
             {children}
           </RadixSelect.Viewport>
-          <RadixSelect.ScrollDownButton className={styles.selectScrollButton}>
+          <RadixSelect.ScrollDownButton className="menu-item">
             <span className="material-symbols-rounded">expand_more</span>
           </RadixSelect.ScrollDownButton>
         </RadixSelect.Content>

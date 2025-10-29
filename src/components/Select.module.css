@@ -15,17 +15,23 @@
   background-color: var(--surface-bg-primary);
   color: var(--surface-fg-primary);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, margin 0.2s;
   cursor: pointer;
+  position: relative;
 }
 
 .selectTrigger:hover {
   border-color: var(--control-border-tertiary-hover);
 }
 
-.selectTrigger[data-state='open'], .selectTrigger:focus-visible {
+.selectTrigger[data-state='open'], 
+.selectTrigger:focus-visible,
+.selectTrigger[data-focused='true'] {
   border-color: var(--surface-border-theme);
   box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+  /* Pull the trigger out to make space for the focus ring */
+  margin: 0 -2px;
+  width: calc(100% + 4px);
 }
 
 .selectIcon {
@@ -58,78 +64,14 @@
   max-height: 256px;
 }
 
-.selectScrollButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 25px;
-  background-color: var(--surface-bg-primary);
-  color: var(--surface-fg-primary);
-  cursor: default;
-}
-
-/* --- Select Item (Aligned with menu.css) --- */
-.selectItem {
-  /* Layout */
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  user-select: none;
-  outline: none;
-  cursor: pointer;
-
-  /* Typography */
-  font-size: 0.9em;
-  font-weight: 500;
-  color: var(--surface-fg-primary);
-  
-  /* Sizing & Appearance */
-  padding: var(--spacing-2) var(--spacing-1p5); /* 8px 6px */
-  border-radius: var(--spacing-2); /* 8px */
-  border: 1px solid transparent;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.selectItem[data-highlighted] {
-  background-color: var(--control-bg-tertiary-hover);
-  border-color: var(--control-border-tertiary-hover);
-}
-.selectItem[data-highlighted] .selectItemIcon {
-  color: var(--surface-fg-secondary);
-}
-
-
-/* Slot A: Container for icon/checkmark */
-.selectItemLeftSlot {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-}
-
-/* The checkmark indicator */
-.selectItemIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--surface-fg-theme-strong);
-}
-.selectItemIndicator .material-symbols-rounded {
-  font-size: 18px;
-  font-variation-settings: 'opsz' 18;
-}
-
-/* The optional decorative icon */
+/* The decorative icon, rendered when an item is not checked */
 .selectItemIcon {
   color: var(--surface-fg-secondary);
   font-size: 18px;
   font-variation-settings: 'opsz' 18;
 }
 
-/* When the item is checked, hide the decorative icon to prevent overlap */
-.selectItem[data-state='checked'] .selectItemIcon {
+/* When the item is checked, Radix adds an ItemIndicator. We hide our decorative icon. */
+.menu-item[data-state='checked'] .selectItemIcon {
   display: none;
 }

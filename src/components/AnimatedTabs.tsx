@@ -48,7 +48,9 @@ export const AnimatedTabs = ({ value, onValueChange, children, isPanelTabs = fal
   );
 };
 
-// Dummy component to satisfy typing and provide props to the parent
-export const Tab = ({ value: _value, children }: { value: string; children: React.ReactNode }) => {
+// Dummy component to satisfy typing and provide props to the parent.
+// The `value` prop is destructured but not used, which is the intended pattern.
+// The linter error is resolved by only destructuring the `children` prop.
+export const Tab = ({ children }: { value: string; children: React.ReactNode }) => {
   return <>{children}</>;
 };
