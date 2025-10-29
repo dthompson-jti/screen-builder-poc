@@ -1,67 +1,89 @@
 /* src/features/AppHeader/AppHeader.module.css */
-
 .appHeader {
-  flex-shrink: 0;
-  background-color: var(--surface-bg-primary);
-  font-family: var(--font-family-sans);
-  border-bottom: 1px solid var(--surface-border-secondary);
-  display: flex;
-  /* DEFINITIVE FIX 1: The parent header must be a flex container that stretches its children. */
-  align-items: stretch;
-  justify-content: space-between;
-  padding: 0 var(--spacing-2) 0 var(--spacing-4);
-  height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 var(--spacing-4);
+    background-color: var(--surface-bg-primary);
+    border-bottom: 1px solid var(--surface-border-secondary);
+    flex-shrink: 0;
+    font-family: var(--font-family-sans);
 }
 
-.headerLeft, .headerRight {
-  display: flex;
-  align-items: center;
-  /* Override parent stretch for side columns */
-  align-self: center;
+.left, .center, .right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
 }
 
-.headerLeft {
-  gap: var(--spacing-4);
-  position: relative; /* For menu popover */
-  min-width: 0; 
+.left { flex: 1; }
+.center {
+    flex: 1;
+    justify-content: center;
+    /* CRITICAL FIX: Make the center container fill the full header height */
+    height: 100%;
+}
+.right { flex: 1; justify-content: flex-end; }
+
+.divider {
+    width: 1px;
+    height: 20px;
+    background-color: var(--surface-border-secondary);
 }
 
-.headerRight {
-  gap: var(--spacing-2);
-  position: relative;
+.menuWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.headerCenter {
-  display: flex;
-  justify-content: center;
-  /* This inherits the 'stretch' from the parent, making this container 56px tall */
-  align-self: stretch; 
-  position: relative;
+.appTitle {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--surface-fg-primary);
 }
 
-.appHeaderTitle {
-  font-size: 1.25em;
-  font-weight: 500;
-  color: var(--surface-fg-primary);
-  margin: 0;
+.badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    background-color: var(--surface-bg-secondary);
+    border-radius: 6px;
+    color: var(--surface-fg-secondary);
+    font-weight: 500;
+    line-height: 1;
 }
 
-.verticalDivider {
-  width: 1px;
-  height: var(--spacing-6);
-  background-color: var(--surface-border-secondary);
+/* --- Dropdown Trigger --- */
+.screenNameTrigger {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-1p5) var(--spacing-2);
+    border-radius: var(--spacing-2);
+    transition: background-color 0.2s, color 0.2s;
+    color: var(--surface-fg-primary);
+    font-family: var(--font-family-sans);
+    font-size: 14px;
+    font-weight: 600;
+    outline: none;
 }
-
-.formIdentifier {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  min-width: 0;
+.screenNameTrigger:hover, 
+.screenNameTrigger[data-state='open'] {
+    background-color: var(--surface-bg-secondary);
 }
-
-.screenIdentifier {
-  position: relative; /* Anchor for the popover */
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
+.screenNameTrigger:focus-visible {
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+}
+.screenNameTrigger .material-symbols-rounded {
+    font-size: 20px;
+    color: var(--surface-fg-tertiary);
+    transition: transform 0.2s ease, color 0.2s;
+}
+.screenNameTrigger[data-state='open'] .material-symbols-rounded {
+    transform: rotate(180deg);
+    color: var(--surface-fg-secondary);
 }

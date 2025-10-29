@@ -3,11 +3,16 @@
 
 /* --- Menu Popover Container --- */
 .menu-popover {
+    /* FIX: Add absolute positioning to make it a true popover */
+    position: absolute;
+    top: calc(100% + 4px); /* Position below the parent wrapper with a small gap */
+    left: 0;
+    z-index: 1000; /* Ensure it's above other UI */
+
     background-color: var(--surface-bg-primary);
     border-radius: var(--spacing-2);
     box-shadow: var(--surface-shadow-xl);
     border: 1px solid var(--surface-border-primary);
-    z-index: 1100;
     padding: var(--spacing-1); /* Consistent padding for all menus */
     min-width: 220px;
     display: flex;

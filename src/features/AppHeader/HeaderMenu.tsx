@@ -1,4 +1,4 @@
-// src/views/HeaderMenu.tsx
+// src/features/AppHeader/HeaderMenu.tsx
 import { useRef } from 'react';
 import { useAtom } from 'jotai';
 import { isMenuOpenAtom, isToolbarCompactAtom, isShowBreadcrumbAtom, settingsLayoutModeAtom } from '../../data/atoms';

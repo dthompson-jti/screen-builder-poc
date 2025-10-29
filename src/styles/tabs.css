@@ -2,6 +2,7 @@
 /* Single source of truth for all tab component styles, adapted for Radix. */
 
 .animated-tabs-root {
+  /* CRITICAL FIX: Ensure the component root fills the vertical space of its parent */
   height: 100%;
 }
 
@@ -77,7 +78,6 @@
   background-color: var(--surface-fg-theme-strong);
   z-index: 2;
   bottom: 0;
-  /* DEFINITIVE FIX: Force width by constraining both left and right edges to 0. */
   left: 0;
   right: 0;
 }

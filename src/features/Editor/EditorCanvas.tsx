@@ -1,5 +1,5 @@
 // src/features/Editor/EditorCanvas.tsx
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { useDroppable } from '@dnd-kit/core';
 import { 
@@ -7,7 +7,7 @@ import {
   isPropertiesPanelVisibleAtom,
   selectionAnchorIdAtom,
   overDndIdAtom,
-  selectedCanvasComponentIdsAtom, // Import selector atom
+  selectedCanvasComponentIdsAtom,
 } from '../../data/atoms';
 import { rootComponentIdAtom, formNameAtom } from '../../data/historyAtoms';
 import { useEditorHotkeys } from '../../data/useEditorHotkeys';
@@ -40,6 +40,8 @@ export const EditorCanvas = () => {
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   
+  const [contextMenuKey, setContextMenuKey] = useState(0);
+  
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
 
@@ -50,6 +52,35 @@ export const EditorCanvas = () => {
 
   useEditorHotkeys();
   useAutoScroller(canvasContainerRef);
+
+  useEffect(() => {
+    const handleGlobalContextMenu = (event: MouseEvent) => {
+      if (!canvasContainerRef.current?.contains(event.target as Node)) {
+        return;
+      }
+      
+      setContextMenuKey(prev => prev + 1);
+
+      const targetId = findComponentId(event.target as HTMLElement);
+      // FIX: Use the 'interactionState' variable from the hook's scope.
+      const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
+      const isTargetAlreadySelected = targetId ? currentSelectedIds.includes(targetId) : false;
+
+      if (targetId && !isTargetAlreadySelected) {
+        setInteractionState({ mode: 'selecting', ids: [targetId] });
+        setAnchorId(targetId);
+      } else if (!targetId) {
+        if (currentSelectedIds.length > 0) setInteractionState({ mode: 'idle' });
+      }
+    };
+    
+    window.addEventListener('contextmenu', handleGlobalContextMenu, { capture: true });
+    
+    return () => {
+      window.removeEventListener('contextmenu', handleGlobalContextMenu, { capture: true });
+    };
+  }, [interactionState, setInteractionState, setAnchorId]); // FIX: Add interactionState to dependency array.
+
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,22 +96,6 @@ export const EditorCanvas = () => {
     }
   }
 
-  const handleContextMenu = (e: React.MouseEvent) => {
-    const targetId = findComponentId(e.target as HTMLElement);
-    const currentSelectedIds = interactionState.mode === 'selecting' ? interactionState.ids : [];
-    const isTargetAlreadySelected = targetId ? currentSelectedIds.includes(targetId) : false;
-
-    // If we right-click a new item, it becomes the sole selection.
-    if (targetId && !isTargetAlreadySelected) {
-      setInteractionState({ mode: 'selecting', ids: [targetId] });
-      setAnchorId(targetId);
-    } else if (!targetId) {
-      // If we right-click the background, clear selection if one exists.
-      if (currentSelectedIds.length > 0) setInteractionState({ mode: 'idle' });
-    }
-    // If right-clicking an already selected item, the selection is maintained.
-  };
-
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
   const isRootSelected = selectedIds.length === 1 && selectedIds[0] === rootId;
 
@@ -93,12 +108,11 @@ export const EditorCanvas = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   return (
-    <CanvasContextMenu>
+    <CanvasContextMenu key={contextMenuKey}>
         <div 
             ref={setMergedRefs} 
             className={styles.canvasContainer} 
             onClick={handleBackgroundClick} 
-            onContextMenu={handleContextMenu}
         >
             <div ref={canvasRef} className={formCardClasses} onClick={handleCanvasClick}>
                 <div className={styles.formCardHeader}><h2>{screenName}</h2></div>

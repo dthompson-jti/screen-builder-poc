@@ -13,6 +13,7 @@ export type SettingsLayoutMode = 'single-column' | 'two-column';
 export type ScreenType = 'case-init' | 'insert' | 'update' | 'search' | 'folder-view' | 'header-screen';
 
 export const appViewModeAtom = atom<AppViewMode>('editor');
+// FIX: Ensure menu is closed by default.
 export const isMenuOpenAtom = atom(false);
 export const isSettingsMenuOpenAtom = atom(false);
 export const isShowBreadcrumbAtom = atom(true);
