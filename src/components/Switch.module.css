@@ -21,6 +21,8 @@
 .switchRoot:hover:not([data-state='checked']) {
   /* Off, Hover state for the container */
   border-color: var(--control-border-tertiary-hover);
+  /* UPDATED: Added background color for hover state */
+  background-color: var(--control-bg-secondary-hover);
 }
 
 .switchRoot[data-state='checked'] {
@@ -45,12 +47,12 @@
   /* Add requested shadow */
   box-shadow: var(--surface-shadow-sm);
 
-  /* DEFINITIVE FIX: Off position, 2px to create an even internal gutter on both sides. */
+  /* REVERTED: Off position */
   transform: translateX(-4px);
 }
 
 .switchThumb[data-state='checked'] {
-  /* DEFINITIVE FIX: On position: (36px width - 16px thumb - 2px gutter) = 18px */
+  /* REVERTED: On position */
   transform: translateX(12px);
   
   /* Thumb must be white in 'on' state for contrast */
