@@ -2,16 +2,50 @@
 import { useAtomValue } from 'jotai';
 import { Active } from '@dnd-kit/core';
 import { canvasComponentsByIdAtom } from '../../data/historyAtoms';
-import { DndData } from '../../types';
+import { DndData, CanvasComponent } from '../../types';
 
-// Previews
-import { BrowserItemPreview } from './previews/BrowserItemPreview';
-import { ContainerPreview } from './previews/ContainerPreview';
-import PlainTextPreview from './previews/PlainTextPreview';
-import { TextInputPreview } from './previews/TextInputPreview';
-import DropdownPreview from './previews/DropdownPreview';
-import RadioButtonsPreview from './previews/RadioButtonsPreview';
-import LinkPreview from './previews/LinkPreview';
+// Import all the new unified renderers
+import { TextInputRenderer } from './renderers/TextInputRenderer';
+import { DropdownRenderer } from './renderers/DropdownRenderer';
+import { RadioButtonsRenderer } from './renderers/RadioButtonsRenderer';
+import { PlainTextRenderer } from './renderers/PlainTextRenderer';
+import { LinkRenderer } from './renderers/LinkRenderer';
+// FIX: Removed unused import of LayoutRenderer.
+// import { LayoutRenderer } from './renderers/LayoutRenderer';
+
+// --- REPLACEMENTS FOR DELETED PREVIEW COMPONENTS ---
+const BrowserItemPreview = ({ name, icon }: { name: string; icon: string }) => (
+    <div style={{
+        padding: '8px 12px',
+        backgroundColor: 'var(--surface-bg-primary)',
+        border: '1px solid var(--surface-border-secondary)',
+        borderRadius: '6px',
+        boxShadow: 'var(--surface-shadow-lg)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--spacing-3)',
+        color: 'var(--surface-fg-primary)',
+        fontFamily: 'var(--font-family-sans)',
+        fontSize: '0.9em',
+        userSelect: 'none',
+    }}>
+        <span className="material-symbols-rounded" style={{ color: 'var(--surface-fg-secondary)' }}>{icon}</span>
+        <span>{name}</span>
+    </div>
+);
+
+const ContainerPreview = ({ component }: { component: CanvasComponent }) => (
+    <div style={{
+        padding: 'var(--spacing-4)',
+        backgroundColor: 'var(--surface-bg-primary)',
+        border: '1px dashed var(--surface-border-tertiary)',
+        borderRadius: '6px',
+        minWidth: '200px',
+        minHeight: '60px'
+    }}>
+        <p style={{ margin: 0, fontSize: '0.9em', color: 'var(--surface-fg-secondary)' }}>{component.componentType === 'layout' ? component.name : ''}</p>
+    </div>
+);
 
 interface DndDragOverlayProps {
   activeItem: Active | null;
@@ -35,42 +69,34 @@ export const DndDragOverlay = ({ activeItem }: DndDragOverlayProps) => {
   const activeComponent = allComponents[componentId];
   if (!activeComponent) return null;
   
-  if (activeComponent.componentType === 'layout') {
-    return <ContainerPreview component={activeComponent} allComponents={allComponents} />;
-  }
-  
-  if (activeComponent.componentType === 'widget' || activeComponent.componentType === 'field') {
-    const formComponent = activeComponent;
-    const commonProps = {
-        label: formComponent.properties.label,
-        content: formComponent.properties.content,
-        required: formComponent.properties.required,
-        hintText: formComponent.properties.hintText,
-        placeholder: formComponent.properties.placeholder,
-        isEditing: false,
-    };
-    
-    let previewElement;
-    switch (formComponent.properties.controlType) {
-        case 'plain-text':
-            previewElement = <PlainTextPreview {...commonProps} textElement={formComponent.properties.textElement} />;
-            break;
-        case 'dropdown':
-            previewElement = <DropdownPreview {...commonProps} />;
-            break;
-        case 'radio-buttons':
-            previewElement = <RadioButtonsPreview {...commonProps} />;
-            break;
-        case 'link':
-            previewElement = <LinkPreview {...commonProps} />;
-            break;
-        case 'text-input':
-        default:
-            previewElement = <TextInputPreview {...commonProps} />;
-            break;
+  const renderComponent = (comp: CanvasComponent) => {
+    switch (comp.componentType) {
+      case 'layout':
+        return <ContainerPreview component={comp} />;
+      case 'widget':
+      case 'field':
+        switch (comp.properties.controlType) {
+          case 'text-input':
+            return <TextInputRenderer component={comp} mode="preview" />;
+          case 'dropdown':
+            return <DropdownRenderer component={comp} mode="preview" />;
+          case 'radio-buttons':
+            return <RadioButtonsRenderer component={comp} mode="preview" />;
+          case 'plain-text':
+            return <PlainTextRenderer component={comp} mode="preview" />;
+          case 'link':
+            return <LinkRenderer component={comp} mode="preview" />;
+          default:
+            return null;
+        }
+      default:
+        return null;
     }
-    return <div style={{ pointerEvents: 'none', opacity: 0.85 }}>{previewElement}</div>;
-  }
-  
-  return null;
+  };
+
+  return (
+    <div style={{ pointerEvents: 'none', opacity: 0.85 }}>
+      {renderComponent(activeComponent)}
+    </div>
+  );
 };

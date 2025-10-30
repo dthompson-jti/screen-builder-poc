@@ -52,7 +52,11 @@
   user-select: none; 
 }
 
-.formComponentWrapper {
+/* FIX: This is the old class. It is no longer used in the new renderers. */
+/* .formComponentWrapper { ... } */
+
+/* NEW: This is the wrapper that handles selection clicks. */
+.selectableWrapper {
   border: 1px solid transparent;
   padding: var(--spacing-1);
   margin: 0;
@@ -70,22 +74,25 @@
   opacity: 0;
 }
 
-:not(.selected) > .formComponentWrapper:not(.layoutContainer):hover {
+/* FIX: Target the new selectableWrapper on hover */
+.selectableWrapper:not(.selected):not(.layoutContainer):hover {
   background-color: var(--surface-bg-primary_hover);
   border-color: var(--control-border-tertiary-hover);
 }
 
-.selected > .formComponentWrapper:not([data-is-root="true"]) {
+/* FIX: Target the new selectableWrapper when it has the .selected class */
+.selectableWrapper.selected:not([data-is-root="true"]) {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
 
-.selected > .formComponentWrapper[data-is-root="true"] {
+.selectableWrapper.selected[data-is-root="true"] {
   border-width: 1px;
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
 
+/* The layout container is a special type of selectable wrapper */
 .layoutContainer {
   border: 1px dashed var(--surface-border-tertiary);
   min-height: 40px;
@@ -96,19 +103,23 @@
   border-color: transparent;
 }
 
-:not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
+/* FIX: Target the new selectableWrapper on hover */
+.selectableWrapper:not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
   box-shadow: 0 0 0 1px var(--surface-border-primary);
 }
 
-.selected > .layoutContainer:not([data-is-root="true"]) {
+/* FIX: Target the new selectableWrapper when it has the .selected class */
+.selectableWrapper.selected > .layoutContainer:not([data-is-root="true"]) {
   border-style: solid;
   border-width: 1px;
 }
 
-:not(.selected) > .layoutContainer:hover {
+/* FIX: Target the new selectableWrapper on hover */
+.selectableWrapper:not(.selected) > .layoutContainer:hover {
   background-color: var(--surface-bg-secondary_subtle);
   border-color: var(--surface-border-primary);
 }
+
 
 .layoutContainer.is-over-container {
   background-color: var(--primitives-theme-25);

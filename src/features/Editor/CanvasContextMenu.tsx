@@ -1,133 +1,79 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useSetAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import {
-  canvasInteractionAtom, selectedCanvasComponentIdsAtom,
-} from '../../data/atoms';
-import { commitActionAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
+import { selectedCanvasComponentIdsAtom } from '../../data/atoms';
 import { useComponentCapabilities } from './useComponentCapabilities';
-import { SelectionToolbarMenu } from './SelectionToolbarMenu';
+import { useCanvasActions } from './useCanvasActions';
+import { ActionMenu, ActionMenuItem } from '../../components/ActionMenu';
+import { useIsMac } from '../../data/useIsMac';
+import { useMemo } from 'react';
 
 interface CanvasContextMenuProps {
   children: React.ReactNode;
 }
 
 const MenuContent = () => {
-  const targetIds = useAtomValue(selectedCanvasComponentIdsAtom);
-  const setInteractionState = useSetAtom(canvasInteractionAtom);
-  const commitAction = useSetAtom(commitActionAtom);
-  const allComponents = useAtomValue(canvasComponentsByIdAtom);
-  const capabilities = useComponentCapabilities(targetIds);
+  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+  const capabilities = useComponentCapabilities(selectedIds);
+  const actions = useCanvasActions(selectedIds);
+  const isMac = useIsMac();
 
-  if (targetIds.length === 0) {
-    return (
-      <>
-        <div className="menu-item" style={{ cursor: 'default', color: 'var(--surface-fg-secondary)' }}>
-          <span className="checkmark-container" />
-          <span>No items selected</span>
-        </div>
-        <ContextMenu.Separator style={{ height: '1px', backgroundColor: 'var(--surface-border-secondary)', margin: 'var(--spacing-1) 0' }} />
-        <div className="menu-item" style={{ opacity: 0.5 }} data-disabled>
-          <span className="checkmark-container" />
-          <span>Paste</span>
-        </div>
-      </>
-    );
-  }
+  // FIX: Refactored to build the array conditionally, which is more type-safe
+  // and avoids the complex/buggy .filter() call. This resolves the TS error.
+  const menuItems = useMemo<(ActionMenuItem | 'separator')[]>(() => {
+    const modKey = isMac ? '⌘' : 'Ctrl';
 
-  // Multi-select context menu
-  if (targetIds.length > 1) {
-    const handleDelete = () => {
-      commitAction({
-        action: { type: 'COMPONENTS_DELETE_BULK', payload: { componentIds: targetIds } },
-        message: `Delete ${targetIds.length} component(s)`,
-      });
-      setInteractionState({ mode: 'idle' });
-    };
-    const handleWrap = () => {
-      const firstComponent = allComponents[targetIds[0]];
-      if (!firstComponent) return;
-      commitAction({
-        action: { type: 'COMPONENTS_WRAP', payload: { componentIds: targetIds, parentId: firstComponent.parentId } },
-        message: `Wrap ${targetIds.length} component(s)`,
-      });
-    };
-    return (
-      <>
-        <button className="menu-item" onClick={handleWrap} disabled={!capabilities.canWrap}>
-          <span className="checkmark-container">
-            <span className="material-symbols-rounded">add_box</span>
-          </span>
-          <span>Wrap in Container</span>
-        </button>
-        <button className="menu-item destructive" onClick={handleDelete} disabled={!capabilities.canDelete}>
-          <span className="checkmark-container">
-            <span className="material-symbols-rounded">delete</span>
-          </span>
-          <span>Delete [{targetIds.length}] Items</span>
-        </button>
-      </>
-    );
-  }
+    if (selectedIds.length === 0) {
+      return [
+        { id: 'no-selection', icon: ' ', label: 'No items selected', onClick: () => {}, disabled: true },
+        'separator',
+        { id: 'paste', icon: ' ', label: 'Paste', onClick: () => {}, disabled: true },
+      ];
+    }
+    
+    if (selectedIds.length > 1) {
+      return [
+        { id: 'wrap-multi', icon: 'add_box', label: 'Wrap in Container', onClick: actions.handleWrap, disabled: !capabilities.canWrap },
+        { id: 'delete-multi', icon: 'delete', label: `Delete ${selectedIds.length} Items`, onClick: actions.handleDelete, destructive: true, disabled: !capabilities.canDelete },
+      ];
+    }
 
-  // Single-select context menu (reuses the main toolbar menu component)
-  const componentId = targetIds[0];
-  const component = allComponents[componentId];
-  if (!component) return null;
+    // Single selection menu
+    const items: (ActionMenuItem | 'separator')[] = [];
+    items.push({ id: 'rename', icon: 'edit', label: 'Rename', hotkey: 'Enter', onClick: actions.handleRename, disabled: !capabilities.canRename });
+    
+    const conversionItems: ActionMenuItem[] = [];
+    if (capabilities.canConvertToHeading) conversionItems.push({ id: 'convert-heading', icon: 'title', label: 'Convert to Heading', onClick: () => actions.handleConvert('heading') });
+    if (capabilities.canConvertToParagraph) conversionItems.push({ id: 'convert-paragraph', icon: 'notes', label: 'Convert to Paragraph', onClick: () => actions.handleConvert('paragraph') });
+    if (capabilities.canConvertToLink) conversionItems.push({ id: 'convert-link', icon: 'link', label: 'Convert to Link', onClick: () => actions.handleConvert('link') });
 
-  const handleDelete = () => {
-    commitAction({
-      action: { type: 'COMPONENT_DELETE', payload: { componentId } },
-      message: `Delete component`,
-    });
-    setInteractionState({ mode: 'idle' });
-  };
-  const handleRename = () => setInteractionState({ mode: 'editing', id: componentId });
-  const handleWrap = () => commitAction({
-    action: { type: 'COMPONENTS_WRAP', payload: { componentIds: [componentId], parentId: component.parentId } },
-    message: `Wrap component`,
-  });
-  const handleUnwrap = () => commitAction({
-    action: { type: 'COMPONENT_UNWRAP', payload: { componentId } },
-    message: `Unwrap container`,
-  });
-  const handleNudge = (direction: 'up' | 'down') => {
-    const parent = allComponents[component.parentId];
-    if (!parent || parent.componentType !== 'layout') return;
-    const oldIndex = parent.children.indexOf(componentId);
-    const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1;
-    commitAction({
-      action: { type: 'COMPONENT_REORDER', payload: { componentId, parentId: parent.id, oldIndex, newIndex } },
-      message: 'Reorder component',
-    });
-  };
+    if (conversionItems.length > 0) {
+      items.push('separator');
+      items.push(...conversionItems);
+    }
+    
+    items.push('separator');
+    items.push({ id: 'move-up', icon: 'arrow_upward', label: 'Move Up', hotkey: '↑', onClick: () => actions.handleNudge('up'), disabled: !capabilities.canNudgeUp });
+    items.push({ id: 'move-down', icon: 'arrow_downward', label: 'Move Down', hotkey: '↓', onClick: () => actions.handleNudge('down'), disabled: !capabilities.canNudgeDown });
+    items.push({ id: 'wrap', icon: 'add_box', label: 'Wrap in Container', hotkey: `${modKey}+G`, onClick: actions.handleWrap, disabled: !capabilities.canWrap });
+    if (capabilities.canUnwrap) items.push({ id: 'unwrap', icon: 'disabled_by_default', label: 'Unwrap Container', hotkey: `${modKey}+Shift+G`, onClick: actions.handleUnwrap });
 
-  return (
-    <SelectionToolbarMenu
-      selectedId={componentId}
-      onDelete={handleDelete}
-      onRename={handleRename}
-      onNudge={handleNudge}
-      onClose={() => {}} // Radix handles closing
-      onDuplicate={() => {}} // Placeholder
-      onWrap={handleWrap}
-      onUnwrap={handleUnwrap}
-    />
-  );
+    items.push('separator');
+    items.push({ id: 'duplicate', icon: 'content_copy', label: 'Duplicate', hotkey: `${modKey}+D`, onClick: () => {}, disabled: true });
+    items.push({ id: 'delete', icon: 'delete', label: 'Delete', hotkey: isMac ? '⌫' : 'Del', onClick: actions.handleDelete, destructive: true, disabled: !capabilities.canDelete });
+
+    return items;
+  }, [selectedIds, isMac, capabilities, actions]);
+
+  return <ActionMenu items={menuItems} />;
 };
-
 
 export const CanvasContextMenu = ({ children }: CanvasContextMenuProps) => {
   return (
     <ContextMenu.Root>
-      <ContextMenu.Trigger asChild>
-        {children}
-      </ContextMenu.Trigger>
+      <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
-        <ContextMenu.Content
-          className="menu-popover"
-          onCloseAutoFocus={(e) => e.preventDefault()}
-        >
+        <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>
           <MenuContent />
         </ContextMenu.Content>
       </ContextMenu.Portal>

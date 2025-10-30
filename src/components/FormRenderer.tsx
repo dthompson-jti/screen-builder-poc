@@ -1,9 +1,16 @@
 // src/components/FormRenderer.tsx
-import React from 'react';
+// REMOVED: Unused 'React' import due to new JSX transform.
 import { useAtomValue } from 'jotai';
 import { canvasComponentsByIdAtom, rootComponentIdAtom } from '../data/historyAtoms';
-import { FormComponent, LayoutComponent } from '../types';
-import { TextInputPreview } from '../features/Editor/previews/TextInputPreview';
+import { CanvasComponent } from '../types';
+
+// Import all the new unified renderers
+import { TextInputRenderer } from '../features/Editor/renderers/TextInputRenderer';
+import { DropdownRenderer } from '../features/Editor/renderers/DropdownRenderer';
+import { RadioButtonsRenderer } from '../features/Editor/renderers/RadioButtonsRenderer';
+import { PlainTextRenderer } from '../features/Editor/renderers/PlainTextRenderer';
+import { LinkRenderer } from '../features/Editor/renderers/LinkRenderer';
+import { LayoutRenderer } from '../features/Editor/renderers/LayoutRenderer';
 
 // --- Recursive Render Node ---
 const RenderNode = ({ componentId }: { componentId: string }) => {
@@ -12,106 +19,33 @@ const RenderNode = ({ componentId }: { componentId: string }) => {
 
   if (!component) return null;
 
-  if (component.componentType === 'layout') {
-    return <LayoutComponentPreview component={component} />;
-  }
-  return <FormComponentPreview component={component} />;
-};
-
-// --- Layout Component Preview ---
-const LayoutComponentPreview = ({ component }: { component: LayoutComponent }) => {
-  const appearance = component.properties.appearance;
-  
-  const spacingMap: { [key: string]: string } = {
-    none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)',
-    lg: 'var(--spacing-6)', xl: 'var(--spacing-8)'
+  // --- RENDERER ROUTER ---
+  const renderComponent = (comp: CanvasComponent) => {
+    switch (comp.componentType) {
+      case 'layout':
+        return <LayoutRenderer component={comp} mode="preview" />;
+      case 'widget':
+      case 'field':
+        switch (comp.properties.controlType) {
+          case 'text-input':
+            return <TextInputRenderer component={comp} mode="preview" />;
+          case 'dropdown':
+            return <DropdownRenderer component={comp} mode="preview" />;
+          case 'radio-buttons':
+            return <RadioButtonsRenderer component={comp} mode="preview" />;
+          case 'plain-text':
+            return <PlainTextRenderer component={comp} mode="preview" />;
+          case 'link':
+            return <LinkRenderer component={comp} mode="preview" />;
+          default:
+            return <div>Unknown control type</div>;
+        }
+      default:
+        return <div>Unknown component type</div>;
+    }
   };
 
-  const gapMap = { none: '0px', sm: 'var(--spacing-2)', md: 'var(--spacing-4)', lg: 'var(--spacing-6)' };
-  
-  const containerStyle: React.CSSProperties = {
-    padding: spacingMap[appearance?.padding || 'none'],
-    borderRadius: 'var(--spacing-2)',
-  };
-
-  const contentStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: gapMap[component.properties.gap] || gapMap.md,
-  };
-
-  const arrangement = component.properties.arrangement;
-  if (arrangement === 'stack') {
-    contentStyle.flexDirection = 'column';
-  } else if (arrangement === 'row') {
-    contentStyle.flexDirection = 'row';
-    contentStyle.flexWrap = 'nowrap';
-    contentStyle.justifyContent = component.properties.distribution;
-    contentStyle.alignItems = component.properties.verticalAlign;
-  } else if (arrangement === 'wrap') {
-    contentStyle.flexDirection = 'row';
-    contentStyle.flexWrap = 'wrap';
-    contentStyle.alignItems = 'start';
-  } else if (arrangement === 'grid') {
-    contentStyle.display = 'grid';
-    const gridTemplateMap: {[key: string]: string} = {
-      'auto': 'repeat(auto-fill, minmax(150px, 1fr))',
-      '2-col-50-50': '1fr 1fr',
-      '3-col-33': '1fr 1fr 1fr',
-      '2-col-split-left': '2fr 1fr',
-    };
-    const { columnLayout } = component.properties;
-    contentStyle.gridTemplateColumns = typeof columnLayout === 'number'
-      ? `repeat(${columnLayout}, 1fr)`
-      : gridTemplateMap[columnLayout] || '1fr';
-  }
-
-  const wrapperStyle: React.CSSProperties = {};
-  if (component.contextualLayout?.columnSpan) {
-    wrapperStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
-  }
-
-  return (
-    <div style={wrapperStyle}>
-      <div 
-        style={containerStyle}
-        data-appearance-type={appearance?.type || 'transparent'}
-        data-bordered={appearance?.bordered || false}
-        data-arrangement={arrangement}
-      >
-        <div style={contentStyle} className="layout-content-wrapper">
-          {component.children.map(childId => (
-            <RenderNode key={childId} componentId={childId} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Form Item Preview ---
-const FormComponentPreview = ({ component }: { component: FormComponent }) => {
-  const allComponents = useAtomValue(canvasComponentsByIdAtom);
-  const wrapperStyle: React.CSSProperties = {};
-  
-  if (component.contextualLayout?.columnSpan) {
-    wrapperStyle.gridColumn = `span ${component.contextualLayout.columnSpan}`;
-  }
-  
-  const parent = allComponents[component.parentId];
-  if (parent && parent.componentType === 'layout' && parent.properties.arrangement === 'wrap') {
-    wrapperStyle.flexShrink = component.contextualLayout?.preventShrinking ? 0 : 1;
-  }
-  
-  return (
-    <div style={wrapperStyle}>
-      <TextInputPreview
-        label={component.properties.label}
-        isEditing={false}
-        // FIX: Add the missing 'required' prop to satisfy the component's interface.
-        required={component.properties.required}
-      />
-    </div>
-  );
+  return <>{renderComponent(component)}</>;
 };
 
 // --- Main Form Renderer ---

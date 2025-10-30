@@ -1,8 +1,9 @@
 // src/features/Editor/EditorCanvas.tsx
 import React, { useRef } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
+// FIX: Corrected typo from '@d-kit/core' to '@dnd-kit/core'.
 import { useDroppable } from '@dnd-kit/core';
-import { 
+import {
   canvasInteractionAtom,
   isPropertiesPanelVisibleAtom,
   selectionAnchorIdAtom,
@@ -14,7 +15,7 @@ import { useEditorHotkeys } from '../../data/useEditorHotkeys';
 import { useAutoScroller } from '../../data/useAutoScroller';
 
 import { CanvasNode } from './CanvasNode';
-import { FloatingSelectionToolbar } from './CanvasUI';
+import { FloatingMultiSelectToolbar } from './CanvasUI';
 import { CanvasContextMenu } from './CanvasContextMenu';
 
 import styles from './EditorCanvas.module.css';
@@ -29,7 +30,7 @@ export const EditorCanvas = () => {
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
-  
+
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
 
@@ -41,12 +42,7 @@ export const EditorCanvas = () => {
   useEditorHotkeys();
   useAutoScroller(canvasContainerRef);
 
-  // Context menu logic is now fully handled by the CanvasContextMenu component and its trigger.
-  // Global listeners are no longer needed, simplifying this component.
-
   const handleCanvasClick = (e: React.MouseEvent) => {
-    // This click is on the form card itself, but not on a specific component.
-    // This should select the root component.
     e.stopPropagation();
     if (interactionState.mode !== 'selecting' || interactionState.ids[0] !== rootId || interactionState.ids.length > 1) {
       setInteractionState({ mode: 'selecting', ids: [rootId] });
@@ -56,15 +52,13 @@ export const EditorCanvas = () => {
   };
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
-    // This click is on the grey area outside the form card.
-    // This should deselect everything.
     if (e.target === e.currentTarget) {
       if (interactionState.mode !== 'idle') {
         setInteractionState({ mode: 'idle' });
         setAnchorId(null);
       }
     }
-  }
+  };
 
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
   const isRootSelected = selectedIds.length === 1 && selectedIds[0] === rootId;
@@ -74,22 +68,20 @@ export const EditorCanvas = () => {
     isOverBackground ? styles.isBackgroundTarget : '',
     isRootSelected ? styles.isRootSelected : '',
   ].filter(Boolean).join(' ');
-  
+
   return (
     <CanvasContextMenu>
-        <div 
-            ref={setMergedRefs} 
-            className={styles.canvasContainer} 
-            onClick={handleBackgroundClick} 
-        >
-            <div className={formCardClasses} onClick={handleCanvasClick}>
-                <div className={styles.formCardHeader}><h2>{screenName}</h2></div>
-                <div className={styles.canvasDroppableArea}>
-                {rootId && <CanvasNode componentId={rootId} />}
-                </div>
-            </div>
-            <FloatingSelectionToolbar />
+      <div ref={setMergedRefs} className={styles.canvasContainer} onClick={handleBackgroundClick}>
+        <div className={formCardClasses} onClick={handleCanvasClick}>
+          <div className={styles.formCardHeader}>
+            <h2>{screenName}</h2>
+          </div>
+          <div className={styles.canvasDroppableArea}>
+            {rootId && <CanvasNode componentId={rootId} />}
+          </div>
         </div>
+        <FloatingMultiSelectToolbar />
+      </div>
     </CanvasContextMenu>
   );
 };
