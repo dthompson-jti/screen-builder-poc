@@ -15,6 +15,7 @@
   background-color: var(--surface-bg-primary);
   color: var(--surface-fg-primary);
   outline: none;
+  /* FIX: Reverted transition to remove 'margin' as it's no longer used for focus. */
   transition: border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   position: relative;
@@ -24,7 +25,7 @@
   border-color: var(--control-border-tertiary-hover);
 }
 
-/* DEFINITIVE FIX: Standardize on outer focus ring. */
+/* Use the standard outer box-shadow for focus. */
 .selectTrigger[data-state='open'], 
 .selectTrigger:focus-visible,
 .selectTrigger[data-focused='true'] {
@@ -46,14 +47,11 @@
 /* All visual styling (bg, border, shadow) comes from the global .menu-popover class. */
 .selectContent {
   width: var(--radix-select-trigger-width);
-  /* REMOVED overflow: hidden; to allow focus rings to escape. */
+  overflow: hidden;
 }
 
 .selectViewport {
   max-height: 256px;
-  /* DEFINITIVE FIX: Move overflow here to clip scrolling content while preserving focus rings on items. */
-  overflow: hidden;
-  border-radius: 6px; /* Match the item radius to clip corners cleanly */
 }
 
 /* The decorative icon, rendered when an item is not checked */

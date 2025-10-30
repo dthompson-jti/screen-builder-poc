@@ -197,13 +197,14 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
             {filteredGroups.map((group) => (
               <li key={group.title}>
                 <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
-                <ul>
+                {/* Changed to a div to hold non-li children */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   {group.components.map((component) => (
                     <React.Fragment key={component.id}>
                       {renderComponentItem(component)}
                     </React.Fragment>
                   ))}
-                </ul>
+                </div>
               </li>
             ))}
           </ul>

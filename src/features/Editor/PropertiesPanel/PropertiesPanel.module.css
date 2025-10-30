@@ -85,10 +85,14 @@
   border-color: var(--surface-border-primary);
 }
 
-/* ROBUST FIX: Use an inset box-shadow for the selection indicator. */
-/* This is guaranteed not to be clipped by parent padding. */
+/* Use outline for focus to coexist with selection's inset shadow */
+.styleSwatch:focus-visible {
+  outline: 2px solid var(--control-focus-ring-standard);
+  outline-offset: 2px;
+}
+
 .styleSwatch.selected {
-  border-color: transparent; /* Border is not needed when using inset shadow */
+  border-color: transparent;
   box-shadow: inset 0 0 0 2px var(--control-border-selected);
 }
 

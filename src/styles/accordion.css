@@ -56,6 +56,6 @@
 
 .accordion-content-text {
   min-height: 0;
-  /* DEFINITIVE FIX: Add a minimal 2px safe-zone padding to prevent clipping of child focus rings. */
+  /* Creates a 2px safe zone on all sides for outer focus rings of children. */
   padding: var(--spacing-0p5);
 }

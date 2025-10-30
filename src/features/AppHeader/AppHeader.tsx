@@ -19,7 +19,7 @@ export const AppHeader = () => {
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <Button
-              variant="quaternary"
+              variant="tertiary" /* Changed to tertiary */
               size="m"
               iconOnly
               aria-label="Main menu"

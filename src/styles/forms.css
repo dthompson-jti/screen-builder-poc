@@ -11,10 +11,9 @@ input[type="text"],
 textarea {
   font-family: var(--font-family-sans);
   width: 100%;
-  /* DEFINITIVE FIX: Standardize height and border color to match other controls. */
-  height: 38px;
+  height: 38px; /* Standardized height */
   padding: var(--spacing-2) var(--spacing-3);
-  border: 1px solid var(--surface-border-primary);
+  border: 1px solid var(--surface-border-primary); /* Standardized border */
   border-radius: 6px;
   font-size: 0.9em;
   background-color: var(--surface-bg-primary);
@@ -31,9 +30,8 @@ textarea:not(:disabled):hover {
 
 input[type="text"]:focus,
 textarea:focus {
-    /* DEFINITIVE FIX: Standardize on outer focus ring. */
     border-color: var(--surface-border-theme);
-    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+    box-shadow: 0 0 0 2px var(--control-focus-ring-standard); /* Standardized outer focus ring */
     background-color: var(--surface-bg-primary);
 }
 
@@ -46,8 +44,7 @@ textarea:disabled {
 }
 
 textarea {
-  /* DEFINITIVE FIX: Override height for textareas. */
-  height: auto;
+  height: auto; /* Allow textarea to have variable height */
   min-height: 80px;
   resize: vertical;
 }

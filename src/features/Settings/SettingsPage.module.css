@@ -104,8 +104,7 @@
   border-radius: var(--spacing-3);
   box-shadow: var(--surface-shadow-lg);
   border: 1px solid var(--surface-border-secondary);
-  /* DEFINITIVE FIX: Standardize padding to match Properties Panel. */
-  padding: var(--spacing-4);
+  padding: var(--spacing-4); /* Standardized padding */
 }
 
 .settingsFormContainer {
@@ -120,8 +119,7 @@
   box-shadow: var(--surface-shadow-lg);
   border: 1px solid var(--surface-border-secondary);
   margin: var(--spacing-8) 0;
-  /* DEFINITIVE FIX: Standardize padding to match Properties Panel. */
-  padding: var(--spacing-4);
+  padding: var(--spacing-4); /* Standardized padding */
 }
 
 /* Apply two-column styles to the container within the frame */
@@ -152,12 +150,11 @@
 }
 
 .settingsSection h2 {
-  /* DEFINITIVE FIX: Standardize header style to match Accordion trigger. */
-  font-size: 1rem;
+  font-size: 1rem; /* Standardized font size */
   font-weight: 600;
   color: var(--surface-fg-primary);
-  margin: 0 0 var(--spacing-4) 0;
-  padding-bottom: var(--spacing-2);
+  margin: 0 0 var(--spacing-4) 0; /* Standardized margin */
+  padding-bottom: var(--spacing-2); /* Standardized padding */
   border-bottom: 1px solid var(--surface-border-secondary);
 }
 

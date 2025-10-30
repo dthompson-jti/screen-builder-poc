@@ -102,7 +102,7 @@
   text-transform: uppercase;
 }
 
-/* DEFINITIVE FIX: .componentListItem styles are REMOVED. Styling is now handled by the global menu.css */
+/* .componentListItem is now REMOVED and replaced by the global .menu-item style */
 
 .componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
 .componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }

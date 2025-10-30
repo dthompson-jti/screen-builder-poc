@@ -12,7 +12,7 @@
   min-width: 220px;
   display: flex;
   flex-direction: column;
-  /* FIX: Add 2px gap between menu items as requested. */
+  /* Add a 2px gap between menu items */
   gap: 2px;
 }
 .menu-popover[data-state='open'] {
@@ -45,7 +45,6 @@
     padding: var(--spacing-2) var(--spacing-1p5); /* 8px 6px */
     border-radius: var(--spacing-2); /* 8px */
     border: 1px solid transparent; /* Reserve space for border */
-    box-shadow: inset 0 -1px 0 0 transparent; /* Reserve space for bottom border effect */
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
     user-select: none;
     outline: none;
@@ -70,13 +69,12 @@
     color: var(--control-fg-disabled) !important;
 }
 
-/* Hover / Keyboard Nav Highlight */
+/* Hover / Keyboard Nav Highlight - Lighter Style */
 .menu-item:hover:not(:disabled):not([data-state='checked']),
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) {
     outline: none;
-    background-color: var(--control-bg-tertiary-hover);
-    border-color: var(--control-border-tertiary-hover);
-    box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-hover); /* Creates 2px bottom border effect */
+    background-color: var(--control-bg-quaternary-hover);
+    border-color: var(--control-border-quaternary-hover);
     color: var(--surface-fg-primary);
 }
 .menu-item:hover:not(:disabled):not([data-state='checked']) .material-symbols-rounded,
@@ -88,17 +86,17 @@
     color: var(--surface-fg-secondary);
 }
 
-/* DEFINITIVE FIX: Standardize on outer focus ring for menu items. */
+/* Use an inset box-shadow for keyboard focus to prevent clipping. */
 .menu-item[data-highlighted]:focus-visible:not([data-disabled]) {
     background-color: transparent;
-    border-color: var(--surface-border-theme);
-    box-shadow: 0 0 0 2px var(--control-focus-ring-standard);
+    border-color: transparent;
+    box-shadow: inset 0 0 0 2px var(--control-focus-ring-standard);
 }
 
 
 /* --- Variants --- */
 
-/* Destructive Variant */
+/* Destructive Variant - Lighter Style */
 .menu-item.destructive {
     color: var(--surface-fg-alert-primary);
 }
@@ -109,8 +107,7 @@
 .menu-item.destructive:hover:not(:disabled),
 .menu-item.destructive[data-highlighted]:not([data-disabled]) {
     background-color: var(--control-bg-alert-hover);
-    border-color: var(--control-border-tertiary-hover);
-    box-shadow: inset 0 -1px 0 0 var(--control-border-tertiary-hover);
+    border-color: var(--control-border-alert); /* Use a matching red border */
     color: var(--control-fg-on-solid);
 }
 .menu-item.destructive:hover:not(:disabled) .material-symbols-rounded,
@@ -121,8 +118,8 @@
 }
 .menu-item.destructive[data-highlighted]:focus-visible:not([data-disabled]) {
     background-color: transparent;
-    border-color: var(--surface-border-alert);
-    box-shadow: 0 0 0 2px var(--control-focus-ring-error);
+    /* Use inset shadow for destructive items as well */
+    box-shadow: inset 0 0 0 2px var(--control-focus-ring-error);
     color: var(--surface-fg-alert-primary); /* Revert text color on focus */
 }
 .menu-item.destructive[data-highlighted]:focus-visible:not([data-disabled]) .material-symbols-rounded,
