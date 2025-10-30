@@ -70,18 +70,18 @@
 }
 
 /* Hover / Keyboard Nav Highlight - Lighter Style */
-.menu-item:hover:not(:disabled):not([data-state='checked']),
+.menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']),
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) {
     outline: none;
     background-color: var(--control-bg-quaternary-hover);
     border-color: var(--control-border-quaternary-hover);
     color: var(--surface-fg-primary);
 }
-.menu-item:hover:not(:disabled):not([data-state='checked']) .material-symbols-rounded,
+.menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']) .material-symbols-rounded,
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .material-symbols-rounded,
-.menu-item:hover:not(:disabled):not([data-state='checked']) .hotkey,
+.menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']) .hotkey,
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .hotkey,
-.menu-item:hover:not(:disabled):not([data-state='checked']) .chevron,
+.menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']) .chevron,
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .chevron {
     color: var(--surface-fg-secondary);
 }
@@ -104,15 +104,15 @@
 .menu-item.destructive .hotkey {
     color: var(--surface-fg-alert-primary);
 }
-.menu-item.destructive:hover:not(:disabled),
+.menu-item.destructive:hover:not(:disabled):not([data-disabled]),
 .menu-item.destructive[data-highlighted]:not([data-disabled]) {
     background-color: var(--control-bg-alert-hover);
     border-color: var(--control-border-alert); /* Use a matching red border */
     color: var(--control-fg-on-solid);
 }
-.menu-item.destructive:hover:not(:disabled) .material-symbols-rounded,
+.menu-item.destructive:hover:not(:disabled):not([data-disabled]) .material-symbols-rounded,
 .menu-item.destructive[data-highlighted]:not([data-disabled]) .material-symbols-rounded,
-.menu-item.destructive:hover:not(:disabled) .hotkey,
+.menu-item.destructive:hover:not(:disabled):not([data-disabled]) .hotkey,
 .menu-item.destructive[data-highlighted]:not([data-disabled]) .hotkey {
     color: var(--control-fg-on-solid);
 }

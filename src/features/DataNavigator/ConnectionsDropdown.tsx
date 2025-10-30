@@ -42,14 +42,24 @@ export const ConnectionsDropdown = ({ navigator, selectedNodeId, onClose }: Conn
   const hasResults = filteredEntities.length > 0 || filteredCollections.length > 0 || filteredTransientEntities.length > 0;
 
   const renderListItems = (items: DropdownItem[]) => {
-    return items.map((item: DropdownItem) => (
-      <li key={item.id} className={`menu-item ${!item.isNavigable ? styles.nonNavigable : ''}`} onClick={() => handleItemClick(item)}>
-        <span className={`material-symbols-rounded ${styles.itemIcon}`} style={{ color: item.iconColor }}>
-          {item.icon}
-        </span>
-        <span>{item.name}</span>
-      </li>
-    ));
+    return items.map((item: DropdownItem) => {
+      // Conditionally add the data-disabled property only if the item is not navigable
+      const disabledProp = !item.isNavigable ? { 'data-disabled': true } : {};
+      
+      return (
+        <li 
+          key={item.id} 
+          className="menu-item"
+          {...disabledProp}
+          onClick={() => handleItemClick(item)}
+        >
+          <span className={`material-symbols-rounded ${styles.itemIcon}`} style={{ color: item.iconColor }}>
+            {item.icon}
+          </span>
+          <span>{item.name}</span>
+        </li>
+      );
+    });
   };
 
   return (

@@ -85,6 +85,11 @@
   cursor: default;
 }
 
+/* Add padding to the search container to prevent focus ring clipping */
+.searchContainer {
+  padding: var(--spacing-3) var(--spacing-4);
+}
+
 /* --- Component List Styles --- */
 .componentListContainer { 
   flex: 1; 
