@@ -1,4 +1,4 @@
-Of course. Here is the fully rewritten PRD, incorporating the architectural decisions and refactoring plan into a single, comprehensive document.
+Of course. Based on the new context and the work already completed, here is the updated PRD. This document now accurately reflects the *remaining* work required to complete the architectural overhaul, treating the recent cleanups as the new baseline.
 
 ---
 
@@ -11,32 +11,32 @@ Of course. Here is the fully rewritten PRD, incorporating the architectural deci
 ## 1. Overview
 
 ### 1.1. Executive Summary
-This document outlines a series of architectural refinements for the Screen Studio editor. The primary goal is to increase code quality, reusability, and maintainability by addressing key areas of tight coupling and code duplication. We will achieve this by abstracting the canvas-specific selection toolbar into a generic `ActionToolbar` system, unifying the separate rendering paths for the editor and preview modes into a single source of truth, and refining the editor's directory structure for better discoverability. These changes will strengthen the codebase, making it easier to maintain and extend, while ensuring a more consistent and robust user experience.
+This document outlines the primary architectural refactoring for the Screen Studio editor. The goal is to dramatically increase code quality, reusability, and maintainability by resolving the remaining technical debt related to the editor's core rendering logic and selection UI. We will achieve this by abstracting the canvas-specific selection toolbars into a generic `ActionToolbar` system and, most critically, unifying the separate rendering paths for the editor and preview modes into a single source of truth. These changes will eliminate significant code duplication, prevent visual inconsistencies, and establish a robust, scalable foundation for future feature development.
 
 ## 2. Problem & Goals
 
 ### 2.1. Problem Statement
-The editor's architecture, while functional, has developed several technical debts that hinder long-term velocity and maintainability:
-1.  **Component-Specific Toolbar:** The `SelectionToolbar` is tightly coupled to the canvas, preventing its UI pattern from being easily reused in other parts of the application.
-2.  **Dual Rendering Logic:** The visual representation of form components is defined in two separate places (`CanvasRenderers.tsx`/`previews` and `FormRenderer.tsx`). This leads to code duplication and creates a significant risk of visual inconsistency between the editor and the final preview.
-3.  **Suboptimal Directory Structure:** The current `src/features/Editor/` directory structure could be flatter and more intuitive, improving developer experience and reducing cognitive overhead.
+While recent preparatory cleanups have improved the codebase, the editor's core architecture still contains significant technical debt that hinders long-term velocity and maintainability:
+1.  **Tightly Coupled Toolbars:** The `SelectionToolbar` and the multi-select toolbar in `CanvasUI.tsx` are tightly coupled to the canvas, preventing their common UI patterns from being easily reused elsewhere.
+2.  **Critical Code Duplication:** The visual representation of components is defined in two separate, inconsistent places: `CanvasRenderers.tsx`/`previews` for the editor and `FormRenderer.tsx` for the final preview. This is a major source of bugs and visual drift between the editor and the final output.
+3.  **Legacy Directory Structure:** The continued existence of files like `CanvasWrappers.tsx`, `CanvasRenderers.tsx`, and the `previews/` directory creates confusion and makes the codebase harder to navigate.
 
 ### 2.2. Goals
 *   **Establish a Reusable UI Pattern:** Create a generic `ActionToolbar` component system that can be used for any selection-based actions across the application, adhering to the "Single Source of Truth" principle.
-*   **Reduce Code Duplication:** Eliminate the redundant component rendering logic by creating a single, unified rendering path (DRY).
-*   **Guarantee Visual Consistency:** Ensure that a component rendered on the canvas is visually identical to its counterpart in the final preview mode.
-*   **Improve Maintainability:** Make the codebase easier to reason about, debug, and extend by clarifying component responsibilities and centralizing interaction logic into dedicated hooks.
+*   **Eliminate Code Duplication (DRY):** Eradicate the redundant component rendering logic by creating a single, unified rendering path.
+*   **Guarantee Visual Consistency:** Ensure that a component rendered on the canvas is visually identical to its counterpart in the final preview and drag-overlay modes.
+*   **Improve Codebase Health:** Finalize the editor's architecture by removing legacy files and clarifying component responsibilities, making the code easier to reason about, debug, and extend.
 
 ## 3. Scope & Key Initiatives
 
 ### 3.1. Key Initiatives
 1.  **The Generic `ActionToolbar` System:** Abstract the existing selection toolbars into a generic, presentational `<ActionToolbar>` container and a data-driven `<ActionMenu>` component. Centralize all canvas action logic (delete, wrap, etc.) into a new `useCanvasActions` hook.
 2.  **Unified Component Rendering:** Create a new set of unified renderer components in a dedicated `src/features/Editor/renderers/` directory. Each renderer will accept a `mode: 'canvas' | 'preview'` prop to control editor-specific chrome. All editor interaction logic (selection, sorting) will be encapsulated in a new `useEditorInteractions` hook consumed by these renderers.
-3.  **Directory Structure Refinement:** Reorganize the `src/features/Editor/` directory into a flatter, more pragmatic structure to improve code discoverability.
+3.  **Directory Structure Finalization:** Reorganize the `src/features/Editor/` directory, deleting all legacy files (`CanvasRenderers.tsx`, `CanvasWrappers.tsx`, `SelectionToolbar.tsx`, `previews/`, etc.) now made redundant by the new architecture.
 
 ### 3.2. Out of Scope
 *   **New User-Facing Features:** This initiative is a purely architectural refactoring. No new functionality will be added for the end-user.
-*   **Formal Command Pattern:** The existing `commitActionAtom` reducer pattern is sufficient and will not be replaced.
+*   **`componentFactory.ts` or `canvasUtils.ts` Refactoring:** The recently created helper files are considered stable and will be used, not modified.
 *   **Data Navigator Refactoring:** While the `ActionToolbar` is designed for future use in the Data Navigator, its implementation there is out of scope for this PRD.
 
 ## 4. UX/UI Specification & Wireframes
@@ -97,7 +97,7 @@ When multiple items are selected, a toolbar appears at a fixed position at the b
 
 ### 5.1. Logic & State Encapsulation
 The core of this refactor is to centralize logic into dedicated, reusable hooks:
-*   **`useCanvasActions`:** A new hook that accepts `selectedIds` and returns a memoized object of all possible canvas mutation functions (`handleDelete`, `handleWrap`, etc.). This hook is the single place where `commitActionAtom` is called for canvas operations, making it the "brain" for actions.
+*   **`useCanvasActions`:** A new hook that accepts `selectedIds` and returns a memoized object of all possible canvas mutation functions (`handleDelete`, `handleWrap`, etc.). This hook will be the single place where `commitActionAtom` is called for canvas operations, serving as the "brain" for actions.
 *   **`useEditorInteractions`:** A new hook that encapsulates all the logic for making a component *interactive* on the canvas. It accepts a `component` object and returns all necessary props for sorting (`useSortable`), selection handling (`handleSelect`), and state flags (`isSelected`, `isEditing`).
 
 ### 5.2. Generic UI Components
@@ -112,10 +112,10 @@ A new directory, `src/features/Editor/renderers/`, will contain the single sourc
 *   **`mode="canvas"`:** The renderer uses the `useEditorInteractions` hook to get interaction props, wraps the "View" component with the necessary `div`s for selection and sorting, and renders the `<CanvasSelectionToolbar />`. This path is used by `CanvasNode.tsx`.
 
 ### 5.4. Directory & Component Refactoring
-*   `CanvasNode.tsx` will be simplified into a "router" that selects the correct unified renderer.
-*   `FormRenderer.tsx` will be simplified to recursively call the unified renderers in `"preview"` mode.
-*   The old `CanvasWrappers.tsx`, `CanvasRenderers.tsx`, `SelectionToolbar.tsx`, `SelectionToolbarMenu.tsx`, and the `previews/` directory will be deleted.
-*   The `src/features/editor` directory will be renamed to `src/features/Editor` and its contents flattened.
+*   `CanvasNode.tsx` will be simplified into a "router" that selects the correct unified renderer and passes `mode="canvas"`.
+*   `FormRenderer.tsx` will be refactored to recursively call the unified renderers in `"preview"` mode.
+*   The old `CanvasWrappers.tsx`, `CanvasRenderers.tsx`, `SelectionToolbar.tsx`, `SelectionToolbarMenu.tsx`, and the entire `previews/` directory will be **deleted**.
+*   The `src/features/editor` directory will be renamed to `src/features/Editor` and its contents flattened for better discoverability.
 
 ## 6. File Manifest
 
@@ -132,7 +132,7 @@ A new directory, `src/features/Editor/renderers/`, will contain the single sourc
 *   `[NEW] CanvasSelectionToolbar.tsx`
 *   `[MODIFIED] DndDragOverlay.tsx`
 *   `[MODIFIED] EditorCanvas.tsx`
-*   `[MODIFIED] PropertiesPanel.tsx` (Path updates)
+*   `[MODIFIED] PropertiesPanel/PropertiesPanel.tsx` (Path updates)
 *   `[MODIFIED] PropertiesPanel/LayoutEditor.tsx` (Path updates)
 *   `[NEW] useCanvasActions.ts`
 *   `[NEW] useEditorInteractions.ts`
@@ -150,21 +150,22 @@ A new directory, `src/features/Editor/renderers/`, will contain the single sourc
 *   `README.md`
 *   `src/data/atoms.ts`
 *   `src/data/historyAtoms.ts`
+*   `src/data/componentFactory.ts`
 *   `src/types.ts`
 *   `src/features/Editor/useComponentCapabilities.ts`
 *   `src/features/Editor/canvasUtils.ts`
 
 ## 7. Unintended Consequences Check
 *   **`App.tsx`:** Imports from the `Editor` feature must be updated to reflect the new directory structure.
-*   **`types.ts`:** The `useEditable` hook uses generics. Ensure the new renderers correctly type the `ref` for `HTMLInputElement` vs `HTMLTextAreaElement`.
+*   **`useEditable.ts`:** This hook uses generics. Ensure the new renderers correctly type the `ref` for `HTMLInputElement` vs `HTMLTextAreaElement`.
 *   **Global CSS (`menu.css`, `index.css`):** The new `ActionMenu` relies on global styles. Verify that no new component styles introduce specificity conflicts.
-*   **`useEditorHotkeys.ts`:** This hook relies on the interaction state (`canvasInteractionAtom`). Its functionality should be re-verified as the components that set this state are being refactored.
+*   **`useEditorHotkeys.ts`:** This hook relies on the `canvasInteractionAtom`. Its functionality must be re-verified as the components that set this state are being refactored.
 
 ## 8. Risks & Mitigations
 
 | Risk | Likelihood | Impact | Mitigation Strategy |
 | :--- | :--- | :--- | :--- |
-| **Positioning Complexity** | Medium | Medium | The element-relative positioning logic for the toolbar is complex. **Mitigation:** We will use a dedicated, battle-tested library (`@floating-ui/react-dom`) to handle all positioning, scrolling, and viewport collision logic, de-risking this implementation significantly. |
+| **Positioning Complexity** | Medium | Medium | The element-relative positioning for the toolbar is complex. **Mitigation:** We will use a dedicated, battle-tested library (`@floating-ui/react-dom`) to handle all positioning, scrolling, and viewport collision logic, de-risking this implementation significantly. |
 | **Performance Regression** | Low | High | The new renderers and hooks add layers of abstraction, which could impact performance during frequent re-renders like drag-and-drop. **Mitigation:** The pure "View" component inside each renderer will be wrapped in `React.memo`. This ensures that only direct changes to a component's data cause a visual re-render, while interaction state changes do not. |
 | **Prop Drilling** | Medium | Medium | Passing editor-specific props like `isEditing` through the new renderers could become cumbersome. **Mitigation:** A React Context (`EditorContext`) will be scoped to the `EditorCanvas` to provide this state directly to the renderers *only when* `mode="canvas"`, keeping the preview path pure. (Note: Initial implementation will proceed without Context for simplicity, but it remains a viable mitigation if needed). |
 
@@ -172,34 +173,9 @@ A new directory, `src/features/Editor/renderers/`, will contain the single sourc
 
 *   [ ] All new hooks (`useCanvasActions`, `useEditorInteractions`) and generic components (`ActionToolbar`, `ActionMenu`) are implemented and tested.
 *   [ ] The entire `src/features/Editor/renderers` directory is implemented, and all components render correctly in both `'canvas'` and `'preview'` modes.
-*   [ ] The old files (`CanvasWrappers.tsx`, `CanvasRenderers.tsx`, `SelectionToolbar.tsx`, `SelectionToolbarMenu.tsx`) and the `previews/` directory are completely removed from the codebase.
+*   [ ] The legacy files (`CanvasWrappers.tsx`, `CanvasRenderers.tsx`, `SelectionToolbar.tsx`, `SelectionToolbarMenu.tsx`) and the `previews/` directory are **completely removed** from the codebase.
 *   [ ] The single-selection toolbar appears correctly positioned above the selected element and is fully functional.
 *   [ ] The multi-selection toolbar appears correctly at the bottom of the viewport and is fully functional.
 *   [ ] `DndDragOverlay.tsx` and `FormRenderer.tsx` have been updated to use the new unified renderers.
 *   [ ] All core editor functionality (DnD, selection, editing, undo/redo, hotkeys) is verified to work with no regressions.
 *   [ ] The application builds without errors and all relevant tests pass.
-
----
-
-## **File Changes Summary**
-
-### New Files
-*   **`src/components/ActionMenu.tsx`**: A new generic, data-driven component that renders a menu from an `items` array, using global `.menu-item` styles.
-*   **`src/components/ActionToolbar.tsx`**: A new generic, presentational component for positioning floating toolbars using `@floating-ui/react-dom`.
-*   **`src/components/ActionToolbar.module.css`**: Styles for the new `ActionToolbar`.
-*   **`src/features/Editor/CanvasSelectionToolbar.tsx`**: The new "smart" orchestrator for the single-selection toolbar. It uses `useComponentCapabilities` and `useCanvasActions` to build and render the toolbar UI.
-*   **`src/features/Editor/useCanvasActions.ts`**: A critical new hook that centralizes all canvas mutation logic (delete, wrap, etc.), providing a stable API for all UI components.
-*   **`src/features/Editor/useEditorInteractions.ts`**: A critical new hook that encapsulates all common canvas interaction logic for a component (`useSortable`, selection handling), dramatically simplifying the new renderer components.
-*   **`src/features/Editor/renderers/*`**: An entire new directory containing the unified renderers. Each file implements the `mode` prop contract, separating pure view logic from canvas interaction logic.
-*   **`src/features/Editor/renderers/types.ts`**: A new file defining shared TypeScript types (`RenderMode`, `BaseRendererProps`) for the unified renderers.
-
-### Modified Files
-*   **`src/components/FormRenderer.tsx`**: Completely refactored to be a simple recursive component that calls the new unified renderers with `mode="preview"`.
-*   **`src/App.tsx`**: Import paths for `PropertiesPanel` and `EditorCanvas` updated to reflect their new location in the flatter `Editor` directory.
-*   **`src/features/ComponentBrowser/ComponentBrowser.tsx`**: Import path for `panel.module.css` corrected.
-*   **`src/features/Editor/CanvasNode.tsx`**: Drastically simplified. Its role is now just a "router" that selects the correct unified renderer based on component type and passes `mode="canvas"`. All wrapper and editing logic has been removed.
-*   **`src/features/Editor/CanvasUI.tsx`**: The `FloatingSelectionToolbar` is refactored to handle multi-selection only and now uses the generic `<ActionToolbar>` for its container and `useCanvasActions` for its logic.
-*   **`src/features/Editor/DndDragOverlay.tsx`**: **Crucially updated** to import and use the new unified renderers (e.g., `<TextInputRenderer mode="preview" />`) instead of the old, deleted components from the `/previews` directory. This fulfills the "Single Source of Truth" goal.
-*   **`src/features/Editor/EditorCanvas.tsx`**: No longer renders the single-selection toolbar (this is now handled by the renderers). Import paths updated.
-*   **`src/features/Editor/PropertiesPanel.tsx`**: All import paths updated to reflect the new flattened directory structure.
-*   **`src/features/Editor/PropertiesPanel/LayoutEditor.tsx`**: Import path for `canvasUtils` updated.
