@@ -24,7 +24,7 @@ export const DataBindingPicker = ({ binding, onOpen }: DataBindingPickerProps) =
         <Tooltip content="Select data binding">
           <Button
             variant="quaternary"
-            size="s"
+            size="xs"
             iconOnly
             aria-label="Select data binding"
             tabIndex={-1}
