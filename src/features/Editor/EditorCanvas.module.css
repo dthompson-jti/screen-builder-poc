@@ -52,18 +52,11 @@
   user-select: none; 
 }
 
-/* FIX: This is the old class. It is no longer used in the new renderers. */
-/* .formComponentWrapper { ... } */
-
-/* NEW: This is the wrapper that handles selection clicks. */
 .selectableWrapper {
-  border: 1px solid transparent;
-  padding: var(--spacing-1);
-  margin: 0;
-  border-radius: var(--spacing-2);
+  /* This wrapper is now ONLY for interaction, it has no visible styles itself */
   position: relative;
   touch-action: none;
-  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  border-radius: var(--spacing-2);
 }
 
 .sortableItem {
@@ -74,25 +67,33 @@
   opacity: 0;
 }
 
-/* FIX: Target the new selectableWrapper on hover */
-.selectableWrapper:not(.selected):not(.layoutContainer):hover {
+/* --- HOVER & SELECTION STYLES --- */
+/* These styles target the VISUAL elements INSIDE the selectableWrapper */
+
+/* Default state for visual elements */
+.formItemContent, .layoutContainer {
+  border: 1px solid transparent;
+  padding: var(--spacing-1);
+  margin: 0;
+  border-radius: var(--spacing-2);
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+/* FIX: Apply hover styles to the CHILD of the hovered wrapper */
+.selectableWrapper:not(.selected):hover > .formItemContent,
+.selectableWrapper:not(.selected):hover > .layoutContainer {
   background-color: var(--surface-bg-primary_hover);
   border-color: var(--control-border-tertiary-hover);
 }
 
-/* FIX: Target the new selectableWrapper when it has the .selected class */
-.selectableWrapper.selected:not([data-is-root="true"]) {
+/* FIX: Apply selection styles to the CHILD of the selected wrapper */
+.selectableWrapper.selected > .formItemContent,
+.selectableWrapper.selected > .layoutContainer {
   border-color: var(--control-border-selected);
   background-color: var(--control-bg-selected);
 }
 
-.selectableWrapper.selected[data-is-root="true"] {
-  border-width: 1px;
-  border-color: var(--control-border-selected);
-  background-color: var(--control-bg-selected);
-}
-
-/* The layout container is a special type of selectable wrapper */
+/* --- LAYOUT CONTAINER SPECIFIC STYLES --- */
 .layoutContainer {
   border: 1px dashed var(--surface-border-tertiary);
   min-height: 40px;
@@ -103,23 +104,19 @@
   border-color: transparent;
 }
 
-/* FIX: Target the new selectableWrapper on hover */
-.selectableWrapper:not(.selected) > .layoutContainer[data-has-user-border="true"]:hover {
+.selectableWrapper:not(.selected):hover > .layoutContainer[data-has-user-border="true"] {
   box-shadow: 0 0 0 1px var(--surface-border-primary);
 }
 
-/* FIX: Target the new selectableWrapper when it has the .selected class */
 .selectableWrapper.selected > .layoutContainer:not([data-is-root="true"]) {
   border-style: solid;
   border-width: 1px;
 }
 
-/* FIX: Target the new selectableWrapper on hover */
-.selectableWrapper:not(.selected) > .layoutContainer:hover {
+.selectableWrapper:not(.selected):hover > .layoutContainer {
   background-color: var(--surface-bg-secondary_subtle);
   border-color: var(--surface-border-primary);
 }
-
 
 .layoutContainer.is-over-container {
   background-color: var(--primitives-theme-25);
@@ -151,6 +148,7 @@
   border-radius: 6px;
 }
 
+/* --- DnD PLACEHOLDER --- */
 .dropPlaceholder {
   position: absolute;
   background-color: var(--control-border-primary);
@@ -169,7 +167,7 @@
   opacity: 1;
 }
 
-/* --- Floating Selection Toolbar Styles --- */
+/* --- FLOATING TOOLBAR --- */
 .floatingSelectionToolbar {
   position: fixed;
   bottom: 24px;
@@ -201,7 +199,7 @@
   background-color: var(--primitives-dark-tint-700);
 }
 
-/* --- Form Item & Inline Editing Styles (NEW/REWORKED) --- */
+/* --- FORM ITEM & INLINE EDITING --- */
 .formItemContent {
   position: relative;
   padding: var(--spacing-2);

@@ -51,11 +51,12 @@ The undo/redo system is architected for a professional user experience. Beyond j
 
 The canvas is built on a contract of stability, clarity, and intuitive interaction.
 
-### The Interactive Layer Pattern
-To ensure separation of concerns, the canvas renders components through a stack of wrappers. Logic is strictly isolated:
--   **`ComponentRenderer`**: A pure, memoizable component responsible only for visual presentation.
--   **`SelectionWrapper`**: A higher-order component that implements the core canvas interaction logic, including the advanced selection model and display of the `SelectionToolbar`.
--   **`SortableWrapper`**: The outermost layer that integrates with `dnd-kit` to provide drag-and-drop capabilities.
+### The Unified Rendering Pattern
+To guarantee visual consistency and eliminate code duplication, all canvas components are rendered through a single, unified set of renderer components located in `src/features/Editor/renderers/`.
+-   **The `mode` Prop Contract:** Each renderer (e.g., `TextInputRenderer.tsx`) accepts a `mode: 'canvas' | 'preview'` prop. This is the single source of truth for its visual output.
+    -   `mode="preview"`: The renderer returns a pure, memoized presentational component. This path is used for the final output in `Preview` mode and for the `dnd-kit` drag overlay.
+    -   `mode="canvas"`: The renderer uses the `useEditorInteractions` hook to wrap the presentational component with all necessary logic for selection, sorting (DnD), and inline editing.
+-   **Centralized Interaction Logic:** The `useEditorInteractions` hook is a single, reusable hook that encapsulates all the logic for making a component interactive on the canvas, including `dnd-kit` integration and the advanced selection model.
 
 ### Advanced Selection Model
 The editor uses an industry-standard selection model to feel familiar and powerful.
@@ -64,12 +65,13 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor". This is based on the component order in the data tree, not visual position, ensuring predictable behavior. This is constrained to components that share the same parent container.
 
 ### Action Discoverability ("Intelligent Disclosure")
--   **Multiple Access Points:** Actions can be triggered via the `SelectionToolbar`, the right-click `CanvasContextMenu`, and keyboard hotkeys.
--   **Single Source of Truth for Logic:** A centralized hook, `useComponentCapabilities`, determines which actions are possible for any given selection. This ensures absolute consistency across all UI surfaces.
+-   **Multiple Access Points:** Actions can be triggered via the generic `ActionToolbar` system (for single and multi-select), the right-click `CanvasContextMenu`, and keyboard hotkeys.
+-   **Single Source of Truth for Logic:** Logic is now split into two dedicated hooks for ultimate clarity:
+    -   `useComponentCapabilities`: Determines *which* actions are possible for any given selection (e.g., can this item be unwrapped?).
+    -   `useCanvasActions`: Provides the memoized *implementation* for all canvas actions (e.g., `handleWrap`, `handleDelete`), centralizing all calls to `commitActionAtom`.
 -   **Intelligent Disclosure:** The menus follow a refined UX pattern for discoverability:
     -   Actions that are **impossible** for a given component type (e.g., "Unwrap" on a non-container) are **hidden entirely** to reduce clutter.
     -   Actions that are **possible** but temporarily unavailable (e.g., "Move Up" when an item is already at the top) are **shown but disabled**. This teaches the user the full capability of the tool.
--   **Contextual Shortcuts:** The top-level `SelectionToolbar` includes a "smart" slot that shows a high-priority contextual action like **Wrap** or **Unwrap**.
 
 ### Global Hotkey System
 To ensure a fast and predictable workflow, the application features a comprehensive set of keyboard hotkeys. All global editor hotkeys—including undo/redo, delete, wrap/unwrap, and component nudging—are managed in a single, centralized hook (`src/data/useEditorHotkeys.ts`). This centralization makes the system easy to maintain and prevents conflicts between different parts of the application.
@@ -107,32 +109,36 @@ To enforce the "Single Source of Truth" for our UI, we use the global **`menu.cs
 *   **`index.css`**: The single source of truth for the CSS cascade layer order.
 
 ### Styling (`src/styles/`)
-*   **`primitives.css`**: Raw, non-semantic design tokens (colors, spacing).
-*   **`utility.css`**: Reusable utility tokens (e.g., alpha transparency).
-*   **`semantics.css`**: Semantic design tokens that map to primitives.
+*   **`primitives.css`**, **`utility.css`**, **`semantics.css`**: Design token system.
 *   **`buttons.css`**, **`forms.css`**, **`menu.css`**: Global base styles for common UI patterns.
 
 ### Data & State Management (`src/data/`)
-*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom` and the `selectionAnchorIdAtom` for range-select.
-*   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core canvas state via a reducer pattern.
-*   **`useCanvasDnd.ts`**: A custom hook encapsulating all drag-and-drop logic for the canvas.
-*   **`useEditorHotkeys.ts`**: A custom hook that centralizes all global keyboard shortcut logic.
-*   **`useUndoRedo.ts`**: A custom hook providing a clean API for undo/redo actions.
+*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms.
+*   **`historyAtoms.ts`**: Implements the undo/redo system and manages the core canvas state.
+*   **`useCanvasDnd.ts`**: Encapsulates all drag-and-drop logic for the canvas.
+*   **`useEditorHotkeys.ts`**: Centralizes all global keyboard shortcut logic.
+*   **`useUndoRedo.ts`**: Provides a clean API for undo/redo actions.
 
 ### Features (`src/features/`)
 *   **`Editor/`**: The main form-building feature.
     *   `EditorCanvas.tsx`: The main container component with core event handlers.
-    *   `CanvasNode.tsx`: The recursive engine for rendering the component tree.
-    *   `CanvasRenderers.tsx`: Pure presentation logic (The View).
-    *   `CanvasWrappers.tsx`: Manages user interaction logic (selection, DnD).
-    *   `CanvasContextMenu.tsx`: Renders the right-click context menu via Radix UI.
-    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible for the current selection.
+    *   `CanvasNode.tsx`: The recursive engine that routes to the correct unified renderer.
+    *   `renderers/`: **[NEW]** A directory containing the single source of truth for component rendering (e.g., `TextInputRenderer.tsx`, `LayoutRenderer.tsx`).
+    *   `useEditorInteractions.ts`: **[NEW]** A hook that encapsulates all canvas interaction logic (selection, sorting).
+    *   `useCanvasActions.ts`: **[NEW]** A hook that centralizes the implementation of all canvas mutation actions.
+    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible for a given selection.
+    *   `CanvasSelectionToolbar.tsx`: **[NEW]** The specific implementation of the single-selection toolbar for the canvas.
+    *   `CanvasContextMenu.tsx`: Renders the right-click context menu.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
 *   **`ComponentBrowser/`**: The left-hand panel for adding new components.
-*   **`AppHeader/`**: The main application header, including the main menu implemented with Radix UI.
+*   **`AppHeader/`**: The main application header.
 *   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
 
 ### Reusable Components (`src/components/`)
+*   `ActionToolbar.tsx`: **[NEW]** A generic, positioning-aware toolbar container.
+*   `ActionMenu.tsx`: **[NEW]** A generic, data-driven menu component that uses the shared menu system.
 *   **`Button.tsx`**: The composable, data-attribute-driven button component.
-*   **`FormRenderer.tsx`**: A crucial, "pure" component that recursively renders the form state with no editor logic, used in Preview mode.
-*   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives, many built on Radix UI.
+*   **`FormRenderer.tsx`**: A crucial, "pure" component that now uses the unified renderers in `"preview"` mode.
+*   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives.
+
+---
