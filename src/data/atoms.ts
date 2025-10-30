@@ -3,6 +3,7 @@ import { atom } from 'jotai';
 import { UniqueIdentifier, ClientRect } from '@dnd-kit/core';
 import { componentListData } from './componentBrowserMock';
 import { BoundData, ComponentGroup, DraggableComponent } from '../types';
+import { rootComponentIdAtom } from './historyAtoms';
 
 // =================================================================
 //                         App State
@@ -62,17 +63,13 @@ export const activelyEditingComponentIdAtom = atom<string | null>((get) => {
   return state.mode === 'editing' ? state.id : null;
 });
 
-// --- NEW: Context Menu State ---
-export interface ContextMenuState {
-  isOpen: boolean;
-  position: { x: number; y: number };
-  target: { type: 'component'; ids: string[] } | { type: 'canvas' } | null;
-}
-
-export const contextMenuStateAtom = atom<ContextMenuState>({
-  isOpen: false,
-  position: { x: 0, y: 0 },
-  target: null,
+// --- NEW: User Flow Atom ---
+export const startEditingOnEmptyCanvasAtom = atom(null, (get, set) => {
+  const rootId = get(rootComponentIdAtom);
+  set(canvasInteractionAtom, { mode: 'selecting', ids: [rootId] });
+  set(isPropertiesPanelVisibleAtom, true);
+  set(activeToolbarTabAtom, 'data');
+  set(isComponentBrowserVisibleAtom, true);
 });
 
 

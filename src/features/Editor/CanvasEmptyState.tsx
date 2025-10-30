@@ -1,36 +1,16 @@
 // src/features/Editor/CanvasEmptyState.tsx
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { 
-  isComponentBrowserVisibleAtom, 
-  activeToolbarTabAtom, 
-  isPropertiesPanelVisibleAtom,
-  canvasInteractionAtom // CORRECTED: Import the base writable atom
+  startEditingOnEmptyCanvasAtom,
 } from '../../data/atoms';
-import { rootComponentIdAtom } from '../../data/historyAtoms';
 import styles from './CanvasEmptyState.module.css';
 
 export const CanvasEmptyState = () => {
-  const [isLeftPanelOpen, setIsPanelVisible] = useAtom(isComponentBrowserVisibleAtom);
-  const setActiveTab = useSetAtom(activeToolbarTabAtom);
-  // CORRECTED: Get the setter for the base, writable atom
-  const setInteractionState = useSetAtom(canvasInteractionAtom); 
-  const rootId = useAtomValue(rootComponentIdAtom);
-  const setIsPropertiesPanelVisible = useSetAtom(isPropertiesPanelVisibleAtom);
+  const startEditing = useSetAtom(startEditingOnEmptyCanvasAtom);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent canvas from deselecting
-    
-    // CORRECTED: Use the correct setter to update the interaction state
-    setInteractionState({ mode: 'selecting', ids: [rootId] });
-    
-    // NEW: Always open the properties panel when the root/empty state is selected
-    setIsPropertiesPanelVisible(true);
-    
-    // Open the appropriate panel for adding content
-    if (!isLeftPanelOpen) {
-      setActiveTab('data');
-      setIsPanelVisible(true);
-    } 
+    startEditing();
   };
 
   return (

@@ -6,6 +6,7 @@ import { Active, DragEndEvent, DragOverEvent, DragStartEvent, Over, ClientRect }
 import { activeDndIdAtom, overDndIdAtom, dropPlaceholderAtom, canvasInteractionAtom } from './atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from './historyAtoms';
 import { DndData, CanvasComponent } from '../types';
+import { getComponentName } from '../features/Editor/canvasUtils';
 
 const CANVAS_BACKGROUND_ID = '--canvas-background--';
 
@@ -21,18 +22,6 @@ const findHoveredContainer = (overId: string, allComponents: Record<string, Canv
       }
   }
   return null;
-};
-
-// Helper to get the display name/label
-const getComponentName = (component: CanvasComponent): string => {
-    if (component.componentType === 'layout') {
-        return component.name;
-    }
-    // Handle form components
-    if (component.properties.controlType === 'plain-text') {
-        return component.properties.content?.substring(0, 30) || 'Plain Text';
-    }
-    return component.properties.label;
 };
 
 export const useCanvasDnd = () => {
@@ -96,7 +85,7 @@ export const useCanvasDnd = () => {
   };
   
   const handleAddNewComponent = (activeData: DndData, dropTarget: { parentId: string, index: number }) => {
-    const { name, type, origin, controlType } = activeData;
+    const { name, type, origin, controlType, controlTypeProps } = activeData;
     const { parentId, index } = dropTarget;
     
     commitAction({
@@ -109,6 +98,7 @@ export const useCanvasDnd = () => {
           parentId,
           index,
           controlType,
+          controlTypeProps,
           bindingData: activeData.data ? {
             fieldId: String(activeData.id),
             ...activeData.data

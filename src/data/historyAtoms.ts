@@ -1,9 +1,9 @@
 // src/data/historyAtoms.ts
 import { atom } from 'jotai';
-import { nanoid } from 'nanoid';
 import { produce, Draft } from 'immer';
 import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties, NormalizedCanvasComponents } from '../types';
 import { canvasInteractionAtom, CanvasInteractionState, scrollRequestAtom } from './atoms';
+import { createFormComponent, createLayoutComponent } from './componentFactory';
 
 // 1. DEFINE THE CORE SHAPES
 // NormalizedCanvasComponents is now imported from ../types
@@ -119,69 +119,23 @@ export const commitActionAtom = atom(
 
         switch (action.action.type) {
           case 'COMPONENT_ADD': {
-            const { componentType, name, origin, parentId, index, controlType, controlTypeProps, bindingData } = action.action.payload;
-            const newId = nanoid(8);
+            const { componentType, parentId, index, ...rest } = action.action.payload;
             let newComponent: CanvasComponent;
 
             if (componentType === 'layout') {
-              newComponent = {
-                id: newId,
-                parentId,
-                name,
-                componentType: 'layout',
-                children: [],
-                properties: {
-                  arrangement: 'stack', gap: 'md', distribution: 'start',
-                  verticalAlign: 'stretch', columnLayout: 'auto',
-                  appearance: { ...defaultAppearance }
-                },
-              };
+              newComponent = createLayoutComponent(parentId, rest.name);
             } else {
-              const newBinding: BoundData | null = (origin === 'data' && bindingData)
-                ? {
-                    nodeId: bindingData.nodeId,
-                    nodeName: bindingData.nodeName,
-                    fieldId: bindingData.fieldId,
-                    fieldName: name,
-                    path: bindingData.path,
-                  }
-                : null;
-
-              // Auto-generate a camelCase fieldName from the initial label
-              const fieldName = name.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => 
-                index === 0 ? word.toLowerCase() : word.toUpperCase()
-              ).replace(/\s+/g, '');
-
-              const isTextual = controlType === 'plain-text' || controlType === 'link';
-
-              newComponent = {
-                id: newId,
-                parentId,
-                componentType: 'widget',
-                origin,
-                binding: newBinding,
-                properties: {
-                  label: isTextual ? '' : name,
-                  content: isTextual ? name : undefined,
-                  fieldName: isTextual ? '' : fieldName,
-                  required: false,
-                  placeholder: origin === 'data' ? `Enter ${name}` : '',
-                  controlType: controlType || 'text-input',
-                  href: controlType === 'link' ? '#' : undefined,
-                  target: controlType === 'link' ? '_self' : undefined,
-                  ...controlTypeProps,
-                },
-              };
+              newComponent = createFormComponent({ parentId, ...rest });
             }
             
-            presentState.components[newId] = newComponent;
+            presentState.components[newComponent.id] = newComponent;
             const parent = presentState.components[parentId];
             if (parent && parent.componentType === 'layout') {
               const childrenCountBefore = parent.children.length;
-              parent.children.splice(index, 0, newId);
+              parent.children.splice(index, 0, newComponent.id);
               // Check if component was added to the end of the root container to trigger auto-scroll
               if (parentId === presentState.rootComponentId && index === childrenCountBefore) {
-                set(scrollRequestAtom, { componentId: newId });
+                set(scrollRequestAtom, { componentId: newComponent.id });
               }
             }
             break;
@@ -227,30 +181,18 @@ export const commitActionAtom = atom(
             const { componentIds, parentId } = action.action.payload;
             const parent = presentState.components[parentId];
             if (!parent || parent.componentType !== 'layout') break;
-            const newContainerId = nanoid(8);
-            const newContainer: LayoutComponent = {
-              id: newContainerId,
-              parentId: parentId,
-              name: 'Layout Container',
-              componentType: 'layout',
-              children: componentIds,
-              properties: { 
-                arrangement: 'stack', 
-                gap: 'md', 
-                distribution: 'start', 
-                verticalAlign: 'stretch', 
-                columnLayout: 'auto',
-                appearance: { ...defaultAppearance }
-              },
-            };
-            presentState.components[newContainerId] = newContainer;
+            
+            const newContainer = createLayoutComponent(parentId);
+            newContainer.children = componentIds;
+
+            presentState.components[newContainer.id] = newContainer;
             componentIds.forEach(id => {
               const child = presentState.components[id];
-              if (child) child.parentId = newContainerId;
+              if (child) child.parentId = newContainer.id;
             });
             const firstChildIndex = parent.children.indexOf(componentIds[0]);
             const remainingChildren = parent.children.filter(id => !componentIds.includes(id));
-            remainingChildren.splice(firstChildIndex, 0, newContainerId);
+            remainingChildren.splice(firstChildIndex, 0, newContainer.id);
             parent.children = remainingChildren;
             break;
           }

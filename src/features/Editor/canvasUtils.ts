@@ -7,9 +7,9 @@ export const getComponentName = (component: CanvasComponent): string => {
     return component.name;
   }
   
-  const formComponent = component;
-  if (formComponent.properties.controlType === 'plain-text') {
-    return formComponent.properties.content?.substring(0, 30) || 'Plain Text';
+  // Handle form components
+  if (component.properties.controlType === 'plain-text' || component.properties.controlType === 'link') {
+    return component.properties.content?.substring(0, 30) || (component.properties.controlType === 'link' ? 'Link' : 'Plain Text');
   }
-  return formComponent.properties.label || 'Form Field';
+  return component.properties.label || 'Form Field';
 };

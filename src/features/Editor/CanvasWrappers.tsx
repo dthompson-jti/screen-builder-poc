@@ -12,7 +12,7 @@ import {
 } from '../../data/atoms';
 import { canvasComponentsByIdAtom, commitActionAtom, rootComponentIdAtom } from '../../data/historyAtoms';
 import { CanvasComponent, DndData, LayoutComponent } from '../../types';
-import { SelectionToolbar } from './SelectionToolbar'; // Restored import
+import { SelectionToolbar } from './SelectionToolbar';
 import { getComponentName } from './canvasUtils';
 import { useComponentCapabilities } from './useComponentCapabilities';
 

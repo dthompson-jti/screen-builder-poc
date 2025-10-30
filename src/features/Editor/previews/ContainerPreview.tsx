@@ -1,16 +1,7 @@
 // src/features/Editor/previews/ContainerPreview.tsx
-import { LayoutComponent, NormalizedCanvasComponents, CanvasComponent } from '../../../types';
+import { LayoutComponent, NormalizedCanvasComponents } from '../../../types';
+import { getComponentName } from '../canvasUtils';
 import styles from './ContainerPreview.module.css';
-
-const getComponentName = (component: CanvasComponent): string => {
-    if (component.componentType === 'layout') {
-        return component.name;
-    }
-    if (component.properties.controlType === 'plain-text') {
-        return component.properties.content?.substring(0, 30) || 'Plain Text';
-    }
-    return component.properties.label;
-}
 
 interface ContainerPreviewProps {
   component: LayoutComponent;
