@@ -1,6 +1,5 @@
 // src/features/Editor/CanvasSelectionToolbar.tsx
 import { useMemo } from 'react';
-// FIX: Corrected typo from '@d-kit/core' to '@dnd-kit/core'.
 import { DraggableSyntheticListeners } from '@dnd-kit/core';
 import * as Toolbar from '@radix-ui/react-toolbar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -38,8 +37,6 @@ export const CanvasSelectionToolbar = ({
     </div>
   );
 
-  // FIX: Refactored to build the array conditionally, which is more type-safe
-  // and avoids the complex/buggy .filter() call. This resolves the TS error.
   const menuItems = useMemo<(ActionMenuItem | 'separator')[]>(() => {
     const modKey = isMac ? '⌘' : 'Ctrl';
     const items: (ActionMenuItem | 'separator')[] = [];
@@ -64,8 +61,7 @@ export const CanvasSelectionToolbar = ({
 
     items.push('separator');
     items.push({ id: 'duplicate', icon: 'content_copy', label: 'Duplicate', hotkey: `${modKey}+D`, onClick: () => {}, disabled: true });
-    // FIX: Removed `destructive: true` from delete action.
-    items.push({ id: 'delete', icon: 'delete', label: 'Delete', hotkey: isMac ? '⌫' : 'Del', onClick: actions.handleDelete, disabled: !capabilities.canDelete });
+    items.push({ id: 'delete', icon: 'delete', label: 'Delete', hotkey: isMac ? '⌫' : 'Del', onClick: actions.handleDelete, destructive: true, disabled: !capabilities.canDelete });
 
     return items;
   }, [isMac, capabilities, actions]);
@@ -105,6 +101,14 @@ export const CanvasSelectionToolbar = ({
               </Toolbar.Button>
             </Tooltip>
           )}
+          {/* FIX: Add a dedicated delete button for quick access. */}
+          <Tooltip content="Delete" side="top">
+            <Toolbar.Button asChild>
+              <Button variant="on-solid" size="s" iconOnly onClick={actions.handleDelete} aria-label="Delete component" disabled={!capabilities.canDelete}>
+                <span className="material-symbols-rounded">delete</span>
+              </Button>
+            </Toolbar.Button>
+          </Tooltip>
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
               <Toolbar.Button asChild>

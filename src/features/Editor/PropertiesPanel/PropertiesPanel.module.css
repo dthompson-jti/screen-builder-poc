@@ -55,9 +55,15 @@
   color: var(--surface-fg-tertiary);
 }
 .propertiesPanelPlaceholder .material-symbols-rounded {
-  font-size: 48px;
+  /* CRITICAL FIX: Set both font-size and the matching optical size ('opsz'). */
+  font-size: 64px;
   margin-bottom: var(--spacing-4);
-  color: var(--surface-fg-tertiary);
+  color: var(--surface-fg-quinary);
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 64;
 }
 
 /* --- Style Swatch Styles --- */

@@ -86,11 +86,14 @@ export const useEditorInteractions = (component: CanvasComponent) => {
   };
   
   const handleContextMenu = (e: React.MouseEvent) => {
-    // Prevent the default browser context menu.
+    // Prevent the default browser context menu from appearing.
     e.preventDefault();
-    // FIX: Do NOT stop propagation. This allows the event to bubble up to the
-    // main CanvasContextMenu trigger, which will then open the menu.
+    // CRITICAL FIX: DO NOT stop propagation. This allows the event to bubble up
+    // to the Radix ContextMenu.Trigger, which wraps the entire canvas.
     // e.stopPropagation(); 
+    
+    // If the right-clicked item is not already part of the selection,
+    // clear the old selection and select only this item.
     if (!isSelected) {
       setInteractionState({ mode: 'selecting', ids: [component.id] });
       setAnchorId(component.id);

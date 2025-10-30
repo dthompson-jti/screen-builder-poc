@@ -77,10 +77,14 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         const rangeIds = list.slice(start, end + 1).map(item => item.id);
         setSelectedIds(rangeIds);
       } else {
+        // If anchor is invalid, treat as a ctrl-click on the target
         setSelectedIds([component.id]);
         setAnchorId(component.id);
       }
     }
+    // CRITICAL FIX: A normal, unmodified single click should do nothing for selection.
+    // This reserves single-click for drag-and-drop initiation only.
+    // The `else` block that previously handled single-click selection is removed.
   };
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -91,7 +95,6 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         setAnchorId(component.id);
       }
     } else {
-      // FIX: When menu closes, clear the selection so the state "goes away".
       setSelectedIds([]);
       setAnchorId(null);
     }
@@ -129,7 +132,6 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         </li>
       </ContextMenu.Trigger>
       <ContextMenu.Portal>
-        {/* FIX: Removed invalid 'align' prop to resolve TypeScript error. */}
         <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>
           <ActionMenu items={menuItems} />
         </ContextMenu.Content>
