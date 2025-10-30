@@ -2,11 +2,21 @@
 
 This document is the primary entry point for developers. It provides a high-level overview of the project's architecture, file structure, and coding conventions.
 
+---
+
+## Architectural Guidance
+
+To ensure consistency and prevent recurring issues, all developers should be familiar with our core architectural principles. These documents contain critical information about our approach to styling, state management, and component design.
+
+-   **[High-Craft CSS Principles](./CSS-PRINCIPLES.md):** Essential reading to understand our styling philosophy and avoid common layout pitfalls.
+
+---
+
 ## 1. Core Architectural Principles
 
 These foundational rules ensure a consistent, high-craft, and maintainable user experience.
 
--   **Single Source of Truth:** Every piece of data and every visual element must have one, and only one, unambiguous source of truth. State is managed centrally (Jotai), styling is encapsulated within components, and content is separated from presentation.
+-   **Single Source of Truth:** Every piece of data and every visual element must have one, and only one, unambiguous source of truth. State is managed centrally (Jotai), styling is encapsulated or shared globally, and content is separated from presentation.
 -   **Intrinsic Sizing and Natural Flow:** Components and layouts are intrinsically sized by default. We avoid fixed heights in favor of `min-height` and modern CSS (Flexbox, Grid) to allow content to flow naturally. The canvas feels like a fluid, living document.
 -   **State-Driven Appearance:** The UI reflects the application's state by changing the appearance of existing elements (via `data-*` attributes), not by swapping out chunks of the DOM. This ensures UI stability and eliminates jarring visual jumps.
 -   **High-Craft Transitions & Details:** All state changes are communicated through smooth, purposeful transitions on performant CSS properties (`transform`, `opacity`, etc.). Visual details, like ensuring icon optical size (`opsz`) matches font size, are treated as first-class requirements.
@@ -21,9 +31,6 @@ This project uses a **feature-based architecture**. The goal is to group files b
 -   **/src/data**: A consolidated directory for all non-visual logic and definitions (Jotai atoms, custom hooks, etc.).
 
 **Import Rule:** Always use relative paths (`./`, `../`). This project does not use TypeScript path aliases.
-
-### A Note on File Naming
-Due to environmental constraints during analysis and interaction with LLMs, all TypeScript files (`.ts`, `.tsx`, `.d.ts`) are represented with a `.txt` extension in provided file lists. The local development environment uses the correct file extensions, and all tooling (Vite, TypeScript, ESLint) is configured accordingly. This is a known, intentional convention for the purpose of these reviews.
 
 ## 3. State Management Architecture
 
@@ -73,26 +80,59 @@ To ensure a fast and predictable workflow, the application features a comprehens
 
 ## 5. Styling Architecture
 
-The project uses a **systematic CSS architecture** organized into layers to control specificity and promote a cohesive design language.
+The project uses a **systematic CSS architecture** organized into layers to control specificity and promote a cohesive design language. Please see our **[High-Craft CSS Principles](./CSS-PRINCIPLES.md)** for detailed patterns and conventions.
 
 -   **Design Tokens:** The styling foundation is a three-tiered token system for maximum clarity and flexibility:
     -   `primitives.css`: Contains raw, context-agnostic values (hex codes, spacing units).
-    -   `utility.css`: A new layer that defines simple, reusable utility tokens, such as alpha transparency scales (`--utility-alpha-white-20`), which are then referenced by the semantic layer.
+    -   `utility.css`: A layer that defines simple, reusable utility tokens, such as alpha transparency scales.
     -   `semantics.css`: Maps primitive or utility values to semantic, purpose-driven variable names (e.g., `--control-bg-hover`).
 -   **Data-Attribute Styling:** Components use `data-*` attributes for styling variants (e.g., `<Button data-variant="tertiary" data-size="s">`). This provides superior semantic clarity and simplifies style composition over traditional modifier classes.
 -   **Layered Cascade:** The global style cascade is managed in a single location (`src/index.css`) using CSS `@layer`. This provides predictable style application and prevents specificity conflicts between global styles, shared component styles, and scoped CSS Modules.
 -   **Robust Primitives:** Core UI patterns that require complex state management and accessibility (dropdowns, context menus, tooltips) are built using **Radix UI**, enhancing stability and craft.
 
-### Component System & Shared Styles
-To enforce the "Single Source of Truth" principle for our UI, we use shared, global stylesheets for common component patterns. A prime example is **`menu.css`**, which provides a single, unified style definition for all list-based selection components. This system guarantees that primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) are visually indistinguishable. It is built on two key patterns:
-1.  **Shared Container:** All menu popovers use the `.menu-popover` class, which defines the container's shape, shadow, and padding.
-2.  **Shared Item Structure:** All menu items use the `.menu-item` class, which leverages a consistent internal flexbox layout with defined "slots" for icons, labels, and shortcuts. This guarantees perfect alignment and styling, even when items have different content.
-3.  **Shared State Styling:** The stylesheet targets Radix's `data-*` attributes (`[data-highlighted]`, `[data-state="checked"]`, `[data-disabled]`) and standard pseudo-classes (`:hover`) to provide a consistent look and feel for all interaction states across the entire application.
+### The Shared Menu System
+To enforce the "Single Source of Truth" for our UI, we use the global **`menu.css`** stylesheet to provide a single, unified style definition for all list-based selection components. This system guarantees that primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) and custom components are visually indistinguishable. It relies on a composition of a shared container (`.menu-popover`) and a shared item (`.menu-item`) to ensure perfect alignment, spacing, and state styling across the entire application.
 
-### Border Convention
--   **Standard Border:** The default border thickness for static and interactive elements is `1px`.
--   **Hover/Focus Border (Layout Shift Prevention):** For components that gain a border on hover (like buttons or menu items), we use a high-craft technique to prevent layout shift. The component has a `1px solid transparent` border in its resting state. On hover, the `border-color` is changed, and an additional `inset 0 -1px 0 0 var(...)` box-shadow is applied. This combination creates the visual effect of a `1px` top/left/right border and a `2px` bottom border without altering the element's box model, resulting in a perfectly stable interaction.
+### Focus Ring Convention
+-   **Standard Focus Ring:** The default focus indicator for all interactive elements is a `2px` **outer** box-shadow (`box-shadow: 0 0 0 2px var(--control-focus-ring-standard)`).
+-   **The "Safe Zone" Contract:** Any container that must use `overflow: hidden` (e.g., an accordion) is required to provide a `2px` internal padding to ensure this outer focus ring is never clipped.
+-   **The Menu Item Exception:** Menu items are the only components that use an **inset** focus shadow, a necessary exception to prevent clipping by the popover's rounded corners.
 
-## 6. A Guide to Project Philosophy
+## 6. Key File Manifest
 
-This document is more than a technical manual; it is a guide to the project's philosophy. The conventions and architectural patterns described here are not arbitrary rules, but deliberate choices made to uphold a core set of values: architectural purity, user-centric design, and a commitment to high-craft execution. Every contribution should be measured against these principles to ensure the project remains cohesive, maintainable, and a pleasure to both use and develop.
+### Core Application (`src/`)
+*   **`main.tsx`**: The application's entry point.
+*   **`App.tsx`**: The root React component and application shell.
+*   **`types.ts`**: Centralized TypeScript type definitions.
+*   **`index.css`**: The single source of truth for the CSS cascade layer order.
+
+### Styling (`src/styles/`)
+*   **`primitives.css`**: Raw, non-semantic design tokens (colors, spacing).
+*   **`utility.css`**: Reusable utility tokens (e.g., alpha transparency).
+*   **`semantics.css`**: Semantic design tokens that map to primitives.
+*   **`buttons.css`**, **`forms.css`**, **`menu.css`**: Global base styles for common UI patterns.
+
+### Data & State Management (`src/data/`)
+*   **`atoms.ts`**: Defines all global **UI state** using Jotai atoms. Includes the core `canvasInteractionAtom` and the `selectionAnchorIdAtom` for range-select.
+*   **`historyAtoms.ts`**: The heart of the application. Implements the undo/redo system and manages the core canvas state via a reducer pattern.
+*   **`useCanvasDnd.ts`**: A custom hook encapsulating all drag-and-drop logic for the canvas.
+*   **`useEditorHotkeys.ts`**: A custom hook that centralizes all global keyboard shortcut logic.
+*   **`useUndoRedo.ts`**: A custom hook providing a clean API for undo/redo actions.
+
+### Features (`src/features/`)
+*   **`Editor/`**: The main form-building feature.
+    *   `EditorCanvas.tsx`: The main container component with core event handlers.
+    *   `CanvasNode.tsx`: The recursive engine for rendering the component tree.
+    *   `CanvasRenderers.tsx`: Pure presentation logic (The View).
+    *   `CanvasWrappers.tsx`: Manages user interaction logic (selection, DnD).
+    *   `CanvasContextMenu.tsx`: Renders the right-click context menu via Radix UI.
+    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible for the current selection.
+    *   `PropertiesPanel/`: The right-hand panel for editing component properties.
+*   **`ComponentBrowser/`**: The left-hand panel for adding new components.
+*   **`AppHeader/`**: The main application header, including the main menu implemented with Radix UI.
+*   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
+
+### Reusable Components (`src/components/`)
+*   **`Button.tsx`**: The composable, data-attribute-driven button component.
+*   **`FormRenderer.tsx`**: A crucial, "pure" component that recursively renders the form state with no editor logic, used in Preview mode.
+*   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives, many built on Radix UI.
