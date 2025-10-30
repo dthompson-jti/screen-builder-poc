@@ -1,12 +1,3 @@
-Understood. The goal is to create a set of directives that enables the agent to function with greater autonomy and accuracy, delivering a complete, correct solution in a single pass. The previous proposal was too collaborative; this one will be a charter for independent, high-fidelity execution.
-
-This new `AGENTS.md` is built on the core lesson from our interaction: **the agent must internalize the full cycle of implementation, debugging, and verification that a senior developer would perform.** It shifts the burden of catching errors from the user to the agent's own internal process.
-
-Here is the revised proposal for `AGENTS.md`.
-
----
-### AGENTS.md
-
 # Agent Charter & Execution Protocol
 
 This document defines the operating protocol for AI agents working on the Screen Studio codebase. Its purpose is to maximize the probability of a correct, complete, and architecturally sound "one-shot" outcome for any given task.
@@ -60,3 +51,5 @@ These are non-negotiable rules learned from the project's history. Violating the
 5.  **Precision in Imports is Mandatory.** All package names must be exact (e.g., `@dnd-kit/core`, `@floating-ui/react-dom`). All relative paths must be correct. There is no room for typos.
 
 6.  **"Ghost Errors" are Real.** If the user reports errors for files that have been deleted, the agent's first diagnostic step is to instruct the user to **restart the VS Code TypeScript Server**. This resolves stale cache issues.
+
+7.  **`dnd-kit` Clicks Require `activationConstraint` Delay.** If a draggable item also needs to be clickable (`onClick`, multi-select, etc.), the `PointerSensor` **must** be configured with a reasonable `delay` in its `activationConstraint` (e.g., `{ delay: 150, tolerance: 5 }`). Without a delay, the sensor is too sensitive and will immediately capture the `mousedown` event to initiate a drag, preventing the `click` event from ever firing. This is the root cause of "buttons not working" on draggable items.

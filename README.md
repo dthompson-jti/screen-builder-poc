@@ -130,7 +130,8 @@ To enforce the "Single Source of Truth" for our UI, we use the global **`menu.cs
     *   `CanvasSelectionToolbar.tsx`: **[NEW]** The specific implementation of the single-selection toolbar for the canvas.
     *   `CanvasContextMenu.tsx`: Renders the right-click context menu.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
-*   **`ComponentBrowser/`**: The left-hand panel for adding new components.
+*   **`ComponentBrowser/`**: The left-hand panel for adding new components. Now features an advanced multi-select (`Ctrl/Shift+Click`) and quick-add workflow for the Data Navigator.
+    *   `ComponentBrowser.tsx`: **[NEW]** The primary container for the "Data fields" tab, orchestrating the Data Navigator view and the multi-select action bar.
 *   **`AppHeader/`**: The main application header.
 *   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
 
@@ -140,5 +141,3 @@ To enforce the "Single Source of Truth" for our UI, we use the global **`menu.cs
 *   **`Button.tsx`**: The composable, data-attribute-driven button component.
 *   **`FormRenderer.tsx`**: A crucial, "pure" component that now uses the unified renderers in `"preview"` mode.
 *   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives.
-
----

@@ -9,11 +9,10 @@ import { SearchInput } from '../../components/SearchInput';
 import { EmptyStateMessage } from '../../components/EmptyStateMessage';
 import panelStyles from '../../components/panel.module.css';
 import { isShowBreadcrumbAtom } from '../../data/atoms';
-import { ComponentNode } from '../../types';
+import { ComponentNode, DraggableComponent } from '../../types';
 
 // --- TYPES ---
-interface BaseComponent { id: string; name: string; }
-interface BaseComponentGroup { title: string; components: BaseComponent[]; }
+interface BaseComponentGroup { title: string; components: DraggableComponent[]; }
 type TNode = ComponentNode;
 
 interface DataNavigatorAtoms {
@@ -22,15 +21,17 @@ interface DataNavigatorAtoms {
 }
 
 interface DataNavigatorViewProps<TGroup extends BaseComponentGroup> {
+  children?: React.ReactNode;
   treeData: TNode[];
   componentData: Record<string, TGroup[]>;
   atoms: DataNavigatorAtoms;
-  renderComponentItem: (component: TGroup['components'][0]) => React.ReactNode;
+  renderComponentItem: (component: DraggableComponent, list: DraggableComponent[]) => React.ReactNode;
   renderConnectionsDropdown?: (navigator: NodeNavigator | null, selectedNodeId: string, onClose: () => void) => React.ReactNode;
   onClosePanel?: () => void;
   isInsideModal?: boolean;
   autoFocusSearch?: boolean;
   showBreadcrumb?: boolean;
+  onClearSelection?: () => void;
 }
 
 interface NavigateEvent extends Event {
@@ -39,8 +40,8 @@ interface NavigateEvent extends Event {
   };
 }
 
-
 export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
+  children,
   treeData,
   componentData,
   atoms,
@@ -50,15 +51,17 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   isInsideModal = false,
   autoFocusSearch = false,
   showBreadcrumb = false,
+  onClearSelection,
 }: DataNavigatorViewProps<TGroup>) => {
   const [selectedNodeId, setSelectedNodeId] = useAtom(atoms.selectedNodeIdAtom);
   const [query, setQuery] = useAtom(atoms.searchQueryAtom);
   const isGlobalShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   
-  const displayBreadcrumb = showBreadcrumb || isGlobalShowBreadcrumb;
+  const displayBreadcrumb = showBreadcrumb || isGlobalShowBreeadcrumb;
 
   const componentGroups = componentData[selectedNodeId] || [];
+  const flatComponentList = componentGroups.flatMap(g => g.components);
   const filteredGroups = !query ? componentGroups : componentGroups.map(group => ({
     ...group,
     components: group.components.filter(c => c.name.toLowerCase().includes(query.toLowerCase().trim()))
@@ -133,6 +136,12 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
 
   const containerClasses = `${panelStyles.componentBrowserContainer} ${isInsideModal ? panelStyles.insideModal : ''}`;
 
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClearSelection) {
+      onClearSelection();
+    }
+  };
+
   return (
     <div className={containerClasses}>
       <div className={panelStyles.panelHeaderSection}>
@@ -187,7 +196,7 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         </div>
       </div>
 
-      <div className={`${panelStyles.componentListContainer} scrollbar-stealth`}>
+      <div className={`${panelStyles.componentListContainer} scrollbar-stealth`} onClick={handleContainerClick}>
         {query && filteredGroups.length === 0 ? (
           <div className="scrollbar-stealth-content">
             <EmptyStateMessage query={query} />
@@ -195,21 +204,20 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         ) : (
           <ul className={`${panelStyles.componentList} scrollbar-stealth-content`}>
             {filteredGroups.map((group) => (
-              <li key={group.title}>
+              // FIX: The group is now a single LI container.
+              <li key={group.title} className={panelStyles.componentListGroup}>
                 <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
-                {/* Changed to a div to hold non-li children */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <ul className={panelStyles.componentListGroupItems}>
                   {group.components.map((component) => (
-                    <React.Fragment key={component.id}>
-                      {renderComponentItem(component)}
-                    </React.Fragment>
+                      renderComponentItem(component, flatComponentList)
                   ))}
-                </div>
+                </ul>
               </li>
             ))}
           </ul>
         )}
       </div>
+      {children}
     </div>
   );
 };

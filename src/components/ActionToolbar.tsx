@@ -1,6 +1,5 @@
 // src/components/ActionToolbar.tsx
-import { useRef, useLayoutEffect } from 'react';
-// FIX: Removed unused type imports to resolve warnings.
+import { useRef } from 'react';
 import {
   useFloating,
   autoUpdate,
@@ -13,7 +12,8 @@ import styles from './ActionToolbar.module.css';
 
 interface ActionToolbarProps {
   children: React.ReactNode;
-  mode: 'element-relative' | 'fixed';
+  // FIX: Mode is now optional to allow for parent-controlled positioning.
+  mode?: 'element-relative' | 'fixed';
   referenceElement?: HTMLElement | null;
 }
 
@@ -23,6 +23,8 @@ export const ActionToolbar = ({
   referenceElement,
 }: ActionToolbarProps) => {
   const arrowRef = useRef(null);
+
+  // useFloating is a hook, so it must be called unconditionally at the top level.
   const {
     refs,
     floatingStyles,
@@ -42,11 +44,13 @@ export const ActionToolbar = ({
       mode === 'element-relative' ? autoUpdate : undefined,
   });
 
-  useLayoutEffect(() => {
-    if (mode === 'element-relative' && referenceElement) {
-      refs.setReference(referenceElement);
-    }
-  }, [refs, referenceElement, mode]);
+  // Conditionally apply floating styles only when needed.
+  // This prevents conflicts with other positioning modes like 'fixed'.
+  const finalStyles = mode === 'element-relative' ? floatingStyles : {};
+  
+  if (mode === 'element-relative' && referenceElement) {
+    refs.setReference(referenceElement);
+  }
 
   const isHidden = mode === 'element-relative' && !referenceElement;
   const toolbarClasses = `${styles.actionToolbar} ${
@@ -55,8 +59,9 @@ export const ActionToolbar = ({
 
   return (
     <div
-      ref={refs.setFloating}
-      style={floatingStyles}
+      // FIX: Use a conditional ref. For 'fixed' or undefined mode, we don't need floating-ui's ref.
+      ref={mode === 'element-relative' ? refs.setFloating : undefined}
+      style={finalStyles}
       className={toolbarClasses}
       onClick={(e) => e.stopPropagation()}
     >

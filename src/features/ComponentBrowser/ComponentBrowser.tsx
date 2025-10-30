@@ -1,60 +1,97 @@
 // src/features/ComponentBrowser/ComponentBrowser.tsx
-import { useSetAtom } from 'jotai';
-import { useDraggable } from '@dnd-kit/core';
-import { selectedNodeIdAtom, componentSearchQueryAtom, isComponentBrowserVisibleAtom } from '../../data/atoms';
-import { componentListData, componentTreeData } from '../../data/componentBrowserMock';
-import { DraggableComponent, DndData } from '../../types';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DataNavigatorView } from '../DataNavigator/DataNavigatorView';
-import { ConnectionsDropdown } from '../DataNavigator/ConnectionsDropdown';
-import panelStyles from '../../components/panel.module.css'; // CORRECTED PATH
-
-const DraggableListItem = ({ component }: { component: DraggableComponent }) => {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `draggable-${component.id}`,
-    data: { 
-      id: component.id, 
-      name: component.name, 
-      type: component.type, 
-      icon: component.icon, 
-      isNew: true,
-      origin: 'data',
-      data: {
-        nodeId: component.nodeId!,
-        nodeName: component.nodeName!,
-        path: component.path!,
-      }
-    } satisfies DndData,
-  });
-  const iconStyle = component.iconColor ? { color: component.iconColor } : {};
-  // Use the global .menu-item class for consistent styling
-  return (
-    <div ref={setNodeRef} style={{ opacity: isDragging ? 0.4 : 1 }} {...listeners} {...attributes} className="menu-item">
-      <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
-      <span className={panelStyles.componentName}>{component.name}</span>
-    </div>
-  );
-};
+import { DraggableListItem } from './DraggableListItem';
+import { ActionToolbar } from '../../components/ActionToolbar';
+import { Button } from '../../components/Button';
+import { isComponentBrowserVisibleAtom, selectedCanvasComponentIdsAtom } from '../../data/atoms';
+import { componentTreeData, componentListData } from '../../data/componentBrowserMock';
+import { selectedNodeIdAtom, componentSearchQueryAtom } from '../../data/atoms';
+import { dataNavigatorSelectedIdsAtom } from './dataNavigatorAtoms';
+import { commitActionAtom, rootComponentIdAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
+import { DraggableComponent } from '../../types';
+import panelStyles from '../../components/panel.module.css';
 
 export const ComponentBrowser = () => {
   const setIsPanelVisible = useSetAtom(isComponentBrowserVisibleAtom);
+  const [selectedNavIds, setSelectedNavIds] = useAtom(dataNavigatorSelectedIdsAtom);
+  const commitAction = useSetAtom(commitActionAtom);
+  const canvasSelectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+  const allCanvasComponents = useAtomValue(canvasComponentsByIdAtom);
+  const rootId = useAtomValue(rootComponentIdAtom);
 
-  const handleClosePanel = () => {
-    setIsPanelVisible(false);
-  }
+  const atoms = {
+    selectedNodeIdAtom: selectedNodeIdAtom,
+    searchQueryAtom: componentSearchQueryAtom,
+  };
+
+  const determineTargetParentId = (): string => {
+    if (canvasSelectedIds.length === 1) {
+      const component = allCanvasComponents[canvasSelectedIds[0]];
+      if (component && component.componentType === 'layout') {
+        return component.id;
+      }
+    }
+    return rootId;
+  };
+
+  const handleAddMultiple = () => {
+    if (selectedNavIds.length === 0) return;
+    
+    const allAvailableComponents = Object.values(componentListData).flat().flatMap(g => g.components);
+    const componentsToAdd = selectedNavIds
+      .map(id => allAvailableComponents.find(c => c.id === id))
+      .filter((c): c is DraggableComponent => !!c);
+
+    if (componentsToAdd.length > 0) {
+      const targetParentId = determineTargetParentId();
+      commitAction({
+        action: {
+          type: 'COMPONENTS_ADD_BULK',
+          payload: { componentsToAdd, targetParentId },
+        },
+        message: `Add ${componentsToAdd.length} fields`,
+      });
+      setSelectedNavIds([]);
+    }
+  };
 
   return (
     <DataNavigatorView
       treeData={componentTreeData}
       componentData={componentListData}
-      atoms={{
-        selectedNodeIdAtom: selectedNodeIdAtom,
-        searchQueryAtom: componentSearchQueryAtom,
-      }}
-      renderComponentItem={(component) => <DraggableListItem component={component} />}
-      renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
-        <ConnectionsDropdown navigator={navigator} selectedNodeId={selectedNodeId} onClose={onClose} />
+      atoms={atoms}
+      renderComponentItem={(component, list) => (
+        <DraggableListItem
+          key={component.id}
+          component={component}
+          list={list}
+        />
       )}
-      onClosePanel={handleClosePanel}
-    />
+      onClosePanel={() => setIsPanelVisible(false)}
+      showBreadcrumb={true}
+    >
+      <AnimatePresence>
+        {selectedNavIds.length > 1 && (
+          <motion.div
+            className={panelStyles.multiSelectToolbarWrapper}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ type: 'tween', ease: 'easeInOut', duration: 0.2 }}
+          >
+            <ActionToolbar>
+              <span className={panelStyles.floatingToolbarText}>{selectedNavIds.length} selected</span>
+              <div className={panelStyles.floatingToolbarDivider} />
+              {/* FIX: Simplify button text. */}
+              <Button variant="on-solid" size="m" onClick={handleAddMultiple}>
+                Add Fields
+              </Button>
+            </ActionToolbar>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </DataNavigatorView>
   );
 };

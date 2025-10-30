@@ -7,6 +7,8 @@
   background-color: var(--surface-bg-secondary); /* Container has subtle gray bg */
   font-family: var(--font-family-sans);
   border-right: 1px solid var(--surface-border-secondary);
+  position: relative; /* For positioning the action bar */
+  overflow: hidden; /* For positioning the action bar */
 }
 
 .componentBrowserContainer.insideModal {
@@ -85,7 +87,6 @@
   cursor: default;
 }
 
-/* Add padding to the search container to prevent focus ring clipping */
 .searchContainer {
   padding: var(--spacing-3) var(--spacing-4);
 }
@@ -96,18 +97,107 @@
   min-height: 0; 
   overflow-y: auto; 
   background-color: var(--surface-bg-primary);
+  padding-bottom: 80px;
 }
 .componentList, .componentList ul { list-style: none; margin: 0; padding: 0; }
-.componentList > li { padding: var(--spacing-2) var(--spacing-4); }
+
+/* FIX: This is the container for a title + item list. Apply margin here. */
+.componentListGroup {
+  padding: var(--spacing-2) var(--spacing-4);
+}
+
+.componentListGroupItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* FIX: The title no longer needs its own padding. */
 .listGroupTitle {
   font-size: 0.8em;
   font-weight: 600;
   color: var(--surface-fg-secondary);
-  margin: var(--spacing-2) 0;
+  margin-bottom: var(--spacing-2);
   text-transform: uppercase;
 }
 
-/* .componentListItem is now REMOVED and replaced by the global .menu-item style */
+.dataNavItem {
+  height: auto;
+  min-height: 38px;
+  align-items: center;
+  padding-top: var(--spacing-2);
+  padding-bottom: var(--spacing-2);
+}
 
-.componentIcon { color: var(--surface-fg-secondary); margin-right: var(--spacing-3); }
-.componentName { font-size: 0.9em; user-select: none; color: var(--surface-fg-primary); }
+.componentName {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9em;
+  user-select: none;
+  color: var(--surface-fg-primary);
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* --- Transient Icon Overlay --- */
+.iconWrapper {
+  position: relative;
+  margin-right: var(--spacing-2);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.componentIcon { 
+  color: var(--surface-fg-secondary);
+}
+
+/* FIX: Final badge style. No circle, just the letter. */
+.overlayIcon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 9px;
+  font-weight: 500;
+  font-family: var(--font-family-sans);
+  color: var(--primitives-green-600);
+  background-color: transparent;
+  border: none;
+  line-height: 1;
+  /* Use a subtle shadow to lift it off the icon */
+  text-shadow: 0 0 2px var(--surface-bg-primary);
+}
+
+/* --- Multi-Select Toolbar --- */
+.multiSelectToolbarWrapper {
+  position: absolute;
+  bottom: var(--spacing-6);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.multiSelectToolbarWrapper > * {
+  pointer-events: all;
+}
+
+.floatingToolbarText {
+  font-size: 0.9em;
+  font-weight: 400;
+  padding: 0 var(--spacing-2);
+  white-space: nowrap;
+  user-select: none;
+  color: var(--control-fg-on-solid);
+}
+
+.floatingToolbarDivider {
+  width: 2px;
+  height: 20px;
+  background-color: var(--surface-border-theme);
+  margin: 0 var(--spacing-2);
+}

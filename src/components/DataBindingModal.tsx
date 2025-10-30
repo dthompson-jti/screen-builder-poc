@@ -94,7 +94,9 @@ export const DataBindingModal = () => {
             componentData={componentListData}
             atoms={modalAtoms}
             renderComponentItem={(component) => (
+              // FIX: Removed unused `list` prop to resolve warning.
               <SelectableListItem
+                key={component.id}
                 component={component}
                 isSelected={pendingSelection?.fieldId === component.id}
                 onSelect={handleSelect}

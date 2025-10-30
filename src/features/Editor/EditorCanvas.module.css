@@ -187,16 +187,18 @@
 
 .floatingToolbarText {
   font-size: 0.9em;
-  font-weight: 500;
+  /* FIX: Change font-weight to regular. */
+  font-weight: 400;
   padding: 0 var(--spacing-2);
   white-space: nowrap;
   user-select: none;
 }
 
 .floatingToolbarDivider {
-  width: 1px;
+  /* FIX: Update divider to new 2px theme-colored style. */
+  width: 2px;
   height: 20px;
-  background-color: var(--primitives-dark-tint-700);
+  background-color: var(--surface-border-theme);
 }
 
 /* --- FORM ITEM & INLINE EDITING --- */

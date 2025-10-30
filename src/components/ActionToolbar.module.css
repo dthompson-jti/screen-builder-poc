@@ -4,13 +4,15 @@
   align-items: center;
   gap: var(--spacing-1);
   background-color: var(--surface-bg-brand-solid);
-  border-radius: var(--spacing-2);
-  padding: var(--spacing-1);
+  /* FIX: Update border-radius and padding per new spec. */
+  border-radius: var(--spacing-3);
+  padding: var(--spacing-2);
   color: var(--control-fg-on-solid);
   box-shadow: var(--surface-shadow-lg);
   z-index: 20;
   animation: fadeIn 0.1s ease-out;
   will-change: transform;
+  white-space: nowrap;
 }
 
 .actionToolbar.hidden {

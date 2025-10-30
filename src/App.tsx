@@ -60,9 +60,10 @@ function App() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
+      // FIX: Remove the delay to make dragging immediate.
+      // A small tolerance is kept to distinguish between a pure click and a drag.
       activationConstraint: {
-        delay: 100,
-        tolerance: 5,
+        distance: 8,
       },
     })
   );

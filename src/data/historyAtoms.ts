@@ -1,7 +1,7 @@
 // src/data/historyAtoms.ts
 import { atom } from 'jotai';
 import { produce, Draft } from 'immer';
-import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties, NormalizedCanvasComponents } from '../types';
+import { BoundData, LayoutComponent, FormComponent, CanvasComponent, AppearanceProperties, NormalizedCanvasComponents, DraggableComponent } from '../types';
 import { canvasInteractionAtom, CanvasInteractionState, scrollRequestAtom } from './atoms';
 import { createFormComponent, createLayoutComponent } from './componentFactory';
 
@@ -38,6 +38,8 @@ export type HistoryAction =
       controlTypeProps?: Partial<FormComponent['properties']>;
       bindingData?: { nodeId: string, nodeName: string, fieldId: string, path: string };
     } }
+  // NEW: Bulk add action for Data Navigator
+  | { type: 'COMPONENTS_ADD_BULK'; payload: { componentsToAdd: DraggableComponent[]; targetParentId: string; targetIndex?: number; } }
   | { type: 'COMPONENT_DELETE'; payload: { componentId: string } }
   | { type: 'COMPONENTS_DELETE_BULK'; payload: { componentIds: string[] } }
   | { type: 'COMPONENT_MOVE'; payload: { componentId: string; newParentId: string; oldParentId: string; newIndex: number; } }
@@ -138,6 +140,32 @@ export const commitActionAtom = atom(
                 set(scrollRequestAtom, { componentId: newComponent.id });
               }
             }
+            break;
+          }
+          case 'COMPONENTS_ADD_BULK': {
+            const { componentsToAdd, targetParentId, targetIndex } = action.action.payload;
+            const parent = presentState.components[targetParentId];
+            if (!parent || parent.componentType !== 'layout') break;
+
+            const newComponentIds: string[] = [];
+            for (const comp of componentsToAdd) {
+                const newComponent = createFormComponent({
+                    parentId: targetParentId,
+                    name: comp.name,
+                    origin: 'data',
+                    bindingData: comp.nodeId && comp.nodeName && comp.path ? {
+                        nodeId: comp.nodeId,
+                        nodeName: comp.nodeName,
+                        fieldId: comp.id,
+                        path: comp.path
+                    } : undefined,
+                });
+                presentState.components[newComponent.id] = newComponent;
+                newComponentIds.push(newComponent.id);
+            }
+            
+            const finalIndex = targetIndex ?? parent.children.length;
+            parent.children.splice(finalIndex, 0, ...newComponentIds);
             break;
           }
           case 'COMPONENT_DELETE': {
