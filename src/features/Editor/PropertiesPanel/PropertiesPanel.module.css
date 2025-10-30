@@ -52,7 +52,7 @@
   justify-content: center;
   height: 100%;
   text-align: center;
-  color: var(--surface-fg-secondary);
+  color: var(--surface-fg-tertiary);
 }
 .propertiesPanelPlaceholder .material-symbols-rounded {
   font-size: 48px;
