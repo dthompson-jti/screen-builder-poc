@@ -86,7 +86,7 @@ export const useEditorInteractions = (component: CanvasComponent) => {
   };
   
   const handleContextMenu = (e: React.MouseEvent) => {
-    // Prevent the default browser context menu from appearing.
+    // Prevent the default browser context menu.
     e.preventDefault();
     // CRITICAL FIX: DO NOT stop propagation. This allows the event to bubble up
     // to the Radix ContextMenu.Trigger, which wraps the entire canvas.

@@ -9,16 +9,17 @@
   color: var(--surface-fg-secondary);
 }
 
-.emptyStateContainer .material-symbols-rounded {
-  /* CRITICAL FIX: Set both font-size and the matching optical size ('opsz'). */
-  font-size: 64px;
+/* CRITICAL FIX: Target the new dedicated class to guarantee override. */
+.placeholderIcon {
+  font-size: 64px !important; /* Use !important as a final guarantee against stubborn overrides */
   margin-bottom: var(--spacing-3);
   color: var(--surface-fg-quinary);
+  opacity: 0.5;
   font-variation-settings:
     'FILL' 0,
-    'wght' 400,
+    'wght' 300,
     'GRAD' 0,
-    'opsz' 64;
+    'opsz' 64 !important;
 }
 
 .emptyStateMessage {

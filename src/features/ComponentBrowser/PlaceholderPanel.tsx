@@ -20,8 +20,8 @@ export const PlaceholderPanel: React.FC<PlaceholderPanelProps> = ({ title }) => 
     <div className={styles.placeholderPanelContainer}>
       <PanelHeader title={title} onClose={handleClosePanel} />
       <div className={styles.placeholderContent}>
-        <span className="material-symbols-rounded">construction</span>
-        <p>The **{title}** panel is under construction.</p>
+        <span className={`material-symbols-rounded ${styles.placeholderIcon}`}>construction</span>
+        <p>The {title} panel is under construction.</p>
         <p>Check back later!</p>
       </div>
     </div>

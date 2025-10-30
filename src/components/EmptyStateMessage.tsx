@@ -8,7 +8,7 @@ interface EmptyStateMessageProps {
 export const EmptyStateMessage = ({ query }: EmptyStateMessageProps) => {
   return (
     <div className={styles.emptyStateContainer}>
-      <span className="material-symbols-rounded">search_off</span>
+      <span className={`material-symbols-rounded ${styles.placeholderIcon}`}>search_off</span>
       <p className={styles.emptyStateMessage}>
         No results for "<span className={styles.emptyStateQuery}>{query}</span>"
       </p>
