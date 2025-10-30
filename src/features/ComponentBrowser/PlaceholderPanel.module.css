@@ -15,18 +15,20 @@
   justify-content: center;
   height: 100%;
   text-align: center;
-  color: var(--surface-fg-secondary);
+  /* FIX: Update text color per new spec. */
+  color: var(--surface-fg-tertiary);
   padding: var(--spacing-6);
 }
 
 .placeholderContent .material-symbols-rounded {
-  font-size: 48px;
+  /* FIX: Update icon size and color per new spec. */
+  font-size: 64px;
   margin-bottom: var(--spacing-4);
-  color: var(--surface-fg-tertiary);
+  color: var(--surface-fg-quinary);
   /* UPDATED: Match opsz to font-size */
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
-    'opsz' 48;
+    'opsz' 64;
 }

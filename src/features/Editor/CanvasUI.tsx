@@ -1,9 +1,8 @@
 // src/features/Editor/CanvasUI.tsx
 import React from 'react';
-import { useAtomValue } from 'jotai';
-// FIX: Corrected typo from '@d-kit/core' to '@dnd-kit/core'.
+import { useAtomValue, useSetAtom } from 'jotai';
 import { ClientRect } from '@dnd-kit/core';
-import { selectedCanvasComponentIdsAtom } from '../../data/atoms';
+import { selectedCanvasComponentIdsAtom, canvasInteractionAtom, selectionAnchorIdAtom } from '../../data/atoms';
 import { Tooltip } from '../../components/Tooltip';
 import { Button } from '../../components/Button';
 import { ActionToolbar } from '../../components/ActionToolbar';
@@ -38,13 +37,26 @@ export const DropPlaceholder = ({ placeholderProps }: { placeholderProps: DropPl
 export const FloatingMultiSelectToolbar = () => {
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const { handleDelete, handleWrap } = useCanvasActions(selectedIds);
+  const setInteractionState = useSetAtom(canvasInteractionAtom);
+  const setAnchorId = useSetAtom(selectionAnchorIdAtom);
 
   if (selectedIds.length <= 1) {
     return null;
   }
 
+  const handleClearSelection = () => {
+    setInteractionState({ mode: 'idle' });
+    setAnchorId(null);
+  };
+
   return (
     <ActionToolbar mode="fixed">
+      {/* FIX: Moved clear selection button to the far left. */}
+      <Tooltip content="Clear selection">
+        <Button variant="on-solid" size="s" iconOnly onClick={handleClearSelection} aria-label="Clear selection">
+          <span className="material-symbols-rounded">close</span>
+        </Button>
+      </Tooltip>
       <span className={styles.floatingToolbarText}>{selectedIds.length} selected</span>
       <div className={styles.floatingToolbarDivider} />
       <Button variant="on-solid" size="s" iconOnly onClick={handleWrap} aria-label="Wrap in container">

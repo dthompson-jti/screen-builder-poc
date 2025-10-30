@@ -58,7 +58,8 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
   const isGlobalShowBreadcrumb = useAtomValue(isShowBreadcrumbAtom);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   
-  const displayBreadcrumb = showBreadcrumb || isGlobalShowBreeadcrumb;
+  // FIX: Corrected typo from isGlobalShowBreeadcrumb to isGlobalShowBreadcrumb
+  const displayBreadcrumb = showBreadcrumb || isGlobalShowBreadcrumb;
 
   const componentGroups = componentData[selectedNodeId] || [];
   const flatComponentList = componentGroups.flatMap(g => g.components);
@@ -204,7 +205,6 @@ export const DataNavigatorView = <TGroup extends BaseComponentGroup>({
         ) : (
           <ul className={`${panelStyles.componentList} scrollbar-stealth-content`}>
             {filteredGroups.map((group) => (
-              // FIX: The group is now a single LI container.
               <li key={group.title} className={panelStyles.componentListGroup}>
                 <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
                 <ul className={panelStyles.componentListGroupItems}>

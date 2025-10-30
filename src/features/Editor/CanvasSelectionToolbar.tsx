@@ -64,7 +64,8 @@ export const CanvasSelectionToolbar = ({
 
     items.push('separator');
     items.push({ id: 'duplicate', icon: 'content_copy', label: 'Duplicate', hotkey: `${modKey}+D`, onClick: () => {}, disabled: true });
-    items.push({ id: 'delete', icon: 'delete', label: 'Delete', hotkey: isMac ? '⌫' : 'Del', onClick: actions.handleDelete, destructive: true, disabled: !capabilities.canDelete });
+    // FIX: Removed `destructive: true` from delete action.
+    items.push({ id: 'delete', icon: 'delete', label: 'Delete', hotkey: isMac ? '⌫' : 'Del', onClick: actions.handleDelete, disabled: !capabilities.canDelete });
 
     return items;
   }, [isMac, capabilities, actions]);

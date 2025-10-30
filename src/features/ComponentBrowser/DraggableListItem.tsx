@@ -84,9 +84,16 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
   };
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen && !isSelected) {
-      setSelectedIds([component.id]);
-      setAnchorId(component.id);
+    // When menu opens, select the item if it's not already.
+    if (isOpen) {
+      if (!isSelected) {
+        setSelectedIds([component.id]);
+        setAnchorId(component.id);
+      }
+    } else {
+      // FIX: When menu closes, clear the selection so the state "goes away".
+      setSelectedIds([]);
+      setAnchorId(null);
     }
   };
 
@@ -116,14 +123,14 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         >
           <div className={panelStyles.iconWrapper}>
             <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
-            {/* FIX: Use a literal 'T' for the badge content. */}
             {isTransient && <span className={panelStyles.overlayIcon}>T</span>}
           </div>
           <span className={panelStyles.componentName}>{component.name}</span>
         </li>
       </ContextMenu.Trigger>
       <ContextMenu.Portal>
-        <ContextMenu.Content className="menu-popover" align="end" onCloseAutoFocus={(e) => e.preventDefault()}>
+        {/* FIX: Removed invalid 'align' prop to resolve TypeScript error. */}
+        <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>
           <ActionMenu items={menuItems} />
         </ContextMenu.Content>
       </ContextMenu.Portal>

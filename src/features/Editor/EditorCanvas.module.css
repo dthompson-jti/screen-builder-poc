@@ -23,6 +23,8 @@
   border: 1px solid var(--surface-border-secondary);
   position: relative;
   min-height: 200px;
+  /* FIX: Prevent text selection during canvas interaction (e.g., multi-select). */
+  user-select: none;
 }
 
 .formCard.isBackgroundTarget {

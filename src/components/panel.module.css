@@ -101,7 +101,6 @@
 }
 .componentList, .componentList ul { list-style: none; margin: 0; padding: 0; }
 
-/* FIX: This is the container for a title + item list. Apply margin here. */
 .componentListGroup {
   padding: var(--spacing-2) var(--spacing-4);
 }
@@ -115,7 +114,6 @@
   gap: 2px;
 }
 
-/* FIX: The title no longer needs its own padding. */
 .listGroupTitle {
   font-size: 0.8em;
   font-weight: 600;
@@ -131,6 +129,12 @@
   padding-top: var(--spacing-2);
   padding-bottom: var(--spacing-2);
 }
+
+/* FIX: New style to make the right-click affordance look like a hover. */
+.dataNavItem[data-state='open'] {
+  background-color: var(--control-bg-tertiary-hover);
+}
+
 
 .componentName {
   flex: 1;
@@ -156,7 +160,6 @@
   color: var(--surface-fg-secondary);
 }
 
-/* FIX: Final badge style. No circle, just the letter. */
 .overlayIcon {
   position: absolute;
   top: 0px;
@@ -168,7 +171,6 @@
   background-color: transparent;
   border: none;
   line-height: 1;
-  /* Use a subtle shadow to lift it off the icon */
   text-shadow: 0 0 2px var(--surface-bg-primary);
 }
 

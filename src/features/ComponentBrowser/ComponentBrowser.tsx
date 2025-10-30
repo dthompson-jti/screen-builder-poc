@@ -5,10 +5,11 @@ import { DataNavigatorView } from '../DataNavigator/DataNavigatorView';
 import { DraggableListItem } from './DraggableListItem';
 import { ActionToolbar } from '../../components/ActionToolbar';
 import { Button } from '../../components/Button';
+import { Tooltip } from '../../components/Tooltip';
 import { isComponentBrowserVisibleAtom, selectedCanvasComponentIdsAtom } from '../../data/atoms';
 import { componentTreeData, componentListData } from '../../data/componentBrowserMock';
 import { selectedNodeIdAtom, componentSearchQueryAtom } from '../../data/atoms';
-import { dataNavigatorSelectedIdsAtom } from './dataNavigatorAtoms';
+import { dataNavigatorSelectedIdsAtom, dataNavigatorSelectionAnchorIdAtom } from './dataNavigatorAtoms';
 import { commitActionAtom, rootComponentIdAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
 import { DraggableComponent } from '../../types';
 import panelStyles from '../../components/panel.module.css';
@@ -16,6 +17,7 @@ import panelStyles from '../../components/panel.module.css';
 export const ComponentBrowser = () => {
   const setIsPanelVisible = useSetAtom(isComponentBrowserVisibleAtom);
   const [selectedNavIds, setSelectedNavIds] = useAtom(dataNavigatorSelectedIdsAtom);
+  const setAnchorId = useSetAtom(dataNavigatorSelectionAnchorIdAtom);
   const commitAction = useSetAtom(commitActionAtom);
   const canvasSelectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
   const allCanvasComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -57,6 +59,11 @@ export const ComponentBrowser = () => {
     }
   };
 
+  const handleClearSelection = () => {
+    setSelectedNavIds([]);
+    setAnchorId(null);
+  };
+
   return (
     <DataNavigatorView
       treeData={componentTreeData}
@@ -71,6 +78,7 @@ export const ComponentBrowser = () => {
       )}
       onClosePanel={() => setIsPanelVisible(false)}
       showBreadcrumb={true}
+      onClearSelection={handleClearSelection}
     >
       <AnimatePresence>
         {selectedNavIds.length > 1 && (
@@ -82,9 +90,14 @@ export const ComponentBrowser = () => {
             transition={{ type: 'tween', ease: 'easeInOut', duration: 0.2 }}
           >
             <ActionToolbar>
+              {/* FIX: Moved clear selection button to the far left for consistency. */}
+              <Tooltip content="Clear selection">
+                <Button variant="on-solid" size="s" iconOnly onClick={handleClearSelection} aria-label="Clear selection">
+                  <span className="material-symbols-rounded">close</span>
+                </Button>
+              </Tooltip>
               <span className={panelStyles.floatingToolbarText}>{selectedNavIds.length} selected</span>
               <div className={panelStyles.floatingToolbarDivider} />
-              {/* FIX: Simplify button text. */}
               <Button variant="on-solid" size="m" onClick={handleAddMultiple}>
                 Add Fields
               </Button>

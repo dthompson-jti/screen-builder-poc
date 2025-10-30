@@ -1,5 +1,4 @@
 // src/features/Editor/useEditorInteractions.ts
-// FIX: Corrected typo from '@d-kit/sortable' to '@dnd-kit/sortable'.
 import { useSortable } from '@dnd-kit/sortable';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
@@ -11,7 +10,6 @@ import {
 import { canvasComponentsByIdAtom, rootComponentIdAtom } from '../../data/historyAtoms';
 import { CanvasComponent, DndData, LayoutComponent } from '../../types';
 import { getComponentName } from './canvasUtils';
-// FIX: Corrected typo from '@d-kit/utilities' to '@dnd-kit/utilities'.
 import { CSS } from '@dnd-kit/utilities';
 
 /**
@@ -86,6 +84,18 @@ export const useEditorInteractions = (component: CanvasComponent) => {
       setAnchorId(component.id);
     }
   };
+  
+  const handleContextMenu = (e: React.MouseEvent) => {
+    // Prevent the default browser context menu.
+    e.preventDefault();
+    // FIX: Do NOT stop propagation. This allows the event to bubble up to the
+    // main CanvasContextMenu trigger, which will then open the menu.
+    // e.stopPropagation(); 
+    if (!isSelected) {
+      setInteractionState({ mode: 'selecting', ids: [component.id] });
+      setAnchorId(component.id);
+    }
+  };
 
   const sortableStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -115,6 +125,7 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     },
     selectionProps: {
       onClick: handleSelect,
+      onContextMenu: handleContextMenu,
     },
     dndListeners: listeners,
   };

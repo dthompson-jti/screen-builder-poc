@@ -22,7 +22,8 @@
 
 .subtitle {
   font-size: 0.9em;
-  color: var(--surface-fg-secondary);
+  /* FIX: Update text color per new spec. */
+  color: var(--surface-fg-tertiary);
   margin: 0;
   line-height: 1.5;
 }
