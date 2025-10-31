@@ -33,8 +33,6 @@ For any non-trivial task (e.g., implementing a PRD), the agent must follow this 
     *   Generate the full code for all modified files.
     *   Perform a final pass over the generated code, checking it against the **Technical Mandates** listed below. This is a fast, final check for common, known errors.
 
-5.  **Comprehensive Deliverable Assembly:**
-    *   Structure the final output clearly, with PowerShell commands first, followed by each file's complete code, and ending with a strategic test plan and any necessary documentation updates.
 
 ## Technical Mandates & Known Pitfalls
 

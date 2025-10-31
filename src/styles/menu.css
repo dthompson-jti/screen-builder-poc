@@ -69,13 +69,14 @@
     color: var(--control-fg-disabled) !important;
 }
 
-/* Hover / Keyboard Nav Highlight - Lighter Style */
+/* FIX: Use stronger tertiary button hover style with a bottom accent AND a 1px outer border. */
 .menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']),
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) {
     outline: none;
-    background-color: var(--control-bg-quaternary-hover);
-    border-color: var(--control-border-quaternary-hover);
-    color: var(--surface-fg-primary);
+    background-color: var(--control-bg-tertiary-hover);
+    color: var(--control-fg-tertiary-hover);
+    border-color: var(--control-border-tertiary-hover); /* Add the 1px outer border */
+    box-shadow: inset 0 -2px 0 0 var(--control-border-tertiary-hover); /* Add the 2px bottom accent */
 }
 .menu-item:hover:not(:disabled):not([data-disabled]):not([data-state='checked']) .material-symbols-rounded,
 .menu-item[data-highlighted]:not([data-disabled]):not([data-state='checked']) .material-symbols-rounded,
