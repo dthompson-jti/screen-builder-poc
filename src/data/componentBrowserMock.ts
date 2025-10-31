@@ -24,18 +24,13 @@ interface NodeData {
 // =================================================================
 //                 ICON & COLOR CONFIGURATION (OKLCH)
 // =================================================================
-// Using OKLCH to ensure consistent perceptual lightness and chroma.
-// Format: oklch(Lightness Chroma Hue)
 const ICONS = {
-  // For Component List
-  PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0 0)' }, // Grey
-  WIDGET: { icon: 'widgets', color: 'oklch(0.65 0.15 100)' }, // Yellow
-  TRANSIENT_PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0.15 160)' }, // Mint-green
-  
-  // For Dropdown
-  ENTITY: { icon: 'grid_on', color: 'oklch(0.65 0.15 260)' }, // Blue
-  COLLECTION: { icon: 'table_rows', color: 'oklch(0.65 0.15 300)' }, // Purple
-  TRANSIENT_ENTITY_FIELD: { icon: 'variables', color: 'oklch(0.65 0.15 140)' }, // Forest-green
+  PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0 0)' }, 
+  WIDGET: { icon: 'widgets', color: 'oklch(0.65 0.15 100)' },
+  TRANSIENT_PLAIN_FIELD: { icon: 'short_text', color: 'oklch(0.65 0.15 160)' },
+  ENTITY: { icon: 'grid_on', color: 'oklch(0.65 0.15 260)' },
+  COLLECTION: { icon: 'table_rows', color: 'oklch(0.65 0.15 300)' },
+  TRANSIENT_ENTITY_FIELD: { icon: 'variables', color: 'oklch(0.65 0.15 140)' },
 };
 // =================================================================
 
@@ -47,16 +42,17 @@ const createListComponent = (
   name: string,
   type: 'widget' | 'field',
   category: keyof typeof ICONS,
-  node: { id: string, name: string }
+  node: { id: string, name: string },
+  pathPrefix: string = ''
 ): DraggableComponent => ({
-  id: createId(name),
+  id: createId(`${node.name}-${name}`),
   name,
   type,
   icon: ICONS[category].icon,
   iconColor: ICONS[category].color,
   nodeId: node.id,
   nodeName: node.name,
-  path: `${node.name} > ${name}`,
+  path: pathPrefix ? `${pathPrefix} > ${node.name} > ${name}` : `${node.name} > ${name}`,
 });
 
 const createDropdownItem = (
@@ -80,25 +76,26 @@ const createDropdownItem = (
 //                           ARREST NODE
 // -----------------------------------------------------------------
 const arrestNode = { id: 'arrest', name: 'Arrest' };
+const arrestPathPrefix = 'Case > Subcase';
 const arrestFullData: NodeData = {
   list: [
     {
       title: 'Plain Fields',
       components: [
         'Id (PK)', 'Access Level', 'Arrest Date', 'Arrest Time', 'Arrest Type', 'Arresting Agency File Number', 'Booking Number', 'Create User Real Name', 'Create Username', 'Date Created', 'Exchange Id', 'Last Update User Real Name', 'Last Update Username', 'Last Updated', 'Location', 'Memo', 'Roa Access Level', 'Source Case Number', 'Status Date', 'Update Reason'
-      ].map(name => createListComponent(name, 'field', 'PLAIN_FIELD', arrestNode))
+      ].map(name => createListComponent(name, 'field', 'PLAIN_FIELD', arrestNode, arrestPathPrefix))
     },
     {
       title: 'Widgets',
       components: [
         'AddCaseSpecialStatusWidget', 'AddJudgeNoteIcon', 'AddNoteIcon', 'AddPartySpecialStatusWidget', 'AddToRelatedCases', 'CaseDisp', 'CaseEMailIcon', 'CaseLabelWidget', 'ClipboardWidget', 'CustomSearchWidget', 'DateCalculator', 'DaysOfWeekWidget', 'DocAddWidget', 'DocumentCrossReferenceWidget', 'DuplicateHighlighterWidget', 'EntityPagingWidget', 'ExternalSystemSearchWidget', 'FeePayment', 'GeneralFee', 'GenerateDocument', 'GenericDownload', 'GenericLookup', 'LookupItemCategoryWidget', 'ModalWidget', 'NoteIcon', 'ObjectAssociationWidget', 'OpenPersonViewWidget', 'PagePrintIcon', 'PanelTotalWidget', 'PartyCrossReferenceWidget', 'PortalKioskPrintRequest', 'QuestionnaireResponseWidget', 'QuickScheduleEvent', 'RelateCasesByPartyWidget', 'RelatedPeerCasesWidget', 'ReservedToScheduledWidget', 'SSRSWidget', 'ScheduleEvent', 'StaticTextWidget', 'TotalWidget', 'UpdateRecordsOnRelatedCases', 'UserNameSearchWidget', 'VacateFutureEventsWidget', 'WorkflowTasks', 'sendEmailWidget', 'sendSmsWidget'
-      ].map(name => createListComponent(name, 'widget', 'WIDGET', arrestNode))
+      ].map(name => createListComponent(name, 'widget', 'WIDGET', arrestNode, arrestPathPrefix))
     },
     {
       title: 'Transient Plain Fields',
       components: [
         'Access Context Mock', 'Access Level Label', 'Access Level Value', 'Audit Values', 'Case Category', 'Case Id', 'Case Status', 'Case Type', 'Created And Last Updated Label', 'Created And Last Updated User And Date Label', 'Created Name', 'Cross Referenced', 'Current Values', 'Description', 'Entity And Id', 'Entity Display Name', 'Entity Id And Title', 'Entity Name', 'Entity Name And Id', 'Entity Short Name', 'Entity Short Name And Id', 'Entity Underscore Id', 'Id And Entity Name', 'Id And Title', 'Inaccessible', 'Last Modified Or Created', 'Last Modified Or Created Date', 'Last Modified Or Created Username', 'Last Updated Name', 'Number Of Parents', 'Person Id', 'Plain Field Values', 'Plain Fields Only', 'RBCInaccessible', 'Related Peer Ids', 'Revision Objects', 'Roa Changes', 'Title', 'Title With Non Case Parent Titles', 'Update Reason Label', 'Xrefs'
-      ].map(name => createListComponent(`${name} (transient)`, 'field', 'TRANSIENT_PLAIN_FIELD', arrestNode))
+      ].map(name => createListComponent(`${name} (transient)`, 'field', 'TRANSIENT_PLAIN_FIELD', arrestNode, arrestPathPrefix))
     }
   ],
   dropdown: {
@@ -122,11 +119,11 @@ const arrestFullData: NodeData = {
 //                     OTHER SIMPLIFIED NODES
 // -----------------------------------------------------------------
 
-const createSimplifiedNodeData = (node: {id: string, name: string}, relations: {entities: string[], collections: string[]}, nav: Record<string, boolean>): NodeData => ({
+const createSimplifiedNodeData = (node: {id: string, name: string}, pathPrefix: string, relations: {entities: string[], collections: string[]}, nav: Record<string, boolean>): NodeData => ({
   list: [
-    { title: 'Plain Fields', components: [`${node.name} ID (PK)`, `${node.name} Date`, `${node.name} Status`].map(n => createListComponent(n, 'field', 'PLAIN_FIELD', node))},
-    { title: 'Widgets', components: [`${node.name} Widget 1`, `GenerateDocument`].map(n => createListComponent(n, 'widget', 'WIDGET', node)) },
-    { title: 'Transient Plain Fields', components: [`${node.name} Category (transient)`, `${node.name} Type (transient)`].map(n => createListComponent(n, 'field', 'TRANSIENT_PLAIN_FIELD', node))}
+    { title: 'Plain Fields', components: [`${node.name} ID (PK)`, `${node.name} Date`, `${node.name} Status`].map(n => createListComponent(n, 'field', 'PLAIN_FIELD', node, pathPrefix))},
+    { title: 'Widgets', components: [`${node.name} Widget 1`, `GenerateDocument`].map(n => createListComponent(n, 'widget', 'WIDGET', node, pathPrefix)) },
+    { title: 'Transient Plain Fields', components: [`${node.name} Category (transient)`, `${node.name} Type (transient)`].map(n => createListComponent(n, 'field', 'TRANSIENT_PLAIN_FIELD', node, pathPrefix))}
   ],
   dropdown: {
     entities: relations.entities.map(name => createDropdownItem(name, 'ENTITY', !!nav[name])),
@@ -136,31 +133,31 @@ const createSimplifiedNodeData = (node: {id: string, name: string}, relations: {
 });
 
 const caseNode = { id: 'case', name: 'Case' };
-const caseData = createSimplifiedNodeData(caseNode, {
+const caseData = createSimplifiedNodeData(caseNode, '', {
   entities: ['Subcase', 'Case Party'],
   collections: ['Case Charges']
 }, { 'Subcase': true });
 
 const subcaseNode = { id: 'subcase', name: 'Subcase' };
-const subcaseData = createSimplifiedNodeData(subcaseNode, {
+const subcaseData = createSimplifiedNodeData(subcaseNode, 'Case', {
   entities: ['Arrest', 'Subcase Party'],
   collections: ['Subcase Documents']
 }, { 'Arrest': true });
 
 const victimNode = { id: 'victim', name: 'Victim' };
-const victimData = createSimplifiedNodeData(victimNode, {
+const victimData = createSimplifiedNodeData(victimNode, 'Case > Arrest', {
   entities: ['Associated Party'],
   collections: ['Victim Statements', 'Arrest Charges']
 }, { 'Arrest Charges': true });
 
 const arrestChargesNode = { id: 'arrest-charges', name: 'Arrest Charges' };
-const arrestChargesData = createSimplifiedNodeData(arrestChargesNode, {
+const arrestChargesData = createSimplifiedNodeData(arrestChargesNode, 'Case > Arrest', {
   entities: ['Officer', 'Plea Bargain'],
   collections: ['Court Filings']
 }, { 'Officer': true });
 
 const officerNode = { id: 'officer', name: 'Officer' };
-const officerData = createSimplifiedNodeData(officerNode, {
+const officerData = createSimplifiedNodeData(officerNode, 'Case > Arrest', {
   entities: ['Assisting Officer'],
   collections: ['Officer Reports']
 }, {});

@@ -16,7 +16,7 @@ const RadioButtonsView = memo(({ label, required }: { label: string, required: b
     <div className={styles.formItemContent}>
       <label className={styles.formItemLabel}>
         {label}
-        {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
+        {required && <span className="required-indicator">*</span>}
       </label>
       <div className={styles.radioGroupExample}>
         <div className={styles.radioOptionExample}>
@@ -34,7 +34,6 @@ const RadioButtonsView = memo(({ label, required }: { label: string, required: b
 
 // --- Unified Renderer ---
 export const RadioButtonsRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
-  // FIX: Add isEditing and full editing hook setup.
   const { isSelected, isEditing, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -76,7 +75,6 @@ export const RadioButtonsRenderer = ({ component, mode }: RendererProps<FormComp
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        {/* FIX: Add conditional rendering for inline editing. */}
         {isEditing ? (
           <div className={styles.formItemContent}>
             <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />

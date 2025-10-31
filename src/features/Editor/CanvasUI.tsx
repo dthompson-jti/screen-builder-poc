@@ -51,7 +51,6 @@ export const FloatingMultiSelectToolbar = () => {
 
   return (
     <ActionToolbar mode="fixed">
-      {/* FIX: Moved clear selection button to the far left. */}
       <Tooltip content="Clear selection">
         <Button variant="on-solid" size="s" iconOnly onClick={handleClearSelection} aria-label="Clear selection">
           <span className="material-symbols-rounded">close</span>

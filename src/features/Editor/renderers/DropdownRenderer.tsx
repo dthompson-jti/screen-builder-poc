@@ -16,7 +16,7 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
     <div className={styles.formItemContent}>
       <label className={styles.formItemLabel}>
         {label}
-        {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
+        {required && <span className="required-indicator">*</span>}
       </label>
       <div className={`${styles.controlPlaceholder} ${styles.controlWithIcon}`}>
         <span>Select an option...</span>
@@ -28,7 +28,6 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
 
 // --- Unified Renderer ---
 export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
-  // FIX: Add isEditing and full editing hook setup.
   const { isSelected, isEditing, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -70,7 +69,6 @@ export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponen
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        {/* FIX: Add conditional rendering for inline editing. */}
         {isEditing ? (
           <div className={styles.formItemContent}>
             <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />

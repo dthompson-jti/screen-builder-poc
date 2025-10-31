@@ -46,8 +46,9 @@
   --surface-fg-quaternary: var(--primitives-grey-500);
   --surface-fg-quinary: var(--primitives-grey-400);
   --surface-fg-white: var(--primitives-base-white);
-  --surface-fg-primary_on-brand: var(--primitives-base-white);
+  --surface-fg-primary_on_brand: var(--primitives-base-white);
   --surface-fg-secondary_on_brand: var(--primitives-theme-200);
+  --surface-fg-on-solid-faint: var(--utility-alpha-white-70);
   --surface-fg-tertiary_on_brand: var(--primitives-theme-200);
   --surface-fg-quaternary_on_brand: var(--primitives-theme-300);
   --surface-fg-theme-intense: var(--primitives-theme-900);

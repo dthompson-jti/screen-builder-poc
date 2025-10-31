@@ -18,7 +18,7 @@ const CheckboxView = memo(({ label, required }: { label: string, required: boole
         <div className={styles.checkboxSquare} />
         <label className={styles.formItemLabel} style={{ marginBottom: 0 }}>
           {label}
-          {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
+          {required && <span className="required-indicator">*</span>}
         </label>
       </div>
     </div>

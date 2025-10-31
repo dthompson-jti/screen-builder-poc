@@ -34,7 +34,7 @@
 
 .toast-root .material-symbols-rounded {
   font-size: 20px;
-  color: var(--surface-fg-secondary);
+  color: var(--surface-fg-on-solid-faint);
 }
 
 .toast-root[data-state='open'] {

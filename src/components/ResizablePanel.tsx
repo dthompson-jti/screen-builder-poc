@@ -5,6 +5,7 @@ import styles from './ResizablePanel.module.css';
 interface ResizablePanelProps {
   initialWidth: number;
   minWidth?: number;
+  maxWidth?: number;
   children: React.ReactNode;
   position?: 'left' | 'right';
   isAnimatedVisible?: boolean; 
@@ -13,6 +14,7 @@ interface ResizablePanelProps {
 export const ResizablePanel: React.FC<ResizablePanelProps> = ({
   initialWidth,
   minWidth = 200,
+  maxWidth,
   children,
   position = 'left',
   isAnimatedVisible = true, 
@@ -43,6 +45,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
       const deltaX = moveEvent.clientX - startX;
       let newWidth = position === 'left' ? startWidth + deltaX : startWidth - deltaX;
       if (newWidth < minWidth) newWidth = minWidth;
+      if (maxWidth && newWidth > maxWidth) newWidth = maxWidth;
       setWidth(newWidth);
     };
 
@@ -63,7 +66,7 @@ export const ResizablePanel: React.FC<ResizablePanelProps> = ({
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-  }, [minWidth, position, isPanelHidden, width]);
+  }, [minWidth, maxWidth, position, isPanelHidden, width]);
 
   const wrapperStyle: React.CSSProperties = {
     width: isPanelHidden ? '0px' : `${width}px`,

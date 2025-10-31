@@ -25,3 +25,7 @@
 .tooltip-arrow {
   fill: var(--primitives-grey-800);
 }
+
+.tooltip-secondary-text {
+  color: var(--surface-fg-on-solid-faint);
+}

@@ -3,7 +3,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { DraggableComponent } from '../../types';
+import { DraggableComponent, DndData } from '../../types';
 import { ActionMenu, ActionMenuItem } from '../../components/ActionMenu';
 import { dataNavigatorSelectedIdsAtom, dataNavigatorSelectionAnchorIdAtom } from './dataNavigatorAtoms';
 import { commitActionAtom, rootComponentIdAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
@@ -25,7 +25,16 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
 
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: component.id,
-    data: { ...component, isNew: true },
+    data: {
+      ...component,
+      isNew: true,
+      origin: 'data',
+      data: {
+        nodeId: component.nodeId ?? '',
+        nodeName: component.nodeName ?? '',
+        path: component.path ?? '',
+      },
+    } satisfies DndData,
   });
 
   const isSelected = selectedIds.includes(component.id);
@@ -63,6 +72,13 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const isCtrlClick = e.ctrlKey || e.metaKey;
+    const isSingleClick = !isCtrlClick && !e.shiftKey;
+
+    if (isSingleClick) {
+        setSelectedIds([component.id]);
+        setAnchorId(component.id);
+        return;
+    }
 
     if (isCtrlClick) {
       const newIds = isSelected ? selectedIds.filter(id => id !== component.id) : [...selectedIds, component.id];
@@ -90,10 +106,6 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         setSelectedIds([component.id]);
         setAnchorId(component.id);
       }
-    } else {
-      // FIX: When menu closes, clear the selection so the state "goes away".
-      setSelectedIds([]);
-      setAnchorId(null);
     }
   };
 
@@ -101,11 +113,11 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
 
   const numSelected = selectedIds.length;
   const menuItems: ActionMenuItem[] = [
-    { 
-      id: 'add', 
-      icon: numSelected > 1 ? 'playlist_add' : 'add', 
-      label: numSelected > 1 ? `Add ${numSelected} Fields` : 'Add to canvas', 
-      onClick: handleQuickAdd 
+    {
+      id: 'add',
+      icon: numSelected > 1 ? 'playlist_add' : 'add',
+      label: numSelected > 1 ? `Add ${numSelected} Fields` : 'Add to canvas',
+      onClick: handleQuickAdd
     },
   ];
 
@@ -123,7 +135,6 @@ export const DraggableListItem = ({ component, list }: DraggableListItemProps) =
         >
           <div className={panelStyles.iconWrapper}>
             <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
-            {/* FIX: Use the 'title' icon to match the modal's implementation. */}
             {isTransient && <span className={`material-symbols-rounded ${panelStyles.overlayIcon}`}>title</span>}
           </div>
           <span className={panelStyles.componentName}>{component.name}</span>

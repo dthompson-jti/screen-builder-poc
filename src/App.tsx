@@ -106,6 +106,7 @@ function App() {
             <ResizablePanel
                 initialWidth={300}
                 minWidth={280}
+                maxWidth={500}
                 position="right"
                 isAnimatedVisible={isRightPanelVisible}
             >

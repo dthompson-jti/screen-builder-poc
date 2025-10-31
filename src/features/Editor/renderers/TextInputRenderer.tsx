@@ -16,7 +16,7 @@ const TextInputView = memo(({ label, required, placeholder }: { label: string, r
     <div className={styles.formItemContent}>
       <label className={styles.formItemLabel}>
         {label}
-        {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
+        {required && <span className="required-indicator">*</span>}
       </label>
       <div className={styles.controlPlaceholder}>{placeholder}</div>
     </div>
@@ -29,7 +29,6 @@ export const TextInputRenderer = ({ component, mode }: RendererProps<FormCompone
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
 
-  // FIX: Create a stable ref to pass to the toolbar.
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setMergedRefs = (node: HTMLDivElement | null) => {
     wrapperRef.current = node;

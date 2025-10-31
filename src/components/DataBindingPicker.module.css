@@ -47,4 +47,6 @@
   font-size: 0.8em;
   color: var(--surface-fg-secondary);
   padding-left: var(--spacing-1);
+  line-height: 1.4;
+  overflow-wrap: break-word;
 }
