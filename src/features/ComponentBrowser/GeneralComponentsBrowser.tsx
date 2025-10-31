@@ -32,16 +32,16 @@ const DraggableListItem = ({ component }: { component: DraggableComponent }) => 
 
   // Use the global .menu-item class for consistent styling
   return (
-    <div 
-      ref={setNodeRef} 
-      style={{ opacity: isDragging ? 0.4 : 1 }} 
-      {...listeners} 
-      {...attributes} 
-      className="menu-item"
+    <li
+      ref={setNodeRef}
+      style={{ opacity: isDragging ? 0.4 : 1, touchAction: 'none' }}
+      {...listeners}
+      {...attributes}
+      className={`menu-item ${panelStyles.dataNavItem}`}
     >
       <span className={`material-symbols-rounded ${panelStyles.componentIcon}`} style={iconStyle}>{component.icon}</span>
       <span className={panelStyles.componentName}>{component.name}</span>
-    </div>
+    </li>
   );
 };
 
@@ -58,9 +58,9 @@ export const GeneralComponentsBrowser = () => {
       <div className={panelStyles.componentListContainer}>
         <ul className={panelStyles.componentList}>
           {generalComponents.map((group) => (
-            <li key={group.title}>
+            <li key={group.title} className={panelStyles.componentListGroup}>
               <h5 className={panelStyles.listGroupTitle}>{group.title}</h5>
-              <ul>
+              <ul className={panelStyles.componentListGroupItems}>
                 {group.components.map((component) => (
                   <DraggableListItem key={component.id} component={component} />
                 ))}
