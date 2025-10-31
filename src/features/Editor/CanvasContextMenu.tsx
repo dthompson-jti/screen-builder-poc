@@ -89,9 +89,9 @@ export const CanvasContextMenu = ({ children }: CanvasContextMenuProps) => {
   };
 
   return (
-    <ContextMenu.Root key={instanceKey} onOpenChange={handleOpenChange}>
+    <ContextMenu.Root onOpenChange={handleOpenChange}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
-      <ContextMenu.Portal>
+      <ContextMenu.Portal key={instanceKey}>
         <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>
           <MenuContent />
         </ContextMenu.Content>

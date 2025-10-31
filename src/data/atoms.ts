@@ -53,8 +53,8 @@ export const selectionAnchorIdAtom = atom<string | null>(null);
 
 // --- Context Menu State ---
 export const contextMenuTargetIdAtom = atom<string | null>(null);
+// FIX: Re-add the necessary atoms for the "keyed portal" architecture.
 export const isContextMenuOpenAtom = atom(false); 
-// FIX: New atom to force re-mounting the context menu to reset its position.
 export const contextMenuInstanceKeyAtom = atom(0);
 
 // A write-only "action" atom to safely handle selection changes when a context menu is triggered.

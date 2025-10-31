@@ -63,15 +63,8 @@ The editor uses an industry-standard selection model to feel familiar and powerf
 -   **Single Click:** Selects a single component.
 -   **Ctrl/Cmd + Click:** Toggles a single component into or out of the current selection.
 -   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor".
+-   **Alt/Option + Click or Double-Click:** Directly enters inline editing mode for supported components (Text Inputs, Paragraphs, Headings, etc.).
 -   **Right-Click (Context Menu):** Right-clicking an unselected component will select it. Right-clicking an already selected component will preserve the current selection.
-
-### Reliable Context Menu Interactions
--   **The Golden Rule:** To avoid state-driven race conditions with controlled UI libraries like Radix UI, we follow a strict interaction pattern: **Let the library control the event, then react to the library's state.**
--   **The Correct Flow:**
-    1.  A single, top-level `onContextMenu` listener on the canvas captures the *target* of the user's click and stores its ID in a transient atom. It does not update the main selection state.
-    2.  The event bubbles up to the Radix `ContextMenu.Trigger`, which handles `preventDefault()` and begins its internal process to open the menu.
-    3.  We use Radix's `onOpenChange` callback. This function, which fires just before the menu appears, is the designated "safe" time to update our application's selection state.
--   **The Anti-Pattern (To Avoid):** Never update application state directly inside a low-level `onContextMenu` handler on an interactive element. This triggers a React re-render while the UI library is still processing the event, creating a race condition that leads to unreliable behavior.
 
 ### Action Discoverability ("Intelligent Disclosure")
 -   **Multiple Access Points:** Actions can be triggered via the generic `ActionToolbar` system (for single and multi-select), the right-click `CanvasContextMenu`, and keyboard hotkeys.
@@ -133,17 +126,15 @@ We use a global **`menu.css`** stylesheet to provide a single, unified style def
     *   `useEditorInteractions.ts`: **[NEW]** A hook that encapsulates all canvas interaction logic.
     *   `useCanvasActions.ts`: **[NEW]** A hook that centralizes the implementation of all canvas mutation actions.
     *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible.
-    *   `CanvasSelectionToolbar.tsx`: **[NEW]** The specific implementation of the single-selection toolbar.
+    *   `CanvasSelectionToolbar.tsx`: The specific implementation of the single-selection toolbar.
     *   `CanvasContextMenu.tsx`: Renders the right-click context menu.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
 *   **`ComponentBrowser/`**: The left-hand panel for adding new components.
-    *   `ComponentBrowser.tsx`: **[NEW]** The primary container for the "Data fields" tab.
 *   **`AppHeader/`**: The main application header.
 *   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
 
 ### Reusable Components (`src/components/`)
-*   `ActionToolbar.tsx`: **[NEW]** A generic, positioning-aware toolbar container.
-*   `ActionMenu.tsx`: **[NEW]** A generic, data-driven menu component.
+*   `ActionToolbar.tsx`: A generic, positioning-aware toolbar container.
+*   `ActionMenu.tsx`: A generic, data-driven menu component.
 *   **`Button.tsx`**: The composable, data-attribute-driven button component.
-*   **`FormRenderer.tsx`**: A crucial, "pure" component that now uses the unified renderers in `"preview"` mode.
 *   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives.

@@ -72,9 +72,6 @@ export const EditorCanvas = () => {
     
     setContextMenuTargetId(componentId);
 
-    // FIX: Simplify logic for uncontrolled component. If a menu is already open,
-    // we increment the key to force a re-mount, which resets its position.
-    // Radix's default behavior will handle opening the new instance.
     if (isMenuOpen) {
       setContextMenuInstanceKey(k => k + 1);
     }

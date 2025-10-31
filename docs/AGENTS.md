@@ -21,7 +21,7 @@ For any non-trivial task (e.g., implementing a PRD), the agent must follow this 
 
 2.  **Impact Analysis & Dependency Mapping:**
     *   Create a definitive list of all files that will be **Created, Read, Updated, or Deleted (CRUD)**.
-    *   Map the dependencies. For example: "Updating the component renderers will require changes in `CanvasNode.tsx`, `FormRenderer.tsx`, and `DndDragOverlay.tsx`." This prevents leaving dependent files in a broken state.
+    *   Map the dependencies. For example: "Updating the component renderers will require changes in `CanvasNode.tsx` and `DndDragOverlay.tsx`." This prevents leaving dependent files in a broken state.
 
 3.  **Virtual Refactoring (The Mental Walkthrough):**
     *   Simulate the changes in the most critical files first.
@@ -42,18 +42,14 @@ These are non-negotiable rules learned from the project's history. Violating the
 
 1.  **The Rules of Hooks are Absolute.** All React Hooks (`useRef`, `useState`, `useAtomValue`, etc.) **must** be called unconditionally at the top level of a component. Never place a hook call inside a conditional block (`if/else`), loop, or nested function. If a component has different logic paths, hoist all hooks to the top.
 
-2.  **Avoid Event/State Race Conditions with UI Libraries.** When using a controlled UI library like Radix UI, you must respect its event lifecycle to prevent unreliable behavior.
-    *   **The Anti-Pattern:** Calling `setState` (or a Jotai setter) directly inside a raw event handler (e.g., `onContextMenu`, `onClick`) on an element that is a child of a library `Trigger` is an anti-pattern. It triggers a React re-render *while* the library is still processing the event, creating a race condition.
-    *   **The Correct Pattern:** Let the event propagate cleanly to the library's `Trigger`. Use the library's built-in lifecycle callbacks (e.g., `onOpenChange`, `onValueChange`) to safely update application state. This creates a predictable sequence: **Event -> Library State Change -> Application State Change**.
+2.  **`dnd-kit` Refs are Setters.** The `ref` provided by `useSortable` is a function (`(node) => void`), not a `RefObject`. It cannot be accessed with `.current`. To get a stable reference to a sortable element for other purposes (e.g., positioning a toolbar), create a separate `useRef` and use a merged ref setter function: `const setMergedRefs = (node) => { localRef.current = node; sortableRef(node); }`.
 
-3.  **CSS Selectors Must Match the Final DOM.** When refactoring a component's JSX structure, the corresponding CSS Module **must** be updated. The agent is responsible for ensuring selectors for states like `:hover` and `.selected` target the new, correct class names and element hierarchy.
+3.  **`dnd-kit` Clicks Require `activationConstraint` Delay.** If a draggable item also needs to be clickable (`onClick`, multi-select, etc.), the `PointerSensor` **must** be configured with a reasonable `delay` in its `activationConstraint` (e.g., `{ delay: 150, tolerance: 5 }`). Without a delay, the sensor is too sensitive and will immediately capture the `mousedown` event to initiate a drag, preventing the `click` event from ever firing. This is the root cause of "buttons not working" on draggable items.
 
-4.  **Solve Nested Hovers with Child Targeting.** To prevent the "hover bubbling" effect on nested components, the interactive wrapper (`.selectableWrapper`) should be stylistically invisible. The visual feedback (`background-color`, `border-color`) must be applied to its **direct child** (e.g., `.selectableWrapper:hover > .formItemContent`).
+4.  **CSS Selectors Must Match the Final DOM.** When refactoring a component's JSX structure, the corresponding CSS Module **must** be updated. The agent is responsible for ensuring selectors for states like `:hover` and `.selected` target the new, correct class names and element hierarchy.
 
-5.  **`dnd-kit` Refs are Setters.** The `ref` provided by `useSortable` is a function (`(node) => void`), not a `RefObject`. It cannot be accessed with `.current`. To get a stable reference to a sortable element for other purposes (e.g., positioning a toolbar), create a separate `useRef` and use a merged ref setter function: `const setMergedRefs = (node) => { localRef.current = node; sortableRef(node); }`.
+5.  **Solve Nested Hovers with Child Targeting.** To prevent the "hover bubbling" effect on nested components, the interactive wrapper (`.selectableWrapper`) should be stylistically invisible. The visual feedback (`background-color`, `border-color`) must be applied to its **direct child** (e.g., `.selectableWrapper:hover > .formItemContent`).
 
 6.  **Precision in Imports is Mandatory.** All package names must be exact (e.g., `@dnd-kit/core`, `@floating-ui/react-dom`). All relative paths must be correct. There is no room for typos.
 
 7.  **"Ghost Errors" are Real.** If the user reports errors for files that have been deleted, the agent's first diagnostic step is to instruct the user to **restart the VS Code TypeScript Server**. This resolves stale cache issues.
-
-8.  **`dnd-kit` Clicks Require `activationConstraint` Delay.** If a draggable item also needs to be clickable (`onClick`, multi-select, etc.), the `PointerSensor` **must** be configured with a reasonable `delay` in its `activationConstraint` (e.g., `{ delay: 150, tolerance: 5 }`). Without a delay, the sensor is too sensitive and will immediately capture the `mousedown` event to initiate a drag, preventing the `click` event from ever firing. This is the root cause of "buttons not working" on draggable items.
