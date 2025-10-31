@@ -45,9 +45,17 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     e.stopPropagation();
     setIsPropertiesPanelVisible(true);
 
-    const isLayout = component.componentType === 'layout';
-    const isPlainText = !isLayout && component.properties.controlType === 'plain-text';
-    if ((e.altKey && !isLayout) || (e.detail === 2 && isPlainText)) {
+    // FIX: Make the check for Alt-click edit mode more specific and reliable.
+    // It should only trigger for components that have a defined inline editing UI.
+    const isEditableOnCanvas =
+      component.componentType !== 'layout' &&
+      (component.properties.controlType === 'text-input' ||
+        component.properties.controlType === 'plain-text' ||
+        component.properties.controlType === 'checkbox');
+
+    const isPlainText = component.componentType !== 'layout' && component.properties.controlType === 'plain-text';
+
+    if ((e.altKey && isEditableOnCanvas) || (e.detail === 2 && isPlainText)) {
       setInteractionState({ mode: 'editing', id: component.id });
       return;
     }

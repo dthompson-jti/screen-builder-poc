@@ -13,7 +13,6 @@ import styles from '../EditorCanvas.module.css';
 // --- Pure View Component ---
 const PlainTextView = memo(({ content, textElement = 'p' }: { content?: string, textElement?: FormComponent['properties']['textElement'] }) => {
   const Tag = textElement || 'p';
-  // FIX: Removed inline padding to allow parent class to control it.
   return <Tag style={{ margin: 0 }}>{content || 'Plain Text'}</Tag>;
 });
 
@@ -37,7 +36,15 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const editable = useEditable<HTMLTextAreaElement>(component.properties.content || '', handleCommit, handleCancel, { multiline: true });
+  
+  // FIX: Conditionally determine if the editor should be single-line (for headings) or multi-line (for paragraphs).
+  const isHeading = component.properties.textElement?.startsWith('h');
+  const editable = useEditable<HTMLInputElement | HTMLTextAreaElement>(
+    component.properties.content || '',
+    handleCommit,
+    handleCancel,
+    { multiline: !isHeading }
+  );
 
   useEffect(() => {
     if (isEditing) {
@@ -60,10 +67,24 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        {/* FIX: Wrapped content in formItemContent div for consistent hover/selection styles. */}
         <div className={styles.formItemContent}>
+          {/* FIX: Render an <input> for headings and a <textarea> for paragraphs to prevent visual jump. */}
           {isEditing ? (
-            <textarea {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            isHeading ? (
+              <input
+                {...editable}
+                ref={editable.ref as React.Ref<HTMLInputElement>}
+                className={styles.inlineInput}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <textarea
+                {...editable}
+                ref={editable.ref as React.Ref<HTMLTextAreaElement>}
+                className={styles.inlineInput}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )
           ) : (
             <PlainTextView {...component.properties} />
           )}
