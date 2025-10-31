@@ -12,6 +12,7 @@ import { selectedNodeIdAtom, componentSearchQueryAtom } from '../../data/atoms';
 import { dataNavigatorSelectedIdsAtom, dataNavigatorSelectionAnchorIdAtom } from './dataNavigatorAtoms';
 import { commitActionAtom, rootComponentIdAtom, canvasComponentsByIdAtom } from '../../data/historyAtoms';
 import { DraggableComponent } from '../../types';
+import { ConnectionsDropdown } from '../DataNavigator/ConnectionsDropdown';
 import panelStyles from '../../components/panel.module.css';
 
 export const ComponentBrowser = () => {
@@ -74,6 +75,13 @@ export const ComponentBrowser = () => {
           key={component.id}
           component={component}
           list={list}
+        />
+      )}
+      renderConnectionsDropdown={(navigator, selectedNodeId, onClose) => (
+        <ConnectionsDropdown 
+            navigator={navigator} 
+            selectedNodeId={selectedNodeId} 
+            onClose={onClose}
         />
       )}
       onClosePanel={() => setIsPanelVisible(false)}
