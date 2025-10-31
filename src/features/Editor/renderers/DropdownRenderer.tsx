@@ -1,5 +1,9 @@
 // src/features/Editor/renderers/DropdownRenderer.tsx
-import { memo, useRef } from 'react';
+import { memo, useRef, useEffect } from 'react';
+import { useSetAtom } from 'jotai';
+import { canvasInteractionAtom } from '../../../data/atoms';
+import { commitActionAtom } from '../../../data/historyAtoms';
+import { useEditable } from '../../../data/useEditable';
 import { FormComponent } from '../../../types';
 import { RendererProps } from './types';
 import { useEditorInteractions } from '../useEditorInteractions';
@@ -14,7 +18,6 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
         {label}
         {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
       </label>
-      {/* FIX: Replaced generic placeholder with a high-fidelity representation. */}
       <div className={`${styles.controlPlaceholder} ${styles.controlWithIcon}`}>
         <span>Select an option...</span>
         <span className={`material-symbols-rounded ${styles.controlIcon}`}>arrow_drop_down</span>
@@ -25,13 +28,36 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
 
 // --- Unified Renderer ---
 export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
-  const { isSelected, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
+  // FIX: Add isEditing and full editing hook setup.
+  const { isSelected, isEditing, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
+  const setInteractionState = useSetAtom(canvasInteractionAtom);
+  const commitAction = useSetAtom(commitActionAtom);
   
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setMergedRefs = (node: HTMLDivElement | null) => {
     wrapperRef.current = node;
     sortableProps.ref(node);
   };
+
+  const handleCommit = (newValue: string) => {
+    commitAction({
+      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newValue } } },
+      message: `Rename to '${newValue}'`
+    });
+    setInteractionState({ mode: 'selecting', ids: [component.id] });
+  };
+  const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
+  const editable = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
+
+  useEffect(() => {
+    if (isEditing) {
+      const timer = setTimeout(() => {
+        editable.ref.current?.focus();
+        editable.ref.current?.select();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isEditing, editable.ref]);
 
   if (mode === 'preview') {
     return <DropdownView {...component.properties} />;
@@ -44,7 +70,18 @@ export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponen
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        <DropdownView {...component.properties} />
+        {/* FIX: Add conditional rendering for inline editing. */}
+        {isEditing ? (
+          <div className={styles.formItemContent}>
+            <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            <div className={`${styles.controlPlaceholder} ${styles.controlWithIcon}`}>
+              <span>Select an option...</span>
+              <span className={`material-symbols-rounded ${styles.controlIcon}`}>arrow_drop_down</span>
+            </div>
+          </div>
+        ) : (
+          <DropdownView {...component.properties} />
+        )}
       </div>
     </div>
   );

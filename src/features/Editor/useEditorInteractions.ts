@@ -45,17 +45,17 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     e.stopPropagation();
     setIsPropertiesPanelVisible(true);
 
-    // FIX: Make the check for Alt-click edit mode more specific and reliable.
-    // It should only trigger for components that have a defined inline editing UI.
+    // FIX: Expand the definition of an editable component to include dropdown and radio buttons.
     const isEditableOnCanvas =
       component.componentType !== 'layout' &&
       (component.properties.controlType === 'text-input' ||
         component.properties.controlType === 'plain-text' ||
-        component.properties.controlType === 'checkbox');
-
-    const isPlainText = component.componentType !== 'layout' && component.properties.controlType === 'plain-text';
-
-    if ((e.altKey && isEditableOnCanvas) || (e.detail === 2 && isPlainText)) {
+        component.properties.controlType === 'checkbox' ||
+        component.properties.controlType === 'dropdown' ||
+        component.properties.controlType === 'radio-buttons');
+    
+    // FIX: Generalize double-click to work for any editable component, not just plain text.
+    if ((e.altKey && isEditableOnCanvas) || (e.detail === 2 && isEditableOnCanvas)) {
       setInteractionState({ mode: 'editing', id: component.id });
       return;
     }
@@ -93,9 +93,6 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     }
   };
   
-  // REMOVED: The problematic onContextMenu handler has been deleted.
-  // The event now bubbles up to the canvas to be handled by the new architecture.
-
   const sortableStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -124,7 +121,6 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     },
     selectionProps: {
       onClick: handleSelect,
-      // REMOVED: onContextMenu is no longer part of this hook's contract.
     },
     dndListeners: listeners,
   };

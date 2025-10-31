@@ -13,7 +13,12 @@ import styles from '../EditorCanvas.module.css';
 // --- Pure View Component ---
 const PlainTextView = memo(({ content, textElement = 'p' }: { content?: string, textElement?: FormComponent['properties']['textElement'] }) => {
   const Tag = textElement || 'p';
-  return <Tag style={{ margin: 0 }}>{content || 'Plain Text'}</Tag>;
+  // FIX: Apply `white-space: pre-wrap` for paragraphs to render line breaks.
+  const style: React.CSSProperties = { margin: 0 };
+  if (Tag === 'p') {
+    style.whiteSpace = 'pre-wrap';
+  }
+  return <Tag style={style}>{content || 'Plain Text'}</Tag>;
 });
 
 // --- Unified Renderer ---
@@ -37,7 +42,6 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
   
-  // FIX: Conditionally determine if the editor should be single-line (for headings) or multi-line (for paragraphs).
   const isHeading = component.properties.textElement?.startsWith('h');
   const editable = useEditable<HTMLInputElement | HTMLTextAreaElement>(
     component.properties.content || '',
@@ -68,7 +72,6 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         <div className={styles.formItemContent}>
-          {/* FIX: Render an <input> for headings and a <textarea> for paragraphs to prevent visual jump. */}
           {isEditing ? (
             isHeading ? (
               <input
