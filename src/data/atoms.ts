@@ -51,10 +51,13 @@ export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle'
 
 export const selectionAnchorIdAtom = atom<string | null>(null);
 
+// --- Context Menu State ---
 export const contextMenuTargetIdAtom = atom<string | null>(null);
+export const isContextMenuOpenAtom = atom(false); 
+// FIX: New atom to force re-mounting the context menu to reset its position.
+export const contextMenuInstanceKeyAtom = atom(0);
 
-// FIX: New write-only "action" atom to safely handle selection changes on context menu open.
-// This pattern avoids stale state issues within the Radix callback.
+// A write-only "action" atom to safely handle selection changes when a context menu is triggered.
 export const updateSelectionOnContextMenuAtom = atom(
   null,
   (get, set) => {
@@ -71,6 +74,7 @@ export const updateSelectionOnContextMenuAtom = atom(
     }
   }
 );
+// --- End Context Menu State ---
 
 
 export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
@@ -85,7 +89,7 @@ export const activelyEditingComponentIdAtom = atom<string | null>((get) => {
   return state.mode === 'editing' ? state.id : null;
 });
 
-// --- NEW: User Flow Atom ---
+// --- User Flow Atom ---
 export const startEditingOnEmptyCanvasAtom = atom(null, (get, set) => {
   const rootId = get(rootComponentIdAtom);
   set(canvasInteractionAtom, { mode: 'selecting', ids: [rootId] });

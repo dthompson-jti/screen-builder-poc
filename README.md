@@ -60,9 +60,18 @@ To guarantee visual consistency and eliminate code duplication, all canvas compo
 
 ### Advanced Selection Model
 The editor uses an industry-standard selection model to feel familiar and powerful.
--   **Single Click:** Selects a single component. This also sets a "selection anchor" for range-selects.
--   **Ctrl/Cmd + Click:** Toggles a single component into or out of the current selection without deselecting others.
--   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor". This is based on the component order in the data tree, not visual position, ensuring predictable behavior. This is constrained to components that share the same parent container.
+-   **Single Click:** Selects a single component.
+-   **Ctrl/Cmd + Click:** Toggles a single component into or out of the current selection.
+-   **Shift + Click:** Selects a contiguous range of components from the last "selection anchor".
+-   **Right-Click (Context Menu):** Right-clicking an unselected component will select it. Right-clicking an already selected component will preserve the current selection.
+
+### Reliable Context Menu Interactions
+-   **The Golden Rule:** To avoid state-driven race conditions with controlled UI libraries like Radix UI, we follow a strict interaction pattern: **Let the library control the event, then react to the library's state.**
+-   **The Correct Flow:**
+    1.  A single, top-level `onContextMenu` listener on the canvas captures the *target* of the user's click and stores its ID in a transient atom. It does not update the main selection state.
+    2.  The event bubbles up to the Radix `ContextMenu.Trigger`, which handles `preventDefault()` and begins its internal process to open the menu.
+    3.  We use Radix's `onOpenChange` callback. This function, which fires just before the menu appears, is the designated "safe" time to update our application's selection state.
+-   **The Anti-Pattern (To Avoid):** Never update application state directly inside a low-level `onContextMenu` handler on an interactive element. This triggers a React re-render while the UI library is still processing the event, creating a race condition that leads to unreliable behavior.
 
 ### Action Discoverability ("Intelligent Disclosure")
 -   **Multiple Access Points:** Actions can be triggered via the generic `ActionToolbar` system (for single and multi-select), the right-click `CanvasContextMenu`, and keyboard hotkeys.
@@ -70,35 +79,32 @@ The editor uses an industry-standard selection model to feel familiar and powerf
     -   `useComponentCapabilities`: Determines *which* actions are possible for any given selection (e.g., can this item be unwrapped?).
     -   `useCanvasActions`: Provides the memoized *implementation* for all canvas actions (e.g., `handleWrap`, `handleDelete`), centralizing all calls to `commitActionAtom`.
 -   **Intelligent Disclosure:** The menus follow a refined UX pattern for discoverability:
-    -   Actions that are **impossible** for a given component type (e.g., "Unwrap" on a non-container) are **hidden entirely** to reduce clutter.
-    -   Actions that are **possible** but temporarily unavailable (e.g., "Move Up" when an item is already at the top) are **shown but disabled**. This teaches the user the full capability of the tool.
+    -   Actions that are **impossible** for a given component type are **hidden entirely**.
+    -   Actions that are **possible** but temporarily unavailable are **shown but disabled**.
 
 ### Global Hotkey System
-To ensure a fast and predictable workflow, the application features a comprehensive set of keyboard hotkeys. All global editor hotkeys—including undo/redo, delete, wrap/unwrap, and component nudging—are managed in a single, centralized hook (`src/data/useEditorHotkeys.ts`). This centralization makes the system easy to maintain and prevents conflicts between different parts of the application.
+All global editor hotkeys are managed in a single, centralized hook (`src/data/useEditorHotkeys.ts`). This centralization makes the system easy to maintain and prevents conflicts.
 
 ### Drag-and-Drop (DnD) Contracts
 -   **Stability Above All:** Layout-shifting animations are disabled during a drag operation to keep drop targets "rock solid".
--   **Centralized Logic:** All DnD event handling (`onDragStart`, `onDragOver`, `onDragEnd`) is encapsulated within the `src/data/useCanvasDnd.ts` hook.
+-   **Centralized Logic:** All DnD event handling is encapsulated within the `src/data/useCanvasDnd.ts` hook.
 
 ## 5. Styling Architecture
 
 The project uses a **systematic CSS architecture** organized into layers to control specificity and promote a cohesive design language. Please see our **[High-Craft CSS Principles](./CSS-PRINCIPLES.md)** for detailed patterns and conventions.
 
--   **Design Tokens:** The styling foundation is a three-tiered token system for maximum clarity and flexibility:
-    -   `primitives.css`: Contains raw, context-agnostic values (hex codes, spacing units).
-    -   `utility.css`: A layer that defines simple, reusable utility tokens, such as alpha transparency scales.
-    -   `semantics.css`: Maps primitive or utility values to semantic, purpose-driven variable names (e.g., `--control-bg-hover`).
--   **Data-Attribute Styling:** Components use `data-*` attributes for styling variants (e.g., `<Button data-variant="tertiary" data-size="s">`). This provides superior semantic clarity and simplifies style composition over traditional modifier classes.
--   **Layered Cascade:** The global style cascade is managed in a single location (`src/index.css`) using CSS `@layer`. This provides predictable style application and prevents specificity conflicts between global styles, shared component styles, and scoped CSS Modules.
--   **Robust Primitives:** Core UI patterns that require complex state management and accessibility (dropdowns, context menus, tooltips) are built using **Radix UI**, enhancing stability and craft.
+-   **Design Tokens:** A three-tiered token system (`primitives.css`, `utility.css`, `semantics.css`).
+-   **Data-Attribute Styling:** Components use `data-*` attributes for styling variants.
+-   **Layered Cascade:** The global style cascade is managed in `src/index.css` using CSS `@layer`.
+-   **Robust Primitives:** Core UI patterns are built using **Radix UI** for stability and craft.
 
 ### The Shared Menu System
-To enforce the "Single Source of Truth" for our UI, we use the global **`menu.css`** stylesheet to provide a single, unified style definition for all list-based selection components. This system guarantees that primitives from multiple Radix UI packages (`DropdownMenu`, `ContextMenu`, `Select`) and custom components are visually indistinguishable. It relies on a composition of a shared container (`.menu-popover`) and a shared item (`.menu-item`) to ensure perfect alignment, spacing, and state styling across the entire application.
+We use a global **`menu.css`** stylesheet to provide a single, unified style definition for all list-based selection components (`DropdownMenu`, `ContextMenu`, `Select`), ensuring perfect visual consistency.
 
 ### Focus Ring Convention
--   **Standard Focus Ring:** The default focus indicator for all interactive elements is a `2px` **outer** box-shadow (`box-shadow: 0 0 0 2px var(--control-focus-ring-standard)`).
--   **The "Safe Zone" Contract:** Any container that must use `overflow: hidden` (e.g., an accordion) is required to provide a `2px` internal padding to ensure this outer focus ring is never clipped.
--   **The Menu Item Exception:** Menu items are the only components that use an **inset** focus shadow, a necessary exception to prevent clipping by the popover's rounded corners.
+-   **Standard Focus Ring:** A `2px` **outer** box-shadow.
+-   **The "Safe Zone" Contract:** Any container with `overflow: hidden` must provide `2px` of internal padding to prevent clipping the focus ring of its children.
+-   **The Menu Item Exception:** Menu items use an **inset** focus shadow.
 
 ## 6. Key File Manifest
 
@@ -123,21 +129,21 @@ To enforce the "Single Source of Truth" for our UI, we use the global **`menu.cs
 *   **`Editor/`**: The main form-building feature.
     *   `EditorCanvas.tsx`: The main container component with core event handlers.
     *   `CanvasNode.tsx`: The recursive engine that routes to the correct unified renderer.
-    *   `renderers/`: **[NEW]** A directory containing the single source of truth for component rendering (e.g., `TextInputRenderer.tsx`, `LayoutRenderer.tsx`).
-    *   `useEditorInteractions.ts`: **[NEW]** A hook that encapsulates all canvas interaction logic (selection, sorting).
+    *   `renderers/`: **[NEW]** A directory containing the single source of truth for component rendering.
+    *   `useEditorInteractions.ts`: **[NEW]** A hook that encapsulates all canvas interaction logic.
     *   `useCanvasActions.ts`: **[NEW]** A hook that centralizes the implementation of all canvas mutation actions.
-    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible for a given selection.
-    *   `CanvasSelectionToolbar.tsx`: **[NEW]** The specific implementation of the single-selection toolbar for the canvas.
+    *   `useComponentCapabilities.ts`: A hook that centralizes the logic for determining which actions are possible.
+    *   `CanvasSelectionToolbar.tsx`: **[NEW]** The specific implementation of the single-selection toolbar.
     *   `CanvasContextMenu.tsx`: Renders the right-click context menu.
     *   `PropertiesPanel/`: The right-hand panel for editing component properties.
-*   **`ComponentBrowser/`**: The left-hand panel for adding new components. Now features an advanced multi-select (`Ctrl/Shift+Click`) and quick-add workflow for the Data Navigator.
-    *   `ComponentBrowser.tsx`: **[NEW]** The primary container for the "Data fields" tab, orchestrating the Data Navigator view and the multi-select action bar.
+*   **`ComponentBrowser/`**: The left-hand panel for adding new components.
+    *   `ComponentBrowser.tsx`: **[NEW]** The primary container for the "Data fields" tab.
 *   **`AppHeader/`**: The main application header.
 *   **`Preview/`**: The "Preview" mode for a clean, editor-free view of the form.
 
 ### Reusable Components (`src/components/`)
 *   `ActionToolbar.tsx`: **[NEW]** A generic, positioning-aware toolbar container.
-*   `ActionMenu.tsx`: **[NEW]** A generic, data-driven menu component that uses the shared menu system.
+*   `ActionMenu.tsx`: **[NEW]** A generic, data-driven menu component.
 *   **`Button.tsx`**: The composable, data-attribute-driven button component.
 *   **`FormRenderer.tsx`**: A crucial, "pure" component that now uses the unified renderers in `"preview"` mode.
 *   **`Modal.tsx`, `Select.tsx`, `Tooltip.tsx`, etc.**: High-quality, generic UI primitives.

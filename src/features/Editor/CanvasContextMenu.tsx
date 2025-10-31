@@ -1,10 +1,12 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom, useAtomValue } from 'jotai';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { 
   selectedCanvasComponentIdsAtom,
   contextMenuTargetIdAtom,
-  updateSelectionOnContextMenuAtom, // Import the new action atom
+  updateSelectionOnContextMenuAtom,
+  isContextMenuOpenAtom,
+  contextMenuInstanceKeyAtom,
 } from '../../data/atoms';
 import { useComponentCapabilities } from './useComponentCapabilities';
 import { useCanvasActions } from './useCanvasActions';
@@ -71,23 +73,23 @@ const MenuContent = () => {
 };
 
 export const CanvasContextMenu = ({ children }: CanvasContextMenuProps) => {
-  // FIX: Use the new action atom, which handles the logic safely.
   const updateSelection = useSetAtom(updateSelectionOnContextMenuAtom);
   const setContextMenuTargetId = useSetAtom(contextMenuTargetIdAtom);
+  const setIsMenuOpen = useSetAtom(isContextMenuOpenAtom);
+  const instanceKey = useAtomValue(contextMenuInstanceKeyAtom);
 
   const handleOpenChange = (isOpen: boolean) => {
+    setIsMenuOpen(isOpen);
+
     if (isOpen) {
-      // The menu is about to open. Execute our safe action.
-      // This will read the latest state and update selection if necessary.
       updateSelection();
     } else {
-      // Cleanup: Reset the transient target atom when the menu closes.
       setContextMenuTargetId(null);
     }
   };
 
   return (
-    <ContextMenu.Root onOpenChange={handleOpenChange}>
+    <ContextMenu.Root key={instanceKey} onOpenChange={handleOpenChange}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
         <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>

@@ -13,7 +13,6 @@ import styles from '../EditorCanvas.module.css';
 // --- Pure View Component ---
 const PlainTextView = memo(({ content, textElement = 'p' }: { content?: string, textElement?: FormComponent['properties']['textElement'] }) => {
   const Tag = textElement || 'p';
-  // FIX: Apply `white-space: pre-wrap` for paragraphs to render line breaks.
   const style: React.CSSProperties = { margin: 0 };
   if (Tag === 'p') {
     style.whiteSpace = 'pre-wrap';
@@ -67,6 +66,10 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
   const wrapperClasses = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
   const selectionClasses = `${styles.selectableWrapper} ${isSelected ? styles.selected : ''}`;
 
+  // FIX: Create dynamic class names for WYSIWYG editing.
+  const textElement = component.properties.textElement || 'p';
+  const inlineInputClasses = `${styles.inlineInput} ${styles[`is-${textElement}`]}`;
+
   return (
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
@@ -77,14 +80,14 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
               <input
                 {...editable}
                 ref={editable.ref as React.Ref<HTMLInputElement>}
-                className={styles.inlineInput}
+                className={inlineInputClasses}
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <textarea
                 {...editable}
                 ref={editable.ref as React.Ref<HTMLTextAreaElement>}
-                className={styles.inlineInput}
+                className={inlineInputClasses}
                 onClick={(e) => e.stopPropagation()}
               />
             )

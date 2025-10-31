@@ -27,8 +27,6 @@ const displayOptions: { value: FormComponent['properties']['controlType']; label
     { value: 'text-input', label: 'Text Input', icon: 'text_fields' },
     { value: 'dropdown', label: 'Dropdown', icon: 'arrow_drop_down_circle' },
     { value: 'radio-buttons', label: 'Radio Buttons', icon: 'radio_button_checked' },
-    // FIX: Add checkbox to the list of available control types.
-    { value: 'checkbox', label: 'Checkbox', icon: 'check_box' },
 ];
 
 const textElementOptions: { value: NonNullable<FormComponent['properties']['textElement']>; label: string; icon: string }[] = [
@@ -177,7 +175,7 @@ const FormEditor = ({ component }: PropertyEditorProps<CanvasComponent>) => {
             onChange={(e) => handleLabelChange(e.target.value)}
           />
         </div>
-        {controlType !== 'radio-buttons' && controlType !== 'checkbox' && (
+        {controlType !== 'radio-buttons' && (
           <div className={styles.propItem}>
             <label htmlFor={`placeholder-${component.id}`}>Placeholder</label>
             <input

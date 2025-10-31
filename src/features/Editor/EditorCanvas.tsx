@@ -8,7 +8,9 @@ import {
   selectionAnchorIdAtom,
   overDndIdAtom,
   selectedCanvasComponentIdsAtom,
-  contextMenuTargetIdAtom, // Import the new atom
+  contextMenuTargetIdAtom,
+  isContextMenuOpenAtom,
+  contextMenuInstanceKeyAtom,
 } from '../../data/atoms';
 import { rootComponentIdAtom, formNameAtom } from '../../data/historyAtoms';
 import { useEditorHotkeys } from '../../data/useEditorHotkeys';
@@ -30,7 +32,9 @@ export const EditorCanvas = () => {
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
-  const setContextMenuTargetId = useSetAtom(contextMenuTargetIdAtom); // Get the setter for the new atom
+  const setContextMenuTargetId = useSetAtom(contextMenuTargetIdAtom);
+  const isMenuOpen = useAtomValue(isContextMenuOpenAtom);
+  const setContextMenuInstanceKey = useSetAtom(contextMenuInstanceKeyAtom);
 
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
@@ -61,12 +65,19 @@ export const EditorCanvas = () => {
     }
   };
 
-  // The new top-level handler. It just captures intent and does not interfere with the event.
   const handleCanvasContextMenu = (e: React.MouseEvent) => {
     const targetElement = e.target as HTMLElement;
     const componentNode = targetElement.closest('[data-id]');
     const componentId = componentNode?.getAttribute('data-id') ?? null;
+    
     setContextMenuTargetId(componentId);
+
+    // FIX: Simplify logic for uncontrolled component. If a menu is already open,
+    // we increment the key to force a re-mount, which resets its position.
+    // Radix's default behavior will handle opening the new instance.
+    if (isMenuOpen) {
+      setContextMenuInstanceKey(k => k + 1);
+    }
   };
 
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
@@ -84,7 +95,7 @@ export const EditorCanvas = () => {
         ref={setMergedRefs} 
         className={styles.canvasContainer} 
         onClick={handleBackgroundClick}
-        onContextMenu={handleCanvasContextMenu} // Attach the new handler here
+        onContextMenu={handleCanvasContextMenu}
       >
         <div className={formCardClasses} onClick={handleCanvasClick}>
           <div className={styles.formCardHeader}>
