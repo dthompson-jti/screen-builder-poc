@@ -105,7 +105,7 @@ export interface FormComponent extends BaseComponent {
     required: boolean;
     hintText?: string;
     placeholder?: string;
-    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text' | 'link';
+    controlType: 'text-input' | 'dropdown' | 'radio-buttons' | 'plain-text' | 'link' | 'checkbox';
     // Properties for Link
     href?: string;
     target?: '_self' | '_blank';

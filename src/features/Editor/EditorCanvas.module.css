@@ -232,6 +232,49 @@
   color: var(--surface-fg-tertiary);
 }
 
+/* FIX: Styles for high-fidelity placeholders */
+.controlWithIcon {
+  justify-content: space-between;
+}
+.controlIcon {
+  color: var(--surface-fg-secondary);
+  font-size: 20px;
+}
+
+.radioGroupExample {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) 0;
+}
+.radioOptionExample {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: 0.9em;
+  color: var(--surface-fg-tertiary);
+}
+.radioCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-border-primary);
+  background-color: var(--surface-bg-primary);
+}
+.checkboxExample {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+.checkboxSquare {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid var(--surface-border-primary);
+  background-color: var(--surface-bg-primary);
+}
+
+
 .inlineInput {
   font-family: inherit;
   font-size: 0.8em;

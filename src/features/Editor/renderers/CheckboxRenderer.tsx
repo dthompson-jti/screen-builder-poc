@@ -1,4 +1,4 @@
-// src/features/Editor/renderers/PlainTextRenderer.tsx
+// src/features/Editor/renderers/CheckboxRenderer.tsx
 import { memo, useEffect, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { canvasInteractionAtom } from '../../../data/atoms';
@@ -11,14 +11,22 @@ import { CanvasSelectionToolbar } from '../CanvasSelectionToolbar';
 import styles from '../EditorCanvas.module.css';
 
 // --- Pure View Component ---
-const PlainTextView = memo(({ content, textElement = 'p' }: { content?: string, textElement?: FormComponent['properties']['textElement'] }) => {
-  const Tag = textElement || 'p';
-  // FIX: Removed inline padding to allow parent class to control it.
-  return <Tag style={{ margin: 0 }}>{content || 'Plain Text'}</Tag>;
+const CheckboxView = memo(({ label, required }: { label: string, required: boolean }) => {
+  return (
+    <div className={styles.formItemContent}>
+      <div className={styles.checkboxExample}>
+        <div className={styles.checkboxSquare} />
+        <label className={styles.formItemLabel} style={{ marginBottom: 0 }}>
+          {label}
+          {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
+        </label>
+      </div>
+    </div>
+  );
 });
 
 // --- Unified Renderer ---
-export const PlainTextRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
+export const CheckboxRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
   const { isSelected, isEditing, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
   const setInteractionState = useSetAtom(canvasInteractionAtom);
   const commitAction = useSetAtom(commitActionAtom);
@@ -31,13 +39,13 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
 
   const handleCommit = (newValue: string) => {
     commitAction({
-      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { content: newValue } } },
-      message: `Update text content`
+      action: { type: 'COMPONENT_UPDATE_FORM_PROPERTIES', payload: { componentId: component.id, newProperties: { label: newValue } } },
+      message: `Rename to '${newValue}'`
     });
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const editable = useEditable<HTMLTextAreaElement>(component.properties.content || '', handleCommit, handleCancel, { multiline: true });
+  const editable = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
 
   useEffect(() => {
     if (isEditing) {
@@ -48,9 +56,9 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
       return () => clearTimeout(timer);
     }
   }, [isEditing, editable.ref]);
-  
+
   if (mode === 'preview') {
-    return <PlainTextView {...component.properties} />;
+    return <CheckboxView {...component.properties} />;
   }
 
   const wrapperClasses = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
@@ -60,14 +68,16 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        {/* FIX: Wrapped content in formItemContent div for consistent hover/selection styles. */}
-        <div className={styles.formItemContent}>
-          {isEditing ? (
-            <textarea {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
-          ) : (
-            <PlainTextView {...component.properties} />
-          )}
-        </div>
+        {isEditing ? (
+          <div className={styles.formItemContent}>
+             <div className={styles.checkboxExample}>
+                <div className={styles.checkboxSquare} />
+                <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            </div>
+          </div>
+        ) : (
+          <CheckboxView {...component.properties} />
+        )}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import { RadioButtonsRenderer } from './renderers/RadioButtonsRenderer';
 import { PlainTextRenderer } from './renderers/PlainTextRenderer';
 import { LinkRenderer } from './renderers/LinkRenderer';
 import { LayoutRenderer } from './renderers/LayoutRenderer';
+import { CheckboxRenderer } from './renderers/CheckboxRenderer';
 
 // --- ORCHESTRATOR COMPONENT ---
 export const CanvasNode = ({ componentId }: { componentId: string }) => {
@@ -38,6 +39,9 @@ export const CanvasNode = ({ componentId }: { componentId: string }) => {
             return <PlainTextRenderer component={comp} mode="canvas" />;
           case 'link':
             return <LinkRenderer component={comp} mode="canvas" />;
+          // FIX: Add case for the new checkbox control type.
+          case 'checkbox':
+            return <CheckboxRenderer component={comp} mode="canvas" />;
           default:
             return <div>Unknown control type</div>;
         }

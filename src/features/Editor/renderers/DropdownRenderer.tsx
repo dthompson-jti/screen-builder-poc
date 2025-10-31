@@ -14,7 +14,11 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
         {label}
         {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
       </label>
-      <div className={styles.controlPlaceholder}>Select an option...</div>
+      {/* FIX: Replaced generic placeholder with a high-fidelity representation. */}
+      <div className={`${styles.controlPlaceholder} ${styles.controlWithIcon}`}>
+        <span>Select an option...</span>
+        <span className={`material-symbols-rounded ${styles.controlIcon}`}>arrow_drop_down</span>
+      </div>
     </div>
   );
 });
@@ -23,7 +27,6 @@ const DropdownView = memo(({ label, required }: { label: string, required: boole
 export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
   const { isSelected, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
   
-  // FIX: Create a stable ref to pass to the toolbar.
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setMergedRefs = (node: HTMLDivElement | null) => {
     wrapperRef.current = node;

@@ -10,6 +10,7 @@ import { DropdownRenderer } from './renderers/DropdownRenderer';
 import { RadioButtonsRenderer } from './renderers/RadioButtonsRenderer';
 import { PlainTextRenderer } from './renderers/PlainTextRenderer';
 import { LinkRenderer } from './renderers/LinkRenderer';
+import { CheckboxRenderer } from './renderers/CheckboxRenderer';
 // FIX: Removed unused import of LayoutRenderer.
 // import { LayoutRenderer } from './renderers/LayoutRenderer';
 
@@ -86,6 +87,9 @@ export const DndDragOverlay = ({ activeItem }: DndDragOverlayProps) => {
             return <PlainTextRenderer component={comp} mode="preview" />;
           case 'link':
             return <LinkRenderer component={comp} mode="preview" />;
+          // FIX: Add case for the new checkbox control type.
+          case 'checkbox':
+            return <CheckboxRenderer component={comp} mode="preview" />;
           default:
             return null;
         }

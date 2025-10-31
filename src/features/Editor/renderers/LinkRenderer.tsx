@@ -8,14 +8,14 @@ import styles from '../EditorCanvas.module.css';
 
 // --- Pure View Component ---
 const LinkView = memo(({ content, href }: { content?: string, href?: string }) => {
-  return <a href={href} style={{ margin: 0, padding: 'var(--spacing-2)' }}>{content || 'Link Text'}</a>;
+  // FIX: Removed inline padding to allow parent class to control it.
+  return <a href={href} style={{ margin: 0 }}>{content || 'Link Text'}</a>;
 });
 
 // --- Unified Renderer ---
 export const LinkRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
   const { isSelected, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
   
-  // FIX: Create a stable ref to pass to the toolbar and a merged ref setter.
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setMergedRefs = (node: HTMLDivElement | null) => {
     wrapperRef.current = node;
@@ -33,7 +33,10 @@ export const LinkRenderer = ({ component, mode }: RendererProps<FormComponent>) 
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        <LinkView {...component.properties} />
+        {/* FIX: Wrapped content in formItemContent div for consistent hover/selection styles. */}
+        <div className={styles.formItemContent}>
+          <LinkView {...component.properties} />
+        </div>
       </div>
     </div>
   );

@@ -14,7 +14,17 @@ const RadioButtonsView = memo(({ label, required }: { label: string, required: b
         {label}
         {required && <span style={{ color: 'var(--surface-fg-error)' }}> *</span>}
       </label>
-      <div className={styles.controlPlaceholder}>Radio Group</div>
+      {/* FIX: Replaced generic placeholder with a high-fidelity representation. */}
+      <div className={styles.radioGroupExample}>
+        <div className={styles.radioOptionExample}>
+          <div className={styles.radioCircle} />
+          <span>Option 1</span>
+        </div>
+        <div className={styles.radioOptionExample}>
+          <div className={styles.radioCircle} />
+          <span>Option 2</span>
+        </div>
+      </div>
     </div>
   );
 });
@@ -23,7 +33,6 @@ const RadioButtonsView = memo(({ label, required }: { label: string, required: b
 export const RadioButtonsRenderer = ({ component, mode }: RendererProps<FormComponent>) => {
   const { isSelected, isDragging, isOnlySelection, sortableProps, selectionProps, dndListeners } = useEditorInteractions(component);
 
-  // FIX: Create a stable ref to pass to the toolbar.
   const wrapperRef = useRef<HTMLDivElement>(null);
   const setMergedRefs = (node: HTMLDivElement | null) => {
     wrapperRef.current = node;
