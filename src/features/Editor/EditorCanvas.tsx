@@ -1,7 +1,6 @@
 // src/features/Editor/EditorCanvas.tsx
 import React, { useRef } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-// FIX: Corrected typo from '@d-kit/core' to '@dnd-kit/core'.
 import { useDroppable } from '@dnd-kit/core';
 import {
   canvasInteractionAtom,
@@ -9,6 +8,7 @@ import {
   selectionAnchorIdAtom,
   overDndIdAtom,
   selectedCanvasComponentIdsAtom,
+  contextMenuTargetIdAtom, // Import the new atom
 } from '../../data/atoms';
 import { rootComponentIdAtom, formNameAtom } from '../../data/historyAtoms';
 import { useEditorHotkeys } from '../../data/useEditorHotkeys';
@@ -30,6 +30,7 @@ export const EditorCanvas = () => {
   const setAnchorId = useSetAtom(selectionAnchorIdAtom);
   const overId = useAtomValue(overDndIdAtom);
   const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+  const setContextMenuTargetId = useSetAtom(contextMenuTargetIdAtom); // Get the setter for the new atom
 
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const { setNodeRef: setBackgroundNodeRef } = useDroppable({ id: CANVAS_BACKGROUND_ID });
@@ -60,6 +61,14 @@ export const EditorCanvas = () => {
     }
   };
 
+  // The new top-level handler. It just captures intent and does not interfere with the event.
+  const handleCanvasContextMenu = (e: React.MouseEvent) => {
+    const targetElement = e.target as HTMLElement;
+    const componentNode = targetElement.closest('[data-id]');
+    const componentId = componentNode?.getAttribute('data-id') ?? null;
+    setContextMenuTargetId(componentId);
+  };
+
   const isOverBackground = overId === CANVAS_BACKGROUND_ID;
   const isRootSelected = selectedIds.length === 1 && selectedIds[0] === rootId;
 
@@ -71,7 +80,12 @@ export const EditorCanvas = () => {
 
   return (
     <CanvasContextMenu>
-      <div ref={setMergedRefs} className={styles.canvasContainer} onClick={handleBackgroundClick}>
+      <div 
+        ref={setMergedRefs} 
+        className={styles.canvasContainer} 
+        onClick={handleBackgroundClick}
+        onContextMenu={handleCanvasContextMenu} // Attach the new handler here
+      >
         <div className={formCardClasses} onClick={handleCanvasClick}>
           <div className={styles.formCardHeader}>
             <h2>{screenName}</h2>

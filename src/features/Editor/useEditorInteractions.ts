@@ -85,20 +85,8 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     }
   };
   
-  const handleContextMenu = (e: React.MouseEvent) => {
-    // Prevent the default browser context menu.
-    e.preventDefault();
-    // CRITICAL FIX: DO NOT stop propagation. This allows the event to bubble up
-    // to the Radix ContextMenu.Trigger, which wraps the entire canvas.
-    // e.stopPropagation(); 
-    
-    // If the right-clicked item is not already part of the selection,
-    // clear the old selection and select only this item.
-    if (!isSelected) {
-      setInteractionState({ mode: 'selecting', ids: [component.id] });
-      setAnchorId(component.id);
-    }
-  };
+  // REMOVED: The problematic onContextMenu handler has been deleted.
+  // The event now bubbles up to the canvas to be handled by the new architecture.
 
   const sortableStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -128,7 +116,7 @@ export const useEditorInteractions = (component: CanvasComponent) => {
     },
     selectionProps: {
       onClick: handleSelect,
-      onContextMenu: handleContextMenu,
+      // REMOVED: onContextMenu is no longer part of this hook's contract.
     },
     dndListeners: listeners,
   };

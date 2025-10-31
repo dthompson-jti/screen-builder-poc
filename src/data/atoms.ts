@@ -51,6 +51,9 @@ export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle'
 
 export const selectionAnchorIdAtom = atom<string | null>(null);
 
+// NEW: A transient atom to track the target of a context menu click.
+export const contextMenuTargetIdAtom = atom<string | null>(null);
+
 export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
   const state = get(canvasInteractionAtom);
   if (state.mode === 'selecting') return state.ids;

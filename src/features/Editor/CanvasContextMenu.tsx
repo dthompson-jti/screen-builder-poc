@@ -1,7 +1,12 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { selectedCanvasComponentIdsAtom } from '../../data/atoms';
+import { 
+  selectedCanvasComponentIdsAtom,
+  contextMenuTargetIdAtom,
+  canvasInteractionAtom,
+  selectionAnchorIdAtom
+} from '../../data/atoms';
 import { useComponentCapabilities } from './useComponentCapabilities';
 import { useCanvasActions } from './useCanvasActions';
 import { ActionMenu, ActionMenuItem } from '../../components/ActionMenu';
@@ -18,8 +23,6 @@ const MenuContent = () => {
   const actions = useCanvasActions(selectedIds);
   const isMac = useIsMac();
 
-  // FIX: Refactored to build the array conditionally, which is more type-safe
-  // and avoids the complex/buggy .filter() call. This resolves the TS error.
   const menuItems = useMemo<(ActionMenuItem | 'separator')[]>(() => {
     const modKey = isMac ? '⌘' : 'Ctrl';
 
@@ -69,8 +72,29 @@ const MenuContent = () => {
 };
 
 export const CanvasContextMenu = ({ children }: CanvasContextMenuProps) => {
+  const setInteractionState = useSetAtom(canvasInteractionAtom);
+  const setAnchorId = useSetAtom(selectionAnchorIdAtom);
+  const [contextMenuTargetId, setContextMenuTargetId] = useAtom(contextMenuTargetIdAtom);
+  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && contextMenuTargetId) {
+      // The menu is about to open. Check if we need to update the selection state.
+      const isTargetAlreadySelected = selectedIds.includes(contextMenuTargetId);
+      if (!isTargetAlreadySelected) {
+        // The right-clicked item was not part of the current selection,
+        // so we clear the old selection and select only the target item.
+        setInteractionState({ mode: 'selecting', ids: [contextMenuTargetId] });
+        setAnchorId(contextMenuTargetId);
+      }
+    } else if (!isOpen) {
+      // Cleanup: Reset the transient target atom when the menu closes.
+      setContextMenuTargetId(null);
+    }
+  };
+
   return (
-    <ContextMenu.Root>
+    <ContextMenu.Root onOpenChange={handleOpenChange}>
       <ContextMenu.Trigger asChild>{children}</ContextMenu.Trigger>
       <ContextMenu.Portal>
         <ContextMenu.Content className="menu-popover" onCloseAutoFocus={(e) => e.preventDefault()}>
