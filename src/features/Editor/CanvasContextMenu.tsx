@@ -1,11 +1,10 @@
 // src/features/Editor/CanvasContextMenu.tsx
-import { useAtomValue, useSetAtom, useAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { 
   selectedCanvasComponentIdsAtom,
   contextMenuTargetIdAtom,
-  canvasInteractionAtom,
-  selectionAnchorIdAtom
+  updateSelectionOnContextMenuAtom, // Import the new action atom
 } from '../../data/atoms';
 import { useComponentCapabilities } from './useComponentCapabilities';
 import { useCanvasActions } from './useCanvasActions';
@@ -72,22 +71,16 @@ const MenuContent = () => {
 };
 
 export const CanvasContextMenu = ({ children }: CanvasContextMenuProps) => {
-  const setInteractionState = useSetAtom(canvasInteractionAtom);
-  const setAnchorId = useSetAtom(selectionAnchorIdAtom);
-  const [contextMenuTargetId, setContextMenuTargetId] = useAtom(contextMenuTargetIdAtom);
-  const selectedIds = useAtomValue(selectedCanvasComponentIdsAtom);
+  // FIX: Use the new action atom, which handles the logic safely.
+  const updateSelection = useSetAtom(updateSelectionOnContextMenuAtom);
+  const setContextMenuTargetId = useSetAtom(contextMenuTargetIdAtom);
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen && contextMenuTargetId) {
-      // The menu is about to open. Check if we need to update the selection state.
-      const isTargetAlreadySelected = selectedIds.includes(contextMenuTargetId);
-      if (!isTargetAlreadySelected) {
-        // The right-clicked item was not part of the current selection,
-        // so we clear the old selection and select only the target item.
-        setInteractionState({ mode: 'selecting', ids: [contextMenuTargetId] });
-        setAnchorId(contextMenuTargetId);
-      }
-    } else if (!isOpen) {
+    if (isOpen) {
+      // The menu is about to open. Execute our safe action.
+      // This will read the latest state and update selection if necessary.
+      updateSelection();
+    } else {
       // Cleanup: Reset the transient target atom when the menu closes.
       setContextMenuTargetId(null);
     }

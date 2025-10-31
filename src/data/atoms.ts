@@ -51,8 +51,27 @@ export const canvasInteractionAtom = atom<CanvasInteractionState>({ mode: 'idle'
 
 export const selectionAnchorIdAtom = atom<string | null>(null);
 
-// NEW: A transient atom to track the target of a context menu click.
 export const contextMenuTargetIdAtom = atom<string | null>(null);
+
+// FIX: New write-only "action" atom to safely handle selection changes on context menu open.
+// This pattern avoids stale state issues within the Radix callback.
+export const updateSelectionOnContextMenuAtom = atom(
+  null,
+  (get, set) => {
+    const targetId = get(contextMenuTargetIdAtom);
+    if (!targetId) return;
+
+    const currentInteraction = get(canvasInteractionAtom);
+    const selectedIds = (currentInteraction.mode === 'selecting' ? currentInteraction.ids : (currentInteraction.mode === 'editing' ? [currentInteraction.id] : []));
+        
+    const isTargetAlreadySelected = selectedIds.includes(targetId);
+    if (!isTargetAlreadySelected) {
+      set(canvasInteractionAtom, { mode: 'selecting', ids: [targetId] });
+      set(selectionAnchorIdAtom, targetId);
+    }
+  }
+);
+
 
 export const selectedCanvasComponentIdsAtom = atom<string[]>((get) => {
   const state = get(canvasInteractionAtom);
