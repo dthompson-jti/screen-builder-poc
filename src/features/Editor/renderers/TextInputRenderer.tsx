@@ -43,17 +43,17 @@ export const TextInputRenderer = ({ component, mode }: RendererProps<FormCompone
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const editable = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
+  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
 
   useEffect(() => {
     if (isEditing) {
       const timer = setTimeout(() => {
-        editable.ref.current?.focus();
-        editable.ref.current?.select();
+        ref.current?.focus();
+        ref.current?.select();
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [isEditing, editable.ref]);
+  }, [isEditing, ref]);
 
   if (mode === 'preview') {
     return <TextInputView {...component.properties} />;
@@ -68,7 +68,7 @@ export const TextInputRenderer = ({ component, mode }: RendererProps<FormCompone
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         {isEditing ? (
           <div className={styles.formItemContent}>
-            <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            <input {...editableProps} ref={ref} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
             <div className={styles.controlPlaceholder}>{component.properties.placeholder}</div>
           </div>
         ) : (

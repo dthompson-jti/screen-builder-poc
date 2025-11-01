@@ -45,17 +45,17 @@ export const CheckboxRenderer = ({ component, mode }: RendererProps<FormComponen
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const editable = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
+  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
 
   useEffect(() => {
     if (isEditing) {
       const timer = setTimeout(() => {
-        editable.ref.current?.focus();
-        editable.ref.current?.select();
+        ref.current?.focus();
+        ref.current?.select();
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [isEditing, editable.ref]);
+  }, [isEditing, ref]);
 
   if (mode === 'preview') {
     return <CheckboxView {...component.properties} />;
@@ -72,7 +72,7 @@ export const CheckboxRenderer = ({ component, mode }: RendererProps<FormComponen
           <div className={styles.formItemContent}>
              <div className={styles.checkboxExample}>
                 <div className={styles.checkboxSquare} />
-                <input {...editable} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+                <input {...editableProps} ref={ref} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
             </div>
           </div>
         ) : (

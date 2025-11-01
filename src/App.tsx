@@ -44,6 +44,7 @@ const dropAnimation: DropAnimation = {
 
 const INITIAL_PANEL_WIDTH = 320;
 const MIN_PANEL_WIDTH = 280;
+const MAX_PANEL_WIDTH = 600;
 
 function App() {
   const isLeftPanelVisible = useAtomValue(isComponentBrowserVisibleAtom);
@@ -60,8 +61,6 @@ function App() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      // FIX: Remove the delay to make dragging immediate.
-      // A small tolerance is kept to distinguish between a pure click and a drag.
       activationConstraint: {
         distance: 8,
       },
@@ -95,6 +94,7 @@ function App() {
             <ResizablePanel
               initialWidth={INITIAL_PANEL_WIDTH}
               minWidth={MIN_PANEL_WIDTH}
+              maxWidth={MAX_PANEL_WIDTH}
               position="left"
               isAnimatedVisible={isLeftPanelVisible}
             >
@@ -106,7 +106,7 @@ function App() {
             <ResizablePanel
                 initialWidth={300}
                 minWidth={280}
-                maxWidth={500}
+                maxWidth={MAX_PANEL_WIDTH}
                 position="right"
                 isAnimatedVisible={isRightPanelVisible}
             >

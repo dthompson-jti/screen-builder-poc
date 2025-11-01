@@ -42,7 +42,7 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
   
   const isHeading = component.properties.textElement?.startsWith('h');
-  const editable = useEditable<HTMLInputElement | HTMLTextAreaElement>(
+  const { ref, ...editableProps } = useEditable<HTMLInputElement | HTMLTextAreaElement>(
     component.properties.content || '',
     handleCommit,
     handleCancel,
@@ -52,12 +52,12 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
   useEffect(() => {
     if (isEditing) {
       const timer = setTimeout(() => {
-        editable.ref.current?.focus();
-        editable.ref.current?.select();
+        ref.current?.focus();
+        ref.current?.select();
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [isEditing, editable.ref]);
+  }, [isEditing, ref]);
   
   if (mode === 'preview') {
     return <PlainTextView {...component.properties} />;
@@ -66,7 +66,6 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
   const wrapperClasses = `${styles.sortableItem} ${isDragging ? styles.isDragging : ''}`;
   const selectionClasses = `${styles.selectableWrapper} ${isSelected ? styles.selected : ''}`;
 
-  // FIX: Create dynamic class names for WYSIWYG editing.
   const textElement = component.properties.textElement || 'p';
   const inlineInputClasses = `${styles.inlineInput} ${styles[`is-${textElement}`]}`;
 
@@ -78,15 +77,15 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
           {isEditing ? (
             isHeading ? (
               <input
-                {...editable}
-                ref={editable.ref as React.Ref<HTMLInputElement>}
+                {...editableProps}
+                ref={ref as React.Ref<HTMLInputElement>}
                 className={inlineInputClasses}
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <textarea
-                {...editable}
-                ref={editable.ref as React.Ref<HTMLTextAreaElement>}
+                {...editableProps}
+                ref={ref as React.Ref<HTMLTextAreaElement>}
                 className={inlineInputClasses}
                 onClick={(e) => e.stopPropagation()}
               />
