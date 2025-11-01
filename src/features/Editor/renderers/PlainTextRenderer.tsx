@@ -1,5 +1,5 @@
 // src/features/Editor/renderers/PlainTextRenderer.tsx
-import { memo, useEffect, useRef } from 'react';
+import { memo, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { canvasInteractionAtom } from '../../../data/atoms';
 import { commitActionAtom } from '../../../data/historyAtoms';
@@ -13,11 +13,10 @@ import styles from '../EditorCanvas.module.css';
 // --- Pure View Component ---
 const PlainTextView = memo(({ content, textElement = 'p' }: { content?: string, textElement?: FormComponent['properties']['textElement'] }) => {
   const Tag = textElement || 'p';
-  const style: React.CSSProperties = { margin: 0 };
   if (Tag === 'p') {
-    style.whiteSpace = 'pre-wrap';
+    return <p style={{ whiteSpace: 'pre-wrap' }}>{content || 'Plain Text'}</p>;
   }
-  return <Tag style={style}>{content || 'Plain Text'}</Tag>;
+  return <Tag>{content || 'Plain Text'}</Tag>;
 });
 
 // --- Unified Renderer ---
@@ -46,18 +45,9 @@ export const PlainTextRenderer = ({ component, mode }: RendererProps<FormCompone
     component.properties.content || '',
     handleCommit,
     handleCancel,
+    isEditing,
     { multiline: !isHeading }
   );
-
-  useEffect(() => {
-    if (isEditing) {
-      const timer = setTimeout(() => {
-        ref.current?.focus();
-        ref.current?.select();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [isEditing, ref]);
   
   if (mode === 'preview') {
     return <PlainTextView {...component.properties} />;

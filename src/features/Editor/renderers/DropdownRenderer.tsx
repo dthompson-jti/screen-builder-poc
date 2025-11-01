@@ -1,5 +1,5 @@
 // src/features/Editor/renderers/DropdownRenderer.tsx
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { canvasInteractionAtom } from '../../../data/atoms';
 import { commitActionAtom } from '../../../data/historyAtoms';
@@ -46,17 +46,7 @@ export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponen
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
-
-  useEffect(() => {
-    if (isEditing) {
-      const timer = setTimeout(() => {
-        ref.current?.focus();
-        ref.current?.select();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [isEditing, ref]);
+  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel, isEditing);
 
   if (mode === 'preview') {
     return <DropdownView {...component.properties} />;
@@ -71,7 +61,7 @@ export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponen
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         {isEditing ? (
           <div className={styles.formItemContent}>
-            <input {...editableProps} ref={ref} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            <input {...editableProps} ref={ref} className={`${styles.inlineInput} ${styles.inlineInputForLabel}`} onClick={(e) => e.stopPropagation()} />
             <div className={`${styles.controlPlaceholder} ${styles.controlWithIcon}`}>
               <span>Select an option...</span>
               <span className={`material-symbols-rounded ${styles.controlIcon}`}>arrow_drop_down</span>

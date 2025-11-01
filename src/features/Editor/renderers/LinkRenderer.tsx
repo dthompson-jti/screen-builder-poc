@@ -1,5 +1,5 @@
 // src/features/Editor/renderers/LinkRenderer.tsx
-import { memo, useRef } from 'react';
+import React, { memo, useRef } from 'react';
 import { FormComponent } from '../../../types';
 import { RendererProps } from './types';
 import { useEditorInteractions } from '../useEditorInteractions';
@@ -8,8 +8,7 @@ import styles from '../EditorCanvas.module.css';
 
 // --- Pure View Component ---
 const LinkView = memo(({ content, href }: { content?: string, href?: string }) => {
-  // FIX: Removed inline padding to allow parent class to control it.
-  return <a href={href} style={{ margin: 0 }}>{content || 'Link Text'}</a>;
+  return <a href={href}>{content || 'Link Text'}</a>;
 });
 
 // --- Unified Renderer ---
@@ -33,8 +32,7 @@ export const LinkRenderer = ({ component, mode }: RendererProps<FormComponent>) 
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
       <div className={selectionClasses} {...selectionProps}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
-        {/* FIX: Wrapped content in formItemContent div for consistent hover/selection styles. */}
-        <div className={styles.formItemContent}>
+        <div className={styles.formItemContent} onClick={(e: React.MouseEvent) => e.preventDefault()}>
           <LinkView {...component.properties} />
         </div>
       </div>

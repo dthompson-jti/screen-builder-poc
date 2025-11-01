@@ -1,5 +1,5 @@
 // src/features/Editor/renderers/RadioButtonsRenderer.tsx
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 import { canvasInteractionAtom } from '../../../data/atoms';
 import { commitActionAtom } from '../../../data/historyAtoms';
@@ -52,17 +52,7 @@ export const RadioButtonsRenderer = ({ component, mode }: RendererProps<FormComp
     setInteractionState({ mode: 'selecting', ids: [component.id] });
   };
   const handleCancel = () => setInteractionState({ mode: 'selecting', ids: [component.id] });
-  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel);
-
-  useEffect(() => {
-    if (isEditing) {
-      const timer = setTimeout(() => {
-        ref.current?.focus();
-        ref.current?.select();
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [isEditing, ref]);
+  const { ref, ...editableProps } = useEditable<HTMLInputElement>(component.properties.label, handleCommit, handleCancel, isEditing);
 
   if (mode === 'preview') {
     return <RadioButtonsView {...component.properties} />;
@@ -77,7 +67,7 @@ export const RadioButtonsRenderer = ({ component, mode }: RendererProps<FormComp
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         {isEditing ? (
           <div className={styles.formItemContent}>
-            <input {...editableProps} ref={ref} className={styles.inlineInput} onClick={(e) => e.stopPropagation()} />
+            <input {...editableProps} ref={ref} className={`${styles.inlineInput} ${styles.inlineInputForLabel}`} onClick={(e) => e.stopPropagation()} />
             <div className={styles.radioGroupExample}>
               <div className={styles.radioOptionExample}>
                 <div className={styles.radioCircle} />
