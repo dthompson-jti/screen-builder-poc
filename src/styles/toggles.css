@@ -1,11 +1,11 @@
 /* src/styles/toggles.css */
-/* CACHE BUST: v12 - Muted Unselected Borders */
+/* CACHE BUST: v13 - Correct Border Token & Icon Fill */
 
 /*
   This file provides global, unified styles for toggle buttons.
-  DEFINITIVE FIX: The border color for unselected items has been changed
-  to a more subtle token (`--surface-border-secondary`) to match the desired
-  muted appearance from the original design.
+  DEFINITIVE FIX: The border color for unselected items has been corrected
+  to use `--surface-border-primary`. A high-specificity rule has also
+  been added to ensure icons are correctly filled when selected.
 */
 
 /* --- Segmented Control (Toggle Group) Styles --- */
@@ -39,7 +39,7 @@
   flex: 1;
   border-radius: 0; /* Items are square by default */
   
-  /* Each item has its own border. Use a subtle color for the unselected state. */
+  /* Each item has its own border. Use the corrected token for the unselected state. */
   border: 1px solid var(--surface-border-primary);
   /* Pull items together so borders overlap */
   margin-left: -1px;
@@ -105,4 +105,12 @@
 .toggle-group .toggle-group-item .material-symbols-rounded {
   font-size: 20px;
   transition: font-variation-settings 0.2s ease;
+}
+
+/*
+  FIX: Add a high-specificity rule to ensure the icon color is
+  correct in the selected state.
+*/
+.toggle-group .toggle-group-item[aria-checked='true'] .material-symbols-rounded {
+  color: var(--control-fg-selected);
 }
