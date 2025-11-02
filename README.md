@@ -82,6 +82,9 @@ All global editor hotkeys are managed in a single, centralized hook (`src/data/u
 -   **Stability Above All:** Layout-shifting animations are disabled during a drag operation to keep drop targets "rock solid".
 -   **Centralized Logic:** All DnD event handling is encapsulated within the `src/data/useCanvasDnd.ts` hook.
 
+### View-Aware Logic
+To ensure a clean separation of concerns, all editor-specific systems must be "view-aware." This means they must check the current application view mode (via the `appViewModeAtom`) and disable their functionality when the user is not in the `'editor'`. This is the primary mechanism that prevents editor interactions (like keyboard hotkeys and mouse selection) from being active in read-only modes like "Preview."
+
 ## 5. Styling Architecture
 
 The project uses a **systematic CSS architecture** organized into layers to control specificity and promote a cohesive design language. Please see our **[High-Craft CSS Principles](./CSS-PRINCIPLES.md)** for detailed patterns and conventions.

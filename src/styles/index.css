@@ -1,36 +1,44 @@
 /* src/styles/index.css */
 
-/* Add a new, higher-precedence layer for targeted overrides */
-@layer base, components, overrides;
+/*
+  This file is the single source of truth for the CSS cascade layer order,
+  ensuring predictable styling. CSS Modules are not part of these layers,
+  giving them higher specificity than any global style by default.
+*/
 
-/* 1. Foundational Design Tokens */
-@import './primitives.css';
-@import './utility.css';
-@import './semantics.css';
-
-/* 2. Global utility styles */
-@import './animations.css' layer(base);
-@import './scrollbars.css' layer(base);
-
-/* 3. Global Styles for HTML elements and common components */
-@import './forms.css' layer(base);
-@import './buttons.css' layer(base);
-@import './menu.css' layer(base);
-@import './tabs.css' layer(base);
-@import './navigator.css' layer(base);
-@import './appearance.css' layer(components);
-
-/* 4. Radix Primitive Themes */
-@import './modal.css' layer(components);
-@import './popover.css' layer(components);
-@import './accordion.css' layer(components);
-@import './tooltip.css' layer(components);
-@import './toast.css' layer(components);
-
-/* FIX: The toggle-group is moved to a higher-precedence layer. */
-@import './toggle-group.css' layer(overrides);
+@layer tokens, base, themes, components, utilities;
 
 
+/* Layer 1: Design Tokens */
+/* DEFINITIVE FIX: Add terminating semicolons to all @import rules. */
+@import url('./primitives.css') layer(tokens);
+@import url('./utility.css') layer(tokens);
+@import url('./semantics.css') layer(tokens);
+
+/* Layer 2: Base Styles */
+@import url('./forms.css') layer(base);
+@import url('./scrollbars.css') layer(base);
+
+/* Layer 3: Themes for Radix Primitives */
+@import url('./modal.css') layer(themes);
+@import url('./popover.css') layer(themes);
+@import url('./accordion.css') layer(themes);
+@import url('./tooltip.css') layer(themes);
+@import url('./toast.css') layer(themes);
+
+/* Layer 4: Reusable Component Patterns */
+@import url('./buttons.css') layer(components);
+@import url('./menu.css') layer(components);
+@import url('./tabs.css') layer(components);
+@import url('./toggles.css') layer(components);
+@import url('./navigator.css') layer(components);
+@import url('./appearance.css') layer(components);
+
+/* Layer 5: Utility Classes */
+@import url('./animations.css') layer(utilities);
+
+
+/* --- Global Root and Body Styles (defined outside layers) --- */
 :root {
   --font-family-sans: 'Inter', sans-serif;
 }

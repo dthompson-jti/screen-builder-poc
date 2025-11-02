@@ -27,6 +27,7 @@ For any non-trivial task (e.g., implementing a PRD), the agent must follow this 
     *   Simulate the changes in the most critical files first.
     *   **Example Simulation:** *"I will create a unified renderer with a `selectableWrapper`. The old CSS targeted `.selected > .formComponentWrapper`. This selector will fail. Therefore, I must update `EditorCanvas.module.css` to target `.selectableWrapper.selected` to prevent a visual regression."*
     *   **Example Simulation:** *"I will add a hover effect to `.selectableWrapper`. Since these wrappers can be nested, this will cause a hover-bubbling bug. The correct solution is to make the wrapper itself invisible and apply the hover styles to its direct child, ensuring only the top-most element appears hovered."*
+    *   **Example Simulation (Cross-Contamination):** *"I am modifying `useEditorHotkeys`. This is a global hook. Does it run in Preview Mode? Yes. Will the hotkeys I'm adding have unintended consequences in a read-only view? Yes, the user could delete components from the preview. Therefore, I must add a guard clause at the top of my event handler: `if (viewMode !== 'editor') return;` to prevent this architectural leak."*
     *   This is the most critical step. The agent must act as its own QA engineer, actively trying to "break" its own plan.
 
 4.  **Code Generation & Self-Correction:**
@@ -51,3 +52,5 @@ These are non-negotiable rules learned from the project's history. Violating the
 6.  **Precision in Imports is Mandatory.** All package names must be exact (e.g., `@dnd-kit/core`, `@floating-ui/react-dom`). All relative paths must be correct. There is no room for typos.
 
 7.  **"Ghost Errors" are Real.** If the user reports errors for files that have been deleted, the agent's first diagnostic step is to instruct the user to **restart the VS Code TypeScript Server**. This resolves stale cache issues.
+
+8.  **Editor Systems Must Be View-Aware.** Any hook or system that provides editor-specific functionality (e.g., `useEditorHotkeys`, `useEditorInteractions`) **must** be conditionally disabled if the application's view mode is not `'editor'`. Failure to do so will cause editor logic to leak into read-only views like "Preview," breaking the user experience. Always check the `appViewModeAtom` as a guard clause.

@@ -2,6 +2,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import {
+  appViewModeAtom, // MODIFIED: Import view mode atom
   canvasInteractionAtom,
   isPropertiesPanelVisibleAtom,
   selectionAnchorIdAtom,
@@ -17,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities';
  * It provides props for sorting (dnd-kit), selection handling, and state flags.
  */
 export const useEditorInteractions = (component: CanvasComponent) => {
+  const viewMode = useAtomValue(appViewModeAtom); // MODIFIED: Read the current view mode
   const [interactionState, setInteractionState] = useAtom(canvasInteractionAtom);
   const [anchorId, setAnchorId] = useAtom(selectionAnchorIdAtom);
   const allComponents = useAtomValue(canvasComponentsByIdAtom);
@@ -37,15 +39,18 @@ export const useEditorInteractions = (component: CanvasComponent) => {
       type: component.componentType,
       childrenCount: component.componentType === 'layout' ? component.children.length : undefined,
     } satisfies DndData,
-    disabled: isRoot,
+    // MODIFIED: Disable sorting if not in editor mode
+    disabled: isRoot || viewMode !== 'editor',
   });
 
   const handleSelect = (e: React.MouseEvent) => {
+    // MODIFIED: Add guard clause to disable all mouse interactions outside of editor mode
+    if (viewMode !== 'editor') return;
+
     if (isRoot) return;
     e.stopPropagation();
     setIsPropertiesPanelVisible(true);
 
-    // FIX: Expand the definition of an editable component to include dropdown and radio buttons.
     const isEditableOnCanvas =
       component.componentType !== 'layout' &&
       (component.properties.controlType === 'text-input' ||
@@ -54,7 +59,6 @@ export const useEditorInteractions = (component: CanvasComponent) => {
         component.properties.controlType === 'dropdown' ||
         component.properties.controlType === 'radio-buttons');
     
-    // FIX: Generalize double-click to work for any editable component, not just plain text.
     if ((e.altKey && isEditableOnCanvas) || (e.detail === 2 && isEditableOnCanvas)) {
       setInteractionState({ mode: 'editing', id: component.id });
       return;

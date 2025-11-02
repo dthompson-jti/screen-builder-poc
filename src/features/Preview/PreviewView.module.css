@@ -1,5 +1,5 @@
-/* src/views/PreviewView.module.css */
-/* NEW FILE */
+/* src/features/Preview/PreviewView.module.css */
+/* MODIFIED FILE */
 
 .previewWrapper {
   width: 100%;
@@ -18,10 +18,6 @@
   justify-content: center;
 }
 
-.canvasContainer.desktop {
-  justify-content: center;
-}
-
 .formFrame {
   background-color: var(--surface-bg-primary);
   border-radius: var(--spacing-3);
@@ -31,9 +27,4 @@
   transition: max-width 0.3s ease-in-out;
   height: fit-content;
   flex-shrink: 0;
-}
-
-.desktop .formFrame {
-  width: 100%;
-  max-width: 1200px; /* A reasonable max for desktop preview */
 }

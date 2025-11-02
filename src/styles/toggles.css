@@ -1,0 +1,108 @@
+/* src/styles/toggles.css */
+/* CACHE BUST: v12 - Muted Unselected Borders */
+
+/*
+  This file provides global, unified styles for toggle buttons.
+  DEFINITIVE FIX: The border color for unselected items has been changed
+  to a more subtle token (`--surface-border-secondary`) to match the desired
+  muted appearance from the original design.
+*/
+
+/* --- Segmented Control (Toggle Group) Styles --- */
+.toggle-group {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  /* The container is a clipping mask, it has NO border of its own. */
+  overflow: hidden;
+  position: relative;
+}
+
+.toggle-group .toggle-group-item {
+  /* 1. Targeted Reset */
+  background: none;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  
+  /* 2. Re-apply base styles */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: var(--spacing-2);
+  background-color: var(--surface-bg-primary);
+  color: var(--surface-fg-secondary);
+  position: relative;
+  cursor: pointer;
+  flex: 1;
+  border-radius: 0; /* Items are square by default */
+  
+  /* Each item has its own border. Use a subtle color for the unselected state. */
+  border: 1px solid var(--surface-border-primary);
+  /* Pull items together so borders overlap */
+  margin-left: -1px;
+  
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, z-index 0s 0.2s;
+}
+
+/* Correct the first item's margin and apply corner radius */
+.toggle-group .toggle-group-item:first-child {
+  margin-left: 0;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+/* Apply corner radius to the last item */
+.toggle-group .toggle-group-item:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/* On hover, bring the item forward so its border is on top */
+.toggle-group .toggle-group-item:not([aria-checked='true']):hover:not([data-disabled]) {
+  background-color: var(--control-bg-tertiary-hover);
+  color: var(--control-fg-tertiary-hover);
+  border-color: var(--control-border-tertiary-hover);
+  z-index: 1;
+}
+
+/* The selected item gets blue styles and the highest z-index */
+.toggle-group .toggle-group-item[aria-checked='true'] {
+  background-color: var(--control-bg-selected);
+  color: var(--control-fg-selected);
+  border-color: var(--control-border-selected);
+  z-index: 2;
+}
+
+.toggle-group .toggle-group-item[aria-checked='true']:hover:not([data-disabled]) {
+   background-color: var(--control-bg-selected-hover);
+   color: var(--control-fg-selected);
+}
+
+/* --- Standalone Toggle Button Overrides --- */
+.btn[data-variant][aria-pressed='true'] {
+  background-color: var(--control-bg-selected);
+  color: var(--control-fg-selected);
+  border-color: var(--control-border-selected);
+  box-shadow: none;
+}
+
+.btn[data-variant][aria-pressed='true']:hover:not([disabled]) {
+  background-color: var(--control-bg-selected-hover);
+  color: var(--control-fg-selected);
+  border-color: var(--control-border-selected);
+}
+
+/* --- Universal Icon Fill for ANY Selected State --- */
+[aria-checked='true'] .material-symbols-rounded,
+[aria-pressed='true'] .material-symbols-rounded {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* --- General Icon styles within toggles --- */
+.toggle-group .toggle-group-item .material-symbols-rounded {
+  font-size: 20px;
+  transition: font-variation-settings 0.2s ease;
+}

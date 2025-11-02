@@ -6,7 +6,8 @@ interface UseEditableOptions {
 }
 
 export interface EditableProps<T extends HTMLElement> {
-  ref: React.RefObject<T>;
+  // MODIFIED: The ref can be null initially.
+  ref: React.RefObject<T | null>;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;

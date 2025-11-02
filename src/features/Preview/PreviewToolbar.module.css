@@ -1,5 +1,5 @@
-/* src/components/PreviewToolbar.module.css */
-/* NEW FILE */
+/* src/features/Preview/PreviewToolbar.module.css */
+/* MODIFIED FILE */
 
 .previewToolbar {
   flex-shrink: 0;
@@ -43,6 +43,20 @@
   color: var(--surface-fg-primary);
   font-weight: 500;
   font-size: 14px;
+}
+
+/* For Firefox */
+.widthInput[type=number] {
+  /* MODIFIED: Add standard properties for compatibility */
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+/* For Chrome, Safari and Opera */
+.widthInput::-webkit-outer-spin-button,
+.widthInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .widthInputUnit {
