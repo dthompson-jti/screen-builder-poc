@@ -57,7 +57,7 @@ export const DropdownRenderer = ({ component, mode }: RendererProps<FormComponen
 
   return (
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefs}>
-      <div className={selectionClasses} {...selectionProps}>
+      <div className={selectionClasses} {...selectionProps} {...dndListeners}>
         {isOnlySelection && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         {isEditing ? (
           <div className={styles.formItemContent}>

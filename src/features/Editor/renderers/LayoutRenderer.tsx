@@ -99,7 +99,7 @@ export const LayoutRenderer = ({ component, mode }: RendererProps<LayoutComponen
 
   return (
     <div className={wrapperClasses} {...sortableProps} data-id={component.id} ref={setMergedRefsForSortable}>
-      <div className={selectionClasses} {...selectionProps}>
+      <div className={selectionClasses} {...selectionProps} {...dndListeners}>
         {isOnlySelection && !isRoot && <CanvasSelectionToolbar componentId={component.id} referenceElement={wrapperRef.current} dndListeners={dndListeners} />}
         <div className={containerClasses} data-has-user-border={component.properties.appearance?.bordered} data-is-root={isRoot}>
           <div ref={setMergedRefsForDroppable} className={styles.layoutContainerContent}>

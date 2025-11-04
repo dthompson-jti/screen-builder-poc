@@ -59,6 +59,8 @@ function App() {
   useEditorHotkeys();
   useUrlSync();
 
+  // MODIFIED: Added an activation constraint to the PointerSensor.
+  // This delay allows click events (select, edit) to fire before a drag is initiated.
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
