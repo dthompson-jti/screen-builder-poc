@@ -9,7 +9,14 @@ interface InlineTextInputProps {
 }
 
 export const InlineTextInput = ({ value, onCommit, onCancel }: InlineTextInputProps) => {
-  const { ref, ...editableProps } = useEditable(value, onCommit, onCancel);
+  // FIX: Provide the missing 'isEditing' argument (always true for this component)
+  // and specify the generic type to ensure the ref type is correct.
+  const { ref, ...editableProps } = useEditable<HTMLInputElement>(
+    value,
+    onCommit,
+    onCancel,
+    true // This component is always in editing mode when rendered.
+  );
 
   return (
     <input
